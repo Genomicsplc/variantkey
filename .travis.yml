@@ -1,0 +1,17 @@
+language: clang
+sudo: required
+dist: trusty
+
+addons:
+  apt:
+    packages:
+    - lcov
+
+install:
+  - gem install coveralls-lcov
+
+script:
+  - make test
+
+after_success:
+  - coveralls-lcov /home/travis/build/tecnickcom/farmhash64/target/test/coverage/farmhash64.info

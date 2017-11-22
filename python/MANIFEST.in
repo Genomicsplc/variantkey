@@ -1,0 +1,17 @@
+exclude .gitignore
+exclude .coverage
+exclude .coveragerc
+exclude .travis.yml
+include setup.cfg
+include ../README.md
+include ../LICENSE
+include ../src/farmhash64.h
+include ../src/variantahash.h
+include src/pyvariantahash.h
+prune .cache
+prune .git
+prune build
+prune dist
+prune htmlcov
+recursive-exclude *.egg-info *
+recursive-include tests *
