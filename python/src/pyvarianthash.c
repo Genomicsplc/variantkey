@@ -98,19 +98,6 @@ static PyObject* py_farmhash64(PyObject *Py_UNUSED(ignored), PyObject *args)
     return result;
 }
 
-static PyObject* py_farmhash32(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    const char *s;
-    Py_ssize_t len;
-    if (!PyArg_ParseTuple(args, "s#", &s))
-        return NULL;
-    len = strlen(s);
-    uint64_t h = farmhash32(s, len);
-    result = Py_BuildValue("I", h);
-    return result;
-}
-
 static PyMethodDef PyVariantHashMethods[] =
 {
     {"encode_chrom", py_encode_chrom, METH_VARARGS, PYENCODECHROM_DOCSTRING},
@@ -119,7 +106,6 @@ static PyMethodDef PyVariantHashMethods[] =
     {"variant_hash_string", py_variant_hash_string, METH_VARARGS, PYVARIANTHASHSTRING_DOCSTRING},
     {"decode_variant_hash_string", py_decode_variant_hash_string, METH_VARARGS, PYDECODEVARIANTHASHSTRING_DOCSTRING},
     {"farmhash64", py_farmhash64, METH_VARARGS, PYFARMHASH64_DOCSTRING},
-    {"farmhash32", py_farmhash32, METH_VARARGS, PYFARMHASH32_DOCSTRING},
     {NULL, NULL, 0, NULL}
 };
 

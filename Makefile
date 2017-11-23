@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test build python pytest golang doc format clean
+.PHONY: help qa test build python pytest go cgo doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -51,14 +51,16 @@ help:
 	@echo "    make build   : Build the library"
 	@echo "    make python  : Build the python module"
 	@echo "    make pytest  : Test the python module"
-	@echo "    make golang  : Test the golang module"
+	@echo "    make go      : Test the native golang module"
+	@echo "    make cgo     : Test the golang cgo module"
 	@echo "    make doc     : Generate source code documentation"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
 # Alias for help target
-all: clean format test build doc python pytest golang
+all: clean format test build doc python pytest go cgo
+#golang
 
 # BUikd and run the unit tests
 test:
@@ -120,8 +122,13 @@ pytest:
 	python3 setup.py test
 
 # Test golang module
-golang:
+go:
 	cd go && \
+	make qa
+
+# Test golang cgo module
+cgo:
+	cd cgo && \
 	make qa
 
 # Generate source code documentation
@@ -136,6 +143,8 @@ format:
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'python/src/*.h'
 	astyle --style=allman --recursive --suffix=none 'python/src/*.c'
+	cd cgo && make format
+	cd go && make format
 
 # Remove any build artifact
 clean:
@@ -144,3 +153,5 @@ clean:
 	rm -rf ./python/.cache
 	rm -rf ./python/tests/*.so
 	rm -rf ./python/tests/__pycache__
+	rm -rf ./cgo/target
+	rm -rf ./go/target

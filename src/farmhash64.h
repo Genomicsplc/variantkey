@@ -57,21 +57,4 @@
  */
 uint64_t farmhash64(const char* s, size_t len);
 
-/**
- * @brief 32 bit hash.
- *
- * Returns a 32-bit fingerprint hash for a byte array.
- *
- * NOTE: This is NOT equivalent to the original Fingerprint32 function.
- * It is a new function based on farmhash64.
- *
- * This function is not suitable for cryptography.
- *
- * @param s   string to process
- * @param len string length
- *
- * @return 32-bit hash code
- */
-uint32_t farmhash32(const char* s, size_t len);
-
 #endif  // FARMHASH64_H
