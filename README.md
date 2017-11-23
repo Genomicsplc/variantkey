@@ -73,6 +73,7 @@ make build
 
 ## Python Module
 
+The python module is located in the ```python``` directory.
 
 ### Build
 
@@ -102,4 +103,17 @@ print(s)
 
 d = vh.decode_variant_hash_string("000000060002f332e683c0ceef5adee0")
 print(d[0], d[1], d[2])
+```
+
+
+## GO Library
+
+A go wrapper is located in the ```go``` directory.
+
+### Test
+
+Use the following commands to test the go wrapper and generate reports.
+
+```
+make golang
 ```

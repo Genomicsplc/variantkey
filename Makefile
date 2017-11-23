@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test build python pytest doc format clean
+.PHONY: help qa test build python pytest golang doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -51,13 +51,14 @@ help:
 	@echo "    make build   : Build the library"
 	@echo "    make python  : Build the python module"
 	@echo "    make pytest  : Test the python module"
+	@echo "    make golang  : Test the golang module"
 	@echo "    make doc     : Generate source code documentation"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
 # Alias for help target
-all: clean format test build doc python pytest
+all: clean format test build doc python pytest golang
 
 # BUikd and run the unit tests
 test:
@@ -117,6 +118,11 @@ python:
 pytest:
 	cd python && \
 	python3 setup.py test
+
+# Test golang module
+golang:
+	cd go && \
+	make qa
 
 # Generate source code documentation
 doc:

@@ -65,7 +65,7 @@ uint32_t encode_chrom(const char *chrom)
 uint64_t encode_ref_alt(const char *ref, const char *alt)
 {
     size_t slen = 1 + strlen(ref) + strlen(alt);
-    char ra[slen+1];
+    char ra[slen + 1];
     char *it = ra;
     while ((*it++ = aztoupper(*ref++)));
     it[-1] = '_';
