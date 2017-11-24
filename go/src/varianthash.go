@@ -52,7 +52,7 @@ func EncodeRefAlt(ref string, alt string) uint64 {
 	return FarmHash64(ra)
 }
 
-// VariantHash returns a Genetic Variant Hash based on CHROM, POS (1-base), REF, ALT.
+// VariantHash returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
 func VariantHash(chrom string, pos uint32, ref, alt string) TVariantHash {
 	return TVariantHash{
 		EncodeChrom(chrom),

@@ -19,7 +19,7 @@ PyMODINIT_FUNC initlibpyvarianthash(void);
 
 #define PYENCODECHROM_DOCSTRING "Returns 32-bit chromosome encoding."
 #define PYENCODEREFALT_DOCSTRING "Returns 64-bit reference+alternate hash code."
-#define PYVARIANTHASH_DOCSTRING "Returns a Genetic Variant Hash based on CHROM, POS (1-base), REF, ALT."
+#define PYVARIANTHASH_DOCSTRING "Returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT."
 #define PYVARIANTHASHSTRING_DOCSTRING "Returns a human-readable Genetic Variant Hash string (32 hex characters)."
 #define PYDECODEVARIANTHASHSTRING_DOCSTRING "Parses a variant hash string and returns the individual components."
 #define PYFARMHASH64_DOCSTRING "Returns a 64-bit fingerprint hash for a byte array.\nexample: print libpyfarmhash64.farmhash64('Lorem ipsum dolor sit amet')\n16191328082827683567"

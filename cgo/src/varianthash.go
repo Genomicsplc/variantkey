@@ -49,7 +49,7 @@ func EncodeRefAlt(ref string, alt string) uint64 {
 	return uint64(C.encode_ref_alt((*C.char)(pref), (*C.char)(palt)))
 }
 
-// VariantHash returns a Genetic Variant Hash based on CHROM, POS (1-base), REF, ALT.
+// VariantHash returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
 func VariantHash(chrom string, pos uint32, ref, alt string) TVariantHash {
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)

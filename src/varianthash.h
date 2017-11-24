@@ -44,7 +44,7 @@ typedef struct varhash_t
 {
     /** Chromosome encoded number. */
     uint32_t chrom;
-    /** Position. The reference position, with the 1st base having position 1. */
+    /** Position. The reference position, with the 1st base having position 0. */
     uint32_t pos;
     /** Hash code for Reference and Alternate */
     uint64_t refalt;
@@ -79,10 +79,10 @@ uint32_t encode_chrom(const char *chrom);
  */
 uint64_t encode_ref_alt(const char *ref, const char *alt);
 
-/** @brief Returns a Genetic Variant Hash based on CHROM, POS (1-base), REF, ALT.
+/** @brief Returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
  *
  * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
- * @param pos   Position. The reference position, with the 1st base having position 1.
+ * @param pos   Position. The reference position, with the 1st base having position 0.
  * @param ref   Reference base. Each base must be one of A,C,G,T,N (case insensitive). Multiple bases are permitted.
  *              The value in the POS field refers to the position of the first base in the String.
  * @param alt   Alternate base. Non-reference allele.

@@ -22,7 +22,7 @@ The *Genetic Variant* Hash is composed of 3 sections that can be also used separ
                 Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.
                 For other species than human the string-to-number chromosome conversion should happen before calling the hashing function.
 
-* **POS**     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 1.
+* **POS**     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
 
 * **REF_ALT** : 64 bits (16 hex bytes) for the farmhash64 of the "REF_ALT" string.
 
@@ -35,7 +35,7 @@ The first 64 bits of the Variant Hash forms a sortable key.
 
 * **CHROM** - *chromosome*     : Uppercase identifier from the reference genome, no white-space or leading zeros permitted.
 
-* **POS**   - *position*       : The reference position, with the 1st base having position 1.
+* **POS**   - *position*       : The reference position, with the 1st base having position 0.
 
 * **REF**   - *reference base* : Each base must be one of A,C,G,T,N (always in uppercase). Multiple bases are permitted.
                                  The value in the POS field refers to the position of the first base in the String.
