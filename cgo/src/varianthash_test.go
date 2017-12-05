@@ -1,8 +1,6 @@
 package varianthash
 
 import (
-	//"bytes"
-	//"fmt"
 	"testing"
 )
 

@@ -53,7 +53,7 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     extras_require = {
-        'test': ['pytest'],
+        'test': ['pytest', 'pytest-benchmark'],
     },
     cmdclass = {'test': RunTests},
 )
