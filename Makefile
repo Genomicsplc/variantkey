@@ -59,8 +59,7 @@ help:
 	@echo ""
 
 # Alias for help target
-all: clean format test build doc python pytest go cgo
-#golang
+all: clean format test build doc cgo go python pytest
 
 # BUikd and run the unit tests
 test:
@@ -143,7 +142,7 @@ format:
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'python/src/*.h'
 	astyle --style=allman --recursive --suffix=none 'python/src/*.c'
-	autopep8 --in-place --aggressive --aggressive ./python/tests/*.py
+	#autopep8 --in-place --aggressive --aggressive ./python/tests/*.py
 	cd cgo && make format
 	cd go && make format
 

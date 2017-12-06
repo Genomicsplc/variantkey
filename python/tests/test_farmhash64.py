@@ -65,4 +65,8 @@ class TestFunctions(TestCase):
 class TestBenchmark(object):
 
     def test_farmhash64_benchmark(self, benchmark):
-        benchmark(vh.farmhash64, "2ZVSmMwBTILcCekZjgZ49Py5RoJUriQ7URkCgZPw")
+        benchmark.pedantic(
+            vh.farmhash64,
+            args=["2ZVSmMwBTILcCekZjgZ49Py5RoJUriQ7URkCgZPw"],
+            iterations=10000,
+            rounds=100)
