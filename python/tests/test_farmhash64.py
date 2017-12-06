@@ -53,10 +53,11 @@ hashTestData = [
     (0xc3f02c4ffd5d71e6, "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
 ]
 
+
 class TestFunctions(TestCase):
 
     def test_farmhash64_strings(self):
-        for expected,test_input in hashTestData:
+        for expected, test_input in hashTestData:
             h = vh.farmhash64(test_input)
             self.assertEqual(h, expected)
 
