@@ -40,6 +40,8 @@ setup(
         Extension('libpyvarianthash', [
             '../src/farmhash64.c',
             '../src/varianthash.c',
+            '../src/binsearch.c',
+            '../src/rsidvar.c',
             'src/pyvarianthash.c'
         ], extra_compile_args=["-O3"])
     ],

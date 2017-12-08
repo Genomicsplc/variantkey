@@ -1,14 +1,11 @@
-This project contains a C99 translation of the Fingerprint64
-(farmhashna::Hash64) code from Google's FarmHash
-(https://github.com/google/farmhash)
-copied from: https://github.com/tecnickcom/farmhash64
-
-This project and the farmhash code are both releasead with the following license:
+This project contains several third-party libraries all released under the
+same license. The copyrights of each library is detailed below.
 
 MIT LICENSE
 
-Copyright (c) 2017 GENOMICS plc (varianthash)
-Copyright (c) 2014 Google, Inc. (farmhash)
+Copyright (c) 2017 GENOMICS plc (varianthash, rsidvar)
+Copyright (c) 2017 Nicola Asuni - Tecnick.com (binsearch)
+Copyright (c) 2014 Google, Inc. (farmhash) - https://github.com/tecnickcom/farmhash64
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
