@@ -32,6 +32,23 @@
 //
 // VariantHash by Nicola Asuni
 
+/**
+ * @file rsidvar.h
+ * @brief File containing the definition of public functions.
+ *
+ * The functions provided here allows to generate or decode
+ * a genetic Variant Hash.
+ *
+ * A Genetic Variant Hash is composed of 3 sections that can be also used separately:
+ *
+ * CHROM   : 32 bits (8 hex bytes) to represent the chromosome.
+ *           Chromosomes are always encoded as numbers.
+ *           Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.
+ *           For other species than human the string-to-number chromosome conversion should happen before calling the hashing function.
+ * POS     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
+ * REF_ALT : 64 bits (16 hex bytes) for the farmhash64 of the "REF_ALT" string.
+ */
+
 #ifndef VARIANTHASH_H
 #define VARIANTHASH_H
 
@@ -42,12 +59,9 @@
  */
 typedef struct varhash_t
 {
-    /** Chromosome encoded number. */
-    uint32_t chrom;
-    /** Position. The reference position, with the 1st base having position 0. */
-    uint32_t pos;
-    /** Hash code for Reference and Alternate */
-    uint64_t refalt;
+    uint32_t chrom;  //!< Chromosome encoded number.
+    uint32_t pos;    //!< Position. The reference position, with the 1st base having position 0.
+    uint64_t refalt; //!< Hash code for Reference and Alternate
 } varhash_t;
 
 /** @brief Fast ASCII Uppercase function for a-z letters
