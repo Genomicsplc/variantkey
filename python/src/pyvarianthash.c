@@ -87,6 +87,8 @@ static PyObject* py_decode_variant_hash_string(PyObject *Py_UNUSED(ignored), PyO
     return result;
 }
 
+// --- FARMHASH64 ---
+
 static PyObject* py_farmhash64(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
@@ -99,6 +101,8 @@ static PyObject* py_farmhash64(PyObject *Py_UNUSED(ignored), PyObject *args)
     result = Py_BuildValue("K", h);
     return result;
 }
+
+// --- BINSEARCH ---
 
 static PyObject* py_mmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
@@ -222,6 +226,90 @@ static PyObject* py_find_last_uint128be(PyObject *Py_UNUSED(ignored), PyObject *
     return result;
 }
 
+// --- RSIDVAR ---
+
+static PyObject* py_get_vr_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t item;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t h = get_vr_rsid(src, item);
+    result = Py_BuildValue("I", h);
+    return result;
+}
+
+static PyObject* py_get_rv_varhash(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t item;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    varhash_t h = get_rv_varhash(src, item);
+    result = PyTuple_New(3);
+    PyTuple_SetItem(result, 0, Py_BuildValue("I", h.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("K", h.refalt));
+    return result;
+}
+
+static PyObject* py_find_rv_varhash_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t first, last;
+    uint32_t rsid;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OKKI", &mfsrc, &first, &last, &rsid))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    varhash_t h = find_rv_varhash_by_rsid(src, &first, last, rsid);
+    result = PyTuple_New(4);
+    PyTuple_SetItem(result, 0, Py_BuildValue("I", h.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("K", h.refalt));
+    PyTuple_SetItem(result, 3, Py_BuildValue("K", first));
+    return result;
+}
+
+static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t first, last;
+    uint32_t chrom, pos_start, pos_end;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OKKIII", &mfsrc, &first, &last, &chrom, &pos_start, &pos_end))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t h = find_vr_chrompos_range(src, &first, &last, chrom, pos_start, pos_end);
+    result = PyTuple_New(3);
+    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
+    PyTuple_SetItem(result, 2, Py_BuildValue("K", last));
+    return result;
+}
+
+static PyObject* py_find_vr_rsid_by_varhash(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t first, last;
+    varhash_t vh;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OKKIIK", &mfsrc, &first, &last, &vh.chrom, &vh.pos, &vh.refalt))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t h = find_vr_rsid_by_varhash(src, &first, last, vh);
+    result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
+    return result;
+}
+
+// ---
+
 static PyMethodDef PyVariantHashMethods[] =
 {
     {"encode_chrom", py_encode_chrom, METH_VARARGS, PYENCODECHROM_DOCSTRING},
@@ -229,7 +317,9 @@ static PyMethodDef PyVariantHashMethods[] =
     {"variant_hash", py_variant_hash, METH_VARARGS, PYVARIANTHASH_DOCSTRING},
     {"variant_hash_string", py_variant_hash_string, METH_VARARGS, PYVARIANTHASHSTRING_DOCSTRING},
     {"decode_variant_hash_string", py_decode_variant_hash_string, METH_VARARGS, PYDECODEVARIANTHASHSTRING_DOCSTRING},
+
     {"farmhash64", py_farmhash64, METH_VARARGS, PYFARMHASH64_DOCSTRING},
+
     {"mmap_binfile", py_mmap_binfile, METH_VARARGS, PYMMAPBINFILE_DOCSTRING},
     {"munmap_binfile", py_munmap_binfile, METH_VARARGS, PYMUNMAPBINFILE_DOCSTRING},
     {"get_address", py_get_address, METH_VARARGS, PYGETADDRESS_DOCSTRING},
@@ -239,6 +329,13 @@ static PyMethodDef PyVariantHashMethods[] =
     {"find_last_uint64be", py_find_last_uint64be, METH_VARARGS, PYFINDLASTUINT64BE_DOCSTRING},
     {"find_first_uint128be", py_find_first_uint128be, METH_VARARGS, PYFINDFIRSTUINT128BE_DOCSTRING},
     {"find_last_uint128be", py_find_last_uint128be, METH_VARARGS, PYFINDLASTUINT128BE_DOCSTRING},
+
+    {"get_vr_rsid", py_get_vr_rsid, METH_VARARGS, PYGETVRRSID_DOCSTRING},
+    {"get_rv_varhash", py_get_rv_varhash, METH_VARARGS, PYGETRVVARHASH_DOCSTRING},
+    {"find_rv_varhash_by_rsid", py_find_rv_varhash_by_rsid, METH_VARARGS, PYFINDRVVARHASHBYRSID_DOCSTRING},
+    {"find_vr_chrompos_range", py_find_vr_chrompos_range, METH_VARARGS, PYFINDVRCHROMPOSRANGE_DOCSTRING},
+    {"find_vr_rsid_by_varhash", py_find_vr_rsid_by_varhash, METH_VARARGS, PYFINDVRRSIDBYVARHASH_DOCSTRING},
+
     {NULL, NULL, 0, NULL}
 };
 

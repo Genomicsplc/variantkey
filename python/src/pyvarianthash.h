@@ -44,6 +44,11 @@ PyMODINIT_FUNC initlibpyvarianthash(void);
 #define PYFINDFIRSTUINT128BE_DOCSTRING "Search for the first occurrence of a 128 bit unsigned integer on a memory mapped binary file containing adjacent blocks of sorted binary data. The 128 bit values in the file must encoded in big-endian format and sorted in ascending order."
 #define PYFINDLASTUINT128BE_DOCSTRING "Search for the last occurrence of a 128 bit unsigned integer on a memory mapped binary file containing adjacent blocks of sorted binary data. The 128 bit values in the file must encoded in big-endian format and sorted in ascending order."
 
+#define PYGETVRRSID_DOCSTRING "Returns the RSID at the specified position."
+#define PYGETRVVARHASH_DOCSTRING "Returns the VariantHash at the specified position."
+#define PYFINDRVVARHASHBYRSID_DOCSTRING "Search for the specified RSID and returns the first occurrence of VariantHash."
+#define PYFINDVRCHROMPOSRANGE_DOCSTRING "Search for the specified CHROM-POS range and returns the first occurrence of RSID."
+#define PYFINDVRRSIDBYVARHASH_DOCSTRING "Search for the specified VariantHash and returns the first occurrence of RSID."
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
 #define inline
