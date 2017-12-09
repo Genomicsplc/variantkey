@@ -290,7 +290,7 @@ int main()
     int errors = 0;
 
     char *file = "test_data.bin"; // file containing test data
-    uint64_t blklen = 20; // lenght of each binary block
+    uint64_t blklen = 20; // length of each binary block
     uint64_t nitems; // number of binary blocks in the file
 
     mmfile_t mf = mmap_binfile(file);

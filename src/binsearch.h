@@ -24,7 +24,7 @@
  *
  * The functions provided here allows to search big-endian
  * unsigned integers in a binary file made of adjacent
- * constant-lenght binary blocks sorted in ascending order.
+ * constant-length binary blocks sorted in ascending order.
  *
  * For example, the first 4 bytes of each 8-bytes blocks below
  * represent a uint32 in big-endian. The integers are sorted in
@@ -85,7 +85,7 @@ int munmap_binfile(mmfile_t mf);
 /**
  * Returns the absolute file start position of the specified item (binary block).
  *
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param item      Item number to search.
  *
@@ -119,7 +119,7 @@ uint64_t bytes_to_uint64be(const unsigned char *src, uint64_t i);
  * The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
  *
  * @param src       Memory mapped file address.
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param first     First element of the range to search (min value = 0).
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -135,7 +135,7 @@ uint64_t find_first_uint32be(const unsigned char *src, uint64_t blklen, uint64_t
  * The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
  *
  * @param src       Memory mapped file address.
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param first     First element of the range to search (min value = 0).
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -151,7 +151,7 @@ uint64_t find_last_uint32be(const unsigned char *src, uint64_t blklen, uint64_t 
  * The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
  *
  * @param src       Memory mapped file address.
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param first     First element of the range to search (min value = 0).
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -167,7 +167,7 @@ uint64_t find_first_uint64be(const unsigned char *src, uint64_t blklen, uint64_t
  * The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
  *
  * @param src       Memory mapped file address.
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param first     First element of the range to search (min value = 0).
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -183,7 +183,7 @@ uint64_t find_last_uint64be(const unsigned char *src, uint64_t blklen, uint64_t 
  * The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
  *
  * @param src       Memory mapped file address.
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param first     First element of the range to search (min value = 0).
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -200,7 +200,7 @@ uint64_t find_first_uint128be(const unsigned char *src, uint64_t blklen, uint64_
  * The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
  *
  * @param src       Memory mapped file address.
- * @param blklen    Lenght of the binary block in bytes.
+ * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
  * @param first     First element of the range to search (min value = 0).
  * @param last      Last element of the range to search (max value = nitems - 1).

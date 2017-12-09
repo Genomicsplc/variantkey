@@ -58,5 +58,5 @@ uint32_t find_vr_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint
 {
     *first = find_first_uint128be(src, RSIDVAR_BIN_BLKLEN, VARRSID_BPOS_CHROM, *first, last, ((uint64_t)vh.chrom << 32 | (uint64_t)vh.pos), vh.refalt);
     if (*first > last) return 0; // not found
-    return bytes_to_uint32be(src, get_address(RSIDVAR_BIN_BLKLEN, VARRSID_BPOS_RSID, *first));
+    return get_vr_rsid(src, *first);
 }

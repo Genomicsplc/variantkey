@@ -21,6 +21,24 @@ type TVariantHash struct {
 	RefAlt uint64 `json:"refalt"`
 }
 
+// castCVariantHash convert C varianthash_t to GO TVariantHash.
+func castCVariantHash(vh C.varhash_t) TVariantHash {
+	return TVariantHash{
+		Chrom:  uint32(vh.chrom),
+		Pos:    uint32(vh.pos),
+		RefAlt: uint64(vh.refalt),
+	}
+}
+
+// castGoVariantHash convert GO TVariantHash to C varianthash_t.
+func castGoVariantHash(vh TVariantHash) C.varhash_t {
+	var cvh C.varhash_t
+	cvh.chrom = C.uint32_t(vh.Chrom)
+	cvh.pos = C.uint32_t(vh.Pos)
+	cvh.refalt = C.uint64_t(vh.RefAlt)
+	return cvh
+}
+
 // StringToNTBytes safely convert a string to byte array with an extra null terminator
 // This is to ensure a correct CGO conversion to char*
 func StringToNTBytes(s string) []byte {
@@ -71,12 +89,7 @@ func VariantHash(chrom string, pos uint32, ref, alt string) TVariantHash {
 	if len(alt) > 0 {
 		palt = unsafe.Pointer(&balt[0]) // #nosec
 	}
-	h := C.variant_hash((*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt))
-	return TVariantHash{
-		Chrom:  uint32(h.chrom),
-		Pos:    uint32(h.pos),
-		RefAlt: uint64(h.refalt),
-	}
+	return castCVariantHash(C.variant_hash((*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt)))
 }
 
 // String representation of the TVariantHash
@@ -98,12 +111,7 @@ func DecodeVariantHashString(s string) TVariantHash {
 	if len(s) > 0 {
 		p = unsafe.Pointer(&b[0]) // #nosec
 	}
-	h := C.decode_variant_hash_string((*C.char)(p))
-	return TVariantHash{
-		Chrom:  uint32(h.chrom),
-		Pos:    uint32(h.pos),
-		RefAlt: uint64(h.refalt),
-	}
+	return castCVariantHash(C.decode_variant_hash_string((*C.char)(p)))
 }
 
 // --- FARMHASH64 ---
@@ -206,4 +214,38 @@ func (mf TMMFile) FindFirstUint128be(blklen, blkpos, first, last uint64, searchH
 // Return the item number if found or (last + 1) if not found.
 func (mf TMMFile) FindLastUint128be(blklen, blkpos, first, last uint64, searchHi, searchLo uint64) uint64 {
 	return uint64(C.find_last_uint128be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint64_t(searchHi), C.uint64_t(searchLo)))
+}
+
+// --- RSIDVAR ---
+
+// GetVRRsid returns the RSID at the specified position of the varhash_rsid.bin file.
+func (mf TMMFile) GetVRRsid(item uint64) uint32 {
+	return uint32(C.get_vr_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
+}
+
+// GetRVVarhash returns the VariantHash at the specified position of the rsid_varhash.bin file.
+func (mf TMMFile) GetRVVarhash(item uint64) TVariantHash {
+	return castCVariantHash(C.get_rv_varhash((*C.uchar)(mf.Src), C.uint64_t(item)))
+}
+
+// FindRVVarhashByRsid search for the specified RSID and returns the first occurrence of VariantHash, item position.
+func (mf TMMFile) FindRVVarhashByRsid(first, last uint64, rsid uint32) (TVariantHash, uint64) {
+	cfirst := C.uint64_t(first)
+	vh := castCVariantHash(C.find_rv_varhash_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
+	return vh, uint64(cfirst)
+}
+
+// FindVRChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
+func (mf TMMFile) FindVRChromposRange(first, last uint64, chrom, posStart, posEnd uint32) (uint32, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint32_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))
+	return rsid, uint64(cfirst), uint64(clast)
+}
+
+// FindVRRsidByVarshash search for the specified VariantHash and returns the first occurrence of RSID, item position.
+func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantHash) (uint32, uint64) {
+	cfirst := C.uint64_t(first)
+	rsid := uint32(C.find_vr_rsid_by_varhash((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), castGoVariantHash(vh)))
+	return rsid, uint64(cfirst)
 }

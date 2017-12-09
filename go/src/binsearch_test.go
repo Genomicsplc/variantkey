@@ -1,7 +1,6 @@
 package varianthash
 
 import "testing"
-import "os"
 
 var mf TMMFile
 
@@ -69,24 +68,11 @@ var testData128 = []struct {
 	{4, 0, 0, 0xfffffffffffffff0, 0xfffffffffffffff0, 1, 1},
 }
 
-func TestMain(m *testing.M) {
-	var err error
-
-	// memory map the input file
-	mf, err = MmapBinFile("../../test/test_data.bin")
-	if err != nil {
-		return
+func TestGetAddress(t *testing.T) {
+	h := GetAddress(3, 5, 7)
+	if h != 26 {
+		t.Errorf("Expected 26, got %d", h)
 	}
-
-	retCode := m.Run()
-
-	// close the memory-mapped file
-	err = mf.Close()
-	if err != nil {
-		retCode++
-	}
-
-	os.Exit(retCode)
 }
 
 func TestFindFirstUint32be(t *testing.T) {

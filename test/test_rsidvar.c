@@ -33,30 +33,30 @@ typedef struct test_data_vr_t
 
 static test_data_rv_t test_data_rv[TEST_DATA_SIZE] =
 {
-    {0x2F81F572,0x00000017,0x0509C4A7,0xCCD3C1D35DF0CE04},
-    {0x2F81F573,0x00000017,0x05098728,0x4EECA287F5C90712},
-    {0x2F81F574,0x0000000B,0x054CAF51,0xBB9EE46DF5C4C2E0},
-    {0x2F81F575,0x00000002,0x095E7925,0x90C4DEFF765F63B8},
-    {0x2F81F576,0x0000000F,0x060C1468,0x0981EF0F500126C2},
-    {0x2F81F577,0x00000011,0x0199B8D6,0x22A78FD91ACC7B43},
-    {0x2F81F578,0x0000000A,0x07D8C4BE,0x90C4DEFF765F63B8},
-    {0x2F81F579,0x00000001,0x0DE63E19,0x453EA229CAA9A652},
-    {0x2F81F57A,0x00000011,0x026140E3,0xCCD3C1D35DF0CE04},
-    {0x2F81F57B,0x00000011,0x02610DFC,0x26CAA8F5488B8717},
+    {0x2F81F572, 0x00000017, 0x0509C4A7, 0xCCD3C1D35DF0CE04},
+    {0x2F81F573, 0x00000017, 0x05098728, 0x4EECA287F5C90712},
+    {0x2F81F574, 0x0000000B, 0x054CAF51, 0xBB9EE46DF5C4C2E0},
+    {0x2F81F575, 0x00000002, 0x095E7925, 0x90C4DEFF765F63B8},
+    {0x2F81F576, 0x0000000F, 0x060C1468, 0x0981EF0F500126C2},
+    {0x2F81F577, 0x00000011, 0x0199B8D6, 0x22A78FD91ACC7B43},
+    {0x2F81F578, 0x0000000A, 0x07D8C4BE, 0x90C4DEFF765F63B8},
+    {0x2F81F579, 0x00000001, 0x0DE63E19, 0x453EA229CAA9A652},
+    {0x2F81F57A, 0x00000011, 0x026140E3, 0xCCD3C1D35DF0CE04},
+    {0x2F81F57B, 0x00000011, 0x02610DFC, 0x26CAA8F5488B8717},
 };
 
 static test_data_vr_t test_data_vr[TEST_DATA_SIZE] =
 {
-    {0x0000001A,0x00004005,0x26CAA8F5488B8717,0x0277648B},
-    {0x0000001A,0x00004006,0x3D9C29BE7B4387A2,0x020B67DE},
-    {0x0000001A,0x00004006,0xCCD3C1D35DF0CE04,0x020B67DE},
-    {0x0000001A,0x0000400E,0x4EECA287F5C90712,0x0849000D},
-    {0x0000001A,0x0000403C,0x0981EF0F500126C2,0x162BA962},
-    {0x0000001A,0x00004072,0x4EECA287F5C90712,0x167638AD},
-    {0x0000001A,0x0000407F,0x0981EF0F500126C2,0x1649ED55},
-    {0x0000001A,0x00004086,0x0981EF0F500126C2,0x003C1309},
-    {0x0000001A,0x0000408F,0x22A78FD91ACC7B43,0x170E8C03},
-    {0x0000001A,0x00004090,0x0981EF0F500126C2,0x161885A7},
+    {0x0000001A, 0x00004005, 0x26CAA8F5488B8717, 0x0277648B},
+    {0x0000001A, 0x00004006, 0x3D9C29BE7B4387A2, 0x020B67DE},
+    {0x0000001A, 0x00004006, 0xCCD3C1D35DF0CE04, 0x020B67DE},
+    {0x0000001A, 0x0000400E, 0x4EECA287F5C90712, 0x0849000D},
+    {0x0000001A, 0x0000403C, 0x0981EF0F500126C2, 0x162BA962},
+    {0x0000001A, 0x00004072, 0x4EECA287F5C90712, 0x167638AD},
+    {0x0000001A, 0x0000407F, 0x0981EF0F500126C2, 0x1649ED55},
+    {0x0000001A, 0x00004086, 0x0981EF0F500126C2, 0x003C1309},
+    {0x0000001A, 0x0000408F, 0x22A78FD91ACC7B43, 0x170E8C03},
+    {0x0000001A, 0x00004090, 0x0981EF0F500126C2, 0x161885A7},
 };
 
 // returns current time in nanoseconds
@@ -145,6 +145,35 @@ int test_find_rv_varhash_by_rsid(mmfile_t rv)
     return errors;
 }
 
+int test_find_rv_varhash_by_rsid_notfound(mmfile_t rv)
+{
+    int errors = 0;
+    varhash_t vh;
+    uint64_t first = 0;
+    vh = find_rv_varhash_by_rsid(rv.src, &first, 9, 0xfffffff0);
+    if (first != 10)
+    {
+        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected first 10, got %"PRIu64"\n", first);
+        ++errors;
+    }
+    if (vh.chrom != 0)
+    {
+        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected chrom 0, got %"PRIu32"\n", vh.chrom);
+        ++errors;
+    }
+    if (vh.pos != 0)
+    {
+        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected pos 0, got %"PRIu32"\n", vh.pos);
+        ++errors;
+    }
+    if (vh.refalt != 0)
+    {
+        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected refalt 0, got %"PRIu64"\n", vh.refalt);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_find_vr_chrompos_range(mmfile_t vr)
 {
     int errors = 0;
@@ -159,12 +188,37 @@ int test_find_vr_chrompos_range(mmfile_t vr)
     }
     if (first != 3)
     {
-        fprintf(stderr, "test_find_rv_varhash_by_rsid : Expected first 3, got %"PRIu64"\n", first);
+        fprintf(stderr, "test_find_vr_chrompos_range : Expected first 3, got %"PRIu64"\n", first);
         ++errors;
     }
     if (last != 7)
     {
-        fprintf(stderr, "test_find_rv_varhash_by_rsid : Expected first 7, got %"PRIu64"\n", last);
+        fprintf(stderr, "test_find_vr_chrompos_range : Expected last 7, got %"PRIu64"\n", last);
+        ++errors;
+    }
+    return errors;
+}
+
+int test_find_vr_chrompos_range_notfound(mmfile_t vr)
+{
+    int errors = 0;
+    uint32_t rsid;
+    uint64_t first = 0;
+    uint64_t last = 9;
+    rsid = find_vr_chrompos_range(vr.src, &first, &last, 0xfffffff0, 0xffffff00, 0xfffffff0);
+    if (rsid != 0)
+    {
+        fprintf(stderr, "test_find_vr_chrompos_range_notfound : Expected rsid 0, got %"PRIx32"\n", rsid);
+        ++errors;
+    }
+    if (first != 10)
+    {
+        fprintf(stderr, "test_find_vr_chrompos_range_notfound : Expected first 10, got %"PRIu64"\n", first);
+        ++errors;
+    }
+    if (last != 9)
+    {
+        fprintf(stderr, "test_find_vr_chrompos_range_notfound : Expected last 9, got %"PRIu64"\n", last);
         ++errors;
     }
     return errors;
@@ -184,16 +238,40 @@ int test_find_vr_rsid_by_varhash(mmfile_t vr)
         vh.pos = test_data_vr[i].pos;
         vh.refalt = test_data_vr[i].refalt;
         rsid = find_vr_rsid_by_varhash(vr.src, &first, 9, vh);
+        if (rsid != test_data_vr[i].rsid)
+        {
+            fprintf(stderr, "find_vr_rsid_by_varhash (%d) Expected rsid %"PRIx32", got %"PRIx32"\n", i, test_data_vr[i].rsid, rsid);
+            ++errors;
+        }
         if (first != (uint64_t)i)
         {
             fprintf(stderr, "find_vr_rsid_by_varhash (%d) Expected first %d, got %"PRIu64"\n", i, i, first);
             ++errors;
         }
-        if (rsid != test_data_vr[i].rsid)
-        {
-            fprintf(stderr, "find_vr_rsid_by_varhash (%d) Expected %"PRIx32", got %"PRIx32"\n", i, test_data_vr[i].rsid, rsid);
-            ++errors;
-        }
+    }
+    return errors;
+}
+
+int test_find_vr_rsid_by_varhash_notfound(mmfile_t vr)
+{
+    int errors = 0;
+    uint32_t rsid;
+    uint64_t first;
+    varhash_t vh;
+    first = 0;
+    vh.chrom = 0xfffffff0;
+    vh.pos = 0xfffffff0;
+    vh.refalt = 0xfffffffffffffff0;
+    rsid = find_vr_rsid_by_varhash(vr.src, &first, 9, vh);
+    if (rsid != 0)
+    {
+        fprintf(stderr, "find_vr_rsid_by_varhash_notfound : Expected rsid 0, got %"PRIx32"\n", rsid);
+        ++errors;
+    }
+    if (first != 10)
+    {
+        fprintf(stderr, "find_vr_rsid_by_varhash_notfound :  Expected first 10, got %"PRIu64"\n", first);
+        ++errors;
     }
     return errors;
 }
@@ -301,8 +379,11 @@ int main()
     errors += test_get_vr_rsid(vr);
     errors += test_get_rv_varhash(rv);
     errors += test_find_rv_varhash_by_rsid(rv);
+    errors += test_find_rv_varhash_by_rsid_notfound(rv);
     errors += test_find_vr_chrompos_range(vr);
+    errors += test_find_vr_chrompos_range_notfound(vr);
     errors += test_find_vr_rsid_by_varhash(vr);
+    errors += test_find_vr_rsid_by_varhash_notfound(vr);
 
     benchmark_get_vr_rsid(vr);
     benchmark_get_rv_varhash(rv);

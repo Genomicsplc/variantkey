@@ -24,7 +24,7 @@
  *
  * The functions provided here allows to search RSIDs and
  * VariantHashes from binary files made of adjacent
- * constant-lenght binary blocks sorted in ascending order.
+ * constant-length binary blocks sorted in ascending order.
  *
  * The input binary files can be generated using some open source tools:
  *
@@ -44,7 +44,7 @@
  * The rsid_varhash.bin file contains adjacent 20 bytes binary blocks
  * with the following structure:
  *
- *     2F 81 F5 7B 00 00 00 11 02 61 0D FC 26 CA A8 F5 48 8B 87 17
+ *     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
  *     +---------+ +---------+ +---------+ +---------------------+
  *     |  RSID   | |  CHROM  | |   POS   | |    REF_ALT_HASH     |
  *     +---------+ +---------+ +---------+ +---------------------+
@@ -56,7 +56,7 @@
  * The varhash_rsid.bin file contains adjacent 20 bytes binary blocks
  * with the following structure:
  *
- *     00 00 11 02 61 0D FC 26 CA A8 F5 48 8B 87 17 2F 81 F5 7B 00
+ *     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
  *     +---------+ +---------+ +---------------------+ +---------+
  *     |  CHROM  | |   POS   | |    REF_ALT_HASH     | |  RSID   |
  *     +---------+ +---------+ +---------------------+ +---------+
@@ -72,7 +72,7 @@
 #include "varianthash.h"
 #include "binsearch.h"
 
-#define RSIDVAR_BIN_BLKLEN 20 //!< Lenght of a binary block containing RSID + VARHASH
+#define RSIDVAR_BIN_BLKLEN 20 //!< Length of a binary block containing RSID + VARHASH
 
 #define RSIDVAR_BPOS_RSID   0 //!< RSIDVAR offset of RS ID 
 #define RSIDVAR_BPOS_CHROM  4 //!< RSIDVAR offset of CHROM
@@ -81,7 +81,7 @@
 
 #define VARRSID_BPOS_CHROM  0 //!< VARRSID offset of CHROM 
 #define VARRSID_BPOS_POS    4 //!< VARRSID offset of POS
-#define VARRSID_BPOS_RFH    8 //!< VARRSID offset of REF_ALT_HASH
+#define VARRSID_BPOS_RAH    8 //!< VARRSID offset of REF_ALT_HASH
 #define VARRSID_BPOS_RSID  16 //!< VARRSID offset of RS ID
 
 /**

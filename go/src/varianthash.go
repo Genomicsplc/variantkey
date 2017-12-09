@@ -67,7 +67,7 @@ func (v TVariantHash) String() string {
 
 }
 
-// DecodeVariantHash parses a VariantHash string and returns the components.
+// DecodeVariantHashString parses a VariantHash string and returns the components.
 func DecodeVariantHashString(vh string) TVariantHash {
 	ret := TVariantHash{}
 	chrom, err := strconv.ParseUint(vh[0:8], 16, 32)
