@@ -45,6 +45,7 @@ The first 64 bits of the Variant Hash forms a sortable key.
                                  The ‘*’ allele is reserved to indicate that the allele is missing due to a upstream deletion.
                                  If there are no alternative alleles, then the missing value should be used.
 
+
 ## Binary file format for RSID-VariantHash index
 
 The functions provided here allows to search RSIDs and VariantHashes from binary files
@@ -52,36 +53,36 @@ made of adjacent constant-length binary blocks sorted in ascending order.
 
 The input binary files can be generated using some open source tools:
 
-* split multialleic variants in dbSNP
+* split multialleic variants in dbSNP (requires the Genomics plc version of bcftools)
 
 ```
-    time bcftools norm --multiallelics -any --output ~/Downloads/dbSNP_All_20151104_split.vcf ~/Downloads/All_20151104.vcf.gz
+    bcftools norm --multiallelics -any --output dbSNP_split.vcf All_20151104.vcf.gz
 ```
 
 * create RSID to Variant map
 
 ```
-    time bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' ~/Downloads/dbSNP_All_20151104_split.vcf > ~/Downloads/rsid_varhash.txt
+    bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' dbSNP_split.vcf > rsid_varhash.txt
 ```
 
 * create Variant to RSID map
 
 ```
-    time bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' ~/Downloads/dbSNP_All_20151104_split.vcf > ~/Downloads/varhash_rsid.txt
+    bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' dbSNP_split.vcf > varhash_rsid.txt
 ```
 
 * sort the maps
 
 ```
-    LC_ALL=C time sort --parallel=4 --output=rsid_varhash.sorted.txt rsid_varhash.txt
-    LC_ALL=C time sort --parallel=4 --output=varhash_rsid.sorted.txt varhash_rsid.txt
+    LC_ALL=C sort --parallel=4 --output=rsid_varhash.sorted.txt rsid_varhash.txt
+    LC_ALL=C sort --parallel=4 --output=varhash_rsid.sorted.txt varhash_rsid.txt
 ```
 
 * convert the maps to binary format
 
 ```
-    time xxd -r -p rsid_varhash.sorted.txt rsid_varhash.bin
-    time xxd -r -p varhash_rsid.sorted.txt varhash_rsid.bin
+    xxd -r -p rsid_varhash.sorted.txt rsid_varhash.bin
+    xxd -r -p varhash_rsid.sorted.txt varhash_rsid.bin
 ```
 
 
