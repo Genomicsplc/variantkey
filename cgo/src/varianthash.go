@@ -1,6 +1,7 @@
 package varianthash
 
 /*
+#include "../../src/uint128.h"
 #include "../../src/farmhash64.h"
 #include "../../src/farmhash64.c"
 #include "../../src/varianthash.h"
@@ -13,6 +14,20 @@ package varianthash
 import "C"
 import "unsafe"
 import "fmt"
+
+// Uint128 contains 2 64bit unsigned integers
+type Uint128 struct {
+	Lo uint64
+	Hi uint64
+}
+
+// castGoUint128 convert GO Uint128 to C uint128_t.
+func castGoUint128(u Uint128) C.uint128_t {
+	var c C.uint128_t
+	c.lo = C.uint64_t(u.Lo)
+	c.hi = C.uint64_t(u.Hi)
+	return c
+}
 
 // TVariantHash contains a representation of a genetic variant hash
 type TVariantHash struct {
@@ -86,7 +101,7 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 }
 
 // VariantHash returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
-func VariantHash(chrom string, pos uint32, ref, alt string) TVariantHash {
+func VariantHash(assembly, chrom string, pos uint32, ref, alt string) TVariantHash {
 	bassembly := StringToNTBytes(assembly)
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)
@@ -116,11 +131,11 @@ func (v TVariantHash) String() string {
 	cvh.assembly = C.uint32_t(v.Assembly)
 	cvh.chrom = C.uint32_t(v.Chrom)
 	cvh.pos = C.uint32_t(v.Pos)
-	cvh.refalt = C.uint64_t(v.RefAlt)
+	cvh.refalt = C.uint32_t(v.RefAlt)
 	var cstr *C.char = C.CString("00000000000000000000000000000000")
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
 	C.variant_hash_string(cstr, C.size_t(33), cvh)
-	return C.GoStringN(cstr, C.int(32)) // #nosec
+	return C.GoStringN(cstr, C.int(32))
 }
 
 // DecodeVariantHashString parses a variant hash string and returns the components as TVariantHash structure.
@@ -140,7 +155,7 @@ func FarmHash64(s []byte) uint64 {
 	slen := len(s)
 	var p unsafe.Pointer
 	if slen > 0 {
-		p = unsafe.Pointer(&s[0]) // #nosec
+		p = unsafe.Pointer(&s[0]) /* #nosec */
 	}
 	return uint64(C.farmhash64((*C.char)(p), C.size_t(slen)))
 }
@@ -197,52 +212,70 @@ func GetAddress(blklen, blkpos, item uint64) uint64 {
 	return ((blklen * item) + blkpos)
 }
 
-// FindFirstUint32be search for the first occurrence of a 32 bit unsigned integer on a memory mapped
+// FindFirstUint32 search for the first occurrence of a 32 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindFirstUint32be(blklen, blkpos, first, last uint64, search uint32) uint64 {
-	return uint64(C.find_first_uint32be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint32_t(search)))
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_first_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
 }
 
-// FindLastUint32be search for the last occurrence of a 32 bit unsigned integer on a memory mapped
+// FindLastUint32 search for the last occurrence of a 32 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindLastUint32be(blklen, blkpos, first, last uint64, search uint32) uint64 {
-	return uint64(C.find_last_uint32be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint32_t(search)))
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_last_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
 }
 
-// FindFirstUint64be search for the first occurrence of a 64 bit unsigned integer on a memory mapped
+// FindFirstUint64 search for the first occurrence of a 64 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindFirstUint64be(blklen, blkpos, first, last uint64, search uint64) uint64 {
-	return uint64(C.find_first_uint64be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint64_t(search)))
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_first_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
 }
 
-// FindLastUint64be search for the last occurrence of a 64 bit unsigned integer on a memory mapped
+// FindLastUint64 search for the last occurrence of a 64 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindLastUint64be(blklen, blkpos, first, last uint64, search uint64) uint64 {
-	return uint64(C.find_last_uint64be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint64_t(search)))
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_last_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
 }
 
-// FindFirstUint128be search for the first occurrence of a 128 bit unsigned integer on a memory mapped
+// FindFirstUint128 search for the first occurrence of a 128 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindFirstUint128be(blklen, blkpos, first, last uint64, searchHi, searchLo uint64) uint64 {
-	return uint64(C.find_first_uint128be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint64_t(searchHi), C.uint64_t(searchLo)))
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint128(blklen, blkpos, first, last uint64, search Uint128) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_first_uint128_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, castGoUint128(search)))
+	return ret, uint64(cfirst), uint64(clast)
 }
 
-// FindLastUint128be search for the last occurrence of a 128 bit unsigned integer on a memory mapped
+// FindLastUint128 search for the last occurrence of a 128 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindLastUint128be(blklen, blkpos, first, last uint64, searchHi, searchLo uint64) uint64 {
-	return uint64(C.find_last_uint128be((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), C.uint64_t(last), C.uint64_t(searchHi), C.uint64_t(searchLo)))
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint128(blklen, blkpos, first, last uint64, search Uint128) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_last_uint128_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, castGoUint128(search)))
+	return ret, uint64(cfirst), uint64(clast)
 }
 
 // --- RSIDVAR ---
@@ -264,17 +297,17 @@ func (mf TMMFile) FindRVVarhashByRsid(first, last uint64, rsid uint32) (TVariant
 	return vh, uint64(cfirst)
 }
 
+// FindVRRsidByVarshash search for the specified VariantHash and returns the first occurrence of RSID, item position.
+func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantHash) (uint32, uint64) {
+	cfirst := C.uint64_t(first)
+	rsid := uint32(C.find_vr_rsid_by_varhash((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), castGoVariantHash(vh)))
+	return rsid, uint64(cfirst)
+}
+
 // FindVRChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
 func (mf TMMFile) FindVRChromposRange(first, last uint64, chrom, posStart, posEnd uint32) (uint32, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint32_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))
 	return rsid, uint64(cfirst), uint64(clast)
-}
-
-// FindVRRsidByVarshash search for the specified VariantHash and returns the first occurrence of RSID, item position.
-func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantHash) (uint32, uint64) {
-	cfirst := C.uint64_t(first)
-	rsid := uint32(C.find_vr_rsid_by_varhash((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), castGoVariantHash(vh)))
-	return rsid, uint64(cfirst)
 }

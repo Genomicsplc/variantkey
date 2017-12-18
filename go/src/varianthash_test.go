@@ -585,6 +585,13 @@ var variantsTestData = []TVariant{
 	{"GRCh37", "mt", 16528, "t", "c", 0x8b29d2c7, 0x1a, 0x4090, 0x181d293a, "8b29d2c70000001a00004090181d293a"},
 }
 
+func TestEncodeAssembly(t *testing.T) {
+	ae := EncodeAssembly(variantsTestData[0].assembly)
+	if ae != variantsTestData[0].hassembly {
+		t.Errorf("The assembly hash is different, got: %d expected %d", ae, variantsTestData[0].hassembly)
+	}
+}
+
 func TestEncodeChrom(t *testing.T) {
 	cdata := []string{
 		"", "1", "2", "3", "4", "5", "6", "7", "8", "9",

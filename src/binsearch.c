@@ -72,8 +72,8 @@ uint128_t bytes_to_uint128_t(const unsigned char *src, uint64_t i)
 {
     return (uint128_t)
     {
-        .hi = bytes_to_uint64_t(src, i),
-         .lo = bytes_to_uint64_t(src, i + 8)
+        .lo = bytes_to_uint64_t(src, i),
+         .hi = bytes_to_uint64_t(src, i + 8)
     };
 }
 
@@ -84,9 +84,9 @@ define_compare(uint64_t)
 
 int compare_uint128_t(uint128_t a, uint128_t b)
 {
-    if (a.hi < b.hi) return -1;
-    if (a.hi > b.hi) return 1;
-    return compare_uint64_t(a.lo, b.lo);
+    if (a.lo < b.lo) return -1;
+    if (a.lo > b.lo) return 1;
+    return compare_uint64_t(a.hi, b.hi);
 }
 
 #define define_find_first(T) \

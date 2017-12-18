@@ -43,7 +43,7 @@ func (mf TMMFile) FindRVVarhashByRsid(first, last uint64, rsid uint32) (TVariant
 
 // FindVRRsidByVarshash search for the specified VariantHash and returns the first occurrence of RSID, item position.
 func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantHash) (uint32, uint64) {
-	firstItem, _, _ := mf.FindFirstUint128(rvBinBlkLen, 0, first, last, Uint128{Hi: (uint64(vh.Assembly)<<32 | uint64(vh.Chrom)), Lo: (uint64(vh.Pos)<<32 | uint64(vh.RefAlt))})
+	firstItem, _, _ := mf.FindFirstUint128(rvBinBlkLen, 0, first, last, Uint128{Lo: (uint64(vh.Assembly)<<32 | uint64(vh.Chrom)), Hi: (uint64(vh.Pos)<<32 | uint64(vh.RefAlt))})
 	if firstItem > last {
 		return 0, firstItem
 	}

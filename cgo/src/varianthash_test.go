@@ -1,10 +1,6 @@
 package varianthash
 
-import (
-	//"bytes"
-	//"fmt"
-	"testing"
-)
+import "testing"
 
 // TVariant contains a representation of a genetic variant key
 type TVariant struct {
@@ -587,6 +583,13 @@ var variantsTestData = []TVariant{
 	{"GRCh37", "MT", 16518, "T", "C", 0x8b29d2c7, 0x1a, 0x4086, 0x181d293a, "8b29d2c70000001a00004086181d293a"},
 	{"GRCh37", "MT", 16527, "C", "T", 0x8b29d2c7, 0x1a, 0x408f, 0x387351cb, "8b29d2c70000001a0000408f387351cb"},
 	{"GRCh37", "mt", 16528, "t", "c", 0x8b29d2c7, 0x1a, 0x4090, 0x181d293a, "8b29d2c70000001a00004090181d293a"},
+}
+
+func TestEncodeAssembly(t *testing.T) {
+	ae := EncodeAssembly(variantsTestData[0].assembly)
+	if ae != variantsTestData[0].hassembly {
+		t.Errorf("The assembly hash is different, got: %d expected %d", ae, variantsTestData[0].hassembly)
+	}
 }
 
 func TestEncodeChrom(t *testing.T) {

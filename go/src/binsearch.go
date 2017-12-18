@@ -24,8 +24,8 @@ import "golang.org/x/exp/mmap"
 
 // Uint128 contains 2 64bit unsigned integers
 type Uint128 struct {
-	Hi uint64
 	Lo uint64
+	Hi uint64
 }
 
 // TMMFile contains the memory mapped file reader
@@ -65,8 +65,8 @@ func (mf TMMFile) BytesToUint64(i int) uint64 {
 // BytesToUint128 convert 16 bytes in big-endian format to Uint128.
 func (mf TMMFile) BytesToUint128(i int) Uint128 {
 	return Uint128{
-		Hi: mf.BytesToUint64(i),
-		Lo: mf.BytesToUint64(i + 8),
+		Lo: mf.BytesToUint64(i),
+		Hi: mf.BytesToUint64(i + 8),
 	}
 }
 
@@ -198,16 +198,16 @@ func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint
 
 // compareUint128 compare two 128bit numbers
 func compareUint128(a Uint128, b Uint128) int {
-	if a.Hi < b.Hi {
-		return -1
-	}
-	if a.Hi > b.Hi {
-		return 1
-	}
 	if a.Lo < b.Lo {
 		return -1
 	}
 	if a.Lo > b.Lo {
+		return 1
+	}
+	if a.Hi < b.Hi {
+		return -1
+	}
+	if a.Hi > b.Hi {
 		return 1
 	}
 	return 0

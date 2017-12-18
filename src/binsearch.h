@@ -49,15 +49,7 @@
 #define BINSEARCH_H
 
 #include <inttypes.h>
-
-/**
- * Struct containing 128 bits as 2 64bit unsigned integer
- */
-typedef struct uint128_t
-{
-    uint64_t hi; /*!< hi 64 bits */
-    uint64_t lo; /*!< low 64 bits */
-} uint128_t;
+#include "uint128.h"
 
 /**
  * Struct containing the memory mapped file info.
