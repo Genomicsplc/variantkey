@@ -48,7 +48,7 @@
  *    |                VARIANT_HASH                 |
  *    +---------------------------------------------+
  *
- * ASSBLY  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly (genome sequence). 
+ * ASSBLY  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly (genome sequence).
  * CHROM   : 32 bits (8 hex bytes) to represent the chromosome.
  *           Chromosomes are always encoded as numbers.
  *           Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.

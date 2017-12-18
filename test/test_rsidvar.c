@@ -205,12 +205,12 @@ int test_find_vr_chrompos_range(mmfile_t vr)
     }
     if (first != 4)
     {
-        fprintf(stderr, "test_find_vr_chrompos_range : Expected first 3, got %"PRIu64"\n", first);
+        fprintf(stderr, "test_find_vr_chrompos_range : Expected first 4, got %"PRIu64"\n", first);
         ++errors;
     }
     if (last != 4)
     {
-        fprintf(stderr, "test_find_vr_chrompos_range : Expected last 7, got %"PRIu64"\n", last);
+        fprintf(stderr, "test_find_vr_chrompos_range : Expected last 4, got %"PRIu64"\n", last);
         ++errors;
     }
     return errors;

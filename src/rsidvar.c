@@ -52,7 +52,10 @@ varhash_t find_rv_varhash_by_rsid(const unsigned char *src, uint64_t *first, uin
 uint32_t find_vr_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, varhash_t vh)
 {
     uint64_t max = last;
-    uint64_t found = find_first_uint128_t(src, RSIDVAR_BIN_BLKLEN, 0, first, &max, (uint128_t){((uint64_t)vh.assembly << 32 | (uint64_t)vh.chrom), ((uint64_t)vh.pos << 32 | (uint64_t)vh.refalt)});
+    uint64_t found = find_first_uint128_t(src, RSIDVAR_BIN_BLKLEN, 0, first, &max, (uint128_t)
+    {
+        ((uint64_t)vh.assembly << 32 | (uint64_t)vh.chrom), ((uint64_t)vh.pos << 32 | (uint64_t)vh.refalt)
+    });
     if (found > last) return 0; // not found
     *first = found;
     return get_vr_rsid(src, found);
