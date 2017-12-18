@@ -39,14 +39,22 @@
  * The functions provided here allows to generate or decode
  * a genetic Variant Hash.
  *
- * A Genetic Variant Hash is composed of 3 sections that can be also used separately:
+ * A Genetic Variant Hash is composed of 4 sections that can be also used separately:
  *
+ *    00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+ *    +---------+ +---------+ +---------+ +---------+
+ *    | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
+ *    +---------+ +---------+ +---------+ +---------+
+ *    |                VARIANT_HASH                 |
+ *    +---------------------------------------------+
+ *
+ * ASSBLY  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly (genome sequence).
  * CHROM   : 32 bits (8 hex bytes) to represent the chromosome.
  *           Chromosomes are always encoded as numbers.
  *           Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.
  *           For other species than human the string-to-number chromosome conversion should happen before calling the hashing function.
  * POS     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
- * REF_ALT : 64 bits (16 hex bytes) for the farmhash64 of the "REF_ALT" string.
+ * REF_ALT : 32 bits (8 hex bytes) for the hash of the "REF_ALT" string.
  */
 
 #ifndef VARIANTHASH_H
@@ -59,9 +67,10 @@
  */
 typedef struct varhash_t
 {
-    uint32_t chrom;  //!< Chromosome encoded number.
-    uint32_t pos;    //!< Position. The reference position, with the 1st base having position 0.
-    uint64_t refalt; //!< Hash code for Reference and Alternate
+    uint32_t assembly; //!< Genome Assembly encoded number.
+    uint32_t chrom;    //!< Chromosome encoded number.
+    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
+    uint32_t refalt;   //!< Hash code for Reference and Alternate
 } varhash_t;
 
 /** @brief Fast ASCII Uppercase function for a-z letters
@@ -72,6 +81,14 @@ typedef struct varhash_t
  */
 int aztoupper(int c);
 
+/** @brief Returns 32-bit genome assembly encoding.
+ *
+ * @param assembly Genome Assembly string.
+ *
+ * @return Chrom encoding
+ */
+uint32_t encode_assembly(const char *assembly);
+
 /** @brief Returns 32-bit chromosome encoding.
  *
  * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
@@ -80,7 +97,7 @@ int aztoupper(int c);
  */
 uint32_t encode_chrom(const char *chrom);
 
-/** @brief Returns 64-bit reference+alternate hash code.
+/** @brief Returns 32-bit reference+alternate hash code.
  *
  * @param ref   Reference base. Each base must be one of A,C,G,T,N (case insensitive). Multiple bases are permitted.
  *              The value in the POS field refers to the position of the first base in the String.
@@ -89,9 +106,9 @@ uint32_t encode_chrom(const char *chrom);
  *              The ‘*’ allele is reserved to indicate that the allele is missing due to a upstream deletion.
  *              If there are no alternative alleles, then the missing value should be used.
  *
- * @return 64-bit hash code
+ * @return 32-bit hash code
  */
-uint64_t encode_ref_alt(const char *ref, const char *alt);
+uint32_t encode_ref_alt(const char *ref, const char *alt);
 
 /** @brief Returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
  *
@@ -106,14 +123,15 @@ uint64_t encode_ref_alt(const char *ref, const char *alt);
  *
  * @return      A varhash_t structure.
  */
-varhash_t variant_hash(const char *chrom, uint32_t pos, const char *ref, const char *alt);
+varhash_t variant_hash(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt);
 
 /** @brief Returns a human-readable Genetic Variant Hash string (32 hex characters).
  *
  * The string represent a 128bit number or:
+ *   - 32bit  (8 hex bytes) for ASSBLY Hash
  *   - 32bit  (8 hex bytes) for CHROM
  *   - 32bit  (8 hex bytes) for POS
- *   - 64bit (16 hex bytes) for REF+ALT
+ *   - 32bit  (8 hex bytes) for REF_ALT Hash
  *
  * @param str   String buffer to be returned.
  * @param size  Size of the string buffer.
@@ -126,7 +144,7 @@ varhash_t variant_hash(const char *chrom, uint32_t pos, const char *ref, const c
  */
 size_t variant_hash_string(char *str, size_t size, varhash_t vh);
 
-/** @brief Parses a variant hash string and returns the components as varhash_t structure.
+/** @brief Parses a variant hash hex string and returns the components as varhash_t structure.
  *
  * @param vh Variant Hash string
  *

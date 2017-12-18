@@ -3,6 +3,8 @@ package varianthash
 import "testing"
 import "os"
 
+var rv, vr TMMFile
+
 func TestMain(m *testing.M) {
 	var err error
 

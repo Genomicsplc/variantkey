@@ -7,29 +7,29 @@ import time
 from unittest import TestCase
 
 testDataRV = [
-	(0, 0x2F81F572, 0x00000017, 0x0509C4A7, 0xCCD3C1D35DF0CE04),
-	(1, 0x2F81F573, 0x00000017, 0x05098728, 0x4EECA287F5C90712),
-	(2, 0x2F81F574, 0x0000000B, 0x054CAF51, 0xBB9EE46DF5C4C2E0),
-	(3, 0x2F81F575, 0x00000002, 0x095E7925, 0x90C4DEFF765F63B8),
-	(4, 0x2F81F576, 0x0000000F, 0x060C1468, 0x0981EF0F500126C2),
-	(5, 0x2F81F577, 0x00000011, 0x0199B8D6, 0x22A78FD91ACC7B43),
-	(6, 0x2F81F578, 0x0000000A, 0x07D8C4BE, 0x90C4DEFF765F63B8),
-	(7, 0x2F81F579, 0x00000001, 0x0DE63E19, 0x453EA229CAA9A652),
-	(8, 0x2F81F57A, 0x00000011, 0x026140E3, 0xCCD3C1D35DF0CE04),
-	(9, 0x2F81F57B, 0x00000011, 0x02610DFC, 0x26CAA8F5488B8717),
+	(0, 0x00000001, 0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb),
+	(1, 0x00000002, 0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3),
+	(2, 0x00000003, 0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f),
+	(3, 0x00000004, 0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae),
+	(4, 0x00000005, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f),
+	(5, 0x00000006, 0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc),
+	(6, 0x00000007, 0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a),
+	(7, 0x00000008, 0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb),
+	(8, 0x00000009, 0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb),
+	(9, 0x0000000a, 0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c),
 ]
 
 testDataVR = [
-	(0, 0x0000001A, 0x00004005, 0x26CAA8F5488B8717, 0x0277648B),
-	(1, 0x0000001A, 0x00004006, 0x3D9C29BE7B4387A2, 0x020B67DE),
-	(2, 0x0000001A, 0x00004006, 0xCCD3C1D35DF0CE04, 0x020B67DE),
-	(3, 0x0000001A, 0x0000400E, 0x4EECA287F5C90712, 0x0849000D),
-	(4, 0x0000001A, 0x0000403C, 0x0981EF0F500126C2, 0x162BA962),
-	(5, 0x0000001A, 0x00004072, 0x4EECA287F5C90712, 0x167638AD),
-	(6, 0x0000001A, 0x0000407F, 0x0981EF0F500126C2, 0x1649ED55),
-	(7, 0x0000001A, 0x00004086, 0x0981EF0F500126C2, 0x003C1309),
-	(8, 0x0000001A, 0x0000408F, 0x22A78FD91ACC7B43, 0x170E8C03),
-	(9, 0x0000001A, 0x00004090, 0x0981EF0F500126C2, 0x161885A7),
+	(0, 0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb, 0x00000009),
+	(1, 0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a, 0x00000007),
+	(2, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f, 0x00000005),
+	(3, 0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f, 0x00000003),
+	(4, 0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb, 0x00000001),
+	(5, 0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3, 0x00000002),
+	(6, 0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae, 0x00000004),
+	(7, 0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc, 0x00000006),
+	(8, 0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb, 0x00000008),
+	(9, 0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c, 0x0000000a),
 ]
 
 
@@ -66,54 +66,57 @@ class TestFunctions(TestCase):
             assert False, "Error while closing the varhash_rsid.10.bin memory-mapped file"
 
     def test_get_vr_rsid(self):
-        for item, chrom, pos, refalt, rsid in testDataVR:
+        for item, assembly, chrom, pos, refalt, rsid in testDataVR:
             xrsid = bs.get_vr_rsid(vrsrc, item)
             self.assertEqual(xrsid, rsid)
 
     def test_get_rv_varhash(self):
-        for item, rsid, chrom, pos, refalt in testDataRV:
-            xchrom, xpos, xrefalt = bs.get_rv_varhash(rvsrc, item)
+        for item, rsid, assembly, chrom, pos, refalt in testDataRV:
+            xassembly, xchrom, xpos, xrefalt = bs.get_rv_varhash(rvsrc, item)
+            self.assertEqual(xassembly, assembly)
             self.assertEqual(xchrom, chrom)
             self.assertEqual(xpos, pos)
             self.assertEqual(xrefalt, refalt)
 
     def test_find_rv_varhash_by_rsid(self):
-        for item, rsid, chrom, pos, refalt in testDataRV:
-            xchrom, xpos, xrefalt, xitem = bs.find_rv_varhash_by_rsid(rvsrc, 0, 9, rsid)
+        for item, rsid, assembly, chrom, pos, refalt in testDataRV:
+            xassembly, xchrom, xpos, xrefalt, xitem = bs.find_rv_varhash_by_rsid(rvsrc, 0, 9, rsid)
+            self.assertEqual(xassembly, assembly)
             self.assertEqual(xchrom, chrom)
             self.assertEqual(xpos, pos)
             self.assertEqual(xrefalt, refalt)
             self.assertEqual(xitem, item)
 
     def test_find_rv_varhash_by_rsid_notfound(self):
-        xchrom, xpos, xrefalt, xitem = bs.find_rv_varhash_by_rsid(rvsrc, 0, 9, 0xfffffff0)
+        xassembly, xchrom, xpos, xrefalt, xitem = bs.find_rv_varhash_by_rsid(rvsrc, 0, 9, 0xfffffff0)
+        self.assertEqual(xassembly, 0)
         self.assertEqual(xchrom, 0)
         self.assertEqual(xpos, 0)
         self.assertEqual(xrefalt, 0)
         self.assertEqual(xitem, 10)
 
+    def test_find_vr_rsid_by_varhash(self):
+        for item, assembly, chrom, pos, refalt, rsid in testDataVR:
+            xrsid, xitem = bs.find_vr_rsid_by_varhash(vrsrc, 0, 9, assembly, chrom, pos, refalt)
+            self.assertEqual(xrsid, rsid)
+            self.assertEqual(xitem, item)
+
+    def test_find_vr_rsid_by_varhash_notfound(self):
+        xrsid, xitem = bs.find_vr_rsid_by_varhash(vrsrc, 0, 9, 0xfffffff0, 0xfffffff0, 0xfffffff0, 0xfffffff0)
+        self.assertEqual(xrsid, 0)
+        self.assertEqual(xitem, 10)
+
     def test_find_vr_chrompos_range(self):
-        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, testDataVR[0][1], testDataVR[3][2], testDataVR[7][2])
-        self.assertEqual(xrsid, testDataVR[3][4])
-        self.assertEqual(xfirst, 3)
-        self.assertEqual(xlast, 7)
+        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, testDataVR[4][2], testDataVR[4][3], testDataVR[4][3])
+        self.assertEqual(xrsid, testDataVR[4][5])
+        self.assertEqual(xfirst, 4)
+        self.assertEqual(xlast, 4)
 
     def test_find_vr_chrompos_range_notfound(self):
         xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, 0xfffffff0, 0xffffff00, 0xfffffff0)
         self.assertEqual(xrsid, 0)
         self.assertEqual(xfirst, 10)
         self.assertEqual(xlast, 9)
-
-    def test_find_vr_rsid_by_varhash(self):
-        for item, chrom, pos, refalt, rsid in testDataVR:
-            xrsid, xitem = bs.find_vr_rsid_by_varhash(vrsrc, 0, 9, chrom, pos, refalt)
-            self.assertEqual(xrsid, rsid)
-            self.assertEqual(xitem, item)
-
-    def test_find_vr_rsid_by_varhash_notfound(self):
-        xrsid, xitem = bs.find_vr_rsid_by_varhash(vrsrc, 0, 9, 0xfffffff0, 0xfffffff0, 0xfffffffffffffff0)
-        self.assertEqual(xrsid, 0)
-        self.assertEqual(xitem, 10)
 
 
 class TestBenchmark(object):
@@ -147,9 +150,7 @@ class TestBenchmark(object):
     def test_get_vr_rsid(self, benchmark):
         benchmark.pedantic(
             bs.get_vr_rsid,
-            args=[
-                vrsrc,
-                3],
+            args=[vrsrc, 3],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -157,9 +158,7 @@ class TestBenchmark(object):
     def test_get_rv_varhash(self, benchmark):
         benchmark.pedantic(
             bs.get_rv_varhash,
-            args=[
-                rvsrc,
-                3],
+            args=[rvsrc, 3],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -167,25 +166,7 @@ class TestBenchmark(object):
     def test_find_rv_varhash_by_rsid(self, benchmark):
         benchmark.pedantic(
             bs.find_rv_varhash_by_rsid,
-            args=[
-                rvsrc,
-                0,
-                9,
-                0x2F81F575],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
-
-    def test_find_vr_chrompos_range(self, benchmark):
-        benchmark.pedantic(
-            bs.find_vr_chrompos_range,
-            args=[
-                vrsrc,
-                0,
-                9,
-                0x0000001A,
-                0x0000400E,
-                0x00004086],
+            args=[rvsrc, 0, 9, 0x387351cb],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -193,13 +174,15 @@ class TestBenchmark(object):
     def test_find_vr_rsid_by_varhash(self, benchmark):
         benchmark.pedantic(
             bs.find_vr_rsid_by_varhash,
-            args=[
-                vrsrc,
-                0,
-                9,
-                0x0000001A,
-                0x0000400E,
-                0x4EECA287F5C90712],
+            args=[vrsrc, 0, 9, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x8ffb1a03],
+            setup=setup,
+            iterations=1,
+            rounds=10000)
+
+    def test_find_vr_chrompos_range(self, benchmark):
+        benchmark.pedantic(
+            bs.find_vr_chrompos_range,
+            args=[vrsrc, 0, 9, 0x00000005, 0x00006f88, 0x00006ed7],
             setup=setup,
             iterations=1,
             rounds=10000)

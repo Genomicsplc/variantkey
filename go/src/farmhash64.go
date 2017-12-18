@@ -34,12 +34,20 @@ const k0 uint64 = 0xc3a5c85c97cb3127
 const k1 uint64 = 0xb492b66fbe98f273
 const k2 uint64 = 0x9ae16a3b2f90404f
 
+// Magic numbers for 32-bit hashing.  Copied from Murmur3.
+const c1 uint32 = 0xcc9e2d51
+const c2 uint32 = 0x1b873593
+
 type uint128 struct {
 	lo uint64
 	hi uint64
 }
 
 // PLATFORM
+
+func rotate32(val uint32, shift uint) uint32 {
+	return ((val >> shift) | (val << (32 - shift)))
+}
 
 func rotate64(val uint64, shift uint) uint64 {
 	return ((val >> shift) | (val << (64 - shift)))
@@ -58,6 +66,21 @@ func fetch64(s []byte, idx int) uint64 {
 
 func shiftMix(val uint64) uint64 {
 	return val ^ (val >> 47)
+}
+
+func mur(a, h uint32) uint32 {
+	// Helper from Murmur3 for combining two 32-bit values.
+	a *= c1
+	a = rotate32(a, 17)
+	a *= c2
+	h ^= a
+	h = rotate32(h, 19)
+	return h*5 + 0xe6546b64
+}
+
+// Merge a 64 bit integer into 32 bit
+func mix64To32(x uint64) uint32 {
+	return mur(uint32(x>>32), uint32((x<<32)>>32))
 }
 
 func hashLen16Mul(u, v, mul uint64) uint64 {
@@ -198,4 +221,10 @@ func FarmHash64(s []byte) uint64 {
 	w.lo, w.hi = weakHashLen32WithSeeds(s[32:], z+w.hi, y+fetch64(s, 16))
 	x, z = z, x
 	return hashLen16Mul(hashLen16Mul(v.lo, w.lo, mul)+shiftMix(y)*k0+z, hashLen16Mul(v.hi, w.hi, mul)+x, mul)
+}
+
+// FarmHash32 returns a 32-bit fingerprint hash for a string.
+// NOTE: This is NOT equivalent to the original Fingerprint32 function.
+func FarmHash32(s []byte) uint32 {
+	return mix64To32(FarmHash64(s))
 }

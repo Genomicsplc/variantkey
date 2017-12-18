@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include "uint128.h"
 #include "farmhash64.h"
 #include <string.h>
 #include <assert.h>
@@ -134,20 +135,14 @@
 #define uint64_t_in_expected_order(x) (x)
 #endif
 
-typedef struct uint128_t
-{
-    uint64_t a;
-    uint64_t b;
-} uint128_t;
-
 STATIC_INLINE uint64_t uint128_t_low64(const uint128_t x)
 {
-    return x.a;
+    return x.lo;
 }
 
 STATIC_INLINE uint64_t uint128_t_high64(const uint128_t x)
 {
-    return x.b;
+    return x.hi;
 }
 
 STATIC_INLINE uint128_t make_uint128_t(uint64_t lo, uint64_t hi)
@@ -193,6 +188,12 @@ STATIC_INLINE void swap64(uint64_t* a, uint64_t* b)
     *b = t;
 }
 
+STATIC_INLINE uint32_t ror32(uint32_t val, size_t shift)
+{
+    // Avoid shifting by 32: doing so yields an undefined result.
+    return shift == 0 ? val : (val >> shift) | (val << (32 - shift));
+}
+
 STATIC_INLINE uint64_t ror64(uint64_t val, size_t shift)
 {
     // Avoid shifting by 64: doing so yields an undefined result.
@@ -206,9 +207,30 @@ static const uint64_t k0 = 0xc3a5c85c97cb3127ULL;
 static const uint64_t k1 = 0xb492b66fbe98f273ULL;
 static const uint64_t k2 = 0x9ae16a3b2f90404fULL;
 
+// Magic numbers for 32-bit hashing.  Copied from Murmur3.
+static const uint32_t c1 = 0xcc9e2d51;
+static const uint32_t c2 = 0x1b873593;
+
 STATIC_INLINE uint64_t smix(uint64_t val)
 {
     return val ^ (val >> 47);
+}
+
+// Helper from Murmur3 for combining two 32-bit values.
+STATIC_INLINE uint32_t mur(uint32_t a, uint32_t h)
+{
+    a *= c1;
+    a = ror32(a, 17);
+    a *= c2;
+    h ^= a;
+    h = ror32(h, 19);
+    return h * 5 + 0xe6546b64;
+}
+
+// Merge a 64 bit integer into 32 bit
+STATIC_INLINE uint32_t mix_64_to_32(uint64_t x)
+{
+    return mur((uint32_t)(x >> 32), (uint32_t)((x << 32) >> 32));
 }
 
 STATIC_INLINE uint64_t farmhash_len_16(uint64_t u, uint64_t v)
@@ -333,13 +355,13 @@ uint64_t farmhash64(const char *s, size_t len)
     assert(s + len - 64 == last64);
     do
     {
-        x = ror64(x + y + v.a + fetch64(s + 8), 37) * k1;
-        y = ror64(y + v.b + fetch64(s + 48), 42) * k1;
-        x ^= w.b;
-        y += v.a + fetch64(s + 40);
-        z = ror64(z + w.a, 33) * k1;
-        v = weak_farmhash_na_len_32_with_seeds(s, v.b * k1, x + w.a);
-        w = weak_farmhash_na_len_32_with_seeds(s + 32, z + w.b, y + fetch64(s + 16));
+        x = ror64(x + y + v.lo + fetch64(s + 8), 37) * k1;
+        y = ror64(y + v.hi + fetch64(s + 48), 42) * k1;
+        x ^= w.hi;
+        y += v.lo + fetch64(s + 40);
+        z = ror64(z + w.lo, 33) * k1;
+        v = weak_farmhash_na_len_32_with_seeds(s, v.hi * k1, x + w.lo);
+        w = weak_farmhash_na_len_32_with_seeds(s + 32, z + w.hi, y + fetch64(s + 16));
         swap64(&z, &x);
         s += 64;
     }
@@ -347,18 +369,24 @@ uint64_t farmhash64(const char *s, size_t len)
     uint64_t mul = k1 + ((z & 0xff) << 1);
     // Make s point to the last 64 bytes of input.
     s = last64;
-    w.a += ((len - 1) & 63);
-    v.a += w.a;
-    w.a += v.a;
-    x = ror64(x + y + v.a + fetch64(s + 8), 37) * mul;
-    y = ror64(y + v.b + fetch64(s + 48), 42) * mul;
-    x ^= w.b * 9;
-    y += v.a * 9 + fetch64(s + 40);
-    z = ror64(z + w.a, 33) * mul;
-    v = weak_farmhash_na_len_32_with_seeds(s, v.b * mul, x + w.a);
-    w = weak_farmhash_na_len_32_with_seeds(s + 32, z + w.b, y + fetch64(s + 16));
+    w.lo += ((len - 1) & 63);
+    v.lo += w.lo;
+    w.lo += v.lo;
+    x = ror64(x + y + v.lo + fetch64(s + 8), 37) * mul;
+    y = ror64(y + v.hi + fetch64(s + 48), 42) * mul;
+    x ^= w.hi * 9;
+    y += v.lo * 9 + fetch64(s + 40);
+    z = ror64(z + w.lo, 33) * mul;
+    v = weak_farmhash_na_len_32_with_seeds(s, v.hi * mul, x + w.lo);
+    w = weak_farmhash_na_len_32_with_seeds(s + 32, z + w.hi, y + fetch64(s + 16));
     swap64(&z, &x);
-    return farmhash_len_16_mul(farmhash_len_16_mul(v.a, w.a, mul) + smix(y) * k0 + z,
-                               farmhash_len_16_mul(v.b, w.b, mul) + x,
+    return farmhash_len_16_mul(farmhash_len_16_mul(v.lo, w.lo, mul) + smix(y) * k0 + z,
+                               farmhash_len_16_mul(v.hi, w.hi, mul) + x,
                                mul);
+}
+
+// 32-bit Fingerprint function for a byte array
+uint32_t farmhash32(const char *s, size_t len)
+{
+    return mix_64_to_32(farmhash64(s, len));
 }

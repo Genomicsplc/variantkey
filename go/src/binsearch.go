@@ -22,6 +22,12 @@ package varianthash
 
 import "golang.org/x/exp/mmap"
 
+// Uint128 contains 2 64bit unsigned integers
+type Uint128 struct {
+	Lo uint64
+	Hi uint64
+}
+
 // TMMFile contains the memory mapped file reader
 type TMMFile struct {
 	r *mmap.ReaderAt
@@ -46,31 +52,39 @@ func GetAddress(blklen, blkpos, item uint64) uint64 {
 	return ((blklen * item) + blkpos)
 }
 
-// BytesToUint32be convert 4 bytes in big-endian format to uint32.
-func (mf TMMFile) BytesToUint32be(i int) uint32 {
+// BytesToUint32 convert 4 bytes in big-endian format to uint32.
+func (mf TMMFile) BytesToUint32(i int) uint32 {
 	return ((uint32(mf.r.At(i)) << 24) | (uint32(mf.r.At(i+1)) << 16) | (uint32(mf.r.At(i+2)) << 8) | uint32(mf.r.At(i+3)))
 }
 
-// BytesToUint64be convert 8 bytes in big-endian format to uint64.
-func (mf TMMFile) BytesToUint64be(i int) uint64 {
+// BytesToUint64 convert 8 bytes in big-endian format to uint64.
+func (mf TMMFile) BytesToUint64(i int) uint64 {
 	return ((uint64(mf.r.At(i)) << 56) | (uint64(mf.r.At(i+1)) << 48) | (uint64(mf.r.At(i+2)) << 40) | (uint64(mf.r.At(i+3)) << 32) | (uint64(mf.r.At(i+4)) << 24) | (uint64(mf.r.At(i+5)) << 16) | (uint64(mf.r.At(i+6)) << 8) | uint64(mf.r.At(i+7)))
 }
 
-// FindFirstUint32be search for the first occurrence of a 32 bit unsigned integer on a memory mapped
+// BytesToUint128 convert 16 bytes in big-endian format to Uint128.
+func (mf TMMFile) BytesToUint128(i int) Uint128 {
+	return Uint128{
+		Lo: mf.BytesToUint64(i),
+		Hi: mf.BytesToUint64(i + 8),
+	}
+}
+
+// FindFirstUint32 search for the first occurrence of a 32 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindFirstUint32be(blklen, blkpos, first, last uint64, search uint32) uint64 {
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
 	var i, middle uint64
 	var x uint32
 	found := (last + 1)
 	for first <= last {
 		middle = ((first + last) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
-		x = mf.BytesToUint32be(int(i))
+		x = mf.BytesToUint32(int(i))
 		if x == search {
 			if middle == 0 {
-				return middle
+				return middle, first, last
 			}
 			found = middle
 			last = (middle - 1)
@@ -81,26 +95,26 @@ func (mf TMMFile) FindFirstUint32be(blklen, blkpos, first, last uint64, search u
 				if middle > 0 {
 					last = (middle - 1)
 				} else {
-					return found
+					return found, first, last
 				}
 			}
 		}
 	}
-	return found
+	return found, first, last
 }
 
-// FindLastUint32be search for the last occurrence of a 32 bit unsigned integer on a memory mapped
+// FindLastUint32 search for the last occurrence of a 32 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindLastUint32be(blklen, blkpos, first, last uint64, search uint32) uint64 {
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
 	var i, middle uint64
 	var x uint32
 	found := (last + 1)
 	for first <= last {
 		middle = ((first + last) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
-		x = mf.BytesToUint32be(int(i))
+		x = mf.BytesToUint32(int(i))
 		if x == search {
 			found = middle
 			first = (middle + 1)
@@ -111,29 +125,29 @@ func (mf TMMFile) FindLastUint32be(blklen, blkpos, first, last uint64, search ui
 				if middle > 0 {
 					last = (middle - 1)
 				} else {
-					return found
+					return found, first, last
 				}
 			}
 		}
 	}
-	return found
+	return found, first, last
 }
 
-// FindFirstUint64be search for the first occurrence of a 64 bit unsigned integer on a memory mapped
+// FindFirstUint64 search for the first occurrence of a 64 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindFirstUint64be(blklen, blkpos, first, last uint64, search uint64) uint64 {
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
 	var i, middle uint64
 	var x uint64
 	found := (last + 1)
 	for first <= last {
 		middle = ((first + last) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
-		x = mf.BytesToUint64be(int(i))
+		x = mf.BytesToUint64(int(i))
 		if x == search {
 			if middle == 0 {
-				return middle
+				return middle, first, last
 			}
 			found = middle
 			last = (middle - 1)
@@ -144,26 +158,26 @@ func (mf TMMFile) FindFirstUint64be(blklen, blkpos, first, last uint64, search u
 				if middle > 0 {
 					last = (middle - 1)
 				} else {
-					return found
+					return found, first, last
 				}
 			}
 		}
 	}
-	return found
+	return found, first, last
 }
 
-// FindLastUint64be search for the last occurrence of a 64 bit unsigned integer on a memory mapped
+// FindLastUint64 search for the last occurrence of a 64 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindLastUint64be(blklen, blkpos, first, last uint64, search uint64) uint64 {
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
 	var i, middle uint64
 	var x uint64
 	found := (last + 1)
 	for first <= last {
 		middle = ((first + last) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
-		x = mf.BytesToUint64be(int(i))
+		x = mf.BytesToUint64(int(i))
 		if x == search {
 			found = middle
 			first = (middle + 1)
@@ -174,99 +188,94 @@ func (mf TMMFile) FindLastUint64be(blklen, blkpos, first, last uint64, search ui
 				if middle > 0 {
 					last = (middle - 1)
 				} else {
-					return found
+					return found, first, last
 				}
 			}
 		}
 	}
-	return found
+	return found, first, last
 }
 
-// FindFirstUint128be search for the first occurrence of a 128 bit unsigned integer on a memory mapped
+// compareUint128 compare two 128bit numbers
+func compareUint128(a Uint128, b Uint128) int {
+	if a.Lo < b.Lo {
+		return -1
+	}
+	if a.Lo > b.Lo {
+		return 1
+	}
+	if a.Hi < b.Hi {
+		return -1
+	}
+	if a.Hi > b.Hi {
+		return 1
+	}
+	return 0
+}
+
+// FindFirstUint128 search for the first occurrence of a 128 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindFirstUint128be(blklen, blkpos, first, last uint64, searchHi, searchLo uint64) uint64 {
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint128(blklen, blkpos, first, last uint64, search Uint128) (uint64, uint64, uint64) {
 	var i, middle uint64
-	var xHi, xLo uint64
+	var x Uint128
+	var cmp int
 	found := (last + 1)
 	for first <= last {
 		middle = ((first + last) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
-		xHi = mf.BytesToUint64be(int(i))
-		if xHi == searchHi {
-			xLo = mf.BytesToUint64be(int(i + 8))
-			if xLo == searchLo {
-				if middle == 0 {
-					return middle
-				}
-				found = middle
-				last = (middle - 1)
-			} else {
-				if xLo < searchLo {
-					first = (middle + 1)
-				} else {
-					if middle > 0 {
-						last = (middle - 1)
-					} else {
-						return found
-					}
-				}
+		x = mf.BytesToUint128(int(i))
+		cmp = compareUint128(x, search)
+		if cmp == 0 {
+			if middle == 0 {
+				return middle, first, last
 			}
+			found = middle
+			last = (middle - 1)
 		} else {
-			if xHi < searchHi {
+			if cmp < 0 {
 				first = (middle + 1)
 			} else {
 				if middle > 0 {
 					last = (middle - 1)
 				} else {
-					return found
+					return found, first, last
 				}
 			}
 		}
 	}
-	return found
+	return found, first, last
 }
 
-// FindLastUint128be search for the last occurrence of a 128 bit unsigned integer on a memory mapped
+// FindLastUint128 search for the last occurrence of a 128 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found.
-func (mf TMMFile) FindLastUint128be(blklen, blkpos, first, last uint64, searchHi, searchLo uint64) uint64 {
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint128(blklen, blkpos, first, last uint64, search Uint128) (uint64, uint64, uint64) {
 	var i, middle uint64
-	var xHi, xLo uint64
+	var x Uint128
+	var cmp int
 	found := (last + 1)
 	for first <= last {
 		middle = ((first + last) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
-		xHi = mf.BytesToUint64be(int(i))
-		if xHi == searchHi {
-			xLo = mf.BytesToUint64be(int(i + 8))
-			if xLo == searchLo {
-				found = middle
-				first = (middle + 1)
-			} else {
-				if xLo < searchLo {
-					first = (middle + 1)
-				} else {
-					if middle > 0 {
-						last = (middle - 1)
-					} else {
-						return found
-					}
-				}
-			}
+		x = mf.BytesToUint128(int(i))
+		cmp = compareUint128(x, search)
+		if cmp == 0 {
+			found = middle
+			first = (middle + 1)
 		} else {
-			if xHi < searchHi {
+			if cmp < 0 {
 				first = (middle + 1)
 			} else {
 				if middle > 0 {
 					last = (middle - 1)
 				} else {
-					return found
+					return found, first, last
 				}
 			}
 		}
 	}
-	return found
+	return found, first, last
 }

@@ -49,6 +49,7 @@
 #define BINSEARCH_H
 
 #include <inttypes.h>
+#include "uint128.h"
 
 /**
  * Struct containing the memory mapped file info.
@@ -94,121 +95,81 @@ int munmap_binfile(mmfile_t mf);
 uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item);
 
 /**
- * Convert 4 bytes in big-endian format to uint32
- *
- * @param src Memory mapped file address.
- * @param i   Start position.
- *
- * @return Converted number
+ * Define generic comparison function for unsigned integers
  */
-uint32_t bytes_to_uint32be(const unsigned char *src, uint64_t i);
+#define define_declare_bytes_to(T) \
+/** Convert bytes in big-endian format to unsigned integer
+@param src Memory mapped file address.
+@param i   Start position.
+@return Converted number
+*/ \
+T bytes_to_##T(const unsigned char *src, uint64_t i);
+
+define_declare_bytes_to(uint32_t)
+define_declare_bytes_to(uint64_t)
+define_declare_bytes_to(uint128_t)
 
 /**
- * Convert 8 bytes in big-endian format to uint64
- *
- * @param src Memory mapped file address.
- * @param i   Start position.
- *
- * @return Converted number
+ * Define generic comparison function for unsigned integers
  */
-uint64_t bytes_to_uint64be(const unsigned char *src, uint64_t i);
+#define define_declare_compare(T) \
+/** Compare two uinsigned integers
+@param a First integer to compare
+@param b Second integer to compare
+@return Negative value if a < b, positive value if a > b and zero if a == b.
+*/ \
+int compare_##T(T a, T b);
+
+define_declare_compare(uint32_t)
+define_declare_compare(uint64_t)
+define_declare_compare(uint128_t)
 
 /**
- * Search for the first occurrence of a 32 bit unsigned integer on a memory mapped
- * binary file containing adjacent blocks of sorted binary data.
- * The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
+ * Generic function to search for the first occurrence of an unsigned integer
+ * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param src       Memory mapped file address.
- * @param blklen    Length of the binary block in bytes.
- * @param blkpos    Indicates the position of the number to search inside a binary block.
- * @param first     First element of the range to search (min value = 0).
- * @param last      Last element of the range to search (max value = nitems - 1).
- * @param search    Unsigned number to search (32 bit).
- *
- * @return item number if found or (last + 1) if not found.
+ * @param T Unsigned integer tupe, one of: uint32_t, uint64_t
  */
-uint64_t find_first_uint32be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint32_t search);
+#define define_declare_find_first(T) \
+/** Search for the first occurrence of an unsigned integer on a memory mapped
+binary file containing adjacent blocks of sorted binary data.
+The values in the file must encoded in big-endian format and sorted in ascending order.
+@param src       Memory mapped file address.
+@param blklen    Length of the binary block in bytes.
+@param blkpos    Indicates the position of the number to search inside a binary block.
+@param first     Pointer to the first element of the range to search (min value = 0).
+@param last      Pointer to the last element of the range to search (max value = nitems - 1).
+@param search    Unsigned number to search (type T).
+@return item number if found or (last + 1) if not found.
+ */ \
+uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+
+define_declare_find_first(uint32_t)
+define_declare_find_first(uint64_t)
+define_declare_find_first(uint128_t)
 
 /**
- * Search for the last occurrence of a 32 bit unsigned integer on a memory mapped
- * binary file containing adjacent blocks of sorted binary data.
- * The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
+ * Generic function to search for the last occurrence of an unsigned integer
+ * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param src       Memory mapped file address.
- * @param blklen    Length of the binary block in bytes.
- * @param blkpos    Indicates the position of the number to search inside a binary block.
- * @param first     First element of the range to search (min value = 0).
- * @param last      Last element of the range to search (max value = nitems - 1).
- * @param search    Unsigned number to search (32 bit).
- *
- * @return Item number if found or (last + 1) if not found.
+ * @param T Unsigned integer tupe, one of: uint32_t, uint64_t
  */
-uint64_t find_last_uint32be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint32_t search);
+#define define_declare_find_last(T) \
+/** Search for the last occurrence of an unsigned integer on a memory mapped
+binary file containing adjacent blocks of sorted binary data.
+The values in the file must encoded in big-endian format and sorted in ascending order.
+@param src       Memory mapped file address.
+@param blklen    Length of the binary block in bytes.
+@param blkpos    Indicates the position of the number to search inside a binary block.
+@param first     Pointer to the first element of the range to search (min value = 0).
+@param last      Pointer to the last element of the range to search (max value = nitems - 1).
+@param search    Unsigned number to search (type T).
+@return Item number if found or (last + 1) if not found.
+*/ \
+uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
 
-/**
- * Search for the first occurrence of a 64 bit unsigned integer on a memory mapped
- * binary file containing adjacent blocks of sorted binary data.
- * The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
- *
- * @param src       Memory mapped file address.
- * @param blklen    Length of the binary block in bytes.
- * @param blkpos    Indicates the position of the number to search inside a binary block.
- * @param first     First element of the range to search (min value = 0).
- * @param last      Last element of the range to search (max value = nitems - 1).
- * @param search    Unsigned number to search (64 bit).
- *
- * @return item number if found or (last + 1) if not found.
- */
-uint64_t find_first_uint64be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search);
-
-/**
- * Search for the last occurrence of a 64 bit unsigned integer on a memory mapped
- * binary file containing adjacent blocks of sorted binary data.
- * The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
- *
- * @param src       Memory mapped file address.
- * @param blklen    Length of the binary block in bytes.
- * @param blkpos    Indicates the position of the number to search inside a binary block.
- * @param first     First element of the range to search (min value = 0).
- * @param last      Last element of the range to search (max value = nitems - 1).
- * @param search    Unsigned number to search (64 bit).
- *
- * @return item number if found or (last + 1) if not found.
- */
-uint64_t find_last_uint64be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search);
-
-/**
- * Search for the first occurrence of a 128 bit unsigned integer on a memory mapped
- * binary file containing adjacent blocks of sorted binary data.
- * The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
- *
- * @param src       Memory mapped file address.
- * @param blklen    Length of the binary block in bytes.
- * @param blkpos    Indicates the position of the number to search inside a binary block.
- * @param first     First element of the range to search (min value = 0).
- * @param last      Last element of the range to search (max value = nitems - 1).
- * @param search_hi First 64 bit of unsigned number to search.
- * @param search_lo Last 64 bit of unsigned number to search.
- *
- * @return item number if found or (last + 1) if not found.
- */
-uint64_t find_first_uint128be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search_hi, uint64_t search_lo);
-
-/**
- * Search for the last occurrence of a 128 bit unsigned integer on a memory mapped
- * binary file containing adjacent blocks of sorted binary data.
- * The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
- *
- * @param src       Memory mapped file address.
- * @param blklen    Length of the binary block in bytes.
- * @param blkpos    Indicates the position of the number to search inside a binary block.
- * @param first     First element of the range to search (min value = 0).
- * @param last      Last element of the range to search (max value = nitems - 1).
- * @param search_hi First 64 bit of unsigned number to search.
- * @param search_lo Last 64 bit of unsigned number to search.
- *
- * @return item number if found or (last + 1) if not found.
- */
-uint64_t find_last_uint128be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search_hi, uint64_t search_lo);
+define_declare_find_last(uint32_t)
+define_declare_find_last(uint64_t)
+define_declare_find_last(uint128_t)
 
 #endif  // BINSEARCH_H
