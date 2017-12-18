@@ -2,8 +2,6 @@ package varianthash
 
 import "testing"
 
-var rv, vr TMMFile
-
 var testDataRV = []struct {
 	rsid   uint32
 	chrom  uint32

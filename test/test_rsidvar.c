@@ -18,45 +18,47 @@
 typedef struct test_data_rv_t
 {
     uint32_t rsid;
+    uint32_t assembly;
     uint32_t chrom;
     uint32_t pos;
-    uint64_t refalt;
+    uint32_t refalt;
 } test_data_rv_t;
 
 typedef struct test_data_vr_t
 {
+    uint32_t assembly;
     uint32_t chrom;
     uint32_t pos;
-    uint64_t refalt;
+    uint32_t refalt;
     uint32_t rsid;
 } test_data_vr_t;
 
 static test_data_rv_t test_data_rv[TEST_DATA_SIZE] =
 {
-    {0x2F81F572, 0x00000017, 0x0509C4A7, 0xCCD3C1D35DF0CE04},
-    {0x2F81F573, 0x00000017, 0x05098728, 0x4EECA287F5C90712},
-    {0x2F81F574, 0x0000000B, 0x054CAF51, 0xBB9EE46DF5C4C2E0},
-    {0x2F81F575, 0x00000002, 0x095E7925, 0x90C4DEFF765F63B8},
-    {0x2F81F576, 0x0000000F, 0x060C1468, 0x0981EF0F500126C2},
-    {0x2F81F577, 0x00000011, 0x0199B8D6, 0x22A78FD91ACC7B43},
-    {0x2F81F578, 0x0000000A, 0x07D8C4BE, 0x90C4DEFF765F63B8},
-    {0x2F81F579, 0x00000001, 0x0DE63E19, 0x453EA229CAA9A652},
-    {0x2F81F57A, 0x00000011, 0x026140E3, 0xCCD3C1D35DF0CE04},
-    {0x2F81F57B, 0x00000011, 0x02610DFC, 0x26CAA8F5488B8717},
+    {0x00000001, 0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb},
+    {0x00000002, 0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3},
+    {0x00000003, 0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f},
+    {0x00000004, 0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae},
+    {0x00000005, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f},
+    {0x00000006, 0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc},
+    {0x00000007, 0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a},
+    {0x00000008, 0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb},
+    {0x00000009, 0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb},
+    {0x0000000a, 0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c},
 };
 
 static test_data_vr_t test_data_vr[TEST_DATA_SIZE] =
 {
-    {0x0000001A, 0x00004005, 0x26CAA8F5488B8717, 0x0277648B},
-    {0x0000001A, 0x00004006, 0x3D9C29BE7B4387A2, 0x020B67DE},
-    {0x0000001A, 0x00004006, 0xCCD3C1D35DF0CE04, 0x020B67DE},
-    {0x0000001A, 0x0000400E, 0x4EECA287F5C90712, 0x0849000D},
-    {0x0000001A, 0x0000403C, 0x0981EF0F500126C2, 0x162BA962},
-    {0x0000001A, 0x00004072, 0x4EECA287F5C90712, 0x167638AD},
-    {0x0000001A, 0x0000407F, 0x0981EF0F500126C2, 0x1649ED55},
-    {0x0000001A, 0x00004086, 0x0981EF0F500126C2, 0x003C1309},
-    {0x0000001A, 0x0000408F, 0x22A78FD91ACC7B43, 0x170E8C03},
-    {0x0000001A, 0x00004090, 0x0981EF0F500126C2, 0x161885A7},
+    {0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb, 0x00000009},
+    {0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a, 0x00000007},
+    {0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f, 0x00000005},
+    {0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f, 0x00000003},
+    {0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb, 0x00000001},
+    {0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3, 0x00000002},
+    {0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae, 0x00000004},
+    {0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc, 0x00000006},
+    {0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb, 0x00000008},
+    {0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c, 0x0000000a},
 };
 
 // returns current time in nanoseconds
@@ -92,6 +94,11 @@ int test_get_rv_varhash(mmfile_t rv)
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         vh = get_rv_varhash(rv.src, i);
+        if (vh.assembly != test_data_rv[i].assembly)
+        {
+            fprintf(stderr, "test_get_rv_varhash (%d) Expected assembly %"PRIx32", got %"PRIx32"\n", i, test_data_rv[i].assembly, vh.assembly);
+            ++errors;
+        }
         if (vh.chrom != test_data_rv[i].chrom)
         {
             fprintf(stderr, "test_get_rv_varhash (%d) Expected chrom %"PRIx32", got %"PRIx32"\n", i, test_data_rv[i].chrom, vh.chrom);
@@ -104,7 +111,7 @@ int test_get_rv_varhash(mmfile_t rv)
         }
         if (vh.refalt != test_data_rv[i].refalt)
         {
-            fprintf(stderr, "test_get_rv_varhash (%d) Expected refalt %"PRIx64", got %"PRIx64"\n", i, test_data_rv[i].refalt, vh.refalt);
+            fprintf(stderr, "test_get_rv_varhash (%d) Expected refalt %"PRIx32", got %"PRIx32"\n", i, test_data_rv[i].refalt, vh.refalt);
             ++errors;
         }
     }
@@ -126,6 +133,11 @@ int test_find_rv_varhash_by_rsid(mmfile_t rv)
             fprintf(stderr, "test_find_rv_varhash_by_rsid (%d) Expected first %d, got %"PRIu64"\n", i, i, first);
             ++errors;
         }
+        if (vh.assembly != test_data_rv[i].assembly)
+        {
+            fprintf(stderr, "test_find_rv_varhash_by_rsid (%d) Expected assembly %"PRIx32", got %"PRIx32"\n", i, test_data_rv[i].assembly, vh.assembly);
+            ++errors;
+        }
         if (vh.chrom != test_data_rv[i].chrom)
         {
             fprintf(stderr, "test_find_rv_varhash_by_rsid (%d) Expected chrom %"PRIx32", got %"PRIx32"\n", i, test_data_rv[i].chrom, vh.chrom);
@@ -138,7 +150,7 @@ int test_find_rv_varhash_by_rsid(mmfile_t rv)
         }
         if (vh.refalt != test_data_rv[i].refalt)
         {
-            fprintf(stderr, "test_find_rv_varhash_by_rsid (%d) Expected refalt %"PRIx64", got %"PRIx64"\n", i, test_data_rv[i].refalt, vh.refalt);
+            fprintf(stderr, "test_find_rv_varhash_by_rsid (%d) Expected refalt %"PRIx32", got %"PRIx32"\n", i, test_data_rv[i].refalt, vh.refalt);
             ++errors;
         }
     }
@@ -154,6 +166,11 @@ int test_find_rv_varhash_by_rsid_notfound(mmfile_t rv)
     if (first != 10)
     {
         fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected first 10, got %"PRIu64"\n", first);
+        ++errors;
+    }
+    if (vh.assembly != 0)
+    {
+        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected assembly 0, got %"PRIu32"\n", vh.assembly);
         ++errors;
     }
     if (vh.chrom != 0)
@@ -180,18 +197,18 @@ int test_find_vr_chrompos_range(mmfile_t vr)
     uint32_t rsid;
     uint64_t first = 0;
     uint64_t last = 9;
-    rsid = find_vr_chrompos_range(vr.src, &first, &last, test_data_vr[0].chrom, test_data_vr[3].pos, test_data_vr[7].pos);
-    if (rsid != test_data_vr[3].rsid)
+    rsid = find_vr_chrompos_range(vr.src, &first, &last, test_data_vr[4].chrom, test_data_vr[4].pos, test_data_vr[4].pos);
+    if (rsid != test_data_vr[4].rsid)
     {
-        fprintf(stderr, "test_find_vr_chrompos_range : Expected rsid %"PRIx32", got %"PRIx32"\n", test_data_vr[3].rsid, rsid);
+        fprintf(stderr, "test_find_vr_chrompos_range : Expected rsid %"PRIx32", got %"PRIx32"\n", test_data_vr[4].rsid, rsid);
         ++errors;
     }
-    if (first != 3)
+    if (first != 4)
     {
         fprintf(stderr, "test_find_vr_chrompos_range : Expected first 3, got %"PRIu64"\n", first);
         ++errors;
     }
-    if (last != 7)
+    if (last != 4)
     {
         fprintf(stderr, "test_find_vr_chrompos_range : Expected last 7, got %"PRIu64"\n", last);
         ++errors;
@@ -234,6 +251,7 @@ int test_find_vr_rsid_by_varhash(mmfile_t vr)
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         first = 0;
+        vh.assembly = test_data_vr[i].assembly;
         vh.chrom = test_data_vr[i].chrom;
         vh.pos = test_data_vr[i].pos;
         vh.refalt = test_data_vr[i].refalt;
@@ -259,9 +277,10 @@ int test_find_vr_rsid_by_varhash_notfound(mmfile_t vr)
     uint64_t first;
     varhash_t vh;
     first = 0;
+    vh.assembly = 0xfffffff0;
     vh.chrom = 0xfffffff0;
     vh.pos = 0xfffffff0;
-    vh.refalt = 0xfffffffffffffff0;
+    vh.refalt = 0xfffffff0;
     rsid = find_vr_rsid_by_varhash(vr.src, &first, 9, vh);
     if (rsid != 0)
     {
@@ -328,7 +347,7 @@ void benchmark_find_vr_chrompos_range(mmfile_t vr)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        find_vr_chrompos_range(vr.src, &first, &last, 0x0000001A, 0x0000400E, 0x00004086);
+        find_vr_chrompos_range(vr.src, &first, &last, 0x00000005, 0x00006f88, 0x00006ed7);
     }
     tend = get_time();
     fprintf(stdout, " * find_vr_chrompos_range : %lu ns/op\n", (tend - tstart)/(size*4));
@@ -339,9 +358,10 @@ void benchmark_find_vr_rsid_by_varhash(mmfile_t vr)
     uint64_t tstart, tend;
     uint64_t first = 0;
     varhash_t vh;
-    vh.chrom = 0x0000001A;
-    vh.pos = 0x0000400E;
-    vh.refalt = 0x4EECA287F5C90712;
+    vh.assembly = 0x8b29d2c7;
+    vh.chrom = 0x00000003;
+    vh.pos = 0x000124a3;
+    vh.refalt = 0x8ffb1a03;
     int i;
     int size = 100000;
     tstart = get_time();

@@ -44,6 +44,11 @@ int aztoupper(int c)
     return c;
 }
 
+uint32_t encode_assembly(const char *assembly)
+{
+    return farmhash32(assembly, strlen(assembly));
+}
+
 // @TODO: support other species
 uint32_t encode_chrom(const char *chrom)
 {
@@ -62,7 +67,7 @@ uint32_t encode_chrom(const char *chrom)
     return 0;
 }
 
-uint64_t encode_ref_alt(const char *ref, const char *alt)
+uint32_t encode_ref_alt(const char *ref, const char *alt)
 {
     size_t slen = 1 + strlen(ref) + strlen(alt);
     char ra[slen + 1];
@@ -70,14 +75,15 @@ uint64_t encode_ref_alt(const char *ref, const char *alt)
     while ((*it++ = aztoupper(*ref++)));
     it[-1] = '_';
     while ((*it++ = aztoupper(*alt++)));
-    uint64_t h = farmhash64(ra, slen);
-    return h;
+    return farmhash32(ra, slen);
 }
 
-varhash_t variant_hash(const char *chrom, uint32_t pos, const char *ref, const char *alt)
+varhash_t variant_hash(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt)
 {
-    varhash_t vh = {encode_chrom(chrom), pos, encode_ref_alt(ref, alt)};
-    return vh;
+    return (varhash_t)
+    {
+        encode_assembly(assembly), encode_chrom(chrom), pos, encode_ref_alt(ref, alt)
+    };
 }
 
 size_t variant_hash_string(char *str, size_t size, varhash_t vh)
@@ -86,24 +92,27 @@ size_t variant_hash_string(char *str, size_t size, varhash_t vh)
     if (slen > size) return slen;
     char* it = str;
     const char* end = it + size;
-    it += snprintf(it, (end - it), "%08"PRIx32"%08"PRIx32"%016"PRIx64"", vh.chrom, vh.pos, vh.refalt);
+    it += snprintf(it, (end - it), "%08"PRIx32"%08"PRIx32"%08"PRIx32"%08"PRIx32"", vh.assembly, vh.chrom, vh.pos, vh.refalt);
     return (end - it);
 }
 
 varhash_t decode_variant_hash_string(const char *vs)
 {
-    varhash_t vh = {0,0,0};
+    varhash_t vh = {0,0,0,0};
     size_t slen = strlen(vs);
     if (slen != 32) return vh;
     char tmp[33];
     strncpy(tmp, vs, slen);
     tmp[32] = 0;
-    char* it = tmp + 16;
-    vh.refalt = (uint64_t)strtoull(it, NULL, 16);
+    char* it = tmp + 24;
+    vh.refalt = (uint32_t)strtoull(it, NULL, 16);
     *it = 0;
-    it = tmp + 8;
+    it = tmp + 16;
     vh.pos = (uint32_t)strtoul(it, NULL, 16);
     *it = 0;
-    vh.chrom = (uint32_t)strtoul(tmp, NULL, 16);
+    it = tmp + 8;
+    vh.chrom = (uint32_t)strtoul(it, NULL, 16);
+    *it = 0;
+    vh.assembly = (uint32_t)strtoul(tmp, NULL, 16);
     return vh;
 }

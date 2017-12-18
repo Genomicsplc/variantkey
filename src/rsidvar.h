@@ -44,11 +44,10 @@
  * The rsid_varhash.bin file contains adjacent 20 bytes binary blocks
  * with the following structure:
  *
- *     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
- *     +---------+ +---------+ +---------+ +---------------------+
- *     |  RSID   | |  CHROM  | |   POS   | |    REF_ALT_HASH     |
- *     +---------+ +---------+ +---------+ +---------------------+
- *                 +---------------------------------------------+
+ *     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
+ *     +---------+ +---------+ +---------+ +---------+ +---------+
+ *     |  RSID   | | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
+ *     +---------+ +---------+ +---------+ +---------+ +---------+
  *                 |                VARIANT_HASH                 |
  *                 +---------------------------------------------+
  *
@@ -56,11 +55,10 @@
  * The varhash_rsid.bin file contains adjacent 20 bytes binary blocks
  * with the following structure:
  *
- *     01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
- *     +---------+ +---------+ +---------------------+ +---------+
- *     |  CHROM  | |   POS   | |    REF_ALT_HASH     | |  RSID   |
- *     +---------+ +---------+ +---------------------+ +---------+
- *     +---------------------------------------------+
+ *     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
+ *     +---------+ +---------+ +---------+ +---------+ +---------+
+ *     | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
+ *     +---------+ +---------+ +---------+ +---------+ +---------+
  *     |                VARIANT_HASH                 |
  *     +---------------------------------------------+
  *
@@ -74,15 +72,17 @@
 
 #define RSIDVAR_BIN_BLKLEN 20 //!< Length of a binary block containing RSID + VARHASH
 
-#define RSIDVAR_BPOS_RSID   0 //!< RSIDVAR offset of RS ID 
-#define RSIDVAR_BPOS_CHROM  4 //!< RSIDVAR offset of CHROM
-#define RSIDVAR_BPOS_POS    8 //!< RSIDVAR offset of POS
-#define RSIDVAR_BPOS_RFH   12 //!< RSIDVAR offset of REF_ALT_HASH
+#define RSIDVAR_BPOS_RSID    0 //!< RSIDVAR offset of RS ID
+#define RSIDVAR_BPOS_ASSBLY  4 //!< RSIDVAR offset of ASSEMBLY HASH
+#define RSIDVAR_BPOS_CHROM   8 //!< RSIDVAR offset of CHROM
+#define RSIDVAR_BPOS_POS    12 //!< RSIDVAR offset of POS
+#define RSIDVAR_BPOS_REFALT 16 //!< RSIDVAR offset of REF_ALT HASH
 
-#define VARRSID_BPOS_CHROM  0 //!< VARRSID offset of CHROM 
-#define VARRSID_BPOS_POS    4 //!< VARRSID offset of POS
-#define VARRSID_BPOS_RAH    8 //!< VARRSID offset of REF_ALT_HASH
-#define VARRSID_BPOS_RSID  16 //!< VARRSID offset of RS ID
+#define VARRSID_BPOS_ASSBLY  0 //!< VARRSID offset of ASSEMBLY HASH
+#define VARRSID_BPOS_CHROM   4 //!< VARRSID offset of CHROM
+#define VARRSID_BPOS_POS     8 //!< VARRSID offset of POS
+#define VARRSID_BPOS_REFALT 12 //!< VARRSID offset of REF_ALT HASH
+#define VARRSID_BPOS_RSID   16 //!< VARRSID offset of RS ID
 
 /**
  * Returns the RSID at the specified position.

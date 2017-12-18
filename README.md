@@ -15,23 +15,31 @@
 This project contains tools to generate and process a **Genetic Variant Hash**,
 a variant ID that can be used to match and cross-reference genetic variants across different databases and sources.
 
-The *Genetic Variant* Hash is composed of 3 sections that can be also used separately:
+A *Genetic Variant Hash* is composed of 4 sections that can be also used separately:
 
+    00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
+    +---------+ +---------+ +---------+ +---------+
+    | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
+    +---------+ +---------+ +---------+ +---------+
+    |                VARIANT_HASH                 |
+    +---------------------------------------------+
+
+* **ASSBLY**  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly (genome sequence). 
 * **CHROM**   : 32 bits (8 hex bytes) to represent the chromosome.
                 Chromosomes are always encoded as numbers.
                 Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.
                 For other species than human the string-to-number chromosome conversion should happen before calling the hashing function.
-
 * **POS**     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
-
-* **REF_ALT** : 64 bits (16 hex bytes) for the farmhash64 of the "REF_ALT" string.
+* **REF_ALT** : 32 bits (8 hex bytes) for the hash of the "REF_ALT" string.
 
 Each Variant Hash is unique to a given *Genome Assembly Model* (species + build number).  
 The full 128 bits can be exported as a single 32 character hexadecimal string.  
-The first 64 bits of the Variant Hash forms a sortable key.
+The CHROM and POS 32 sections of the key are sortable.
 
 
 ## Input values
+
+* **ASSBLY** - *genome Assembly* : String identifying the Genome Assembly (e.g. GRCh38.p10)
 
 * **CHROM** - *chromosome*     : Uppercase identifier from the reference genome, no white-space or leading zeros permitted.
 
@@ -89,11 +97,10 @@ The input binary files can be generated using some open source tools:
 The rsid_varhash.bin file contains adjacent 20 bytes binary blocks
 with the following structure:
 
-    01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
-    +---------+ +---------+ +---------+ +---------------------+
-    |  RSID   | |  CHROM  | |   POS   | |    REF_ALT_HASH     |
-    +---------+ +---------+ +---------+ +---------------------+
-                +---------------------------------------------+
+    00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
+    +---------+ +---------+ +---------+ +---------+ +---------+ 
+    |  RSID   | | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
+    +---------+ +---------+ +---------+ +---------+ +---------+
                 |                VARIANT_HASH                 |
                 +---------------------------------------------+
 
@@ -101,11 +108,10 @@ with the following structure:
 The varhash_rsid.bin file contains adjacent 20 bytes binary blocks
 with the following structure:
 
-    01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20
-    +---------+ +---------+ +---------------------+ +---------+
-    |  CHROM  | |   POS   | |    REF_ALT_HASH     | |  RSID   |
-    +---------+ +---------+ +---------------------+ +---------+
-    +---------------------------------------------+
+    00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
+    +---------+ +---------+ +---------+ +---------+ +---------+
+    | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
+    +---------+ +---------+ +---------+ +---------+ +---------+
     |                VARIANT_HASH                 |
     +---------------------------------------------+
 

@@ -114,6 +114,55 @@ static const uint64_t farmhash64string_expected[] =
     0xc3f02c4ffd5d71e6,
 };
 
+static const uint32_t farmhash32string_expected[] =
+{
+    0xfe0061e9,
+    0xd824662a,
+    0x15eb5ed6,
+    0xcaf25fe2,
+    0xcf297808,
+    0x5f8d48db,
+    0x16b8a2fd,
+    0xcfc5f43d,
+    0x8d1b642,
+    0xb382832e,
+    0x3f19a3cb,
+    0xee83c5c,
+    0x6fca023f,
+    0x6b2c02bd,
+    0xb8e8fba,
+    0xe6946835,
+    0xfa44df74,
+    0x2a1ed264,
+    0xbcd3277f,
+    0x26bf5a67,
+    0x8eedb634,
+    0xa329652e,
+    0x4ba9b4ed,
+    0x1b9ea72f,
+    0x819d77a5,
+    0x8b72761e,
+    0x5f21fe43,
+    0xa15ead04,
+    0xe3763baf,
+    0x50a48aaa,
+    0x517e346c,
+    0x8a4b0b6c,
+    0xb360937b,
+    0x2e5713b3,
+    0xec6d1e0e,
+    0x7175f31d,
+    0xdf4c5297,
+    0x62359aca,
+    0x398c0b7c,
+    0x47f9c,
+    0xe56239a7,
+    0xb556f325,
+    0x75cc5362,
+    0xc401a0bf,
+    0x4e56b7e9,
+};
+
 static const uint32_t farmhash64_expected[] =
 {
     2598464059u, 797982799u, 1410420968u, 2134990486u, 255297188u, 2992121793u, 4019337850u, 452431531u, 299850021u,
@@ -299,12 +348,30 @@ void benchmark_farmhash64()
     fprintf(stdout, " * benchmark_farmhash64 : %lu ns/op\n", (tend - tstart)/(size*4));
 }
 
+int test_farmhash32_strings()
+{
+    int errors = 0;
+    uint32_t h;
+    int i;
+    for (i=0 ; i < k_string_test_size; i++)
+    {
+        h = farmhash32(string_input[i], strlen(string_input[i]));
+        if (h != farmhash32string_expected[i])
+        {
+            fprintf(stderr, "%d. expected %x but got %x for %s\n", i, farmhash32string_expected[i], h, string_input[i]);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int main()
 {
     int errors = 0;
 
     errors += test_farmhash64_strings();
     errors += test_farmhash64();
+    errors += test_farmhash32_strings();
 
     benchmark_farmhash64();
 

@@ -48,7 +48,7 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
-uint32_t bytes_to_uint32be(const unsigned char *src, uint64_t i)
+uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
 {
     return (((uint32_t)src[i] << 24)
             | ((uint32_t)src[i+1] << 16)
@@ -56,7 +56,7 @@ uint32_t bytes_to_uint32be(const unsigned char *src, uint64_t i)
             | (uint32_t)src[i+3]);
 }
 
-uint64_t bytes_to_uint64be(const unsigned char *src, uint64_t i)
+uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i)
 {
     return (((uint64_t)src[i] << 56)
             | ((uint64_t)src[i+1] << 48)
@@ -68,145 +68,80 @@ uint64_t bytes_to_uint64be(const unsigned char *src, uint64_t i)
             | (uint64_t)src[i+7]);
 }
 
-uint64_t find_first_uint32be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint32_t search)
+uint128_t bytes_to_uint128_t(const unsigned char *src, uint64_t i)
 {
-    uint64_t i, middle, found = (last + 1);
-    uint32_t x;
-    while (first <= last)
+    return (uint128_t)
     {
-        middle = ((first + last) >> 1);
-        i = get_address(blklen, blkpos, middle);
-        x = bytes_to_uint32be(src, i);
-        if (x == search)
-        {
-            if (middle == 0) return middle;
-            found = middle;
-            last = (middle - 1);
-        }
-        else if (x < search) first = (middle + 1);
-        else if (middle > 0) last = (middle - 1);
-        else return found;
-    }
-    return found;
+        .hi = bytes_to_uint64_t(src, i),
+         .lo = bytes_to_uint64_t(src, i + 8)
+    };
 }
 
-uint64_t find_last_uint32be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint32_t search)
+#define define_compare(T) int compare_##T(T a, T b) {return (a < b) ? -1 : (a > b);}
+
+define_compare(uint32_t)
+define_compare(uint64_t)
+
+int compare_uint128_t(uint128_t a, uint128_t b)
 {
-    uint64_t i, middle, found = (last + 1);
-    uint32_t x;
-    while (first <= last)
-    {
-        middle = ((first + last) >> 1);
-        i = get_address(blklen, blkpos, middle);
-        x = bytes_to_uint32be(src, i);
-        if (x == search)
-        {
-            found = middle;
-            first = (middle + 1);
-        }
-        else if (x < search) first = (middle + 1);
-        else if (middle > 0) last = (middle - 1);
-        else return found;
-    }
-    return found;
+    if (a.hi < b.hi) return -1;
+    if (a.hi > b.hi) return 1;
+    return compare_uint64_t(a.lo, b.lo);
 }
 
-uint64_t find_first_uint64be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search)
-{
-    uint64_t i, middle, found = (last + 1);
-    uint64_t x;
-    while (first <= last)
-    {
-        middle = ((first + last) >> 1);
-        i = get_address(blklen, blkpos, middle);
-        x = bytes_to_uint64be(src, i);
-        if (x == search)
-        {
-            if (middle == 0) return middle;
-            found = middle;
-            last = (middle - 1);
-        }
-        else if (x < search) first = (middle + 1);
-        else if (middle > 0) last = (middle - 1);
-        else return found;
-    }
-    return found;
+#define define_find_first(T) \
+uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+{ \
+    uint64_t i, middle, found = (*last + 1); \
+    T x; \
+    int cmp; \
+    while (*first <= *last) \
+    { \
+        middle = ((*first + *last) >> 1); \
+        i = get_address(blklen, blkpos, middle); \
+        x = bytes_to_##T(src, i); \
+        cmp = compare_##T(x, search); \
+        if (cmp == 0) \
+        { \
+            if (middle == 0) return middle; \
+            found = middle; \
+            *last = (middle - 1); \
+        } \
+        else if (cmp < 0) *first = (middle + 1); \
+        else if (middle > 0) *last = (middle - 1); \
+        else return found; \
+    } \
+    return found; \
 }
 
-uint64_t find_last_uint64be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search)
-{
-    uint64_t i, middle, found = (last + 1);
-    uint64_t x;
-    while (first <= last)
-    {
-        middle = ((first + last) >> 1);
-        i = get_address(blklen, blkpos, middle);
-        x = bytes_to_uint64be(src, i);
-        if (x == search)
-        {
-            found = middle;
-            first = (middle + 1);
-        }
-        else if (x < search) first = (middle + 1);
-        else if (middle > 0) last = (middle - 1);
-        else return found;
-    }
-    return found;
+define_find_first(uint32_t)
+define_find_first(uint64_t)
+define_find_first(uint128_t)
+
+#define define_find_last(T) \
+uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+{ \
+    uint64_t i, middle, found = (*last + 1); \
+    T x; \
+    int cmp; \
+    while (*first <= *last) \
+    { \
+        middle = ((*first + *last) >> 1); \
+        i = get_address(blklen, blkpos, middle); \
+        x = bytes_to_##T(src, i); \
+        cmp = compare_##T(x, search); \
+        if (cmp == 0) \
+        { \
+            found = middle; \
+            *first = (middle + 1); \
+        } \
+        else if (cmp < 0) *first = (middle + 1); \
+        else if (middle > 0) *last = (middle - 1); \
+        else return found; \
+    } \
+    return found; \
 }
 
-uint64_t find_first_uint128be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search_hi, uint64_t search_lo)
-{
-    uint64_t i, middle, found = (last + 1);
-    uint64_t x_hi, x_lo;
-    while (first <= last)
-    {
-        middle = ((first + last) >> 1);
-        i = get_address(blklen, blkpos, middle);
-        x_hi = bytes_to_uint64be(src, i);
-        if (x_hi == search_hi)
-        {
-            x_lo = bytes_to_uint64be(src, i + 8);
-            if (x_lo == search_lo)
-            {
-                if (middle == 0) return middle;
-                found = middle;
-                last = (middle - 1);
-            }
-            else if (x_lo < search_lo) first = (middle + 1);
-            else if (middle > 0) last = (middle - 1);
-            else return found;
-        }
-        else if (x_hi < search_hi) first = (middle + 1);
-        else if (middle > 0) last = (middle - 1);
-        else return found;
-    }
-    return found;
-}
-
-uint64_t find_last_uint128be(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t last, uint64_t search_hi, uint64_t search_lo)
-{
-    uint64_t i, middle, found = (last + 1);
-    uint64_t x_hi, x_lo;
-    while (first <= last)
-    {
-        middle = ((first + last) >> 1);
-        i = get_address(blklen, blkpos, middle);
-        x_hi = bytes_to_uint64be(src, i);
-        if (x_hi == search_hi)
-        {
-            x_lo = bytes_to_uint64be(src, i + 8);
-            if (x_lo == search_lo)
-            {
-                found = middle;
-                first = (middle + 1);
-            }
-            else if (x_lo < search_lo) first = (middle + 1);
-            else if (middle > 0) last = (middle - 1);
-            else return found;
-        }
-        else if (x_hi < search_hi) first = (middle + 1);
-        else if (middle > 0) last = (middle - 1);
-        else return found;
-    }
-    return found;
-}
+define_find_last(uint32_t)
+define_find_last(uint64_t)
+define_find_last(uint128_t)

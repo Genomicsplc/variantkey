@@ -8,9 +8,15 @@ import (
 
 // TVariantHash contains a representation of a genetic variant hash
 type TVariantHash struct {
-	Chrom  uint32 `json:"chrom"`
-	Pos    uint32 `json:"pos"`
-	RefAlt uint64 `json:"refalt"`
+	Assembly uint32 `json:"assembly"`
+	Chrom    uint32 `json:"chrom"`
+	Pos      uint32 `json:"pos"`
+	RefAlt   uint32 `json:"refalt"`
+}
+
+// EncodeAssembly returns 32-bit genome assembly encoding.
+func EncodeAssembly(assembly string) uint32 {
+	return FarmHash32([]byte(assembly))
 }
 
 // EncodeChrom returns 32-bit chromosome encoding.
@@ -39,8 +45,8 @@ func EncodeChrom(chrom string) uint32 {
 	return 0
 }
 
-// EncodeRefAlt returns 64-bit reference+alternate hash code.
-func EncodeRefAlt(ref string, alt string) uint64 {
+// EncodeRefAlt returns 32-bit reference+alternate hash code.
+func EncodeRefAlt(ref string, alt string) uint32 {
 	lenref := len(ref)
 	ra := make([]byte, lenref+1+len(alt))
 	i := 0
@@ -49,12 +55,13 @@ func EncodeRefAlt(ref string, alt string) uint64 {
 	ra[i] = '_'
 	i++
 	copy(ra[i:], strings.ToUpper(alt))
-	return FarmHash64(ra)
+	return FarmHash32(ra)
 }
 
 // VariantHash returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
-func VariantHash(chrom string, pos uint32, ref, alt string) TVariantHash {
+func VariantHash(assembly, chrom string, pos uint32, ref, alt string) TVariantHash {
 	return TVariantHash{
+		EncodeAssembly(assembly),
 		EncodeChrom(chrom),
 		pos,
 		EncodeRefAlt(ref, alt),
@@ -63,24 +70,28 @@ func VariantHash(chrom string, pos uint32, ref, alt string) TVariantHash {
 
 // String representation of the TVariantHash
 func (v TVariantHash) String() string {
-	return fmt.Sprintf("%08x%08x%016x", v.Chrom, v.Pos, v.RefAlt)
+	return fmt.Sprintf("%08x%08x%08x%08x", v.Assembly, v.Chrom, v.Pos, v.RefAlt)
 
 }
 
 // DecodeVariantHashString parses a VariantHash string and returns the components.
 func DecodeVariantHashString(vh string) TVariantHash {
 	ret := TVariantHash{}
-	chrom, err := strconv.ParseUint(vh[0:8], 16, 32)
+	assembly, err := strconv.ParseUint(vh[0:8], 16, 32)
+	if err == nil {
+		ret.Assembly = uint32(assembly)
+	}
+	chrom, err := strconv.ParseUint(vh[8:16], 16, 32)
 	if err == nil {
 		ret.Chrom = uint32(chrom)
 	}
-	pos, err := strconv.ParseUint(vh[8:16], 16, 32)
+	pos, err := strconv.ParseUint(vh[16:24], 16, 32)
 	if err == nil {
 		ret.Pos = uint32(pos)
 	}
-	refalt, err := strconv.ParseUint(vh[16:32], 16, 64)
+	refalt, err := strconv.ParseUint(vh[24:32], 16, 32)
 	if err == nil {
-		ret.RefAlt = refalt
+		ret.RefAlt = uint32(refalt)
 	}
 	return ret
 }
