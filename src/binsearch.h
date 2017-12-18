@@ -128,7 +128,7 @@ define_declare_compare(uint128_t)
  * Generic function to search for the first occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ * @param T Unsigned integer tupe, one of: uint32_t, uint64_t
  */
 #define define_declare_find_first(T) \
 /** Search for the first occurrence of an unsigned integer on a memory mapped
@@ -152,7 +152,7 @@ define_declare_find_first(uint128_t)
  * Generic function to search for the last occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ * @param T Unsigned integer tupe, one of: uint32_t, uint64_t
  */
 #define define_declare_find_last(T) \
 /** Search for the last occurrence of an unsigned integer on a memory mapped
