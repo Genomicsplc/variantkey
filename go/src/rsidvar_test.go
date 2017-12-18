@@ -128,39 +128,6 @@ func BenchmarkFindRVVarhashByRsid(b *testing.B) {
 	}
 }
 
-func TestFindVRChromposRange(t *testing.T) {
-	rsid, first, last := vr.FindVRChromposRange(0, 9, testDataVR[4].chrom, testDataVR[4].pos, testDataVR[4].pos)
-	if rsid != testDataVR[4].rsid {
-		t.Errorf("Expected rsid %x, got %x", testDataVR[4].rsid, rsid)
-	}
-	if first != 4 {
-		t.Errorf("Expected first 4, got %d", first)
-	}
-	if last != 4 {
-		t.Errorf("Expected last 4, got %d", last)
-	}
-}
-
-func TestFindVRChromposRangeNotFound(t *testing.T) {
-	rsid, first, last := vr.FindVRChromposRange(0, 9, 0xfffffff0, 0xffffff00, 0xfffffff0)
-	if rsid != 0 {
-		t.Errorf("Expected rsid 0, got %x", rsid)
-	}
-	if first != 10 {
-		t.Errorf("Expected first 10, got %d", first)
-	}
-	if last != 9 {
-		t.Errorf("Expected last 9, got %d", last)
-	}
-}
-
-func BenchmarkFindVRChromposRange(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		vr.FindVRChromposRange(0, 9, 0x00000005, 0x00006f88, 0x00006ed7)
-	}
-}
-
 func TestFindVRRsidByVarshash(t *testing.T) {
 	vh := TVariantHash{}
 	for i, tt := range testDataVR {
@@ -203,5 +170,38 @@ func BenchmarkFindVRRsidByVarshash(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		vr.FindVRRsidByVarshash(0, 9, vh)
+	}
+}
+
+func TestFindVRChromposRange(t *testing.T) {
+	rsid, first, last := vr.FindVRChromposRange(0, 9, testDataVR[4].chrom, testDataVR[4].pos, testDataVR[4].pos)
+	if rsid != testDataVR[4].rsid {
+		t.Errorf("Expected rsid %x, got %x", testDataVR[4].rsid, rsid)
+	}
+	if first != 4 {
+		t.Errorf("Expected first 4, got %d", first)
+	}
+	if last != 4 {
+		t.Errorf("Expected last 4, got %d", last)
+	}
+}
+
+func TestFindVRChromposRangeNotFound(t *testing.T) {
+	rsid, first, last := vr.FindVRChromposRange(0, 9, 0xfffffff0, 0xffffff00, 0xfffffff0)
+	if rsid != 0 {
+		t.Errorf("Expected rsid 0, got %x", rsid)
+	}
+	if first != 10 {
+		t.Errorf("Expected first 10, got %d", first)
+	}
+	if last != 9 {
+		t.Errorf("Expected last 9, got %d", last)
+	}
+}
+
+func BenchmarkFindVRChromposRange(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		vr.FindVRChromposRange(0, 9, 0x00000005, 0x00006f88, 0x00006ed7)
 	}
 }

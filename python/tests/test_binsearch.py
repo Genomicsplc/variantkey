@@ -1,42 +1,11 @@
-"""Tests for libpybinsearch module."""
+"""Tests for libpyvarianthash module."""
 
 
-import libpybinsearch as bs
+import libpyvarianthash as bs
 import os
 import time
 from unittest import TestCase
 
-testData8 = [
-    (6, 0, 99, 0x27, 0, 0, 1, 18, 19, 18),
-    (6, 0, 99, 0x33, 87, 87, 86, 99, 100, 99),
-    (0, 0, 99, 0x00, 0, 0, 1, 99, 100, 99),
-    (6, 0, 99, 0xff, 100, 100, 99, 100, 100, 99),
-    (6, 0, 99, 0x27, 0, 0, 1, 18, 19, 18),
-    (6, 13, 99, 0x27, 13, 13, 12, 18, 19, 18),
-    (6, 14, 99, 0x27, 14, 14, 13, 18, 19, 18),
-    (6, 0, 0, 0x01, 1, 0, 0, 1, 0, 0),
-    (6, 0, 0, 0xf0, 1, 1, 0, 1, 1, 0),
-    (6, 99, 99, 0x01, 100, 99, 98, 100, 99, 98),
-    (6, 99, 99, 0xf0, 100, 100, 99, 100, 100, 99),
-    (6, 0, 99, 0x28, 19, 19, 18, 44, 45, 44),
-    (6, 0, 99, 0x2A, 57, 57, 56, 61, 62, 61),
-]
-
-testData16 = [
-    (6, 0, 99, 0x2722, 0, 0, 1, 0, 1, 0),
-    (6, 0, 99, 0x33f5, 99, 99, 98, 99, 100, 99),
-    (0, 0, 99, 0x0001, 100, 100, 99, 100, 100, 99),
-    (6, 0, 99, 0xf7f3, 100, 100, 99, 100, 100, 99),
-    (6, 0, 99, 0x27f3, 13, 13, 12, 14, 15, 14),
-    (6, 13, 99, 0x27f3, 13, 13, 12, 14, 15, 14),
-    (6, 14, 99, 0x27f3, 14, 14, 13, 14, 15, 14),
-    (6, 0, 0, 0x0001, 1, 0, 0, 1, 0, 0),
-    (6, 0, 0, 0xfff0, 1, 1, 0, 1, 1, 0),
-    (6, 99, 99, 0x0001, 100, 99, 98, 100, 99, 98),
-    (6, 99, 99, 0xfff0, 100, 100, 99, 100, 100, 99),
-    (6, 0, 99, 0x2805, 100, 19, 18, 100, 19, 18),
-    (6, 0, 99, 0x28ff, 100, 45, 44, 100, 45, 44),
-]
 testData32 = [
     (4, 0, 99, 0x00002722, 0, 0, 1, 0, 1, 0),
     (4, 0, 99, 0x000033f5, 99, 99, 98, 99, 100, 99),
@@ -106,38 +75,6 @@ class TestFunctions(TestCase):
         if h != 0:
             assert False, "Error while closing the memory-mapped file"
 
-    def test_find_first_uint8(self):
-        for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testData8:
-            rp, rf, rl = bs.find_first_uint8(
-                src, 20, blkpos, first, last, search)
-            self.assertEqual(rp, fF)
-            self.assertEqual(rf, fFF)
-            self.assertEqual(rl, fFL)
-
-    def test_find_last_uint8(self):
-        for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testData8:
-            rp, rf, rl = bs.find_last_uint8(
-                src, 20, blkpos, first, last, search)
-            self.assertEqual(rp, fL)
-            self.assertEqual(rf, fLF)
-            self.assertEqual(rl, fLL)
-
-    def test_find_first_uint16(self):
-        for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testData16:
-            rp, rf, rl = bs.find_first_uint16(
-                src, 20, blkpos, first, last, search)
-            self.assertEqual(rp, fF)
-            self.assertEqual(rf, fFF)
-            self.assertEqual(rl, fFL)
-
-    def test_find_last_uint16(self):
-        for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testData16:
-            rp, rf, rl = bs.find_last_uint16(
-                src, 20, blkpos, first, last, search)
-            self.assertEqual(rp, fL)
-            self.assertEqual(rf, fLF)
-            self.assertEqual(rl, fLL)
-
     def test_find_first_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testData32:
             rp, rf, rl = bs.find_first_uint32(
@@ -203,38 +140,6 @@ class TestBenchmark(object):
         src, fd, size = bs.mmap_binfile(inputfile)
         if fd < 0 or size != 2000:
             assert False, "Unable to open the file"
-
-    def test_find_first_uint8_benchmark(self, benchmark):
-        benchmark.pedantic(
-            bs.find_first_uint8,
-            args=[src, 20, 6, 0, 99, 0x27],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
-
-    def test_find_last_uint8_benchmark(self, benchmark):
-        benchmark.pedantic(
-            bs.find_last_uint8,
-            args=[src, 20, 6, 0, 99, 0x27],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
-
-    def test_find_first_uint16_benchmark(self, benchmark):
-        benchmark.pedantic(
-            bs.find_first_uint16,
-            args=[src, 20, 6, 0, 99, 0x27f3],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
-
-    def test_find_last_uint16_benchmark(self, benchmark):
-        benchmark.pedantic(
-            bs.find_last_uint16,
-            args=[src, 20, 6, 0, 99, 0x27f3],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
 
     def test_find_first_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
