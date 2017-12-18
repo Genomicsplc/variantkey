@@ -647,20 +647,20 @@ int test_azoupper()
         c = aztoupper(i);
         if (c != (i - 32))
         {
-            fprintf(stderr, "test_azoupper : Wrong uppercase value for %d - expecting %d, got %d\n", i, (i - 32), c);
+            fprintf(stderr, "%s : Wrong uppercase value for %d - expecting %d, got %d\n", __func__, i, (i - 32), c);
             ++errors;
         }
     }
     c = aztoupper(96);
     if (c != 96)
     {
-        fprintf(stderr, "test_azoupper : Wrong uppercase value - expecting 96, got %d\n", c);
+        fprintf(stderr, "%s : Wrong uppercase value - expecting 96, got %d\n", __func__, c);
         ++errors;
     }
     c = aztoupper(123);
     if (c != 123)
     {
-        fprintf(stderr, "test_azoupper : Wrong uppercase value - expecting 123, got %d\n", c);
+        fprintf(stderr, "%s : Wrong uppercase value - expecting 123, got %d\n", __func__, c);
         ++errors;
     }
     return errors;
@@ -682,14 +682,14 @@ int test_encode_chrom()
         chrom = encode_chrom(chrom_data[i]);
         if (chrom != i+1)
         {
-            fprintf(stderr, "test_encode_chrom : expecting %u, got %u\n", i+1, chrom);
+            fprintf(stderr, "%s : expecting %u, got %u\n", __func__, i+1, chrom);
             ++errors;
         }
     }
     chrom = encode_chrom("WRONG");
     if (chrom != 0)
     {
-        fprintf(stderr, "test_encode_chrom : expecting 0, got %u\n", chrom);
+        fprintf(stderr, "%s : expecting 0, got %u\n", __func__, chrom);
         ++errors;
     }
     return errors;
@@ -735,14 +735,14 @@ int test_encode_ref_alt()
             h = encode_ref_alt(input_data[i], input_data[j]);
             if (h != expected_data[k])
             {
-                fprintf(stderr, "test_encode_ref_alt : expecting %x, got %x\n", h, expected_data[k]);
+                fprintf(stderr, "%s : expecting %x, got %x\n", __func__, h, expected_data[k]);
                 ++errors;
             }
             k++;
             h = encode_ref_alt(input_data[j], input_data[i]);
             if (h != expected_data[k])
             {
-                fprintf(stderr, "test_encode_ref_alt : expecting %x, got %x\n", h, expected_data[k]);
+                fprintf(stderr, "%s : expecting %x, got %x\n", __func__, h, expected_data[k]);
                 ++errors;
             }
             k++;
@@ -761,22 +761,22 @@ int test_variant_hash()
         h = variant_hash(test_data[i].i_assembly, test_data[i].i_chrom, test_data[i].i_pos, test_data[i].i_ref, test_data[i].i_alt);
         if (h.assembly != test_data[i].o_assembly)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected assembly encode hash: got %x instead of %x\n", i, h.assembly, test_data[i].o_assembly);
+            fprintf(stderr, "%s (%d): Unexpected assembly encode hash: got %x instead of %x\n", __func__, i, h.assembly, test_data[i].o_assembly);
             ++errors;
         }
         if (h.chrom != test_data[i].o_chrom)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected chrom encode hash: got %x instead of %x\n", i, h.chrom, test_data[i].o_chrom);
+            fprintf(stderr, "%s (%d): Unexpected chrom encode hash: got %x instead of %x\n", __func__, i, h.chrom, test_data[i].o_chrom);
             ++errors;
         }
         if (h.pos != test_data[i].o_pos)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected pos encode hash: got %x instead of %x\n", i, h.pos, test_data[i].o_pos);
+            fprintf(stderr, "%s (%d): Unexpected pos encode hash: got %x instead of %x\n", __func__, i, h.pos, test_data[i].o_pos);
             ++errors;
         }
         if (h.refalt != test_data[i].o_refalt)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", i, h.refalt, test_data[i].o_refalt);
+            fprintf(stderr, "%s (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", __func__, i, h.refalt, test_data[i].o_refalt);
             ++errors;
         }
     }
@@ -794,7 +794,7 @@ int test_variant_hash_string()
         variant_hash_string(vs, 512, h);
         if (strcmp(vs, test_data[i].o_hash) != 0)
         {
-            fprintf(stderr, "test_variant_hash_string (%d): Unexpected value: got %s instead of %s\n", i, vs, test_data[i].o_hash);
+            fprintf(stderr, "%s (%d): Unexpected value: got %s instead of %s\n", __func__, i, vs, test_data[i].o_hash);
             ++errors;
         }
     }
@@ -811,22 +811,22 @@ int test_decode_variant_hash_string()
         h = decode_variant_hash_string(test_data[i].o_hash);
         if (h.assembly != test_data[i].o_assembly)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected assembly encode hash: got %x instead of %x\n", i, h.assembly, test_data[i].o_assembly);
+            fprintf(stderr, "%s (%d): Unexpected assembly encode hash: got %x instead of %x\n", __func__, i, h.assembly, test_data[i].o_assembly);
             ++errors;
         }
         if (h.chrom != test_data[i].o_chrom)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected chrom encode hash: got %x instead of %x\n", i, h.chrom, test_data[i].o_chrom);
+            fprintf(stderr, "%s (%d): Unexpected chrom encode hash: got %x instead of %x\n", __func__, i, h.chrom, test_data[i].o_chrom);
             ++errors;
         }
         if (h.pos != test_data[i].o_pos)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected pos encode hash: got %x instead of %x\n", i, h.pos, test_data[i].o_pos);
+            fprintf(stderr, "%s (%d): Unexpected pos encode hash: got %x instead of %x\n", __func__, i, h.pos, test_data[i].o_pos);
             ++errors;
         }
         if (h.refalt != test_data[i].o_refalt)
         {
-            fprintf(stderr, "test_variant_hash (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", i, h.refalt, test_data[i].o_refalt);
+            fprintf(stderr, "%s (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", __func__, i, h.refalt, test_data[i].o_refalt);
             ++errors;
         }
     }
@@ -844,7 +844,7 @@ void benchmark_variant_hash()
         variant_hash("GRCh37", "Y", 445974, "A", "G");
     }
     tend = get_time();
-    fprintf(stdout, " * benchmark_variant_hash : %lu ns/op\n", (tend - tstart)/size);
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 void benchmark_decode_variant_hash_string()
@@ -858,7 +858,7 @@ void benchmark_decode_variant_hash_string()
         decode_variant_hash_string("8b29d2c700000017002a9161524ed55e");
     }
     tend = get_time();
-    fprintf(stdout, " * benchmark_decode_variant_hash_string : %lu ns/op\n", (tend - tstart)/size);
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int main()

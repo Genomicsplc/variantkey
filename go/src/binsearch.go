@@ -1,4 +1,4 @@
-package binsearch
+package varianthash
 
 // Copyright (c) 2017 Nicola Asuni - Tecnick.com
 //

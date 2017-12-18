@@ -15,68 +15,6 @@
 
 #define TEST_DATA_SIZE 13
 
-typedef struct test_data_8_t
-{
-    uint64_t blkpos;
-    uint64_t first;
-    uint64_t last;
-    uint8_t search;
-    uint64_t foundFirst;
-    uint64_t foundFFirst;
-    uint64_t foundFLast;
-    uint64_t foundLast;
-    uint64_t foundLFirst;
-    uint64_t foundLLast;
-} test_data_8_t;
-
-static test_data_8_t test_data_uint8_t[TEST_DATA_SIZE] =
-{
-    {6, 0, 99, 0x27, 0, 0, 1, 18, 19, 18},
-    {6, 0, 99, 0x33, 87, 87, 86, 99, 100, 99},
-    {0, 0, 99, 0x00, 0, 0, 1, 99, 100, 99},
-    {6, 0, 99, 0xff, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x27, 0, 0, 1, 18, 19, 18},
-    {6, 13, 99, 0x27, 13, 13, 12, 18, 19, 18},
-    {6, 14, 99, 0x27, 14, 14, 13, 18, 19, 18},
-    {6, 0, 0, 0x01, 1, 0, 0, 1, 0, 0},
-    {6, 0, 0, 0xf0, 1, 1, 0, 1, 1, 0},
-    {6, 99, 99, 0x01, 100, 99, 98, 100, 99, 98},
-    {6, 99, 99, 0xf0, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x28, 19, 19, 18, 44, 45, 44},
-    {6, 0, 99, 0x2A, 57, 57, 56, 61, 62, 61},
-};
-
-typedef struct test_data_16_t
-{
-    uint64_t blkpos;
-    uint64_t first;
-    uint64_t last;
-    uint16_t search;
-    uint64_t foundFirst;
-    uint64_t foundFFirst;
-    uint64_t foundFLast;
-    uint64_t foundLast;
-    uint64_t foundLFirst;
-    uint64_t foundLLast;
-} test_data_16_t;
-
-static test_data_16_t test_data_uint16_t[TEST_DATA_SIZE] =
-{
-    {6, 0, 99, 0x2722, 0, 0, 1, 0, 1, 0},
-    {6, 0, 99, 0x33f5, 99, 99, 98, 99, 100, 99},
-    {0, 0, 99, 0x0001, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0xf7f3, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x27f3, 13, 13, 12, 14, 15, 14},
-    {6, 13, 99, 0x27f3, 13, 13, 12, 14, 15, 14},
-    {6, 14, 99, 0x27f3, 14, 14, 13, 14, 15, 14},
-    {6, 0, 0, 0x0001, 1, 0, 0, 1, 0, 0},
-    {6, 0, 0, 0xfff0, 1, 1, 0, 1, 1, 0},
-    {6, 99, 99, 0x0001, 100, 99, 98, 100, 99, 98},
-    {6, 99, 99, 0xfff0, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x2805, 100, 19, 18, 100, 19, 18},
-    {6, 0, 99, 0x28ff, 100, 45, 44, 100, 45, 44},
-};
-
 typedef struct test_data_32_t
 {
     uint64_t blkpos;
@@ -230,10 +168,6 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen) \
     return errors; \
 }
 
-define_test_find_first(uint8_t)
-define_test_find_last(uint8_t)
-define_test_find_first(uint16_t)
-define_test_find_last(uint16_t)
 define_test_find_first(uint32_t)
 define_test_find_last(uint32_t)
 define_test_find_first(uint64_t)
@@ -283,10 +217,6 @@ void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
-define_benchmark_find_first(uint8_t)
-define_benchmark_find_last(uint8_t)
-define_benchmark_find_first(uint16_t)
-define_benchmark_find_last(uint16_t)
 define_benchmark_find_first(uint32_t)
 define_benchmark_find_last(uint32_t)
 define_benchmark_find_first(uint64_t)
@@ -327,12 +257,6 @@ int main()
         return 1;
     }
 
-    errors += test_find_first_uint8_t(mf, blklen);
-    errors += test_find_last_uint8_t(mf, blklen);
-
-    errors += test_find_first_uint16_t(mf, blklen);
-    errors += test_find_last_uint16_t(mf, blklen);
-
     errors += test_find_first_uint32_t(mf, blklen);
     errors += test_find_last_uint32_t(mf, blklen);
 
@@ -341,12 +265,6 @@ int main()
 
     errors += test_find_first_uint128_t(mf, blklen);
     errors += test_find_last_uint128_t(mf, blklen);
-
-    benchmark_find_first_uint8_t(mf, blklen, nitems);
-    benchmark_find_last_uint8_t(mf, blklen, nitems);
-
-    benchmark_find_first_uint16_t(mf, blklen, nitems);
-    benchmark_find_last_uint16_t(mf, blklen, nitems);
 
     benchmark_find_first_uint32_t(mf, blklen, nitems);
     benchmark_find_last_uint32_t(mf, blklen, nitems);

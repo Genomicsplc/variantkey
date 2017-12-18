@@ -185,7 +185,7 @@ int test_find_rv_varhash_by_rsid_notfound(mmfile_t rv)
     }
     if (vh.refalt != 0)
     {
-        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected refalt 0, got %"PRIu64"\n", vh.refalt);
+        fprintf(stderr, "test_find_rv_varhash_by_rsid_error : Expected refalt 0, got %"PRIu32"\n", vh.refalt);
         ++errors;
     }
     return errors;

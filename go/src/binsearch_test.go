@@ -1,4 +1,4 @@
-package binsearch
+package varianthash
 
 import "testing"
 import "os"
@@ -138,26 +138,6 @@ var testData128 = []struct {
 	{4, 0, 0, Uint128{0xfffffffffffffff0, 0xfffffffffffffff0}, 1, 1, 0, 1, 1, 0},
 	{4, 0, 99, Uint128{0x000028060981ef0f, 0x500126c22f813253}, 100, 19, 18, 100, 19, 18},
 	{4, 0, 99, Uint128{0x000028fca24c9148, 0x830a986a0be5c095}, 100, 45, 44, 100, 45, 44},
-}
-
-func TestMain(m *testing.M) {
-	var err error
-
-	// memory map the input file
-	mf, err = MmapBinFile("../../test/test_data.bin")
-	if err != nil {
-		return
-	}
-
-	retCode := m.Run()
-
-	// close the memory-mapped file
-	err = mf.Close()
-	if err != nil {
-		retCode++
-	}
-
-	os.Exit(retCode)
 }
 
 func TestGetAddress(t *testing.T) {

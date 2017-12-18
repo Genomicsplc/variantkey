@@ -113,25 +113,9 @@ varhash_t get_rv_varhash(const unsigned char *src, uint64_t item);
  * @param last      Last element of the range to search (max value = nitems - 1).
  * @param rsid      RSID to search.
  *
- * @return variant hash data
+ * @return variant hash data or all-zero data if not found
  */
 varhash_t find_rv_varhash_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid);
-
-/**
- * Search for the specified CHROM-POS range and returns the first occurrence of RSID.
- *
- * @param src       Memory mapped file address.
- * @param first     Pointer to the first element of the range to search (min value = 0).
- *                  This will hold the position of the first record found.
- * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
- *                  This will hold the position of the first record found.
- * @param chrom     Chromosome number. Non numerical human chromosomes mest be encoded as (X=23, Y=24, XY=25, MT=26)
- * @param pos_start Start reference position, with the 1st base having position 0.
- * @param pos_end   End reference position, with the 1st base having position 0.
- *
- * @return RS ID
- */
-uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom, uint32_t pos_start, uint32_t pos_end);
 
 /**
  * Search for the specified VariantHash and returns the first occurrence of RSID.
@@ -142,8 +126,22 @@ uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint6
  * @param last      Last element of the range to search (max value = nitems - 1).
  * @param vh        VariantHash.
  *
- * @return RS ID
+ * @return RS ID or 0 if not found
  */
 uint32_t find_vr_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, varhash_t vh);
+
+/**
+ * Search for the specified CHROM-POS range and returns the first occurrence of RSID.
+ *
+ * @param src       Memory mapped file address.
+ * @param first     Pointer to the first element of the range to search (min value = 0).
+ * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
+ * @param chrom     Chromosome number. Non numerical human chromosomes mest be encoded as (X=23, Y=24, XY=25, MT=26)
+ * @param pos_start Start reference position, with the 1st base having position 0.
+ * @param pos_end   End reference position, with the 1st base having position 0.
+ *
+ * @return RS ID
+ */
+uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom, uint32_t pos_start, uint32_t pos_end);
 
 #endif  // RSIDVAR_H
