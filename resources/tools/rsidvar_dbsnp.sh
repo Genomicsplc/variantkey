@@ -19,29 +19,32 @@ PROJECT_DIR=$(dirname "${SCRIPT_DIR}")     # this project root directory
 : ${OUTPUT_DIR:?}
 : ${PARALLEL:=4}  # number of parallel processes for sorting
 
+# index source file
+bcftools index ${INPUT_FILE}
+
 # split multialleic variants in dbSNP
 bcftools norm --multiallelics -any --output ${OUTPUT_DIR}/dbSNP_split.vcf ${INPUT_FILE}
 
 cd ${OUTPUT_DIR}
 
 # create RSID to Variant map
-bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' dbSNP_split.vcf > rsid_varhash.txt
+bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' dbSNP_split.vcf > rsid_varhash.hex
 # sort the map 
-LC_ALL=C sort --parallel=${PARALLEL} --output=rsid_varhash.sorted.txt rsid_varhash.txt
+LC_ALL=C sort --parallel=${PARALLEL} --output=rsid_varhash.sorted.hex rsid_varhash.hex
 # remove unsorted file
-rm -f rsid_varhash.txt
+rm -f rsid_varhash.hex
 # convert the map to binary format
-xxd -r -p rsid_varhash.sorted.txt rsid_varhash.bin
+xxd -r -p rsid_varhash.sorted.hex rsid_varhash.bin
 # remove sorted text format
-rm -f rsid_varhash.sorted.txt
+rm -f rsid_varhash.sorted.hex
 
 # create Variant to RSID map
-bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' dbSNP_split.vcf > varhash_rsid.txt
+bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' dbSNP_split.vcf > varhash_rsid.hex
 # sort the map
-LC_ALL=C sort --parallel=${PARALLEL} --output=varhash_rsid.sorted.txt varhash_rsid.txt
+LC_ALL=C sort --parallel=${PARALLEL} --output=varhash_rsid.sorted.hex varhash_rsid.hex
 # remove unsorted file
-rm -f varhash_rsid.txt
+rm -f varhash_rsid.hex
 # convert the map to binary format
-xxd -r -p varhash_rsid.sorted.txt varhash_rsid.bin
+xxd -r -p varhash_rsid.sorted.hex varhash_rsid.bin
 # remove sorted text format
-rm -f varhash_rsid.sorted.txt
+rm -f varhash_rsid.sorted.hex

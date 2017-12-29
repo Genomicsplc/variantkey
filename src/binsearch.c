@@ -97,7 +97,7 @@ uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkp
     int cmp; \
     while (*first <= *last) \
     { \
-        middle = ((*first + *last) >> 1); \
+        middle = (*first + ((*last - *first) >> 1)); \
         i = get_address(blklen, blkpos, middle); \
         x = bytes_to_##T(src, i); \
         cmp = compare_##T(x, search); \
@@ -126,7 +126,7 @@ uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpo
     int cmp; \
     while (*first <= *last) \
     { \
-        middle = ((*first + *last) >> 1); \
+        middle = (*first + ((*last - *first) >> 1)); \
         i = get_address(blklen, blkpos, middle); \
         x = bytes_to_##T(src, i); \
         cmp = compare_##T(x, search); \

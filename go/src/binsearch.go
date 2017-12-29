@@ -79,7 +79,7 @@ func (mf TMMFile) FindFirstUint32(blklen, blkpos, first, last uint64, search uin
 	var x uint32
 	found := (last + 1)
 	for first <= last {
-		middle = ((first + last) >> 1)
+		middle = first + ((last - first) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
 		x = mf.BytesToUint32(int(i))
 		if x == search {
@@ -112,7 +112,7 @@ func (mf TMMFile) FindLastUint32(blklen, blkpos, first, last uint64, search uint
 	var x uint32
 	found := (last + 1)
 	for first <= last {
-		middle = ((first + last) >> 1)
+		middle = first + ((last - first) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
 		x = mf.BytesToUint32(int(i))
 		if x == search {
@@ -142,7 +142,7 @@ func (mf TMMFile) FindFirstUint64(blklen, blkpos, first, last uint64, search uin
 	var x uint64
 	found := (last + 1)
 	for first <= last {
-		middle = ((first + last) >> 1)
+		middle = first + ((last - first) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
 		x = mf.BytesToUint64(int(i))
 		if x == search {
@@ -175,7 +175,7 @@ func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint
 	var x uint64
 	found := (last + 1)
 	for first <= last {
-		middle = ((first + last) >> 1)
+		middle = first + ((last - first) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
 		x = mf.BytesToUint64(int(i))
 		if x == search {
@@ -223,7 +223,7 @@ func (mf TMMFile) FindFirstUint128(blklen, blkpos, first, last uint64, search Ui
 	var cmp int
 	found := (last + 1)
 	for first <= last {
-		middle = ((first + last) >> 1)
+		middle = first + ((last - first) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
 		x = mf.BytesToUint128(int(i))
 		cmp = compareUint128(x, search)
@@ -258,7 +258,7 @@ func (mf TMMFile) FindLastUint128(blklen, blkpos, first, last uint64, search Uin
 	var cmp int
 	found := (last + 1)
 	for first <= last {
-		middle = ((first + last) >> 1)
+		middle = first + ((last - first) >> 1)
 		i = GetAddress(blklen, blkpos, middle)
 		x = mf.BytesToUint128(int(i))
 		cmp = compareUint128(x, search)
