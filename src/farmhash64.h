@@ -40,8 +40,8 @@
 #ifndef FARMHASH64_H
 #define FARMHASH64_H
 
-#include <stdlib.h>
 #include <stdint.h>
+#include <stdlib.h>
 
 /**
  * @brief 64 bit hash.

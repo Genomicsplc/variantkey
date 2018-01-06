@@ -18,28 +18,40 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <sys/mman.h>
-#include <sys/stat.h>
+#include "binsearch.h"
 #include <fcntl.h>
 #include <unistd.h>
-#include "binsearch.h"
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 mmfile_t mmap_binfile(const char *file)
 {
     mmfile_t mf = {MAP_FAILED, -1, 0};
     struct stat statbuf;
-    if ((mf.fd = open(file, O_RDONLY)) < 0) return mf;
-    if (fstat(mf.fd, &statbuf) < 0) return mf;
+    if ((mf.fd = open(file, O_RDONLY)) < 0)
+    {
+        return mf;
+    }
+    if (fstat(mf.fd, &statbuf) < 0)
+    {
+        return mf;
+    }
     mf.size = (uint64_t)statbuf.st_size;
     mf.src = mmap(0, mf.size, PROT_READ, MAP_PRIVATE, mf.fd, 0);
-    if (mf.src == MAP_FAILED) return mf;
+    if (mf.src == MAP_FAILED)
+    {
+        return mf;
+    }
     return mf;
 }
 
 int munmap_binfile(mmfile_t mf)
 {
     int err = munmap(mf.src, mf.size);
-    if (err != 0) return err;
+    if (err != 0)
+    {
+        return err;
+    }
     return close(mf.fd);
 }
 
@@ -84,8 +96,14 @@ define_compare(uint64_t)
 
 int compare_uint128_t(uint128_t a, uint128_t b)
 {
-    if (a.lo < b.lo) return -1;
-    if (a.lo > b.lo) return 1;
+    if (a.lo < b.lo)
+    {
+        return -1;
+    }
+    if (a.lo > b.lo)
+    {
+        return 1;
+    }
     return compare_uint64_t(a.hi, b.hi);
 }
 
@@ -103,13 +121,27 @@ uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkp
         cmp = compare_##T(x, search); \
         if (cmp == 0) \
         { \
-            if (middle == 0) return middle; \
+            if (middle == 0) { \
+                return middle; \
+            } \
             found = middle; \
             *last = (middle - 1); \
         } \
-        else if (cmp < 0) *first = (middle + 1); \
-        else if (middle > 0) *last = (middle - 1); \
-        else return found; \
+        else { \
+            if (cmp < 0) { \
+                *first = (middle + 1); \
+            } \
+            else \
+            { \
+                if (middle > 0) { \
+                    *last = (middle - 1); \
+                } \
+                else \
+                { \
+                    return found; \
+                } \
+            } \
+        } \
     } \
     return found; \
 }
@@ -135,9 +167,22 @@ uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpo
             found = middle; \
             *first = (middle + 1); \
         } \
-        else if (cmp < 0) *first = (middle + 1); \
-        else if (middle > 0) *last = (middle - 1); \
-        else return found; \
+        else \
+        { \
+            if (cmp < 0) { \
+                *first = (middle + 1); \
+            } \
+            else \
+            { \
+                if (middle > 0) { \
+                    *last = (middle - 1); \
+                } \
+                else \
+                { \
+                    return found; \
+                } \
+            } \
+        } \
     } \
     return found; \
 }

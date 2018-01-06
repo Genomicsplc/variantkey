@@ -21,10 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include "uint128.h"
 #include "farmhash64.h"
-#include <string.h>
+#include "uint128.h"
 #include <assert.h>
+#include <string.h>
 
 // PORTABILITY LAYER: "static inline" or similar
 
@@ -338,9 +338,17 @@ uint64_t farmhash64(const char *s, size_t len)
 {
     const uint64_t seed = 81;
     if (len <= 32)
-        if (len <= 16) return farmhash_na_len_0_to_16(s, len);
-        else return farmhash_na_len_17_to_32(s, len);
-    else if (len <= 64) return farmhash_na_len_33_to_64(s, len);
+    {
+        if (len <= 16)
+        {
+            return farmhash_na_len_0_to_16(s, len);
+        }
+        return farmhash_na_len_17_to_32(s, len);
+    }
+    if (len <= 64)
+    {
+        return farmhash_na_len_33_to_64(s, len);
+    }
     // For strings over 64 bytes we loop.
     // Internal state consists of 56 bytes: v, w, x, y, and z.
     uint64_t x = seed;

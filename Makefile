@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test build python pytest go cgo doc format clean
+.PHONY: help qa test tidy build python pytest go cgo doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -48,6 +48,7 @@ help:
 	@echo ""
 	@echo "    make qa      : Run all the tests and static analysis reports"
 	@echo "    make test    : Run the unit tests"
+	@echo "    make tidy    : Check the code using clang-tidy"
 	@echo "    make build   : Build the library"
 	@echo "    make python  : Build the python module"
 	@echo "    make pytest  : Test the python module"
@@ -59,7 +60,10 @@ help:
 	@echo ""
 
 # Alias for help target
-all: clean format test build doc cgo go python pytest
+all: clean format qa build doc cgo go python pytest
+
+# Alias for test
+qa: test tidy
 
 # BUikd and run the unit tests
 test:
@@ -87,6 +91,10 @@ ifeq ($(VH_BUILD_DOXYGEN),ON)
 	cd target && \
 	make doc | tee doc.log ; test $${PIPESTATUS[0]} -eq 0
 endif
+
+# use clang-tidy
+tidy:
+	clang-tidy -checks='*,-llvm-header-guard' -header-filter=.* -p . src/*.c
 
 # Build the library
 build:

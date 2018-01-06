@@ -40,7 +40,10 @@
 
 int aztoupper(int c)
 {
-    if ((c >= 0x61) && (c <= 0x7A)) return (c ^ 0x20);
+    if ((c >= 0x61) && (c <= 0x7A))
+    {
+        return (c ^ 0x20);
+    }
     return c;
 }
 
@@ -55,15 +58,27 @@ uint32_t encode_chrom(const char *chrom)
     uint32_t h;
     char *endptr;
     h = (uint32_t)strtoul(chrom, &endptr, 10);
-    if (*endptr == '\0') return h; // numerical chromosome
+    if (*endptr == '\0')
+    {
+        return h; // numerical chromosome
+    }
     // HUMAN
     if ((chrom[0] == 'X') || (chrom[0] == 'x'))
     {
-        if ((chrom[1] == 'Y') || (chrom[1] == 'y')) return 25;
+        if ((chrom[1] == 'Y') || (chrom[1] == 'y'))
+        {
+            return 25;
+        }
         return 23;
     }
-    if ((chrom[0] == 'Y') || (chrom[0] == 'y')) return 24;
-    if ((chrom[0] == 'M') || (chrom[0] == 'm')) return 26;
+    if ((chrom[0] == 'Y') || (chrom[0] == 'y'))
+    {
+        return 24;
+    }
+    if ((chrom[0] == 'M') || (chrom[0] == 'm'))
+    {
+        return 26;
+    }
     return 0;
 }
 
@@ -72,9 +87,9 @@ uint32_t encode_ref_alt(const char *ref, const char *alt)
     size_t slen = 1 + strlen(ref) + strlen(alt);
     char ra[slen + 1];
     char *it = ra;
-    while ((*it++ = aztoupper(*ref++)));
+    while ((*it++ = aztoupper(*ref++))) {};
     it[-1] = '_';
-    while ((*it++ = aztoupper(*alt++)));
+    while ((*it++ = aztoupper(*alt++))) {};
     return farmhash32(ra, slen);
 }
 
@@ -89,7 +104,10 @@ varhash_t variant_hash(const char *assembly, const char *chrom, uint32_t pos, co
 size_t variant_hash_string(char *str, size_t size, varhash_t vh)
 {
     size_t slen = 33; // = 32 hex chars + '\0'
-    if (slen > size) return slen;
+    if (slen > size)
+    {
+        return slen;
+    }
     char* it = str;
     const char* end = it + size;
     it += snprintf(it, (end - it), "%08"PRIx32"%08"PRIx32"%08"PRIx32"%08"PRIx32"", vh.assembly, vh.chrom, vh.pos, vh.refalt);
@@ -100,7 +118,10 @@ varhash_t decode_variant_hash_string(const char *vs)
 {
     varhash_t vh = {0,0,0,0};
     size_t slen = strlen(vs);
-    if (slen != 32) return vh;
+    if (slen != 32)
+    {
+        return vh;
+    }
     char tmp[33];
     strncpy(tmp, vs, slen);
     tmp[32] = 0;
