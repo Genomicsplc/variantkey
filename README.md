@@ -15,6 +15,8 @@
 This project contains tools to generate and process a **Genetic Variant Hash**,
 a variant ID that can be used to match and cross-reference genetic variants across different databases and sources.
 
+This model assumes that the variants have been normalized in some way.
+
 A *Genetic Variant Hash* is composed of 4 sections that can be also used separately:
 
     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
@@ -32,7 +34,6 @@ A *Genetic Variant Hash* is composed of 4 sections that can be also used separat
 * **POS**     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
 * **REF_ALT** : 32 bits (8 hex bytes) for the hash of the "REF_ALT" string.
 
-Each Variant Hash is unique to a given *Genome Assembly Model* (species + build number).  
 The full 128 bits can be exported as a single 32 character hexadecimal string.  
 The CHROM and POS 32 sections of the key are sortable.
 
