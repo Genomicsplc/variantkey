@@ -332,6 +332,7 @@ void benchmark_find_rv_varhash_by_rsid(mmfile_t rv)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
+        first = 0;
         find_rv_varhash_by_rsid(rv.src, &first, 9, 0x2F81F575);
     }
     tend = get_time();
@@ -347,6 +348,8 @@ void benchmark_find_vr_chrompos_range(mmfile_t vr)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
+        first = 0;
+        last = 9;
         find_vr_chrompos_range(vr.src, &first, &last, 0x00000005, 0x00006f88, 0x00006ed7);
     }
     tend = get_time();
@@ -367,6 +370,7 @@ void benchmark_find_vr_rsid_by_varhash(mmfile_t vr)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
+        first = 0;
         find_vr_rsid_by_varhash(vr.src, &first, 9, vh);
     }
     tend = get_time();
