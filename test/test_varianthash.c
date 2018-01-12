@@ -801,6 +801,19 @@ int test_variant_hash_string()
     return errors;
 }
 
+int test_variant_hash_string_error()
+{
+    int errors = 0;
+    varhash_t h = {test_data[0].o_assembly, test_data[0].o_chrom, test_data[0].o_pos, test_data[0].o_refalt};
+    size_t l = variant_hash_string("", 32, h);
+    if (l != 33)
+    {
+        fprintf(stderr, "%s : An error was expected\n", __func__);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_decode_variant_hash_string()
 {
     int errors = 0;
@@ -829,6 +842,33 @@ int test_decode_variant_hash_string()
             fprintf(stderr, "%s (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", __func__, i, h.refalt, test_data[i].o_refalt);
             ++errors;
         }
+    }
+    return errors;
+}
+
+int test_decode_variant_hash_string_error()
+{
+    int errors = 0;
+    varhash_t h = decode_variant_hash_string("ERROR");
+    if (h.assembly != 0)
+    {
+        fprintf(stderr, "%s : assembly should be 0\n", __func__);
+        ++errors;
+    }
+    if (h.chrom != 0)
+    {
+        fprintf(stderr, "%s : chrom should be 0\n", __func__);
+        ++errors;
+    }
+    if (h.pos != 0)
+    {
+        fprintf(stderr, "%s : pos should be 0\n", __func__);
+        ++errors;
+    }
+    if (h.refalt != 0)
+    {
+        fprintf(stderr, "%s : refalt should be 0\n", __func__);
+        ++errors;
     }
     return errors;
 }
@@ -870,7 +910,9 @@ int main()
     errors += test_encode_ref_alt();
     errors += test_variant_hash();
     errors += test_variant_hash_string();
+    errors += test_variant_hash_string_error();
     errors += test_decode_variant_hash_string();
+    errors += test_decode_variant_hash_string_error();
 
     benchmark_variant_hash();
     benchmark_decode_variant_hash_string();

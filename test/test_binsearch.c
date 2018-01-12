@@ -224,9 +224,36 @@ define_benchmark_find_last(uint64_t)
 define_benchmark_find_first(uint128_t)
 define_benchmark_find_last(uint128_t)
 
+int test_mmap_binfile_error(const char* file)
+{
+    mmfile_t mf = mmap_binfile(file);
+    if (mf.src != MAP_FAILED)
+    {
+        fprintf(stderr, "An mmap error was expected\n");
+        return 1;
+    }
+    return 0;
+}
+
+int test_munmap_binfile_error()
+{
+    mmfile_t mf;
+    int e = munmap_binfile(mf);
+    if (e == 0)
+    {
+        fprintf(stderr, "An mummap error was expected\n");
+        return 1;
+    }
+    return 0;
+}
+
 int main()
 {
     int errors = 0;
+
+    errors += test_mmap_binfile_error("ERROR");
+    errors += test_mmap_binfile_error("/dev/null");
+    errors += test_munmap_binfile_error();
 
     char *file = "test_data.bin"; // file containing test data
     uint64_t blklen = 20; // length of each binary block

@@ -28,11 +28,7 @@ mmfile_t mmap_binfile(const char *file)
 {
     mmfile_t mf = {MAP_FAILED, -1, 0};
     struct stat statbuf;
-    if ((mf.fd = open(file, O_RDONLY)) < 0)
-    {
-        return mf;
-    }
-    if (fstat(mf.fd, &statbuf) < 0)
+    if (((mf.fd = open(file, O_RDONLY)) < 0) || (fstat(mf.fd, &statbuf) < 0))
     {
         return mf;
     }
