@@ -60,7 +60,7 @@ help:
 	@echo ""
 
 # Alias for help target
-all: clean format qa build doc cgo go python pytest
+all: clean format qa build doc go cgo python pytest
 
 # Alias for test
 qa: test tidy
@@ -131,12 +131,12 @@ pytest:
 # Test golang module
 go:
 	cd go && \
-	make qa
+	make deps qa
 
 # Test golang cgo module
 cgo:
 	cd cgo && \
-	make qa
+	make deps qa
 
 # Generate source code documentation
 doc:
