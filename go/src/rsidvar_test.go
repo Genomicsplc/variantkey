@@ -42,10 +42,15 @@ var testDataVR = []struct {
 
 func TestGetVRRsid(t *testing.T) {
 	for i, tt := range testDataVR {
-		rsid := vr.GetVRRsid(uint64(i))
-		if rsid != tt.rsid {
-			t.Errorf("%d. Expected %x, got %x", i, tt.rsid, rsid)
-		}
+		i := i
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			rsid := vr.GetVRRsid(uint64(i))
+			if rsid != tt.rsid {
+				t.Errorf("Expected %x, got %x", tt.rsid, rsid)
+			}
+		})
 	}
 }
 
@@ -58,19 +63,24 @@ func BenchmarkGetVRRsid(b *testing.B) {
 
 func TestGetRVVarhash(t *testing.T) {
 	for i, tt := range testDataRV {
-		vh := rv.GetRVVarhash(uint64(i))
-		if vh.Assembly != tt.assembly {
-			t.Errorf("%d. Expected assembly %x, got %x", i, tt.assembly, vh.Assembly)
-		}
-		if vh.Chrom != tt.chrom {
-			t.Errorf("%d. Expected chrom %x, got %x", i, tt.chrom, vh.Chrom)
-		}
-		if vh.Pos != tt.pos {
-			t.Errorf("%d. Expected pos %x, got %x", i, tt.pos, vh.Pos)
-		}
-		if vh.RefAlt != tt.refalt {
-			t.Errorf("%d. Expected refalt %x, got %x", i, tt.refalt, vh.RefAlt)
-		}
+		i := i
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vh := rv.GetRVVarhash(uint64(i))
+			if vh.Assembly != tt.assembly {
+				t.Errorf("Expected assembly %x, got %x", tt.assembly, vh.Assembly)
+			}
+			if vh.Chrom != tt.chrom {
+				t.Errorf("Expected chrom %x, got %x", tt.chrom, vh.Chrom)
+			}
+			if vh.Pos != tt.pos {
+				t.Errorf("Expected pos %x, got %x", tt.pos, vh.Pos)
+			}
+			if vh.RefAlt != tt.refalt {
+				t.Errorf("Expected refalt %x, got %x", tt.refalt, vh.RefAlt)
+			}
+		})
 	}
 }
 
@@ -83,22 +93,27 @@ func BenchmarkGetRVVarhash(b *testing.B) {
 
 func TestFindRVVarhashByRsid(t *testing.T) {
 	for i, tt := range testDataRV {
-		vh, first := rv.FindRVVarhashByRsid(0, 9, tt.rsid)
-		if first != uint64(i) {
-			t.Errorf("%d. Expected first %d, got %d", i, i, first)
-		}
-		if vh.Assembly != tt.assembly {
-			t.Errorf("%d. Expected assembly %x, got %x", i, tt.assembly, vh.Assembly)
-		}
-		if vh.Chrom != tt.chrom {
-			t.Errorf("%d. Expected chrom %x, got %x", i, tt.chrom, vh.Chrom)
-		}
-		if vh.Pos != tt.pos {
-			t.Errorf("%d. Expected pos %x, got %x", i, tt.pos, vh.Pos)
-		}
-		if vh.RefAlt != tt.refalt {
-			t.Errorf("%d. Expected refalt %x, got %x", i, tt.refalt, vh.RefAlt)
-		}
+		i := i
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vh, first := rv.FindRVVarhashByRsid(0, 9, tt.rsid)
+			if first != uint64(i) {
+				t.Errorf("Expected first %d, got %d", i, first)
+			}
+			if vh.Assembly != tt.assembly {
+				t.Errorf("Expected assembly %x, got %x", tt.assembly, vh.Assembly)
+			}
+			if vh.Chrom != tt.chrom {
+				t.Errorf("Expected chrom %x, got %x", tt.chrom, vh.Chrom)
+			}
+			if vh.Pos != tt.pos {
+				t.Errorf("Expected pos %x, got %x", tt.pos, vh.Pos)
+			}
+			if vh.RefAlt != tt.refalt {
+				t.Errorf("Expected refalt %x, got %x", tt.refalt, vh.RefAlt)
+			}
+		})
 	}
 }
 
@@ -129,19 +144,25 @@ func BenchmarkFindRVVarhashByRsid(b *testing.B) {
 }
 
 func TestFindVRRsidByVarshash(t *testing.T) {
-	vh := TVariantHash{}
 	for i, tt := range testDataVR {
-		vh.Assembly = testDataVR[i].assembly
-		vh.Chrom = testDataVR[i].chrom
-		vh.Pos = testDataVR[i].pos
-		vh.RefAlt = testDataVR[i].refalt
-		rsid, first := vr.FindVRRsidByVarshash(0, 9, vh)
-		if rsid != tt.rsid {
-			t.Errorf("%d. Expected %x, got %x", i, tt.rsid, rsid)
-		}
-		if first != uint64(i) {
-			t.Errorf("%d. Expected first %d, got %d", i, i, first)
-		}
+		i := i
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vh := TVariantHash{
+				Assembly: testDataVR[i].assembly,
+				Chrom:    testDataVR[i].chrom,
+				Pos:      testDataVR[i].pos,
+				RefAlt:   testDataVR[i].refalt,
+			}
+			rsid, first := vr.FindVRRsidByVarshash(0, 9, vh)
+			if rsid != tt.rsid {
+				t.Errorf("%d. Expected %x, got %x", i, tt.rsid, rsid)
+			}
+			if first != uint64(i) {
+				t.Errorf("%d. Expected first %d, got %d", i, i, first)
+			}
+		})
 	}
 }
 

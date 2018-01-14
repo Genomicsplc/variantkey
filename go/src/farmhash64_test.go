@@ -143,9 +143,14 @@ var expectedFarmHash64 = []uint32{
 
 func TestFarmHash64Strings(t *testing.T) {
 	for _, tt := range hashTestData {
-		if h := FarmHash64([]byte(tt.in)); h != tt.oh64 {
-			t.Errorf("FarmHash64(%q)=%#08x (len=%d), want %#08x", tt.in, h, len(tt.in), tt.oh64)
-		}
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h := FarmHash64([]byte(tt.in))
+			if h != tt.oh64 {
+				t.Errorf("FarmHash64(%q)=%#08x (len=%d), want %#08x", tt.in, h, len(tt.in), tt.oh64)
+			}
+		})
 	}
 }
 
@@ -203,9 +208,13 @@ func TestFarmHash64(t *testing.T) {
 
 func TestFarmHash32Strings(t *testing.T) {
 	for _, tt := range hashTestData {
-		h := FarmHash32([]byte(tt.in))
-		if h != tt.oh32 {
-			t.Errorf("Hash32(%q)=%#08x (len=%d), want %#08x", tt.in, h, len(tt.in), tt.oh32)
-		}
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h := FarmHash32([]byte(tt.in))
+			if h != tt.oh32 {
+				t.Errorf("Hash32(%q)=%#08x (len=%d), want %#08x", tt.in, h, len(tt.in), tt.oh32)
+			}
+		})
 	}
 }

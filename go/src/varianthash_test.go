@@ -599,45 +599,55 @@ func TestEncodeChrom(t *testing.T) {
 		"20", "21", "22",
 		"X", "Y", "XY", "MT",
 	}
-	var ce uint32
 	for k, v := range cdata {
-		ce = EncodeChrom(v)
-		if ce != uint32(k) {
-			t.Errorf("The chrom hash is different, got: %d expected %d", ce, k)
-		}
+		k := k
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			ce := EncodeChrom(v)
+			if ce != uint32(k) {
+				t.Errorf("The chrom hash is different, got: %d expected %d", ce, k)
+			}
+		})
 	}
-	ce = EncodeChrom("#")
+	ce := EncodeChrom("#")
 	if 0 != ce {
 		t.Errorf("The chrom hash is different, got: %d expected 0", ce)
 	}
 }
 
 func TestEncodeRefAlt(t *testing.T) {
-	var h uint32
 	for _, v := range variantsTestData {
-		h = EncodeRefAlt(v.ref, v.alt)
-		if h != v.hrefalt {
-			t.Errorf("The ref+alt hash is different, got: %x expected %x\n", h, v.hrefalt)
-		}
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h := EncodeRefAlt(v.ref, v.alt)
+			if h != v.hrefalt {
+				t.Errorf("The ref+alt hash is different, got: %x expected %x\n", h, v.hrefalt)
+			}
+		})
 	}
 }
 
 func TestVariantHash(t *testing.T) {
-	var vh TVariantHash
 	for _, v := range variantsTestData {
-		vh = VariantHash(v.assembly, v.chrom, v.pos, v.ref, v.alt)
-		if vh.Assembly != v.hassembly {
-			t.Errorf("The assembly hash value is different, got: %d expected %d", vh.Assembly, v.hassembly)
-		}
-		if vh.Chrom != v.hchrom {
-			t.Errorf("The chrom hash value is different, got: %d expected %d", vh.Chrom, v.hchrom)
-		}
-		if vh.Pos != v.hpos {
-			t.Errorf("The pos value is different, got: %d expected %d", vh.Pos, v.hpos)
-		}
-		if vh.RefAlt != v.hrefalt {
-			t.Errorf("The ref_alt value is different, got: %x expected %x", vh.RefAlt, v.hrefalt)
-		}
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vh := VariantHash(v.assembly, v.chrom, v.pos, v.ref, v.alt)
+			if vh.Assembly != v.hassembly {
+				t.Errorf("The assembly hash value is different, got: %d expected %d", vh.Assembly, v.hassembly)
+			}
+			if vh.Chrom != v.hchrom {
+				t.Errorf("The chrom hash value is different, got: %d expected %d", vh.Chrom, v.hchrom)
+			}
+			if vh.Pos != v.hpos {
+				t.Errorf("The pos value is different, got: %d expected %d", vh.Pos, v.hpos)
+			}
+			if vh.RefAlt != v.hrefalt {
+				t.Errorf("The ref_alt value is different, got: %x expected %x", vh.RefAlt, v.hrefalt)
+			}
+		})
 	}
 }
 
@@ -654,14 +664,16 @@ func BenchmarkVariantHash(b *testing.B) {
 }
 
 func TestVariantHashString(t *testing.T) {
-	var vh TVariantHash
-	var vs string
 	for _, v := range variantsTestData {
-		vh = TVariantHash{Assembly: v.hassembly, Chrom: v.hchrom, Pos: v.hpos, RefAlt: v.hrefalt}
-		vs = vh.String()
-		if vs != v.hash {
-			t.Errorf("The chrom hash value is different, got: %s expected %s", vs, v.hash)
-		}
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vh := TVariantHash{Assembly: v.hassembly, Chrom: v.hchrom, Pos: v.hpos, RefAlt: v.hrefalt}
+			vs := vh.String()
+			if vs != v.hash {
+				t.Errorf("The chrom hash value is different, got: %s expected %s", vs, v.hash)
+			}
+		})
 	}
 }
 
@@ -676,19 +688,23 @@ func BenchmarkVariantHashString(b *testing.B) {
 
 func TestDecodeVariantHashString(t *testing.T) {
 	for _, v := range variantsTestData {
-		vh := DecodeVariantHashString(v.hash)
-		if vh.Assembly != v.hassembly {
-			t.Errorf("The assembly hash value is different, got: %d expected %d", vh.Assembly, v.hassembly)
-		}
-		if vh.Chrom != v.hchrom {
-			t.Errorf("The chrom hash value is different, got: %d expected %d", vh.Chrom, v.hchrom)
-		}
-		if vh.Pos != v.hpos {
-			t.Errorf("The pos value is different, got: %d expected %d", vh.Pos, v.hpos)
-		}
-		if vh.RefAlt != v.hrefalt {
-			t.Errorf("The ref_alt value is different, got: %x expected %x", vh.RefAlt, v.hrefalt)
-		}
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vh := DecodeVariantHashString(v.hash)
+			if vh.Assembly != v.hassembly {
+				t.Errorf("The assembly hash value is different, got: %d expected %d", vh.Assembly, v.hassembly)
+			}
+			if vh.Chrom != v.hchrom {
+				t.Errorf("The chrom hash value is different, got: %d expected %d", vh.Chrom, v.hchrom)
+			}
+			if vh.Pos != v.hpos {
+				t.Errorf("The pos value is different, got: %d expected %d", vh.Pos, v.hpos)
+			}
+			if vh.RefAlt != v.hrefalt {
+				t.Errorf("The ref_alt value is different, got: %x expected %x", vh.RefAlt, v.hrefalt)
+			}
+		})
 	}
 }
 
