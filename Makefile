@@ -59,13 +59,12 @@ help:
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-# Alias for help target
 all: clean format qa build doc go cgo python pytest
 
 # Alias for test
 qa: test tidy
 
-# BUikd and run the unit tests
+# Build and run the unit tests
 test:
 	@mkdir -p target/test/test
 	@echo -e "\n\n*** BUILD TEST - see config.mk ***\n"

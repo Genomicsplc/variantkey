@@ -60,38 +60,41 @@ The CHROM and POS 32 sections of the key are sortable.
 The functions provided here allows to search RSIDs and VariantHashes from binary files
 made of adjacent constant-length binary blocks sorted in ascending order.
 
-The input binary files can be generated using some open source tools:
+The input binary files can be generated using some open source tools.
+Requires [vt](https://genome.sph.umich.edu/wiki/Vt) tool and Genomics plc version of [bcftools](https://samtools.github.io/bcftools/).
 
-* split multialleic variants in dbSNP (requires the Genomics plc version of bcftools)
+* split multialleic variants in dbSNP (requires [vt](https://genome.sph.umich.edu/wiki/Vt) tool the Genomics plc version of bcftools) and normalize variants:
 
 ```
-    bcftools norm --multiallelics -any --output dbSNP_split.vcf All_20151104.vcf.gz
+    vt index All_20151104.vcf.gz
+    vt decompose All_20151104.vcf.gz -o dbsnp.decomposed.vcf
+    vt normalize dbsnp.decomposed.vcf -m -r hs37d5.fa -o dbsnp.norm.vcf
 ```
 
 * create RSID to Variant map
 
 ```
-    bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' dbSNP_split.vcf > rsid_varhash.txt
+    bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' dbsnp.decomposed.vcf > rsid_varhash.hex
 ```
 
 * create Variant to RSID map
 
 ```
-    bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' dbSNP_split.vcf > varhash_rsid.txt
+    bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' dbsnp.decomposed.vcf > varhash_rsid.hex
 ```
 
 * sort the maps
 
 ```
-    LC_ALL=C sort --parallel=4 --output=rsid_varhash.sorted.txt rsid_varhash.txt
-    LC_ALL=C sort --parallel=4 --output=varhash_rsid.sorted.txt varhash_rsid.txt
+    LC_ALL=C sort --parallel=4 --output=rsid_varhash.sorted.hex rsid_varhash.hex
+    LC_ALL=C sort --parallel=4 --output=varhash_rsid.sorted.hex varhash_rsid.hex
 ```
 
 * convert the maps to binary format
 
 ```
-    xxd -r -p rsid_varhash.sorted.txt rsid_varhash.bin
-    xxd -r -p varhash_rsid.sorted.txt varhash_rsid.bin
+    xxd -r -p rsid_varhash.sorted.hex rsid_varhash.bin
+    xxd -r -p varhash_rsid.sorted.hex varhash_rsid.bin
 ```
 
 
