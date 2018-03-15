@@ -10,7 +10,7 @@
 //
 // LICENSE
 //
-// Copyright (c) 2017 GENOMICS plc
+// Copyright (c) 2017-2018 GENOMICS plc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -99,27 +99,31 @@ uint32_t encode_chrom(const char *chrom);
 
 /** @brief Returns 32-bit reference+alternate hash code.
  *
- * @param ref   Reference base. Each base must be one of A,C,G,T,N (case insensitive). Multiple bases are permitted.
- *              The value in the POS field refers to the position of the first base in the String.
- * @param alt   Alternate base. Non-reference allele.
- *              Options are base Strings made up of the bases A,C,G,T,N,*, (case insensitive).
- *              The ‘*’ allele is reserved to indicate that the allele is missing due to a upstream deletion.
- *              If there are no alternative alleles, then the missing value should be used.
+ * @param ref   Reference allele. String containing a sequence of nucleotide letters.
+ *              The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param alt   Alternate non-reference allele string.
  *
  * @return 32-bit hash code
  */
 uint32_t encode_ref_alt(const char *ref, const char *alt);
 
+/** @brief Decode the REF+ALT code if reversible (if it has less than 5 nucleotidesin total).
+ *
+ * @param code  REF+ALT code
+ * @param ref   REF string buffer to be returned.
+ * @param alt   ALT string buffer to be returned.
+ *
+ * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
+ */
+size_t decode_ref_alt(uint32_t code, char *ref, char *alt);
+
 /** @brief Returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
  *
  * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
  * @param pos   Position. The reference position, with the 1st base having position 0.
- * @param ref   Reference base. Each base must be one of A,C,G,T,N (case insensitive). Multiple bases are permitted.
- *              The value in the POS field refers to the position of the first base in the String.
- * @param alt   Alternate base. Non-reference allele.
- *              Options are base Strings made up of the bases A,C,G,T,N,*, (case insensitive).
- *              The ‘*’ allele is reserved to indicate that the allele is missing due to a upstream deletion.
- *              If there are no alternative alleles, then the missing value should be used.
+ * @param ref   Reference allele. String containing a sequence of nucleotide letters.
+ *              The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param alt   Alternate non-reference allele string.
  *
  * @return      A varhash_t structure.
  */
@@ -137,7 +141,7 @@ varhash_t variant_hash(const char *assembly, const char *chrom, uint32_t pos, co
  * @param size  Size of the string buffer.
  * @param vh    Variant hash structure to be processed.
  *
- * @return      Upon successful return, these functions return the number of characters processed
+ * @return      Upon successful return, these function returns the number of characters processed
  *              (excluding the null byte used to end output to strings).
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.

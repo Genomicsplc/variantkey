@@ -38,9 +38,9 @@ A *Genetic Variant Hash* is composed of 4 sections that can be also used separat
     This value is reversible only using a lookup table, as the encoding is not reversible.
 
 * **`CHROM`**   : 32 bits (8 hex bytes) to represent the chromosome.  
-    Chromosomes are always encoded as numbers. Non numerical chromosomes (e.g `X`, `Y`, `XY`, `MT`) must be converted to numbers using a conversion table.
-    For humans the default encoding of the non-numerical cromosomes is: `X=23, Y=24, XY=25, MT=26`.  
-    This value is reversible using a conversion table or reverse function.
+    Chromosomes are always encoded as numbers.
+    Non numerical chromosomes are mapped using a perfect hashing function ([gperf](https://www.gnu.org/software/gperf/)).    
+    This value is reversible.
                 
 * **`POS`**     : 32 bits (8 hex bytes) for the reference position (`POS`), with the 1<sup>st</sup> base having position 0.  
 
@@ -66,11 +66,11 @@ The `CHROM` and `POS` 32 sections of the VariantHash key are sortable.
 
 * **`POS`**   - *position*       : The reference position, with the 1st base having position 0.
 
-* **`REF`**   - *reference base* : Reference allele.  
+* **`REF`**   - *reference allele* :
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).   
     The value in the `POS` field refers to the position of the first nucleotide in the String.
 
-* **`ALT`**   - *alternate base* : Non-reference allele.  
+* **`ALT`**   - *alternate non-reference allele* : 
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
