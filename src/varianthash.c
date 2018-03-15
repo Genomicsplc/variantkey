@@ -4,7 +4,7 @@
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
-// @copyright  2017 GENOMICS plc
+// @copyright  2017-2018 GENOMICS plc
 // @license    MIT (see LICENSE)
 // @link       https://github.com/genomicsplc/varianthash
 //
@@ -38,7 +38,6 @@
 #include <inttypes.h>
 #include "varianthash.h"
 
-const char *chrom_str_map[] = {"X", "Y", "MT", "XX", "XY"};
 
 int aztoupper(int c)
 {
@@ -65,6 +64,7 @@ uint32_t encode_chrom(const char *chrom)
             && ((chrom[2] == 'R') || (chrom[2] == 'r')))
     {
         chrom += 3;
+        slen -= 3;
     }
     char *endptr;
     h = (uint32_t)strtoul(chrom, &endptr, 10);
@@ -75,18 +75,6 @@ uint32_t encode_chrom(const char *chrom)
     // HUMAN
     if ((chrom[0] == 'X') || (chrom[0] == 'x'))
     {
-        if (slen > 1)
-        {
-            if ((chrom[1] == 'X') || (chrom[1] == 'X'))
-            {
-                return 26;
-            }
-            if ((chrom[1] == 'Y') || (chrom[1] == 'y'))
-            {
-                return 27;
-            }
-            return 25;
-        }
         return 23;
     }
     if ((chrom[0] == 'Y') || (chrom[0] == 'y'))
@@ -97,16 +85,21 @@ uint32_t encode_chrom(const char *chrom)
     {
         return 25;
     }
-    return 0;
+    return 0; // NA
 }
 
 size_t decode_chrom(uint32_t code, char *chrom)
 {
+    if ((code < 1) || (code > 25))
+    {
+        return sprintf(chrom, "NA");
+    }
     if (code < 23)
     {
         return sprintf(chrom, "%"PRIu32, code);
     }
-    return sprintf(chrom, "%s", chrom_str_map[(code - 23)]);
+    const char *map[] = {"X", "Y", "MT"};
+    return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
 uint32_t encode_hash_refalt(const char *ref, const char *alt, size_t slen)
@@ -124,7 +117,8 @@ void encode_refalt_str(uint32_t *h, int *pos, const char *str)
     int c;
     while ((c = aztoupper(*str++)))
     {
-        if (c == '*') {
+        if (c == '*')
+        {
             c = 91;
         }
         *h |= (((c - 64) & 0x1f) << *pos);
@@ -159,7 +153,8 @@ uint32_t encode_ref_alt(const char *ref, const char *alt)
 char decode_refalt_char(uint32_t code, int pos)
 {
     char c = ((code >> pos) & 0x1f);
-    if (c == 27) {
+    if (c == 27)
+    {
         return '*';
     }
     if (c > 0)
