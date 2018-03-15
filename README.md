@@ -13,9 +13,16 @@
 ## Description
 
 This project contains tools to generate and process a **Genetic Variant Hash**,
-a variant ID that can be used to match and cross-reference genetic variants across different databases and sources.
+a numerical variant ID that can be used to match and cross-reference genetic variants across different databases and sources.
 
-This model assumes that the variants have been normalized in some way.
+This model assumes that the variants have been:
+
+a. **decomposed** to convert multialleic variants to bialleic ones (REF and single ALT).  
+This can be done in VCF files using the [vt decompose](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
+
+b. **normalized** as in ["Unified representation of genetic variants" - Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).
+This can be done in VCF files using the [vt normalize](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
+
 
 A *Genetic Variant Hash* is composed of 4 sections that can be also used separately:
 
@@ -26,33 +33,45 @@ A *Genetic Variant Hash* is composed of 4 sections that can be also used separat
     |                VARIANT_HASH                 |
     +---------------------------------------------+
 
-* **ASSBLY**  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly (genome sequence). 
-* **CHROM**   : 32 bits (8 hex bytes) to represent the chromosome.
-                Chromosomes are always encoded as numbers.
-                Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.
-                For other species than human the string-to-number chromosome conversion should happen before calling the hashing function.
-* **POS**     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
-* **REF_ALT** : 32 bits (8 hex bytes) for the hash of the "REF_ALT" string.
+* **`ASSBLY`**  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly string.  
+    The Genome Assembly string should be in the form used by [Genome Reference Consortium](https://www.ncbi.nlm.nih.gov/grc), including the patch number and build number separated by a dot. For example: `GRCh37.p13.b150`.  
+    This value is reversible only using a lookup table, as the encoding is not reversible.
 
-The full 128 bits can be exported as a single 32 character hexadecimal string.  
-The CHROM and POS 32 sections of the key are sortable.
+* **`CHROM`**   : 32 bits (8 hex bytes) to represent the chromosome.  
+    Chromosomes are always encoded as numbers. Non numerical chromosomes (e.g `X`, `Y`, `XY`, `MT`) must be converted to numbers using a conversion table.
+    For humans the default encoding of the non-numerical cromosomes is: `X=23, Y=24, XY=25, MT=26`.  
+    This value is reversible using a conversion table or reverse function.
+                
+* **`POS`**     : 32 bits (8 hex bytes) for the reference position (`POS`), with the 1<sup>st</sup> base having position 0.  
+
+* **`REF_ALT`** : 32 bits (8 hex bytes) for the encoding of the `REF` and `ALT` strings.  
+    The encoding of this field depends on the tolat lenght of the `REF`+`ALT` string.  
+    If the total number of nucleotides in `REF`+`ALT` is more then 5, then the "`REF_ALT`" string is encoded using an hashing algoritm and a lookup table is required to reverse the values.  
+    If the total number of nucleotides in `REF`+`ALT` is 5 or less, then a reversible encoding is used:
+    * the first 5 bits (0 to 4) are set to 0
+    * the bits 5 and 6 indicates the number of nucleotides in `REF` minus 1
+    * the following 5 groups of 5 bits represent each a nucleotide of `REF` followed by `ALT`
+
+
+The full 128 bits VariantHash can be exported as a single 32 character hexadecimal string.  
+The `CHROM` and `POS` 32 sections of the VariantHash key are sortable.
 
 
 ## Input values
 
-* **ASSBLY** - *genome Assembly* : String identifying the Genome Assembly (e.g. GRCh38.p10)
+* **`ASSBLY`** - *genome Assembly* : String identifying the Genome Assembly.  
+    The Genome Assembly string should be in the form used by [Genome Reference Consortium](https://www.ncbi.nlm.nih.gov/grc), including the patch number and build number separated by a dot. For example: `GRCh37.p13.b150`.  
 
-* **CHROM** - *chromosome*     : Uppercase identifier from the reference genome, no white-space or leading zeros permitted.
+* **`CHROM`** - *chromosome*     : Identifier from the reference genome, no white-space or leading zeros permitted.
 
-* **POS**   - *position*       : The reference position, with the 1st base having position 0.
+* **`POS`**   - *position*       : The reference position, with the 1st base having position 0.
 
-* **REF**   - *reference base* : Each base must be one of A,C,G,T,N (always in uppercase). Multiple bases are permitted.
-                                 The value in the POS field refers to the position of the first base in the String.
+* **`REF`**   - *reference base* : Reference allele.
+    String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).   
+    The value in the `POS` field refers to the position of the first nucleotide in the String.
 
-* **ALT**   - *alternate base* : Non-reference allele.
-                                 Options are base Strings made up of the bases A,C,G,T,N,*,  (always in uppercase).
-                                 The ‘*’ allele is reserved to indicate that the allele is missing due to a upstream deletion.
-                                 If there are no alternative alleles, then the missing value should be used.
+* **`ALT`**   - *alternate base* : Non-reference allele.
+    String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
 ## Binary file format for RSID-VariantHash index
