@@ -97,6 +97,16 @@ uint32_t encode_assembly(const char *assembly);
  */
 uint32_t encode_chrom(const char *chrom);
 
+/** @brief Decode the CHROM code.
+ *
+ * @param code   CHROM code.
+ * @param chrom  CHROM string buffer to be returned.
+ *
+ * @return If successful, the total number of characters written is returned excluding the null-character appended
+ *         at the end of the string, otherwise a negative number is returned in case of failure.
+ */
+size_t decode_chrom(uint32_t code, char *chrom);
+
 /** @brief Returns 32-bit reference+alternate hash code.
  *
  * @param ref   Reference allele. String containing a sequence of nucleotide letters.

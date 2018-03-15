@@ -55,12 +55,6 @@ bcftools +add-varianthash normalized.vcf > ${VCF_OUTPUT_NAME}.vcf
 # Remove temporary file
 rm -f normalized.vcf
 
-# Compress VCF file
-bgzip ${VCF_OUTPUT_NAME}.vcf
-
-# Index VCF file
-vt index ${VCF_OUTPUT_NAME}.vcf.gz
-
 # ---
 
 # --- RSID->VARIANTHASH BINARY FILE ---
@@ -102,6 +96,12 @@ rm -f varhash_rsid.sorted.hex
 
 # ---
 
+
+# Compress VCF file
+bgzip ${VCF_OUTPUT_NAME}.vcf
+
+# Index VCF file
+vt index ${VCF_OUTPUT_NAME}.vcf.gz
 
 # Create a JSON file with basic info
 echo -e '{\n "description":"decomposed and normalized VCF files + RSID<->VariantHash binary files",\n "source_file":"'${VCF_INPUT_FILE}'",\n "reference_genome_fasta_file":"'${REFERENCE_GENOME_FASTA_FILE}'",\n "genome_assembly":"'${GENOME_ASSEMBLY}'",\n "date":"'${DATE}'"\n "version":"'${VERSION}'"\n}' > info.json

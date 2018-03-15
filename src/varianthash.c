@@ -38,6 +38,8 @@
 #include <inttypes.h>
 #include "varianthash.h"
 
+const char *chrom_str_map[] = {"X", "Y", "MT", "XX", "XY"};
+
 int aztoupper(int c)
 {
     if ((c >= 'a') && (c <= 'z'))
@@ -52,7 +54,6 @@ uint32_t encode_assembly(const char *assembly)
     return farmhash32(assembly, strlen(assembly));
 }
 
-// @TODO: support other species
 uint32_t encode_chrom(const char *chrom)
 {
     uint32_t h;
@@ -97,6 +98,15 @@ uint32_t encode_chrom(const char *chrom)
         return 25;
     }
     return 0;
+}
+
+size_t decode_chrom(uint32_t code, char *chrom)
+{
+    if (code < 23)
+    {
+        return sprintf(chrom, "%"PRIu32, code);
+    }
+    return sprintf(chrom, "%s", chrom_str_map[(code - 23)]);
 }
 
 uint32_t encode_hash_refalt(const char *ref, const char *alt, size_t slen)
