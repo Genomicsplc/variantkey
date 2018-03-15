@@ -17,8 +17,8 @@ a numerical variant ID that can be used to match and cross-reference genetic var
 
 This model assumes that the variants have been:
 
-a. **decomposed** to convert multialleic variants to bialleic ones (REF and single ALT).  
-This can be done in VCF files using the [vt decompose](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
+a. **decomposed** to convert multialleic variants to bialleic ones (`REF` and single `ALT`).  
+This can be done in [VCF]() files using the [vt decompose](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
 
 b. **normalized** as in ["Unified representation of genetic variants" - Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).
 This can be done in VCF files using the [vt normalize](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
@@ -66,11 +66,11 @@ The `CHROM` and `POS` 32 sections of the VariantHash key are sortable.
 
 * **`POS`**   - *position*       : The reference position, with the 1st base having position 0.
 
-* **`REF`**   - *reference base* : Reference allele.
+* **`REF`**   - *reference base* : Reference allele.  
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).   
     The value in the `POS` field refers to the position of the first nucleotide in the String.
 
-* **`ALT`**   - *alternate base* : Non-reference allele.
+* **`ALT`**   - *alternate base* : Non-reference allele.  
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
