@@ -124,7 +124,7 @@ uint32_t encode_hash_refalt_32bit(const char *ref, const char *alt, size_t slen)
 
 uint32_t encode_hash_refalt_24bit(const char *ref, const char *alt, size_t slen)
 {
-    return (encode_hash_refalt(ref, alt, slen) >> 8);
+    return (encode_hash_refalt_32bit(ref, alt, slen) >> 8);
 }
 
 void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str)
@@ -202,7 +202,7 @@ size_t decode_refalt(uint32_t code, char *ref, char *alt, uint8_t pos)
     }
     ref[i] = 0;
     i = 0;
-    while (pos >= 0)
+    while (pos >= 5)
     {
         pos -= 5;
         alt[i] = decode_refalt_char(code, pos);
@@ -234,16 +234,16 @@ varhash128_t varianthash128(const char *assembly, const char *chrom, uint32_t po
 {
     return (varhash128_t)
     {
-        encode_assembly(assembly), encode_chrom_32bit(chrom), pos, encode_refalt_32bit(ref, alt)
+        encode_assembly_32bit(assembly), encode_chrom_32bit(chrom), pos, encode_refalt_32bit(ref, alt)
     };
 }
 
 uint64_t varianthash64(const char *chrom, uint32_t pos, const char *ref, const char *alt)
 {
-    return ((encode_chrom_8bit(chrom) << 56) | (pos << 24) | encode_refalt_24bit(ref, alt));
+    return (((uint64_t)encode_chrom_8bit(chrom) << 56) | ((uint64_t)pos << 24) | (uint64_t)encode_refalt_24bit(ref, alt));
 }
 
-size_t varianthash128_string(char *str, size_t size, varhash_t vh)
+size_t varianthash128_string(char *str, size_t size, varhash128_t vh)
 {
     size_t slen = 33; // = 32 hex chars + '\0'
     if (slen > size)
@@ -265,11 +265,11 @@ size_t varianthash64_string(char *str, size_t size, uint64_t vh)
     }
     char* it = str;
     const char* end = it + size;
-    it += snprintf(it, (end - it), "%16"PRIx64"", vh);
+    it += snprintf(it, (end - it), "%016"PRIx64"", vh);
     return (end - it);
 }
 
-varhash128_t decode_varianthash128_string(const char *vs)
+varhash128_t parse_varianthash128_string(const char *vs)
 {
     varhash128_t vh = {0,0,0,0};
     size_t slen = strlen(vs);
@@ -293,24 +293,21 @@ varhash128_t decode_varianthash128_string(const char *vs)
     return vh;
 }
 
-varhash64_t decode_varianthash64_string(const char *vs)
+uint64_t parse_varianthash64_string(const char *vs)
+{
+    if (strlen(vs) != 16)
+    {
+        return 0;
+    }
+    return (uint64_t)strtoull(vs, NULL, 16);
+}
+
+varhash64_t split_varianthash64(uint64_t code)
 {
     varhash64_t vh = {0,0,0};
-    size_t slen = strlen(vs);
-    if (slen != 16)
-    {
-        return vh;
-    }
-    char tmp[17];
-    strncpy(tmp, vs, slen);
-    tmp[16] = 0;
-    char* it = tmp + 10;
-    vh.refalt = (uint32_t)strtoul(it, NULL, 16) | 0x00FFFFFF;
-    *it = 0;
-    it = tmp + 2;
-    vh.pos = (uint32_t)strtoul(it, NULL, 16);
-    *it = 0;
-    vh.chrom = (uint8_t)strtoul(it, NULL, 16);
+    vh.chrom = (uint8_t)((code & 0xFF00000000000000) >> 56);
+    vh.pos = (uint32_t)((code & 0x00FFFFFFFF000000) >> 24);
+    vh.refalt = (uint32_t)(code & 0x0000000000FFFFFF);
     return vh;
 }
 

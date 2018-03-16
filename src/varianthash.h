@@ -126,7 +126,7 @@ size_t decode_chrom_8bit(uint8_t code, char *chrom);
  *
  * @return 32-bit hash code
  */
-uint32_t encode_ref_alt_32bit(const char *ref, const char *alt);
+uint32_t encode_refalt_32bit(const char *ref, const char *alt);
 
 /** @brief Returns 24-bit reference+alternate hash code.
  *
@@ -136,7 +136,7 @@ uint32_t encode_ref_alt_32bit(const char *ref, const char *alt);
  *
  * @return 24-bit hash code (in 32 bit unsignd integer)
  */
-uint32_t encode_ref_alt_24bit(const char *ref, const char *alt);
+uint32_t encode_refalt_24bit(const char *ref, const char *alt);
 
 /** @brief Decode the 32-bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
  *
@@ -146,7 +146,7 @@ uint32_t encode_ref_alt_24bit(const char *ref, const char *alt);
  *
  * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
  */
-size_t decode_ref_alt_32bit(uint32_t code, char *ref, char *alt);
+size_t decode_refalt_32bit(uint32_t code, char *ref, char *alt);
 
 /** @brief Decode the 24-bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
  *
@@ -156,14 +156,14 @@ size_t decode_ref_alt_32bit(uint32_t code, char *ref, char *alt);
  *
  * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
  */
-size_t decode_ref_alt_32bit(uint32_t code, char *ref, char *alt);
+size_t decode_refalt_24bit(uint32_t code, char *ref, char *alt);
 
 /** @brief Returns a VariantHash128 structure based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
  *
  * @param assembly  String identifying the Genome Assembly. It should be in the form used by
  *                  Genome Reference Consortium (https://www.ncbi.nlm.nih.gov/grc),
  *                  including the patch number and build number separated by a dot.
- *                  For example: `GRCh37.p13.b150`.  
+ *                  For example: `GRCh37.p13.b150`.
  * @param chrom     Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
  * @param pos       Position. The reference position, with the 1st base having position 0.
  * @param ref       Reference allele. String containing a sequence of nucleotide letters.
@@ -204,7 +204,7 @@ uint64_t varianthash64(const char *chrom, uint32_t pos, const char *ref, const c
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t varianthash128_string(char *str, size_t size, varhash_t vh);
+size_t varianthash128_string(char *str, size_t size, varhash128_t vh);
 
 /** @brief Returns VariantHash64 hexadecimal string (16 characters).
  *
@@ -230,14 +230,22 @@ size_t varianthash64_string(char *str, size_t size, uint64_t vh);
  *
  * @return A varhash128_t structure.
  */
-varhash128_t decode_varianthash128_string(const char *vs)
+varhash128_t parse_varianthash128_string(const char *vs);
 
-/** @brief Parses a VariantHash64 hex string and returns the components as varhash64_t structure.
+/** @brief Parses a VariantHash64 hex string and returns the code.
  *
  * @param vh VariantHash64 hexadecimal string (16 characters).
  *
+ * @return A VariantHash64 code
+ */
+uint64_t parse_varianthash64_string(const char *vs);
+
+/** @brief Parses a VariantHash64 code and returns the components as varhash64_t structure.
+ *
+ * @param code VariantHash64 code.
+ *
  * @return A varhash64_t structure.
  */
-varhash64_t decode_varianthash64_string(const char *vs);
+varhash64_t split_varianthash64(uint64_t code);
 
 #endif  // VARIANTHASH_H
