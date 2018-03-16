@@ -89,7 +89,7 @@ uint32_t find_vr64_pos_range(const unsigned char *src, uint64_t *first, uint64_t
 {
     uint64_t min = *first;
     uint64_t max = *last;
-    *first = find_first_uint64_t(src, RSIDVAR64_BIN_BLKLEN, VARRSID64_BPOS_POS, &min, &max, pos_start);
+    *first = find_first_uint32_t(src, RSIDVAR64_BIN_BLKLEN, VARRSID64_BPOS_POS, &min, &max, pos_start);
     if (*first > *last)
     {
         *first = min;
@@ -103,7 +103,7 @@ uint32_t find_vr64_pos_range(const unsigned char *src, uint64_t *first, uint64_t
         return 0;
     }
     max = *last;
-    uint64_t end = find_last_uint64_t(src, RSIDVAR64_BIN_BLKLEN, VARRSID64_BPOS_POS, &min, &max, pos_end);
+    uint64_t end = find_last_uint32_t(src, RSIDVAR64_BIN_BLKLEN, VARRSID64_BPOS_POS, &min, &max, pos_end);
     if (end > *last)
     {
         *last = max;

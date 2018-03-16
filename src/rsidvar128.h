@@ -133,6 +133,20 @@ uint32_t find_vr128_rsid_by_varhash(const unsigned char *src, uint64_t *first, u
 uint32_t find_vr128_chrom_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom);
 
 /**
+ * Search for the specified POS range and returns the first occurrence of RSID.
+ * This function should be used only in conjuction with find_vr128_chrom_range to search a range inside a given chromosome.
+ *
+ * @param src       Memory mapped file address.
+ * @param first     Pointer to the first element of the range to search (min value = 0).
+ * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
+ * @param pos_start Start reference position, with the 1st base having position 0.
+ * @param pos_end   End reference position, with the 1st base having position 0.
+ *
+ * @return RS ID
+ */
+uint32_t find_vr128_pos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t pos_start, uint32_t pos_end);
+
+/**
  * Search for the specified CHROM-POS range and returns the first occurrence of RSID.
  *
  * @param src       Memory mapped file address.

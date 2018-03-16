@@ -34,3 +34,6 @@ SMOKE_TEST (test_varianthash test_varianthash.c varianthash)
 
 file (COPY test_rsidvar128.c rsid_varhash128.10.bin varhash128_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_rsidvar128 test_rsidvar128.c varianthash)
+
+file (COPY test_rsidvar64.c rsid_varhash64.10.bin varhash64_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_rsidvar64 test_rsidvar64.c varianthash)

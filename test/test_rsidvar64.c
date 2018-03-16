@@ -11,31 +11,32 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/mman.h>
-#include "rsidvar128.h"
+#include "rsidvar64.h"
 
 #define TEST_DATA_SIZE 10
 
-typedef struct test_data_128_t
+typedef struct test_data_64_t
 {
     uint32_t rsid;
-    uint32_t assembly;
-    uint32_t chrom;
+    uint8_t chrom;
     uint32_t pos;
     uint32_t refalt;
-} test_data_128_t;
+    uint64_t vh;
+} test_data_64_t;
 
-static test_data_128_t test_data[TEST_DATA_SIZE] =
+static test_data_64_t test_data[TEST_DATA_SIZE] =
 {
-    {0X00000001, 0X8B29D2C7, 0X00000001, 0X000FDDC2, 0X014A1C00},
-    {0X00000007, 0X8B29D2C7, 0X00000009, 0X001173EF, 0X00708000},
-    {0X0000000B, 0X8B29D2C7, 0X00000009, 0X00130A1C, 0X00708000},
-    {0X00000061, 0X8B29D2C7, 0X00000016, 0X0014A049, 0X0413D021},
-    {0X00000065, 0X8B29D2C7, 0X00000016, 0X00163676, 0X02138400},
-    {0X000003E5, 0X8B29D2C7, 0X00000016, 0X0017CCA3, 0X027A1C00},
-    {0X000003F1, 0X8B29D2C7, 0X00000019, 0X001962D0, 0X027A1C00},
-    {0X000026F5, 0X8B29D2C7, 0X00000019, 0X001AF8FD, 0X01408000},
-    {0X000186A3, 0X8B29D2C7, 0X00000019, 0X001C8F2A, 0X00708000},
-    {0X00019919, 0X8B29D2C7, 0X00000019, 0X001E2557, 0X003A0000},
+    {0X00000001, 0X01, 0X000FDDC2, 0X0A50E0, 0X01000FDDC20A50E0},
+    {0X00000007, 0X09, 0X001173EF, 0X038400, 0X09001173EF038400},
+    {0X0000000B, 0X09, 0X00130A1C, 0X038400, 0X0900130A1C038400},
+    {0X00000061, 0X16, 0X0014A049, 0XCC6140, 0X160014A049CC6140},
+    {0X00000065, 0X16, 0X00163676, 0X109C20, 0X1600163676109C20},
+    {0X000003E5, 0X16, 0X0017CCA3, 0X13D0E0, 0X160017CCA313D0E0},
+    {0X000003F1, 0X19, 0X001962D0, 0X13D0E0, 0X19001962D013D0E0},
+    {0X000026F5, 0X19, 0X001AF8FD, 0X0A0400, 0X19001AF8FD0A0400},
+    {0X000186A3, 0X19, 0X001C8F2A, 0X038400, 0X19001C8F2A038400},
+    {0X00019919, 0X19, 0X001E2557, 0X01D000, 0X19001E255701D000},
+
 };
 
 // returns current time in nanoseconds
@@ -46,14 +47,14 @@ uint64_t get_time()
     return (((uint64_t)t.tv_sec * 1000000000) + (uint64_t)t.tv_nsec);
 }
 
-int test_get_vr128_rsid(mmfile_t vr)
+int test_get_vr64_rsid(mmfile_t vr)
 {
     int errors = 0;
     int i;
     uint32_t rsid;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        rsid = get_vr128_rsid(vr.src, i);
+        rsid = get_vr64_rsid(vr.src, i);
         if (rsid != test_data[i].rsid)
         {
             fprintf(stderr, "%s (%d) Expected %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].rsid, rsid);
@@ -63,118 +64,73 @@ int test_get_vr128_rsid(mmfile_t vr)
     return errors;
 }
 
-int test_get_rv128_varhash(mmfile_t rv)
+int test_get_rv64_varhash(mmfile_t rv)
 {
     int errors = 0;
     int i;
-    varhash128_t vh;
+    uint64_t vh;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        vh = get_rv128_varhash(rv.src, i);
-        if (vh.assembly != test_data[i].assembly)
+        vh = get_rv64_varhash(rv.src, i);
+        if (vh != test_data[i].vh)
         {
-            fprintf(stderr, "%s (%d) Expected assembly %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].assembly, vh.assembly);
-            ++errors;
-        }
-        if (vh.chrom != test_data[i].chrom)
-        {
-            fprintf(stderr, "%s (%d) Expected chrom %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].chrom, vh.chrom);
-            ++errors;
-        }
-        if (vh.pos != test_data[i].pos)
-        {
-            fprintf(stderr, "%s (%d) Expected pos %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].pos, vh.pos);
-            ++errors;
-        }
-        if (vh.refalt != test_data[i].refalt)
-        {
-            fprintf(stderr, "%s (%d) Expected refalt %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].refalt, vh.refalt);
+            fprintf(stderr, "%s (%d) Expected %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vh, vh);
             ++errors;
         }
     }
     return errors;
 }
 
-int test_find_rv128_varhash_by_rsid(mmfile_t rv)
+int test_find_rv64_varhash_by_rsid(mmfile_t rv)
 {
     int errors = 0;
     int i;
-    varhash128_t vh;
+    uint64_t vh;
     uint64_t first;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         first = 0;
-        vh = find_rv128_varhash_by_rsid(rv.src, &first, 9, test_data[i].rsid);
+        vh = find_rv64_varhash_by_rsid(rv.src, &first, 9, test_data[i].rsid);
         if (first != (uint64_t)i)
         {
             fprintf(stderr, "%s (%d) Expected first %d, got %"PRIu64"\n", __func__, i, i, first);
             ++errors;
         }
-        if (vh.assembly != test_data[i].assembly)
+        if (vh != test_data[i].vh)
         {
-            fprintf(stderr, "%s (%d) Expected assembly %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].assembly, vh.assembly);
-            ++errors;
-        }
-        if (vh.chrom != test_data[i].chrom)
-        {
-            fprintf(stderr, "%s (%d) Expected chrom %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].chrom, vh.chrom);
-            ++errors;
-        }
-        if (vh.pos != test_data[i].pos)
-        {
-            fprintf(stderr, "%s (%d) Expected pos %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].pos, vh.pos);
-            ++errors;
-        }
-        if (vh.refalt != test_data[i].refalt)
-        {
-            fprintf(stderr, "%s (%d) Expected refalt %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].refalt, vh.refalt);
+            fprintf(stderr, "%s (%d) Expected varianthash %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vh, vh);
             ++errors;
         }
     }
     return errors;
 }
 
-int test_find_rv128_varhash_by_rsid_notfound(mmfile_t rv)
+int test_find_rv64_varhash_by_rsid_notfound(mmfile_t rv)
 {
     int errors = 0;
-    varhash128_t vh;
+    uint64_t vh;
     uint64_t first = 0;
-    vh = find_rv128_varhash_by_rsid(rv.src, &first, 9, 0xfffffff0);
+    vh = find_rv64_varhash_by_rsid(rv.src, &first, 9, 0xfffffff0);
     if (first != 10)
     {
         fprintf(stderr, "%s : Expected first 10, got %"PRIu64"\n", __func__, first);
         ++errors;
     }
-    if (vh.assembly != 0)
+    if (vh != 0)
     {
-        fprintf(stderr, "%s : Expected assembly 0, got %"PRIu32"\n", __func__, vh.assembly);
-        ++errors;
-    }
-    if (vh.chrom != 0)
-    {
-        fprintf(stderr, "%s : Expected chrom 0, got %"PRIu32"\n", __func__, vh.chrom);
-        ++errors;
-    }
-    if (vh.pos != 0)
-    {
-        fprintf(stderr, "%s : Expected pos 0, got %"PRIu32"\n", __func__, vh.pos);
-        ++errors;
-    }
-    if (vh.refalt != 0)
-    {
-        fprintf(stderr, "%s : Expected refalt 0, got %"PRIu32"\n", __func__, vh.refalt);
+        fprintf(stderr, "%s : Expected varianthash 0, got %"PRIu64"\n", __func__, vh);
         ++errors;
     }
     return errors;
 }
 
-int test_find_vr128_chrom_range(mmfile_t vr)
+int test_find_vr64_chrom_range(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
     uint64_t last = 9;
-    rsid = find_vr128_chrom_range(vr.src, &first, &last, test_data[3].chrom);
+    rsid = find_vr64_chrom_range(vr.src, &first, &last, test_data[3].chrom);
     if (rsid != test_data[3].rsid)
     {
         fprintf(stderr, "%s : Expected rsid %"PRIx32", got %"PRIx32"\n", __func__, test_data[3].rsid, rsid);
@@ -193,13 +149,13 @@ int test_find_vr128_chrom_range(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_chrom_range_notfound(mmfile_t vr)
+int test_find_vr64_chrom_range_notfound(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
     uint64_t last = 9;
-    rsid = find_vr128_chrom_range(vr.src, &first, &last, 0xfffffff0);
+    rsid = find_vr64_chrom_range(vr.src, &first, &last, 0xf0);
     if (rsid != 0)
     {
         fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
@@ -218,13 +174,13 @@ int test_find_vr128_chrom_range_notfound(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_pos_range(mmfile_t vr)
+int test_find_vr64_pos_range(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 6;
     uint64_t last = 9;
-    rsid = find_vr128_pos_range(vr.src, &first, &last, test_data[7].pos, 0xfffffff0);
+    rsid = find_vr64_pos_range(vr.src, &first, &last, test_data[7].pos, 0xfffffff0);
     if (rsid != test_data[7].rsid)
     {
         fprintf(stderr, "%s : Expected rsid %"PRIx32", got %"PRIx32"\n", __func__, test_data[7].rsid, rsid);
@@ -243,13 +199,13 @@ int test_find_vr128_pos_range(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_pos_range_notfound(mmfile_t vr)
+int test_find_vr64_pos_range_notfound(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
     uint64_t last = 9;
-    rsid = find_vr128_pos_range(vr.src, &first, &last, 0xffffff00, 0xfffffff0);
+    rsid = find_vr64_pos_range(vr.src, &first, &last, 0xffffff00, 0xfffffff0);
     if (rsid != 0)
     {
         fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
@@ -268,13 +224,13 @@ int test_find_vr128_pos_range_notfound(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_chrompos_range(mmfile_t vr)
+int test_find_vr64_chrompos_range(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
     uint64_t last = 9;
-    rsid = find_vr128_chrompos_range(vr.src, &first, &last, test_data[6].chrom, test_data[7].pos, test_data[8].pos);
+    rsid = find_vr64_chrompos_range(vr.src, &first, &last, test_data[6].chrom, test_data[7].pos, test_data[8].pos);
     if (rsid != test_data[7].rsid)
     {
         fprintf(stderr, "%s : Expected rsid %"PRIx32", got %"PRIx32"\n", __func__, test_data[7].rsid, rsid);
@@ -293,13 +249,13 @@ int test_find_vr128_chrompos_range(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_chrompos_range_notfound(mmfile_t vr)
+int test_find_vr64_chrompos_range_notfound(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
     uint64_t last = 9;
-    rsid = find_vr128_chrompos_range(vr.src, &first, &last, 0xfffffff0, 0xffffff00, 0xfffffff0);
+    rsid = find_vr64_chrompos_range(vr.src, &first, &last, 0xff, 0xffffff00, 0xfffffff0);
     if (rsid != 0)
     {
         fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
@@ -318,21 +274,16 @@ int test_find_vr128_chrompos_range_notfound(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_rsid_by_varhash(mmfile_t vr)
+int test_find_vr64_rsid_by_varhash(mmfile_t vr)
 {
     int errors = 0;
     int i;
     uint32_t rsid;
     uint64_t first;
-    varhash128_t vh;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         first = 0;
-        vh.assembly = test_data[i].assembly;
-        vh.chrom = test_data[i].chrom;
-        vh.pos = test_data[i].pos;
-        vh.refalt = test_data[i].refalt;
-        rsid = find_vr128_rsid_by_varhash(vr.src, &first, 9, vh);
+        rsid = find_vr64_rsid_by_varhash(vr.src, &first, 9, test_data[i].vh);
         if (rsid != test_data[i].rsid)
         {
             fprintf(stderr, "%s (%d) Expected rsid %"PRIx32", got %"PRIx32"\n",  __func__, i, test_data[i].rsid, rsid);
@@ -347,18 +298,13 @@ int test_find_vr128_rsid_by_varhash(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr128_rsid_by_varhash_notfound(mmfile_t vr)
+int test_find_vr64_rsid_by_varhash_notfound(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first;
-    varhash128_t vh;
     first = 0;
-    vh.assembly = 0xfffffff0;
-    vh.chrom = 0xfffffff0;
-    vh.pos = 0xfffffff0;
-    vh.refalt = 0xfffffff0;
-    rsid = find_vr128_rsid_by_varhash(vr.src, &first, 9, vh);
+    rsid = find_vr64_rsid_by_varhash(vr.src, &first, 9, 0xfffffffffffffff0);
     if (rsid != 0)
     {
         fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
@@ -372,7 +318,7 @@ int test_find_vr128_rsid_by_varhash_notfound(mmfile_t vr)
     return errors;
 }
 
-void benchmark_get_vr128_rsid(mmfile_t vr)
+void benchmark_get_vr64_rsid(mmfile_t vr)
 {
     uint64_t tstart, tend;
     int i;
@@ -380,13 +326,13 @@ void benchmark_get_vr128_rsid(mmfile_t vr)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        get_vr128_rsid(vr.src, 3);
+        get_vr64_rsid(vr.src, 3);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_get_rv128_varhash(mmfile_t rv)
+void benchmark_get_rv64_varhash(mmfile_t rv)
 {
     uint64_t tstart, tend;
     int i;
@@ -394,13 +340,13 @@ void benchmark_get_rv128_varhash(mmfile_t rv)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        get_rv128_varhash(rv.src, 3);
+        get_rv64_varhash(rv.src, 3);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_find_rv128_varhash_by_rsid(mmfile_t rv)
+void benchmark_find_rv64_varhash_by_rsid(mmfile_t rv)
 {
     uint64_t tstart, tend;
     uint64_t first = 0;
@@ -410,13 +356,13 @@ void benchmark_find_rv128_varhash_by_rsid(mmfile_t rv)
     for (i=0 ; i < size; i++)
     {
         first = 0;
-        find_rv128_varhash_by_rsid(rv.src, &first, 9, 0x2F81F575);
+        find_rv64_varhash_by_rsid(rv.src, &first, 9, 0x2F81F575);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_find_vr128_chrompos_range(mmfile_t vr)
+void benchmark_find_vr64_chrompos_range(mmfile_t vr)
 {
     uint64_t tstart, tend;
     uint64_t first = 0, last = 9;
@@ -427,28 +373,23 @@ void benchmark_find_vr128_chrompos_range(mmfile_t vr)
     {
         first = 0;
         last = 9;
-        find_vr128_chrompos_range(vr.src, &first, &last, 0X00000019, 0X001AF8FD, 0X001C8F2A);
+        find_vr64_chrompos_range(vr.src, &first, &last, 0x19, 0x001AF8FD, 0x001C8F2A);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_find_vr128_rsid_by_varhash(mmfile_t vr)
+void benchmark_find_vr64_rsid_by_varhash(mmfile_t vr)
 {
     uint64_t tstart, tend;
     uint64_t first = 0;
-    varhash128_t vh;
-    vh.assembly =  0X8B29D2C7;
-    vh.chrom = 0X00000019;
-    vh.pos = 0X001AF8FD;
-    vh.refalt = 0X01408000;
     int i;
     int size = 100000;
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
         first = 0;
-        find_vr128_rsid_by_varhash(vr.src, &first, 9, vh);
+        find_vr64_rsid_by_varhash(vr.src, &first, 9, 0x160017CCA313d0e0);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
@@ -461,40 +402,40 @@ int main()
 
     uint64_t nitems; // number of binary blocks in the file
 
-    mmfile_t rv = mmap_binfile("rsid_varhash128.10.bin");
-    nitems = (uint64_t)(rv.size / RSIDVAR128_BIN_BLKLEN);
+    mmfile_t rv = mmap_binfile("rsid_varhash64.10.bin");
+    nitems = (uint64_t)(rv.size / RSIDVAR64_BIN_BLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
         fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 
-    mmfile_t vr = mmap_binfile("varhash128_rsid.10.bin");
-    nitems = (uint64_t)(vr.size / RSIDVAR128_BIN_BLKLEN);
+    mmfile_t vr = mmap_binfile("varhash64_rsid.10.bin");
+    nitems = (uint64_t)(vr.size / RSIDVAR64_BIN_BLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
         fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 
-    errors += test_get_vr128_rsid(vr);
-    errors += test_get_rv128_varhash(rv);
-    errors += test_find_rv128_varhash_by_rsid(rv);
-    errors += test_find_rv128_varhash_by_rsid_notfound(rv);
-    errors += test_find_vr128_chrom_range(vr);
-    errors += test_find_vr128_chrom_range_notfound(vr);
-    errors += test_find_vr128_pos_range(vr);
-    errors += test_find_vr128_pos_range_notfound(vr);
-    errors += test_find_vr128_chrompos_range(vr);
-    errors += test_find_vr128_chrompos_range_notfound(vr);
-    errors += test_find_vr128_rsid_by_varhash(vr);
-    errors += test_find_vr128_rsid_by_varhash_notfound(vr);
+    errors += test_get_vr64_rsid(vr);
+    errors += test_get_rv64_varhash(rv);
+    errors += test_find_rv64_varhash_by_rsid(rv);
+    errors += test_find_rv64_varhash_by_rsid_notfound(rv);
+    errors += test_find_vr64_chrom_range(vr);
+    errors += test_find_vr64_chrom_range_notfound(vr);
+    errors += test_find_vr64_pos_range(vr);
+    errors += test_find_vr64_pos_range_notfound(vr);
+    errors += test_find_vr64_chrompos_range(vr);
+    errors += test_find_vr64_chrompos_range_notfound(vr);
+    errors += test_find_vr64_rsid_by_varhash(vr);
+    errors += test_find_vr64_rsid_by_varhash_notfound(vr);
 
-    benchmark_get_vr128_rsid(vr);
-    benchmark_get_rv128_varhash(rv);
-    benchmark_find_rv128_varhash_by_rsid(rv);
-    benchmark_find_vr128_chrompos_range(vr);
-    benchmark_find_vr128_rsid_by_varhash(vr);
+    benchmark_get_vr64_rsid(vr);
+    benchmark_get_rv64_varhash(rv);
+    benchmark_find_rv64_varhash_by_rsid(rv);
+    benchmark_find_vr64_chrompos_range(vr);
+    benchmark_find_vr64_rsid_by_varhash(vr);
 
     err = munmap_binfile(rv);
     if (err != 0)
