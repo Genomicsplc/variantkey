@@ -138,11 +138,7 @@ uint32_t encode_ref_alt_32bit(const char *ref, const char *alt);
  */
 uint32_t encode_ref_alt_24bit(const char *ref, const char *alt);
 
-
-
-
-
-/** @brief Decode the REF+ALT code if reversible (if it has less than 5 nucleotidesin total).
+/** @brief Decode the 32-bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
  *
  * @param code  REF+ALT code
  * @param ref   REF string buffer to be returned.
@@ -150,27 +146,54 @@ uint32_t encode_ref_alt_24bit(const char *ref, const char *alt);
  *
  * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
  */
-size_t decode_ref_alt(uint32_t code, char *ref, char *alt);
+size_t decode_ref_alt_32bit(uint32_t code, char *ref, char *alt);
 
-/** @brief Returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
+/** @brief Decode the 24-bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
  *
- * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
- * @param pos   Position. The reference position, with the 1st base having position 0.
- * @param ref   Reference allele. String containing a sequence of nucleotide letters.
- *              The value in the pos field refers to the position of the first nucleotide in the String.
- * @param alt   Alternate non-reference allele string.
+ * @param code  REF+ALT code
+ * @param ref   REF string buffer to be returned.
+ * @param alt   ALT string buffer to be returned.
  *
- * @return      A varhash_t structure.
+ * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
  */
-varhash_t variant_hash(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt);
+size_t decode_ref_alt_32bit(uint32_t code, char *ref, char *alt);
 
-/** @brief Returns a human-readable Genetic Variant Hash string (32 hex characters).
+/** @brief Returns a VariantHash128 structure based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
  *
- * The string represent a 128bit number or:
- *   - 32bit  (8 hex bytes) for ASSBLY Hash
- *   - 32bit  (8 hex bytes) for CHROM
- *   - 32bit  (8 hex bytes) for POS
- *   - 32bit  (8 hex bytes) for REF_ALT Hash
+ * @param assembly  String identifying the Genome Assembly. It should be in the form used by
+ *                  Genome Reference Consortium (https://www.ncbi.nlm.nih.gov/grc),
+ *                  including the patch number and build number separated by a dot.
+ *                  For example: `GRCh37.p13.b150`.  
+ * @param chrom     Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param pos       Position. The reference position, with the 1st base having position 0.
+ * @param ref       Reference allele. String containing a sequence of nucleotide letters.
+ *                  The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param alt       Alternate non-reference allele string.
+ *
+ * @return      A varhash128_t structure.
+ */
+varhash128_t varianthash128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt);
+
+
+/** @brief Returns a 64-bit variant code based on CHROM, POS (0-base), REF, ALT.
+ *
+ * @param chrom     Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param pos       Position. The reference position, with the 1st base having position 0.
+ * @param ref       Reference allele. String containing a sequence of nucleotide letters.
+ *                  The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param alt       Alternate non-reference allele string.
+ *
+ * @return      VariantHash 64-bit code.
+ */
+uint64_t varianthash64(const char *chrom, uint32_t pos, const char *ref, const char *alt);
+
+/** @brief Returns VariantHash128 hexadecimal string (32 characters).
+ *
+ * The string represent a 128 bit number or:
+ *   - 32 bit  (4 bytes, 8 hex bytes) for ASSBLY Hash
+ *   - 32 bit  (4 bytes, 8 hex bytes) for CHROM
+ *   - 32 bit  (4 bytes, 8 hex bytes) for POS
+ *   - 32 bit  (4 bytes, 8 hex bytes) for REF+ALT Hash
  *
  * @param str   String buffer to be returned.
  * @param size  Size of the string buffer.
@@ -181,15 +204,40 @@ varhash_t variant_hash(const char *assembly, const char *chrom, uint32_t pos, co
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t variant_hash_string(char *str, size_t size, varhash_t vh);
+size_t varianthash128_string(char *str, size_t size, varhash_t vh);
 
-/** @brief Parses a variant hash hex string and returns the components as varhash_t structure.
+/** @brief Returns VariantHash64 hexadecimal string (16 characters).
  *
- * @param vh Variant Hash string
+ * The string represent a 64 bit number or:
+ *   -  8 bit  (1 byte,  2 hex bytes) for CHROM
+ *   - 32 bit  (4 bytes, 8 hex bytes) for POS
+ *   - 24 bit  (3 bytes, 8 hex bytes) for REF+ALT Hash
  *
- * @return A varhash_t structure.
+ * @param str   String buffer to be returned.
+ * @param size  Size of the string buffer.
+ * @param vh    Variant hash structure to be processed.
+ *
+ * @return      Upon successful return, these function returns the number of characters processed
+ *              (excluding the null byte used to end output to strings).
+ *              If the buffer size is not sufficient, then the return value is the number of characters required for
+ *              buffer string, including the terminating null byte.
  */
+size_t varianthash64_string(char *str, size_t size, uint64_t vh);
 
-varhash_t decode_variant_hash_string(const char *vs);
+/** @brief Parses a VariantHash128 hex string and returns the components as varhash128_t structure.
+ *
+ * @param vh VariantHash128 hexadecimal string (32 characters).
+ *
+ * @return A varhash128_t structure.
+ */
+varhash128_t decode_varianthash128_string(const char *vs)
+
+/** @brief Parses a VariantHash64 hex string and returns the components as varhash64_t structure.
+ *
+ * @param vh VariantHash64 hexadecimal string (16 characters).
+ *
+ * @return A varhash64_t structure.
+ */
+varhash64_t decode_varianthash64_string(const char *vs);
 
 #endif  // VARIANTHASH_H
