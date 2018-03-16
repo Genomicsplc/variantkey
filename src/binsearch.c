@@ -56,6 +56,17 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
+uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i)
+{
+    return ((uint8_t)src[i]);
+}
+
+uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i)
+{
+    return (((uint16_t)src[i] << 8)
+            | (uint16_t)src[i+1]);
+}
+
 uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
 {
     return (((uint32_t)src[i] << 24)
@@ -87,6 +98,8 @@ uint128_t bytes_to_uint128_t(const unsigned char *src, uint64_t i)
 
 #define define_compare(T) int compare_##T(T a, T b) {return (a < b) ? -1 : (a > b);}
 
+define_compare(uint8_t)
+define_compare(uint16_t)
 define_compare(uint32_t)
 define_compare(uint64_t)
 
@@ -142,6 +155,8 @@ uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkp
     return found; \
 }
 
+define_find_first(uint8_t)
+define_find_first(uint16_t)
 define_find_first(uint32_t)
 define_find_first(uint64_t)
 define_find_first(uint128_t)
@@ -183,6 +198,8 @@ uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpo
     return found; \
 }
 
+define_find_last(uint8_t)
+define_find_last(uint16_t)
 define_find_last(uint32_t)
 define_find_last(uint64_t)
 define_find_last(uint128_t)

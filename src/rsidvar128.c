@@ -67,11 +67,11 @@ uint32_t find_vr128_rsid_by_varhash(const unsigned char *src, uint64_t *first, u
     return get_vr128_rsid(src, found);
 }
 
-uint32_t find_vr128_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom, uint32_t pos_start, uint32_t pos_end)
+uint32_t find_vr128_chrom_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom)
 {
     uint64_t min = *first;
     uint64_t max = *last;
-    *first = find_first_uint64_t(src, RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_CHROM, &min, &max, ((uint64_t)chrom << 32 | (uint64_t)pos_start));
+    *first = find_first_uint32_t(src, RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_CHROM, &min, &max, chrom);
     if (*first > *last)
     {
         *first = min;
@@ -85,7 +85,7 @@ uint32_t find_vr128_chrompos_range(const unsigned char *src, uint64_t *first, ui
         return 0;
     }
     max = *last;
-    uint64_t end = find_last_uint64_t(src, RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_CHROM, &min, &max, ((uint64_t)chrom << 32 | (uint64_t)pos_end));
+    uint64_t end = find_last_uint32_t(src, RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_CHROM, &min, &max, chrom);
     if (end > *last)
     {
         *last = max;
@@ -95,4 +95,44 @@ uint32_t find_vr128_chrompos_range(const unsigned char *src, uint64_t *first, ui
         *last = end;
     }
     return get_vr128_rsid(src, *first);
+}
+
+uint32_t find_vr128_pos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t pos_start, uint32_t pos_end)
+{
+    uint64_t min = *first;
+    uint64_t max = *last;
+    *first = find_first_uint32_t(src, RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_POS, &min, &max, pos_start);
+    if (*first > *last)
+    {
+        *first = min;
+    }
+    else
+    {
+        min = *first;
+    }
+    if (min > *last)
+    {
+        return 0;
+    }
+    max = *last;
+    uint64_t end = find_last_uint32_t(src, RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_POS, &min, &max, pos_end);
+    if (end > *last)
+    {
+        *last = max;
+    }
+    else
+    {
+        *last = end;
+    }
+    return get_vr128_rsid(src, *first);
+}
+
+uint32_t find_vr128_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom, uint32_t pos_start, uint32_t pos_end)
+{
+    uint64_t item = find_vr128_chrom_range(src, first, last, chrom);
+    if (item == 0)
+    {
+        return 0;
+    }
+    return find_vr128_pos_range(src, first, last, pos_start, pos_end);
 }

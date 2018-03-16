@@ -105,6 +105,8 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item);
 */ \
 T bytes_to_##T(const unsigned char *src, uint64_t i);
 
+define_declare_bytes_to(uint8_t)
+define_declare_bytes_to(uint16_t)
 define_declare_bytes_to(uint32_t)
 define_declare_bytes_to(uint64_t)
 define_declare_bytes_to(uint128_t)
@@ -120,6 +122,8 @@ define_declare_bytes_to(uint128_t)
 */ \
 int compare_##T(T a, T b);
 
+define_declare_compare(uint8_t)
+define_declare_compare(uint16_t)
 define_declare_compare(uint32_t)
 define_declare_compare(uint64_t)
 define_declare_compare(uint128_t)
@@ -128,7 +132,7 @@ define_declare_compare(uint128_t)
  * Generic function to search for the first occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint32_t, uint64_t
+ * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
 #define define_declare_find_first(T) \
 /** Search for the first occurrence of an unsigned integer on a memory mapped
@@ -144,6 +148,8 @@ The values in the file must encoded in big-endian format and sorted in ascending
  */ \
 uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
 
+define_declare_find_first(uint8_t)
+define_declare_find_first(uint16_t)
 define_declare_find_first(uint32_t)
 define_declare_find_first(uint64_t)
 define_declare_find_first(uint128_t)
@@ -152,7 +158,7 @@ define_declare_find_first(uint128_t)
  * Generic function to search for the last occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint32_t, uint64_t
+ * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
 #define define_declare_find_last(T) \
 /** Search for the last occurrence of an unsigned integer on a memory mapped
@@ -168,6 +174,8 @@ The values in the file must encoded in big-endian format and sorted in ascending
 */ \
 uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
 
+define_declare_find_last(uint8_t)
+define_declare_find_last(uint16_t)
 define_declare_find_last(uint32_t)
 define_declare_find_last(uint64_t)
 define_declare_find_last(uint128_t)
