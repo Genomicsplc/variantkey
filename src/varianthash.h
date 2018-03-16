@@ -4,7 +4,7 @@
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
-// @copyright  2017 GENOMICS plc
+// @copyright  2017-2018 GENOMICS plc
 // @license    MIT (see LICENSE)
 // @link       https://github.com/genomicsplc/varianthash
 //
@@ -33,28 +33,11 @@
 // VariantHash by Nicola Asuni
 
 /**
- * @file rsidvar.h
+ * @file varianthash.h
  * @brief File containing the definition of public functions.
  *
  * The functions provided here allows to generate or decode
- * a genetic Variant Hash.
- *
- * A Genetic Variant Hash is composed of 4 sections that can be also used separately:
- *
- *    00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
- *    +---------+ +---------+ +---------+ +---------+
- *    | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
- *    +---------+ +---------+ +---------+ +---------+
- *    |                VARIANT_HASH                 |
- *    +---------------------------------------------+
- *
- * ASSBLY  : 32 bits (8 hex bytes) to represent the hash of Genome Assembly (genome sequence).
- * CHROM   : 32 bits (8 hex bytes) to represent the chromosome.
- *           Chromosomes are always encoded as numbers.
- *           Non numerical human chromosomes (X, Y, XY, MT) are auomatically converted to numbers.
- *           For other species than human the string-to-number chromosome conversion should happen before calling the hashing function.
- * POS     : 32 bits (8 hex bytes) for the reference position (POS), with the 1st base having position 0.
- * REF_ALT : 32 bits (8 hex bytes) for the hash of the "REF_ALT" string.
+ * a genetic VariantHash128 and VariantHash64.
  */
 
 #ifndef VARIANTHASH_H
@@ -63,15 +46,25 @@
 #include "farmhash64.h"
 
 /**
- * Contains the crom, pos and ref+alt encoded data.
+ * VariantHash128 struct
  */
-typedef struct varhash_t
+typedef struct varhash128_t
 {
     uint32_t assembly; //!< Genome Assembly encoded number.
     uint32_t chrom;    //!< Chromosome encoded number.
     uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
     uint32_t refalt;   //!< Hash code for Reference and Alternate
-} varhash_t;
+} varhash128_t;
+
+/**
+ * VariantHash64 struct
+ */
+typedef struct varhash64_t
+{
+    uint8_t chrom;     //!< Chromosome encoded number.
+    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
+    uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 24 bits are used)
+} varhash64_t;
 
 /** @brief Fast ASCII Uppercase function for a-z letters
  *
@@ -87,7 +80,7 @@ int aztoupper(int c);
  *
  * @return Chrom encoding
  */
-uint32_t encode_assembly(const char *assembly);
+uint32_t encode_assembly_32bit(const char *assembly);
 
 /** @brief Returns 32-bit chromosome encoding.
  *
@@ -95,9 +88,17 @@ uint32_t encode_assembly(const char *assembly);
  *
  * @return Chrom encoding
  */
-uint32_t encode_chrom(const char *chrom);
+uint32_t encode_chrom_32bit(const char *chrom);
 
-/** @brief Decode the CHROM code.
+/** @brief Returns 8-bit chromosome encoding.
+ *
+ * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ *
+ * @return Chrom encoding
+ */
+uint8_t encode_chrom_8bit(const char *chrom);
+
+/** @brief Decode the 32-bit CHROM code.
  *
  * @param code   CHROM code.
  * @param chrom  CHROM string buffer to be returned.
@@ -105,7 +106,17 @@ uint32_t encode_chrom(const char *chrom);
  * @return If successful, the total number of characters written is returned excluding the null-character appended
  *         at the end of the string, otherwise a negative number is returned in case of failure.
  */
-size_t decode_chrom(uint32_t code, char *chrom);
+size_t decode_chrom_32bit(uint32_t code, char *chrom);
+
+/** @brief Decode the 8-bit CHROM code.
+ *
+ * @param code   CHROM code.
+ * @param chrom  CHROM string buffer to be returned.
+ *
+ * @return If successful, the total number of characters written is returned excluding the null-character appended
+ *         at the end of the string, otherwise a negative number is returned in case of failure.
+ */
+size_t decode_chrom_8bit(uint8_t code, char *chrom);
 
 /** @brief Returns 32-bit reference+alternate hash code.
  *
@@ -115,7 +126,21 @@ size_t decode_chrom(uint32_t code, char *chrom);
  *
  * @return 32-bit hash code
  */
-uint32_t encode_ref_alt(const char *ref, const char *alt);
+uint32_t encode_ref_alt_32bit(const char *ref, const char *alt);
+
+/** @brief Returns 24-bit reference+alternate hash code.
+ *
+ * @param ref   Reference allele. String containing a sequence of nucleotide letters.
+ *              The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param alt   Alternate non-reference allele string.
+ *
+ * @return 24-bit hash code (in 32 bit unsignd integer)
+ */
+uint32_t encode_ref_alt_24bit(const char *ref, const char *alt);
+
+
+
+
 
 /** @brief Decode the REF+ALT code if reversible (if it has less than 5 nucleotidesin total).
  *
