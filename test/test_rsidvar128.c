@@ -198,21 +198,39 @@ int test_find_vr128_chrom_range_notfound(mmfile_t vr)
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
-    uint64_t last = 9;
-    rsid = find_vr128_chrom_range(vr.src, &first, &last, 0xfffffff0);
+    uint64_t last = 8;
+    rsid = find_vr128_chrom_range(vr.src, &first, &last, 0xfffffffe);
     if (rsid != 0)
     {
         fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
         ++errors;
     }
-    if (first != 10)
+    if (first != 9)
     {
-        fprintf(stderr, "%s : Expected first 10, got %"PRIu64"\n",  __func__, first);
+        fprintf(stderr, "%s : Expected first 9, got %"PRIu64"\n",  __func__, first);
         ++errors;
     }
-    if (last != 9)
+    if (last != 8)
     {
-        fprintf(stderr, "%s : Expected last 9, got %"PRIu64"\n",  __func__, last);
+        fprintf(stderr, "%s : Expected last 8, got %"PRIu64"\n",  __func__, last);
+        ++errors;
+    }
+    first = 0;
+    last = 8;
+    rsid = find_vr128_chrom_range(vr.src, &first, &last, 0);
+    if (rsid != 1)
+    {
+        fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
+        ++errors;
+    }
+    if (first != 0)
+    {
+        fprintf(stderr, "%s : Expected first 0, got %"PRIu64"\n",  __func__, first);
+        ++errors;
+    }
+    if (last != 0)
+    {
+        fprintf(stderr, "%s : Expected last 0, got %"PRIu64"\n",  __func__, last);
         ++errors;
     }
     return errors;
