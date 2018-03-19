@@ -58,12 +58,12 @@ typedef struct test_data_t
     uint32_t o_chrom;
     uint32_t o_pos;
     uint32_t o_refalt;
-    const char* o_hash;
+    const char* o_key;
     uint8_t os_chrom;
     uint32_t os_pos;
     uint32_t os_refalt;
     uint64_t os_vh;
-    const char* os_hash;
+    const char* os_key;
 } test_data_t;
 
 static test_data_t test_data[566] =
@@ -962,13 +962,13 @@ int test_variantkey128()
         char hash[33];
         variantkey128_string(hash, 33, h);
         // ---
-        variantkey64_t hs;
-        uint64_t k;
-        k = variantkey64(test_data[i].i_chrom, test_data[i].i_pos, test_data[i].i_ref, test_data[i].i_alt);
-        char hashk[17];
-        variantkey64_string(hashk, 17, k);
-        hs = split_variantkey64(k);
-        fprintf(stderr, "{\"%s\", \"%s\", %"PRIu32", \"%s\", \"%s\", 0x%08"PRIx32", 0x%08"PRIx32", 0x%08"PRIx32", 0x%08"PRIx32", \"%s\", 0x%02x, 0x%08"PRIx32", 0x%06"PRIx32", 0x%016"PRIx64", \"%s\"},\n", test_data[i].i_assembly, test_data[i].i_chrom, test_data[i].i_pos, test_data[i].i_ref, test_data[i].i_alt, h.assembly, h.chrom, h.pos, h.refalt, hash, hs.chrom, hs.pos, hs.refalt, k, hashk);
+        //variantkey64_t hs;
+        //uint64_t k;
+        //k = variantkey64(test_data[i].i_chrom, test_data[i].i_pos, test_data[i].i_ref, test_data[i].i_alt);
+        //char hashk[17];
+        //variantkey64_string(hashk, 17, k);
+        //hs = split_variantkey64(k);
+        //fprintf(stderr, "{\"%s\", \"%s\", %"PRIu32", \"%s\", \"%s\", 0x%08"PRIx32", 0x%08"PRIx32", 0x%08"PRIx32", 0x%08"PRIx32", \"%s\", 0x%02x, 0x%08"PRIx32", 0x%06"PRIx32", 0x%016"PRIx64", \"%s\"},\n", test_data[i].i_assembly, test_data[i].i_chrom, test_data[i].i_pos, test_data[i].i_ref, test_data[i].i_alt, h.assembly, h.chrom, h.pos, h.refalt, hash, hs.chrom, hs.pos, hs.refalt, k, hashk);
         // ---
         if (h.assembly != test_data[i].o_assembly)
         {
@@ -1037,9 +1037,9 @@ int test_variantkey128_string()
     {
         variantkey128_t h = {test_data[i].o_assembly, test_data[i].o_chrom, test_data[i].o_pos, test_data[i].o_refalt};
         variantkey128_string(vs, 512, h);
-        if (strcmp(vs, test_data[i].o_hash) != 0)
+        if (strcmp(vs, test_data[i].o_key) != 0)
         {
-            fprintf(stderr, "%s (%d): Unexpected value: got %s instead of %s\n", __func__, i, vs, test_data[i].o_hash);
+            fprintf(stderr, "%s (%d): Unexpected value: got %s instead of %s\n", __func__, i, vs, test_data[i].o_key);
             ++errors;
         }
     }
@@ -1069,9 +1069,9 @@ int test_variantkey64_string()
     {
         h = test_data[i].os_vh;
         variantkey64_string(vs, 512, h);
-        if (strcmp(vs, test_data[i].os_hash) != 0)
+        if (strcmp(vs, test_data[i].os_key) != 0)
         {
-            fprintf(stderr, "%s (%d): Unexpected value: got %s instead of %s\n", __func__, i, vs, test_data[i].os_hash);
+            fprintf(stderr, "%s (%d): Unexpected value: got %s instead of %s\n", __func__, i, vs, test_data[i].os_key);
             ++errors;
         }
     }
@@ -1098,7 +1098,7 @@ int test_parse_variantkey128_string()
     variantkey128_t h;
     for (i=0 ; i < k_test_size; i++)
     {
-        h = parse_variantkey128_string(test_data[i].o_hash);
+        h = parse_variantkey128_string(test_data[i].o_key);
         if (h.assembly != test_data[i].o_assembly)
         {
             fprintf(stderr, "%s (%d): Unexpected assembly encode hash: got %x instead of %x\n", __func__, i, h.assembly, test_data[i].o_assembly);
@@ -1157,7 +1157,7 @@ int test_parse_variantkey64_string()
     uint64_t h;
     for (i=0 ; i < k_test_size; i++)
     {
-        h = parse_variantkey64_string(test_data[i].os_hash);
+        h = parse_variantkey64_string(test_data[i].os_key);
         if (h != test_data[i].os_vh)
         {
             fprintf(stderr, "%s (%d): Unexpected hash: got 0x%016"PRIx64" instead of 0x%016"PRIx64"\n", __func__, i, h, test_data[i].os_vh);
@@ -1175,6 +1175,33 @@ int test_parse_variantkey64_string_error()
     {
         fprintf(stderr, "%s : hash should be 0\n", __func__);
         ++errors;
+    }
+    return errors;
+}
+
+int test_split_variantkey64()
+{
+    int errors = 0;
+    int i;
+    variantkey64_t h;
+    for (i=0 ; i < k_test_size; i++)
+    {
+        h = split_variantkey64(test_data[i].os_vh);
+        if (h.chrom != test_data[i].os_chrom)
+        {
+            fprintf(stderr, "%s (%d): Unexpected chrom encode hash: got %x instead of %x\n", __func__, i, h.chrom, test_data[i].os_chrom);
+            ++errors;
+        }
+        if (h.pos != test_data[i].os_pos)
+        {
+            fprintf(stderr, "%s (%d): Unexpected pos encode hash: got %x instead of %x\n", __func__, i, h.pos, test_data[i].os_pos);
+            ++errors;
+        }
+        if (h.refalt != test_data[i].os_refalt)
+        {
+            fprintf(stderr, "%s (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", __func__, i, h.refalt, test_data[i].os_refalt);
+            ++errors;
+        }
     }
     return errors;
 }
@@ -1256,6 +1283,7 @@ int main()
     errors += test_parse_variantkey128_string_error();
     errors += test_parse_variantkey64_string();
     errors += test_parse_variantkey64_string_error();
+    errors += test_split_variantkey64();
 
     benchmark_variantkey128();
     benchmark_variantkey64();

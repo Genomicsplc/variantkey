@@ -63,7 +63,7 @@ class TestFunctions(TestCase):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/test_data.bin")
+            "/../../test/data/test_data.bin")
         src, fd, size = bs.mmap_binfile(inputfile)
         if fd < 0 or size != 2000:
             assert False, "Unable to open the file"
@@ -136,7 +136,7 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/test_data.bin")
+            "/../../test/data/test_data.bin")
         src, fd, size = bs.mmap_binfile(inputfile)
         if fd < 0 or size != 2000:
             assert False, "Unable to open the file"

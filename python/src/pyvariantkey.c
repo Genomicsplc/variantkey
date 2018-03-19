@@ -139,7 +139,7 @@ static PyObject* py_variantkey64(PyObject *Py_UNUSED(ignored), PyObject *args)
     if (!PyArg_ParseTuple(args, "sIss", &chrom, &pos, &ref, &alt))
         return NULL;
     uint64_t h = variantkey64(chrom, pos, ref, alt);
-    return Py_BuildValue("I", h);
+    return Py_BuildValue("K", h);
 }
 
 static PyObject* py_variantkey128_string(PyObject *Py_UNUSED(ignored), PyObject *args)
@@ -188,20 +188,20 @@ static PyObject* py_parse_variantkey64_string(PyObject *Py_UNUSED(ignored), PyOb
     if (!PyArg_ParseTuple(args, "s#", &vs))
         return NULL;
     uint64_t h = parse_variantkey64_string(vs);
-    return Py_BuildValue("I", h);
+    return Py_BuildValue("K", h);
 }
 
 static PyObject* py_split_variantkey64(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t code;
-    if (!PyArg_ParseTuple(args, "I", &code))
+    if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
     variantkey64_t h = split_variantkey64(code);
     result = PyTuple_New(3);
-    PyTuple_SetItem(result, 1, Py_BuildValue("B", h.chrom));
-    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 3, Py_BuildValue("I", h.refalt));
+    PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.refalt));
     return result;
 }
 
@@ -209,28 +209,24 @@ static PyObject* py_split_variantkey64(PyObject *Py_UNUSED(ignored), PyObject *a
 
 static PyObject* py_farmhash64(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
-    PyObject *result;
     const char *s;
     Py_ssize_t len;
     if (!PyArg_ParseTuple(args, "s#", &s))
         return NULL;
     len = strlen(s);
     uint64_t h = farmhash64(s, len);
-    result = Py_BuildValue("K", h);
-    return result;
+    return Py_BuildValue("K", h);
 }
 
 static PyObject* py_farmhash32(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
-    PyObject *result;
     const char *s;
     Py_ssize_t len;
     if (!PyArg_ParseTuple(args, "s#", &s))
         return NULL;
     len = strlen(s);
-    uint64_t h = farmhash32(s, len);
-    result = Py_BuildValue("I", h);
-    return result;
+    uint32_t h = farmhash32(s, len);
+    return Py_BuildValue("I", h);
 }
 
 // --- BINSEARCH ---
