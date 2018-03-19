@@ -31,7 +31,7 @@ The full VariantKey is composed of 4 sections arranged in 128 bit:
     +---------+ +---------+ +---------+ +---------+
     | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+ +---------+
-    |                VARIANTKEY                 |
+    |                 VARIANTKEY                  |
     +---------------------------------------------+
 
 * **`ASSBLY`**  : 32 bit (4 bytes, 8 hex bytes) to represent the hash of Genome Assembly string.  
@@ -123,7 +123,7 @@ with the following structure:
     +---------+ +---------+ +---------+ +---------+ +---------+ 
     |  RSID   | | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+ +---------+ +---------+
-                |                VARIANTKEY                 |
+                |                 VARIANTKEY                  |
                 +---------------------------------------------+
 
 
@@ -134,7 +134,7 @@ with the following structure:
     +---------+ +---------+ +---------+ +---------+ +---------+
     | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
     +---------+ +---------+ +---------+ +---------+ +---------+
-    |                VARIANTKEY                 |
+    |                 VARIANTKEY                  |
     +---------------------------------------------+
 
 
@@ -152,7 +152,7 @@ with the following structure:
     +---------+ +---------+ +---------+ +---------+ 
     |  RSID   | |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+ +---------+
-                |          VARIANTKEY           |
+                |           VARIANTKEY            |
                 +---------------------------------+
 
 
@@ -163,7 +163,7 @@ with the following structure:
     +---------+ +---------+ +---------+ +---------+
     |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
     +---------+ +---------+ +---------+ +---------+
-    |          VARIANTKEY           |
+    |           VARIANTKEY            |
     +---------------------------------+
 
 
@@ -216,7 +216,7 @@ sudo python setup.py install build_ext --include-dirs=../c/src
 ### Usage Example
 
 ```
-import libpyvariantkey as vh
+import variantkey as vh
 
 h = vh.variant_hash("6", 193330, "TCA", "TGTCG")
 print(h[0], h[1], h[2])

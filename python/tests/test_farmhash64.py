@@ -1,7 +1,7 @@
-"""Tests for libpyvariantkey module."""
+"""Tests for variantkey module."""
 
 
-import libpyvariantkey as vh
+import variantkey as vh
 from unittest import TestCase
 
 

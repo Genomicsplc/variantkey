@@ -114,8 +114,14 @@ build:
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0
 
+
+# Set the version from VERSION file
+version:
+	#sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" python/conda/meta.yaml
+	sed -i "s/version=.*,$$/version='$(VERSION)',/" python/setup.py
+
 # Build the python module
-python:
+python: version
 	cd python && \
 	rm -rf ./build && \
 	python3 setup.py build_ext --include-dirs=../src && \

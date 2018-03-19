@@ -118,7 +118,7 @@ size_t decode_chrom_32bit(uint32_t code, char *chrom);
  */
 size_t decode_chrom_8bit(uint8_t code, char *chrom);
 
-/** @brief Returns 32-bit reference+alternate hash code.
+/** @brief Returns 32-bit reference+alternate encoding.
  *
  * @param ref   Reference allele. String containing a sequence of nucleotide letters.
  *              The value in the pos field refers to the position of the first nucleotide in the String.
@@ -128,7 +128,7 @@ size_t decode_chrom_8bit(uint8_t code, char *chrom);
  */
 uint32_t encode_refalt_32bit(const char *ref, const char *alt);
 
-/** @brief Returns 24-bit reference+alternate hash code.
+/** @brief Returns 24-bit reference+alternate encoding.
  *
  * @param ref   Reference allele. String containing a sequence of nucleotide letters.
  *              The value in the pos field refers to the position of the first nucleotide in the String.
@@ -148,7 +148,7 @@ uint32_t encode_refalt_24bit(const char *ref, const char *alt);
  */
 size_t decode_refalt_32bit(uint32_t code, char *ref, char *alt);
 
-/** @brief Decode the 24-bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
+/** @brief Decode the 24-bit REF+ALT code if reversible (if it has less than 4 nucleotides in total).
  *
  * @param code  REF+ALT code
  * @param ref   REF string buffer to be returned.

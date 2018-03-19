@@ -1,7 +1,7 @@
-"""Tests for libpyvariantkey module."""
+"""Tests for variantkey module."""
 
 
-import libpyvariantkey as vh
+import variantkey as vh
 from unittest import TestCase
 
 variantsTestData = [
@@ -581,40 +581,40 @@ class TestFunctions(TestCase):
             h = vh.encode_assembly(assembly)
             self.assertEqual(h, hassembly)
 
-    def test_encode_chrom(self):
+    def test_encode_chrom_32bit(self):
         for assembly, chrom, pos, ref, alt, hassembly, hchrom, hpos, hrefalt, vhash in variantsTestData:
-            h = vh.encode_chrom(chrom)
+            h = vh.encode_chrom_32bit(chrom)
             self.assertEqual(h, hchrom)
 
-    def test_encode_ref_alt(self):
+    def test_encode_refalt_32bit(self):
         for assembly, chrom, pos, ref, alt, hassembly, hchrom, hpos, hrefalt, vhash in variantsTestData:
-            h = vh.encode_ref_alt(ref, alt)
+            h = vh.encode_refalt_32bit(ref, alt)
             self.assertEqual(h, hrefalt)
 
-    def test_variant_hash(self):
+    def test_variantkey128(self):
         for assembly, chrom, pos, ref, alt, hassembly, hchrom, hpos, hrefalt, vhash in variantsTestData:
-            h = vh.variant_hash(assembly, chrom, pos, ref, alt)
+            h = vh.variantkey128(assembly, chrom, pos, ref, alt)
             self.assertEqual(h[0], hassembly)
             self.assertEqual(h[1], hchrom)
             self.assertEqual(h[2], hpos)
             self.assertEqual(h[3], hrefalt)
 
-    def test_variant_hash_string(self):
+    def test_variantkey128_string(self):
         for assembly, chrom, pos, ref, alt, hassembly, hchrom, hpos, hrefalt, vhash in variantsTestData:
-            h = vh.variant_hash_string(hassembly, hchrom, hpos, hrefalt)
+            h = vh.variantkey128_string(hassembly, hchrom, hpos, hrefalt)
             self.assertEqual(h, vhash.encode('ascii'))
 
-    def test_decode_variant_hash_string(self):
+    def test_decode_variantkey128_string(self):
         for assembly, chrom, pos, ref, alt, hassembly, hchrom, hpos, hrefalt, vhash in variantsTestData:
-            h = vh.decode_variant_hash_string(vhash)
+            h = vh.decode_variantkey128_string(vhash)
             self.assertEqual(h[0], hassembly)
             self.assertEqual(h[1], hchrom)
             self.assertEqual(h[2], hpos)
             self.assertEqual(h[3], hrefalt)
 
-    def test_decode_variant_hash_bytes(self):
+    def test_decode_variantkey128_bytes(self):
         for assembly, chrom, pos, ref, alt, hassembly, hchrom, hpos, hrefalt, vhash in variantsTestData:
-            h = vh.decode_variant_hash_string(vhash.encode('ascii'))
+            h = vh.decode_variantkey128_string(vhash.encode('ascii'))
             self.assertEqual(h[0], hassembly)
             self.assertEqual(h[1], hchrom)
             self.assertEqual(h[2], hpos)
@@ -623,18 +623,18 @@ class TestFunctions(TestCase):
 
 class TestBenchmark(object):
 
-    def test_variant_hash_benchmark(self, benchmark):
-        benchmark(vh.variant_hash, "GRCh37", "MT", 16527, "C", "T")
+    def test_variantkey128_benchmark(self, benchmark):
+        benchmark(vh.variantkey128, "GRCh37", "MT", 16527, "C", "T")
 
-    def test_variant_hash_string_benchmark(self, benchmark):
-        benchmark(vh.variant_hash_string, 0x8b29d2c7, 0x1a, 0x408f, 0x387351cb)
+    def test_variantkey128_string_benchmark(self, benchmark):
+        benchmark(vh.variantkey128_string, 0x8b29d2c7, 0x1a, 0x408f, 0x387351cb)
 
-    def test_decode_variant_hash_string_benchmark(self, benchmark):
+    def test_decode_variantkey128_string_benchmark(self, benchmark):
         benchmark(
-            vh.decode_variant_hash_string,
+            vh.decode_variantkey128_string,
             "8b29d2c70000001a0000408f387351cb")
 
-    def test_decode_variant_hash_bytes_benchmark(self, benchmark):
+    def test_decode_variantkey128_bytes_benchmark(self, benchmark):
         benchmark(
-            vh.decode_variant_hash_string,
+            vh.decode_variantkey128_string,
             b"8b29d2c70000001a0000408f387351cb")

@@ -4,10 +4,6 @@ from codecs import open
 from subprocess import call
 from setuptools import setup, find_packages, Extension, Command
 
-
-VERSION = (1, 0, 0)
-
-
 class RunTests(Command):
     """Run all tests."""
     description = 'run tests'
@@ -26,9 +22,9 @@ class RunTests(Command):
 
 
 setup(
-    name='libpyvariantkey',
-    version=".".join([str(x) for x in VERSION]),
-    keywords=('variantkey'),
+    name='variantkey',
+    version='2.0.6',
+    keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=open('../README.md', 'r').read(),
     author='Nicola Asuni',
@@ -37,11 +33,12 @@ setup(
     packages=find_packages('src', exclude=['docs', 'tests*']),
     package_dir={'': 'src'},
     ext_modules=[
-        Extension('libpyvariantkey', [
-            '../src/farmhash64.c',
-            '../src/variantkey.c',
+        Extension('variantkey', [
             '../src/binsearch.c',
-            '../src/rsidvar.c',
+            '../src/farmhash64.c',
+            '../src/rsidvar64.c',
+            '../src/rsidvar128.c',
+            '../src/variantkey.c',
             'src/pyvariantkey.c'
         ], extra_compile_args=["-O3"])
     ],
