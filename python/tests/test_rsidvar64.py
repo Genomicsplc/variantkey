@@ -31,7 +31,7 @@ class TestFunctions(TestCase):
                 os.path.realpath(__file__)) +
             "/../../test/data/rsid_variantkey64.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
-        if rvfd < 0 or rvsize != 200:
+        if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsid_variantkey64.10.bin file"
         global vrsrc, vrfd, vrsize
         inputfile = os.path.realpath(
@@ -39,7 +39,7 @@ class TestFunctions(TestCase):
                 os.path.realpath(__file__)) +
             "/../../test/data/variantkey64_rsid.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
-        if vrfd < 0 or vrsize != 200:
+        if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the variantkey64_rsid.10.bin file"
 
     @classmethod
@@ -136,7 +136,7 @@ class TestBenchmark(object):
                 os.path.realpath(__file__)) +
             "/../../test/data/rsid_variantkey64.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
-        if rvfd < 0 or rvsize != 200:
+        if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsid_variantkey64.10.bin file"
         global vrsrc, vrfd, vrsize
         if vrfd >= 0:
@@ -147,7 +147,7 @@ class TestBenchmark(object):
                 os.path.realpath(__file__)) +
             "/../../test/data/variantkey64_rsid.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
-        if vrfd < 0 or vrsize != 200:
+        if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the variantkey64_rsid.10.bin file"
 
     def test_get_vr64_rsid(self, benchmark):

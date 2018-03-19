@@ -630,7 +630,7 @@ static PyObject* py_find_vr64_pos_range(PyObject *Py_UNUSED(ignored), PyObject *
     uint64_t first, last;
     uint32_t pos_start, pos_end;
     PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKIII", &mfsrc, &first, &last, &pos_start, &pos_end))
+    if (!PyArg_ParseTuple(args, "OKKII", &mfsrc, &first, &last, &pos_start, &pos_end))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
     uint32_t h = find_vr64_pos_range(src, &first, &last, pos_start, pos_end);
@@ -715,7 +715,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"find_rv64_variantkey_by_rsid", py_find_rv64_variantkey_by_rsid, METH_VARARGS, PYFINDRV64VARIANTKEYBYRSID_DOCSTRING},
     {"find_vr64_rsid_by_variantkey", py_find_vr64_rsid_by_variantkey, METH_VARARGS, PYFINDVR64RSIDBYVARIANTKEY_DOCSTRING},
     {"find_vr64_chrom_range", py_find_vr64_chrom_range, METH_VARARGS, PYFINDVR64CHROMRANGE_DOCSTRING},
-    {"find_vr64_pos_range(", py_find_vr64_pos_range, METH_VARARGS, PYFINDVR64POSRANGE_DOCSTRING},
+    {"find_vr64_pos_range", py_find_vr64_pos_range, METH_VARARGS, PYFINDVR64POSRANGE_DOCSTRING},
     {"find_vr64_chrompos_range", py_find_vr64_chrompos_range, METH_VARARGS, PYFINDVR64CHROMPOSRANGE_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
