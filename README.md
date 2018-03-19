@@ -1,13 +1,13 @@
-# VariantHash
+# VariantKey
 
-*Genetic Variant Hash*
+*Genetic Variant Key*
 
-[![Master Build Status](https://secure.travis-ci.org/genomicsplc/varianthash.png?branch=master)](https://travis-ci.org/genomicsplc/varianthash?branch=master)
-[![Master Coverage Status](https://coveralls.io/repos/genomicsplc/varianthash/badge.svg?branch=master&service=github)](https://coveralls.io/github/genomicsplc/varianthash?branch=master)
+[![Master Build Status](https://secure.travis-ci.org/genomicsplc/variantkey.png?branch=master)](https://travis-ci.org/genomicsplc/variantkey?branch=master)
+[![Master Coverage Status](https://coveralls.io/repos/genomicsplc/variantkey/badge.svg?branch=master&service=github)](https://coveralls.io/github/genomicsplc/variantkey?branch=master)
 
 * **category**    Libraries
 * **license**     MIT (see LICENSE)
-* **link**        https://github.com/genomicsplc/varianthash
+* **link**        https://github.com/genomicsplc/variantkey
 
 
 ## Description
@@ -23,15 +23,15 @@ This can be done in [VCF]() files using the [vt decompose](https://genome.sph.um
 b. **normalized** as in ["Unified representation of genetic variants" - Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).
 This can be done in VCF files using the [vt normalize](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
 
-## VariantHash128
+## VariantKey128
 
-The full VariantHash is composed of 4 sections arranged in 128 bit:
+The full VariantKey is composed of 4 sections arranged in 128 bit:
 
     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15
     +---------+ +---------+ +---------+ +---------+
     | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+ +---------+
-    |                VARIANT_HASH                 |
+    |                VARIANTKEY                 |
     +---------------------------------------------+
 
 * **`ASSBLY`**  : 32 bit (4 bytes, 8 hex bytes) to represent the hash of Genome Assembly string.  
@@ -55,21 +55,21 @@ The full VariantHash is composed of 4 sections arranged in 128 bit:
     * the following 5 groups of 5 bit represent each a nucleotide of `REF` followed by `ALT`.
 
 
-The 128 bit VariantHash can be exported as a single 32 character hexadecimal string.  
-The `CHROM` and `POS` 32 sections of the VariantHash key are sortable.
+The 128 bit VariantKey can be exported as a single 32 character hexadecimal string.  
+The `CHROM` and `POS` 32 sections of the VariantKey key are sortable.
 
 
-## VariantHash64
+## VariantKey64
 
-This is a short version of the VariantHash that supports up to 255 chromosomes and omit the genome assembly reference.
+This is a short version of the VariantKey that supports up to 255 chromosomes and omit the genome assembly reference.
 
-The short VariantHash is composed of 3 sections arranged in 64 bit:
+The short VariantKey is composed of 3 sections arranged in 64 bit:
 
     00          01 02 03 04 05 06 07
     +---------+ +---------+ +---------+
     |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+
-    |          VARIANT_HASH           |
+    |          VARIANTKEY           |
     +---------------------------------+
 
 * **`CHROM`**   : 8 bit (1 byte, 2 hex bytes) to represent the chromosome.  
@@ -88,13 +88,13 @@ The short VariantHash is composed of 3 sections arranged in 64 bit:
     * the following 4 groups of 5 bit represent each a nucleotide of `REF` followed by `ALT`.
 
 
-The 64 bit VariantHash can be exported as a single 16 character hexadecimal string.  
-The `CHROM` and `POS` sections of the VariantHash64 key are sortable.
+The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.  
+The `CHROM` and `POS` sections of the VariantKey64 key are sortable.
 
 
 ## Input values
 
-* **`ASSBLY`** - *genome Assembly* : String identifying the Genome Assembly (*only required for Varianthash128*).  
+* **`ASSBLY`** - *genome Assembly* : String identifying the Genome Assembly (*only required for VARIANTKEY128*).  
     The Genome Assembly string should be in the form used by [Genome Reference Consortium](https://www.ncbi.nlm.nih.gov/grc), including the patch number and build number separated by a dot. For example: `GRCh37.p13.b150`.  
 
 * **`CHROM`** - *chromosome*     : Identifier from the reference genome, no white-space or leading zeros permitted.
@@ -109,61 +109,61 @@ The `CHROM` and `POS` sections of the VariantHash64 key are sortable.
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
-## Binary file format for RSID-VariantHash128 index
+## Binary file format for RSID-VariantKey128 index
 
-The functions provided here allows fast search for RSID and VariantHash128 values from binary files
+The functions provided here allows fast search for RSID and VariantKey128 values from binary files
 made of adjacent constant-length binary blocks sorted in ascending order.
 
 The input binary files can be generated using the rsidvar128.sh script in the resources/tools folder.
 
-The rsid_varhash128.bin file contains adjacent 20 bytes binary blocks
+The rsid_variantkey128.bin file contains adjacent 20 bytes binary blocks
 with the following structure:
 
     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
     +---------+ +---------+ +---------+ +---------+ +---------+ 
     |  RSID   | | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+ +---------+ +---------+
-                |                VARIANT_HASH                 |
+                |                VARIANTKEY                 |
                 +---------------------------------------------+
 
 
-The varhash128_rsid.bin file contains adjacent 20 bytes binary blocks
+The variantkey128_rsid.bin file contains adjacent 20 bytes binary blocks
 with the following structure:
 
     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
     +---------+ +---------+ +---------+ +---------+ +---------+
     | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
     +---------+ +---------+ +---------+ +---------+ +---------+
-    |                VARIANT_HASH                 |
+    |                VARIANTKEY                 |
     +---------------------------------------------+
 
 
-## Binary file format for RSID-VariantHash64 index
+## Binary file format for RSID-VariantKey64 index
 
-The functions provided here allows fast search for RSID and VariantHash64 values from binary files
+The functions provided here allows fast search for RSID and VariantKey64 values from binary files
 made of adjacent constant-length binary blocks sorted in ascending order.
 
 The input binary files can be generated using the rsidvar64.sh script in the resources/tools folder.
 
-The rsid_varhash64.bin file contains adjacent 12 bytes binary blocks
+The rsid_variantkey64.bin file contains adjacent 12 bytes binary blocks
 with the following structure:
 
     00 01 02 03 04          05 06 07    08 09 10 11
     +---------+ +---------+ +---------+ +---------+ 
     |  RSID   | |  CHROM  | |   POS   | | REF_ALT |
     +---------+ +---------+ +---------+ +---------+
-                |          VARIANT_HASH           |
+                |          VARIANTKEY           |
                 +---------------------------------+
 
 
-The varhash64_rsid.bin file contains adjacent 12 bytes binary blocks
+The variantkey64_rsid.bin file contains adjacent 12 bytes binary blocks
 with the following structure:
 
     00          01 02 03 04 05 06 07    08 09 10 11
     +---------+ +---------+ +---------+ +---------+
     |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
     +---------+ +---------+ +---------+ +---------+
-    |          VARIANT_HASH           |
+    |          VARIANTKEY           |
     +---------------------------------+
 
 
@@ -216,7 +216,7 @@ sudo python setup.py install build_ext --include-dirs=../c/src
 ### Usage Example
 
 ```
-import libpyvarianthash as vh
+import libpyvariantkey as vh
 
 h = vh.variant_hash("6", 193330, "TCA", "TGTCG")
 print(h[0], h[1], h[2])

@@ -1,9 +1,9 @@
-// Python varianthash Module
+// Python variantkey Module
 //
 // @category   Libraries
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @license    MIT (see LICENSE)
-// @link       https://github.com/genomicsplc/varianthash
+// @link       https://github.com/genomicsplc/variantkey
 
 #define PY_SSIZE_T_CLEAN
 #include "Python.h"
@@ -28,14 +28,14 @@ static PyObject *py_find_last_uint64(PyObject *self, PyObject *args);
 static PyObject *py_find_first_uint128(PyObject *self, PyObject *args);
 static PyObject *py_find_last_uint128(PyObject *self, PyObject *args);
 
-PyMODINIT_FUNC initlibpyvarianthash(void);
+PyMODINIT_FUNC initlibpyvariantkey(void);
 
 #define PYENCODEASSBLY_DOCSTRING "Returns 32-bit assembly encoding."
 #define PYENCODECHROM_DOCSTRING "Returns 32-bit chromosome encoding."
 #define PYENCODEREFALT_DOCSTRING "Returns 32-bit reference+alternate hash code."
-#define PYVARIANTHASH_DOCSTRING "Returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT."
-#define PYVARIANTHASHSTRING_DOCSTRING "Returns a human-readable Genetic Variant Hash string (32 hex characters)."
-#define PYDECODEVARIANTHASHSTRING_DOCSTRING "Parses a variant hash string and returns the individual components."
+#define PYVARIANTKEY_DOCSTRING "Returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT."
+#define PYVARIANTKEYSTRING_DOCSTRING "Returns a human-readable Genetic Variant Key string (32 hex characters)."
+#define PYDECODEVARIANTKEYSTRING_DOCSTRING "Parses a variant key string and returns the individual components."
 
 #define PYFARMHASH64_DOCSTRING "Returns a 64-bit fingerprint hash for a byte array.\nexample: print libpyfarmhash64.farmhash64('Lorem ipsum dolor sit amet')\n16191328082827683567"
 #define PYFARMHASH32_DOCSTRING "Returns a 32-bit fingerprint hash for a byte array.\nexample: print libpyfarmhash64.farmhash32('Lorem ipsum dolor sit amet')\n2990660358"
@@ -51,9 +51,9 @@ PyMODINIT_FUNC initlibpyvarianthash(void);
 #define PYFINDLASTUINT128_DOCSTRING "Search for the last occurrence of a 128 bit unsigned integer on a memory mapped binary file containing adjacent blocks of sorted binary data. The 128 bit values in the file must encoded in big-endian format and sorted in ascending order."
 
 #define PYGETVRRSID_DOCSTRING "Returns the RSID at the specified position."
-#define PYGETRVVARHASH_DOCSTRING "Returns the VariantHash at the specified position."
-#define PYFINDRVVARHASHBYRSID_DOCSTRING "Search for the specified RSID and returns the first occurrence of VariantHash."
-#define PYFINDVRRSIDBYVARHASH_DOCSTRING "Search for the specified VariantHash and returns the first occurrence of RSID."
+#define PYGETRVVARHASH_DOCSTRING "Returns the VariantKey at the specified position."
+#define PYFINDRVVARHASHBYRSID_DOCSTRING "Search for the specified RSID and returns the first occurrence of VariantKey."
+#define PYFINDVRRSIDBYVARHASH_DOCSTRING "Search for the specified VariantKey and returns the first occurrence of RSID."
 #define PYFINDVRCHROMPOSRANGE_DOCSTRING "Search for the specified CHROM-POS range and returns the first occurrence of RSID."
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)

@@ -25,10 +25,10 @@ uint32_t get_vr128_rsid(const unsigned char *src, uint64_t item)
     return bytes_to_uint32_t(src, get_address(RSIDVAR128_BIN_BLKLEN, VARRSID128_BPOS_RSID, item));
 }
 
-varhash128_t get_rv128_varhash(const unsigned char *src, uint64_t item)
+variantkey128_t get_rv128_variantkey(const unsigned char *src, uint64_t item)
 {
     uint64_t i = get_address(RSIDVAR128_BIN_BLKLEN, 0, item);
-    return (varhash128_t)
+    return (variantkey128_t)
     {
         .assembly = bytes_to_uint32_t(src, i + RSIDVAR128_BPOS_ASSBLY),
          .chrom = bytes_to_uint32_t(src, i + RSIDVAR128_BPOS_CHROM),
@@ -37,22 +37,22 @@ varhash128_t get_rv128_varhash(const unsigned char *src, uint64_t item)
     };
 }
 
-varhash128_t find_rv128_varhash_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
+variantkey128_t find_rv128_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
 {
     uint64_t max = last;
     uint64_t found = find_first_uint32_t(src, RSIDVAR128_BIN_BLKLEN, 0, first, &max, rsid);
     if (found > last)
     {
-        return (varhash128_t)
+        return (variantkey128_t)
         {
             .assembly = 0, .chrom = 0, .pos = 0, .refalt = 0
         };
     }
     *first = found;
-    return get_rv128_varhash(src, found);
+    return get_rv128_variantkey(src, found);
 }
 
-uint32_t find_vr128_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, varhash128_t vh)
+uint32_t find_vr128_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, variantkey128_t vh)
 {
     uint64_t max = last;
     uint64_t found = find_first_uint128_t(src, RSIDVAR128_BIN_BLKLEN, 0, first, &max, (uint128_t)

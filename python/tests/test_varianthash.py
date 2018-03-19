@@ -1,7 +1,7 @@
-"""Tests for libpyvarianthash module."""
+"""Tests for libpyvariantkey module."""
 
 
-import libpyvarianthash as vh
+import libpyvariantkey as vh
 from unittest import TestCase
 
 variantsTestData = [

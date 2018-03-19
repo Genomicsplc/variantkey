@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.1)
-project (varianthash)
+project (variantkey)
 
 set( CMAKE_VERBOSE_MAKEFILE off )
 

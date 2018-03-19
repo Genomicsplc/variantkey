@@ -1,16 +1,16 @@
-// Python VariantHash Module
+// Python VariantKey Module
 //
 // @category   Libraries
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @license    MIT (see LICENSE)
-// @link       https://github.com/genomicsplc/varianthash
+// @link       https://github.com/genomicsplc/variantkey
 
 #include <Python.h>
 #include "farmhash64.h"
-#include "varianthash.h"
+#include "variantkey.h"
 #include "binsearch.h"
 #include "rsidvar.h"
-#include "pyvarianthash.h"
+#include "pyvariantkey.h"
 
 #ifndef Py_UNUSED /* This is already defined for Python 3.4 onwards */
 #ifdef __GNUC__
@@ -60,7 +60,7 @@ static PyObject* py_variant_hash(PyObject *Py_UNUSED(ignored), PyObject *args)
     uint32_t pos;
     if (!PyArg_ParseTuple(args, "ssIss", &assembly, &chrom, &pos, &ref, &alt))
         return NULL;
-    varhash_t h = variant_hash(assembly, chrom, pos, ref, alt);
+    variantkey_t h = variant_hash(assembly, chrom, pos, ref, alt);
     result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
@@ -76,7 +76,7 @@ static PyObject* py_variant_hash_string(PyObject *Py_UNUSED(ignored), PyObject *
     Py_ssize_t slen = 0;
     if (!PyArg_ParseTuple(args, "IIII", &assembly, &chrom, &pos, &refalt))
         return NULL;
-    varhash_t h = {assembly, chrom, pos, refalt};
+    variantkey_t h = {assembly, chrom, pos, refalt};
     slen = variant_hash_string("", slen, h);
     char str[slen];
     variant_hash_string(str, slen, h);
@@ -90,7 +90,7 @@ static PyObject* py_decode_variant_hash_string(PyObject *Py_UNUSED(ignored), PyO
     const char *vs;
     if (!PyArg_ParseTuple(args, "s#", &vs))
         return NULL;
-    varhash_t h = decode_variant_hash_string(vs);
+    variantkey_t h = decode_variant_hash_string(vs);
     result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
@@ -284,7 +284,7 @@ static PyObject* py_get_vr_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
     return result;
 }
 
-static PyObject* py_get_rv_varhash(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_get_rv_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t item;
@@ -292,7 +292,7 @@ static PyObject* py_get_rv_varhash(PyObject *Py_UNUSED(ignored), PyObject *args)
     if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    varhash_t h = get_rv_varhash(src, item);
+    variantkey_t h = get_rv_variantkey(src, item);
     result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
@@ -301,7 +301,7 @@ static PyObject* py_get_rv_varhash(PyObject *Py_UNUSED(ignored), PyObject *args)
     return result;
 }
 
-static PyObject* py_find_rv_varhash_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_find_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t first, last;
@@ -310,7 +310,7 @@ static PyObject* py_find_rv_varhash_by_rsid(PyObject *Py_UNUSED(ignored), PyObje
     if (!PyArg_ParseTuple(args, "OKKI", &mfsrc, &first, &last, &rsid))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    varhash_t h = find_rv_varhash_by_rsid(src, &first, last, rsid);
+    variantkey_t h = find_rv_variantkey_by_rsid(src, &first, last, rsid);
     result = PyTuple_New(5);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
@@ -320,16 +320,16 @@ static PyObject* py_find_rv_varhash_by_rsid(PyObject *Py_UNUSED(ignored), PyObje
     return result;
 }
 
-static PyObject* py_find_vr_rsid_by_varhash(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_find_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t first, last;
-    varhash_t vh;
+    variantkey_t vh;
     PyObject* mfsrc = NULL;
     if (!PyArg_ParseTuple(args, "OKKIIII", &mfsrc, &first, &last, &vh.assembly, &vh.chrom, &vh.pos, &vh.refalt))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr_rsid_by_varhash(src, &first, last, vh);
+    uint32_t h = find_vr_rsid_by_variantkey(src, &first, last, vh);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
@@ -355,14 +355,14 @@ static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObjec
 
 // ---
 
-static PyMethodDef PyVariantHashMethods[] =
+static PyMethodDef PyVariantKeyMethods[] =
 {
     {"encode_assembly", py_encode_assembly, METH_VARARGS, PYENCODEASSBLY_DOCSTRING},
     {"encode_chrom", py_encode_chrom, METH_VARARGS, PYENCODECHROM_DOCSTRING},
     {"encode_ref_alt", py_encode_ref_alt, METH_VARARGS, PYENCODEREFALT_DOCSTRING},
-    {"variant_hash", py_variant_hash, METH_VARARGS, PYVARIANTHASH_DOCSTRING},
-    {"variant_hash_string", py_variant_hash_string, METH_VARARGS, PYVARIANTHASHSTRING_DOCSTRING},
-    {"decode_variant_hash_string", py_decode_variant_hash_string, METH_VARARGS, PYDECODEVARIANTHASHSTRING_DOCSTRING},
+    {"variant_hash", py_variant_hash, METH_VARARGS, PYVARIANTKEY_DOCSTRING},
+    {"variant_hash_string", py_variant_hash_string, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
+    {"decode_variant_hash_string", py_decode_variant_hash_string, METH_VARARGS, PYDECODEVARIANTKEYSTRING_DOCSTRING},
 
     {"farmhash64", py_farmhash64, METH_VARARGS, PYFARMHASH64_DOCSTRING},
     {"farmhash32", py_farmhash32, METH_VARARGS, PYFARMHASH32_DOCSTRING},
@@ -378,9 +378,9 @@ static PyMethodDef PyVariantHashMethods[] =
     {"find_last_uint128", py_find_last_uint128, METH_VARARGS, PYFINDLASTUINT128_DOCSTRING},
 
     {"get_vr_rsid", py_get_vr_rsid, METH_VARARGS, PYGETVRRSID_DOCSTRING},
-    {"get_rv_varhash", py_get_rv_varhash, METH_VARARGS, PYGETRVVARHASH_DOCSTRING},
-    {"find_rv_varhash_by_rsid", py_find_rv_varhash_by_rsid, METH_VARARGS, PYFINDRVVARHASHBYRSID_DOCSTRING},
-    {"find_vr_rsid_by_varhash", py_find_vr_rsid_by_varhash, METH_VARARGS, PYFINDVRRSIDBYVARHASH_DOCSTRING},
+    {"get_rv_variantkey", py_get_rv_variantkey, METH_VARARGS, PYGETRVVARHASH_DOCSTRING},
+    {"find_rv_variantkey_by_rsid", py_find_rv_variantkey_by_rsid, METH_VARARGS, PYFINDRVVARHASHBYRSID_DOCSTRING},
+    {"find_vr_rsid_by_variantkey", py_find_vr_rsid_by_variantkey, METH_VARARGS, PYFINDVRRSIDBYVARHASH_DOCSTRING},
     {"find_vr_chrompos_range", py_find_vr_chrompos_range, METH_VARARGS, PYFINDVRCHROMPOSRANGE_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
@@ -415,10 +415,10 @@ static int myextension_clear(PyObject *m)
 static struct PyModuleDef moduledef =
 {
     PyModuleDef_HEAD_INIT,
-    "libpyvarianthash",
+    "libpyvariantkey",
     NULL,
     sizeof(struct module_state),
-    PyVariantHashMethods,
+    PyVariantKeyMethods,
     NULL,
     myextension_traverse,
     myextension_clear,
@@ -427,19 +427,19 @@ static struct PyModuleDef moduledef =
 
 #define INITERROR return NULL
 
-PyObject* PyInit_libpyvarianthash(void)
+PyObject* PyInit_libpyvariantkey(void)
 
 #else
 #define INITERROR return
 
 void
-initlibpyvarianthash(void)
+initlibpyvariantkey(void)
 #endif
 {
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
 #else
-    PyObject *module = Py_InitModule("libpyvarianthash", PyVariantHashMethods);
+    PyObject *module = Py_InitModule("libpyvariantkey", PyVariantKeyMethods);
 #endif
     struct module_state *st = NULL;
 
@@ -447,7 +447,7 @@ initlibpyvarianthash(void)
         INITERROR;
     st = GETSTATE(module);
 
-    st->error = PyErr_NewException("libpyvarianthash.Error", NULL, NULL);
+    st->error = PyErr_NewException("libpyvariantkey.Error", NULL, NULL);
     if (st->error == NULL)
     {
         Py_DECREF(module);

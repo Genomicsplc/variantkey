@@ -25,13 +25,13 @@ uint32_t get_vr64_rsid(const unsigned char *src, uint64_t item)
     return bytes_to_uint32_t(src, get_address(RSIDVAR64_BIN_BLKLEN, VARRSID64_BPOS_RSID, item));
 }
 
-uint64_t get_rv64_varhash(const unsigned char *src, uint64_t item)
+uint64_t get_rv64_variantkey(const unsigned char *src, uint64_t item)
 {
     uint64_t i = get_address(RSIDVAR64_BIN_BLKLEN, 0, item);
     return bytes_to_uint64_t(src, i + RSIDVAR64_BPOS_CHROM);
 }
 
-uint64_t find_rv64_varhash_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
+uint64_t find_rv64_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
 {
     uint64_t max = last;
     uint64_t found = find_first_uint32_t(src, RSIDVAR64_BIN_BLKLEN, 0, first, &max, rsid);
@@ -40,10 +40,10 @@ uint64_t find_rv64_varhash_by_rsid(const unsigned char *src, uint64_t *first, ui
         return 0;
     }
     *first = found;
-    return get_rv64_varhash(src, found);
+    return get_rv64_variantkey(src, found);
 }
 
-uint32_t find_vr64_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vh)
+uint32_t find_vr64_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vh)
 {
     uint64_t max = last;
     uint64_t found = find_first_uint64_t(src, RSIDVAR64_BIN_BLKLEN, 0, first, &max, vh);

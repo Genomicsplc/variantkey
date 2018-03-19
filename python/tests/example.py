@@ -1,4 +1,4 @@
-import libpyvarianthash as vh
+import libpyvariantkey as vh
 
 h = vh.variant_hash("6", 193330, "TCA", "TGTCG")
 print(h[0], h[1], h[2])

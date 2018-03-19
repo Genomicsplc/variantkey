@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 import "testing"
 

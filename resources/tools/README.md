@@ -10,8 +10,8 @@ Script and tools to normalize VCF files.
 
 * [Normalize](https://genome.sph.umich.edu/wiki/Vt#Normalization) variants as in [Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).
 
-* Extend the VCF file to include [VariantHash](https://github.com/Genomicsplc/varianthash) fields.
+* Extend the VCF file to include [VariantKey](https://github.com/Genomicsplc/variantkey) fields.
 
 * Compress and index the VCF file.
 
-* Generate RSID to VariantHash binary files.
+* Generate RSID to VariantKey binary files.

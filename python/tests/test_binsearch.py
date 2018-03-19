@@ -1,7 +1,7 @@
-"""Tests for libpyvarianthash module."""
+"""Tests for libpyvariantkey module."""
 
 
-import libpyvarianthash as bs
+import libpyvariantkey as bs
 import os
 import time
 from unittest import TestCase

@@ -24,16 +24,16 @@ function(SMOKE_TEST test_name test_file dependencies)
 endfunction(SMOKE_TEST)
 
 file (COPY test_farmhash64.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_farmhash test_farmhash64.c varianthash)
+SMOKE_TEST (test_farmhash test_farmhash64.c variantkey)
 
-file (COPY test_binsearch.c test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_binsearch test_binsearch.c varianthash)
+file (COPY test_binsearch.c data/test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
 
-file (COPY test_varianthash.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_varianthash test_varianthash.c varianthash)
+file (COPY test_variantkey.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_variantkey test_variantkey.c variantkey)
 
-file (COPY test_rsidvar128.c rsid_varhash128.10.bin varhash128_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_rsidvar128 test_rsidvar128.c varianthash)
+file (COPY test_rsidvar128.c data/rsid_variantkey128.10.bin data/variantkey128_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_rsidvar128 test_rsidvar128.c variantkey)
 
-file (COPY test_rsidvar64.c rsid_varhash64.10.bin varhash64_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_rsidvar64 test_rsidvar64.c varianthash)
+file (COPY test_rsidvar64.c data/rsid_variantkey64.10.bin data/variantkey64_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_rsidvar64 test_rsidvar64.c variantkey)

@@ -23,33 +23,33 @@
  * @brief File containing the definition of public functions.
  *
  * The functions provided here allows to search RSID and
- * VariantHash128 from binary files made of adjacent
+ * VariantKey128 from binary files made of adjacent
  * constant-length binary blocks sorted in ascending order.
  *
- * The functions provided here allows fast search for RSID and VariantHash128 values from binary files
+ * The functions provided here allows fast search for RSID and VariantKey128 values from binary files
  * made of adjacent constant-length binary blocks sorted in ascending order.
  *
  * The input binary files can be generated using the rsidvar128.sh script in the resources/tools folder.
  *
- * The rsid_varhash128.bin file contains adjacent 20 bytes binary blocks
+ * The rsid_variantkey128.bin file contains adjacent 20 bytes binary blocks
  * with the following structure:
  *
  *     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
  *     +---------+ +---------+ +---------+ +---------+ +---------+
  *     |  RSID   | | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT |
  *     +---------+ +---------+ +---------+ +---------+ +---------+
- *                 |                VARIANT_HASH                 |
+ *                 |                VARIANTKEY                 |
  *                 +---------------------------------------------+
  *
  *
- * The varhash128_rsid.bin file contains adjacent 20 bytes binary blocks
+ * The variantkey128_rsid.bin file contains adjacent 20 bytes binary blocks
  * with the following structure:
  *
  *     00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19
  *     +---------+ +---------+ +---------+ +---------+ +---------+
  *     | ASSBLY  | |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
  *     +---------+ +---------+ +---------+ +---------+ +---------+
- *     |                VARIANT_HASH                 |
+ *     |                VARIANTKEY                 |
  *     +---------------------------------------------+
  *
  */
@@ -57,7 +57,7 @@
 #ifndef RSIDVAR128_H
 #define RSIDVAR128_H
 
-#include "varianthash.h"
+#include "variantkey.h"
 #include "binsearch.h"
 
 #define RSIDVAR128_BIN_BLKLEN 20 //!< Length of a binary block containing RSID + VARHASH128
@@ -85,17 +85,17 @@
 uint32_t get_vr128_rsid(const unsigned char *src, uint64_t item);
 
 /**
- * Returns the VariantHash128 at the specified position.
+ * Returns the VariantKey128 at the specified position.
  *
  * @param src       Memory mapped file address.
  * @param item      Binary block number.
  *
- * @return variant hash data
+ * @return variant key data
  */
-varhash128_t get_rv128_varhash(const unsigned char *src, uint64_t item);
+variantkey128_t get_rv128_variantkey(const unsigned char *src, uint64_t item);
 
 /**
- * Search for the specified RSID and returns the first occurrence of VariantHash128.
+ * Search for the specified RSID and returns the first occurrence of VariantKey128.
  *
  * @param src       Memory mapped file address.
  * @param first     Pointer to the first element of the range to search (min value = 0).
@@ -103,22 +103,22 @@ varhash128_t get_rv128_varhash(const unsigned char *src, uint64_t item);
  * @param last      Last element of the range to search (max value = nitems - 1).
  * @param rsid      RSID to search.
  *
- * @return variant hash data or all-zero data if not found
+ * @return variant key data or all-zero data if not found
  */
-varhash128_t find_rv128_varhash_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid);
+variantkey128_t find_rv128_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid);
 
 /**
- * Search for the specified VariantHash and returns the first occurrence of RSID.
+ * Search for the specified VariantKey and returns the first occurrence of RSID.
  *
  * @param src       Memory mapped file address.
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
  * @param last      Last element of the range to search (max value = nitems - 1).
- * @param vh        VariantHash.
+ * @param vh        VariantKey.
  *
  * @return RS ID or 0 if not found
  */
-uint32_t find_vr128_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, varhash128_t vh);
+uint32_t find_vr128_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, variantkey128_t vh);
 
 /**
  * Search for the specified CHROM range and returns the first occurrence of RSID.

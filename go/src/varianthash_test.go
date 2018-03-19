@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 import "testing"
 
@@ -629,12 +629,12 @@ func TestEncodeRefAlt(t *testing.T) {
 	}
 }
 
-func TestVariantHash(t *testing.T) {
+func TestVariantKey(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := VariantHash(v.assembly, v.chrom, v.pos, v.ref, v.alt)
+			vh := VariantKey(v.assembly, v.chrom, v.pos, v.ref, v.alt)
 			if vh.Assembly != v.hassembly {
 				t.Errorf("The assembly hash value is different, got: %d expected %d", vh.Assembly, v.hassembly)
 			}
@@ -651,7 +651,7 @@ func TestVariantHash(t *testing.T) {
 	}
 }
 
-func BenchmarkVariantHash(b *testing.B) {
+func BenchmarkVariantKey(b *testing.B) {
 	assembly := "GRCh37"
 	chrom := "22"
 	pos := uint32(123456789)
@@ -659,16 +659,16 @@ func BenchmarkVariantHash(b *testing.B) {
 	alt := "C"
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		VariantHash(assembly, chrom, pos, ref, alt)
+		VariantKey(assembly, chrom, pos, ref, alt)
 	}
 }
 
-func TestVariantHashString(t *testing.T) {
+func TestVariantKeyString(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := TVariantHash{Assembly: v.hassembly, Chrom: v.hchrom, Pos: v.hpos, RefAlt: v.hrefalt}
+			vh := TVariantKey{Assembly: v.hassembly, Chrom: v.hchrom, Pos: v.hpos, RefAlt: v.hrefalt}
 			vs := vh.String()
 			if vs != v.hash {
 				t.Errorf("The chrom hash value is different, got: %s expected %s", vs, v.hash)
@@ -677,8 +677,8 @@ func TestVariantHashString(t *testing.T) {
 	}
 }
 
-func BenchmarkVariantHashString(b *testing.B) {
-	vh := TVariantHash{Assembly: 0x8b29d2c7, Chrom: 0x1a, Pos: 0x4090, RefAlt: 0x181d293a}
+func BenchmarkVariantKeyString(b *testing.B) {
+	vh := TVariantKey{Assembly: 0x8b29d2c7, Chrom: 0x1a, Pos: 0x4090, RefAlt: 0x181d293a}
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = vh.String()
@@ -686,12 +686,12 @@ func BenchmarkVariantHashString(b *testing.B) {
 
 }
 
-func TestDecodeVariantHashString(t *testing.T) {
+func TestDecodeVariantKeyString(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := DecodeVariantHashString(v.hash)
+			vh := DecodeVariantKeyString(v.hash)
 			if vh.Assembly != v.hassembly {
 				t.Errorf("The assembly hash value is different, got: %d expected %d", vh.Assembly, v.hassembly)
 			}
@@ -708,10 +708,10 @@ func TestDecodeVariantHashString(t *testing.T) {
 	}
 }
 
-func BenchmarkDecodeVariantHash(b *testing.B) {
+func BenchmarkDecodeVariantKey(b *testing.B) {
 	bs := "8b29d2c70000001a00004090181d293a"
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		DecodeVariantHashString(bs)
+		DecodeVariantKeyString(bs)
 	}
 }

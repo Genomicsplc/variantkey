@@ -26,23 +26,23 @@ class RunTests(Command):
 
 
 setup(
-    name='libpyvarianthash',
+    name='libpyvariantkey',
     version=".".join([str(x) for x in VERSION]),
-    keywords=('varianthash'),
-    description="VariantHash Bindings for Python",
+    keywords=('variantkey'),
+    description="VariantKey Bindings for Python",
     long_description=open('../README.md', 'r').read(),
     author='Nicola Asuni',
     author_email='nicola.asuni@genomicsplc.com',
-    url='https://github.com/genomicsplc/varianthash',
+    url='https://github.com/genomicsplc/variantkey',
     packages=find_packages('src', exclude=['docs', 'tests*']),
     package_dir={'': 'src'},
     ext_modules=[
-        Extension('libpyvarianthash', [
+        Extension('libpyvariantkey', [
             '../src/farmhash64.c',
-            '../src/varianthash.c',
+            '../src/variantkey.c',
             '../src/binsearch.c',
             '../src/rsidvar.c',
-            'src/pyvarianthash.c'
+            'src/pyvariantkey.c'
         ], extra_compile_args=["-O3"])
     ],
     classifiers=[

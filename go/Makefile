@@ -1,7 +1,7 @@
 # MAKEFILE
 #
 # @author      Nicola Asuni <info@genomicsplc.com>
-# @link        https://github.com/genomicsplc/varianthash
+# @link        https://github.com/genomicsplc/variantkey
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
@@ -20,7 +20,7 @@ OWNER=GENOMICSplc
 VENDOR=genomicsplc
 
 # Project name
-PROJECT=varianthash
+PROJECT=variantkey
 
 # Project version
 VERSION=$(shell cat ../VERSION)

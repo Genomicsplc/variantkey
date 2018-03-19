@@ -3,7 +3,7 @@
 # vcfnorm.sh
 #
 # Normalize VCF files (allele decomposition + normalization)
-# Generate RSID<->VariantHash binary files
+# Generate RSID<->VariantKey binary files
 #
 # Requires:
 #  - vt
@@ -49,50 +49,50 @@ rm -f decomposed.vcf
 # Replace the reference in the VCF file with the genome assembly string
 sed -i "0,\|^##reference=.*$|{s|^##reference=.*$|##reference=${GENOME_ASSEMBLY}|}" normalized.vcf
 
-# Add VariantHash fields in the VCF (this generates the final normalized VCF file)
-bcftools +add-varianthash normalized.vcf > ${VCF_OUTPUT_NAME}.vcf
+# Add VariantKey fields in the VCF (this generates the final normalized VCF file)
+bcftools +add-variantkey normalized.vcf > ${VCF_OUTPUT_NAME}.vcf
 
 # Remove temporary file
 rm -f normalized.vcf
 
 # ---
 
-# --- RSID->VARIANTHASH BINARY FILE ---
+# --- RSID->VARIANTKEY BINARY FILE ---
 
-# Create a RSID to VariantHash HEX file
-bcftools query -f '%RSID_HEX%VARIANT_HASH_HEX\n' ${VCF_OUTPUT_NAME}.vcf > rsid_varhash.hex
+# Create a RSID to VariantKey HEX file
+bcftools query -f '%RSID_HEX%VARIANTKEY_HEX\n' ${VCF_OUTPUT_NAME}.vcf > rsid_variantkey.hex
 
-#  Sort the RSID to VariantHash HEX file
-LC_ALL=C sort --parallel=${PARALLEL} --output=rsid_varhash.sorted.hex rsid_varhash.hex
+#  Sort the RSID to VariantKey HEX file
+LC_ALL=C sort --parallel=${PARALLEL} --output=rsid_variantkey.sorted.hex rsid_variantkey.hex
 
 # Remove temporary file
-rm -f rsid_varhash.hex
+rm -f rsid_variantkey.hex
 
 # Convert HEX file in binary format (the newlines are removed to get adjacent blocks of 160 bits)
-xxd -r -p rsid_varhash.sorted.hex rsid_varhash.bin
+xxd -r -p rsid_variantkey.sorted.hex rsid_variantkey.bin
 
 # Remove temporary file
-rm -f rsid_varhash.sorted.hex
+rm -f rsid_variantkey.sorted.hex
 
 # ---
 
 
-# --- VARIANTHASH->RSID BINARY FILE ---
+# --- VARIANTKEY->RSID BINARY FILE ---
 
-# Create VariantHash to RSID HEX file
-bcftools query -f '%VARIANT_HASH_HEX%RSID_HEX\n' ${VCF_OUTPUT_NAME}.vcf > varhash_rsid.hex
+# Create VariantKey to RSID HEX file
+bcftools query -f '%VARIANTKEY_HEX%RSID_HEX\n' ${VCF_OUTPUT_NAME}.vcf > variantkey_rsid.hex
 
-#  Sort the RSID to VariantHash HEX file
-LC_ALL=C sort --parallel=${PARALLEL} --output=varhash_rsid.sorted.hex varhash_rsid.hex
+#  Sort the RSID to VariantKey HEX file
+LC_ALL=C sort --parallel=${PARALLEL} --output=variantkey_rsid.sorted.hex variantkey_rsid.hex
 
 # Remove temporary file
-rm -f varhash_rsid.hex
+rm -f variantkey_rsid.hex
 
 # Convert HEX file in binary format (the newlines are removed to get adjacent blocks of 160 bits)
-xxd -r -p varhash_rsid.sorted.hex varhash_rsid.bin
+xxd -r -p variantkey_rsid.sorted.hex variantkey_rsid.bin
 
 # Remove temporary file
-rm -f varhash_rsid.sorted.hex
+rm -f variantkey_rsid.sorted.hex
 
 # ---
 
@@ -104,4 +104,4 @@ bgzip ${VCF_OUTPUT_NAME}.vcf
 vt index ${VCF_OUTPUT_NAME}.vcf.gz
 
 # Create a JSON file with basic info
-echo -e '{\n "description":"decomposed and normalized VCF files + RSID<->VariantHash binary files",\n "source_file":"'${VCF_INPUT_FILE}'",\n "reference_genome_fasta_file":"'${REFERENCE_GENOME_FASTA_FILE}'",\n "genome_assembly":"'${GENOME_ASSEMBLY}'",\n "date":"'${DATE}'"\n "version":"'${VERSION}'"\n}' > info.json
+echo -e '{\n "description":"decomposed and normalized VCF files + RSID<->VariantKey binary files",\n "source_file":"'${VCF_INPUT_FILE}'",\n "reference_genome_fasta_file":"'${REFERENCE_GENOME_FASTA_FILE}'",\n "genome_assembly":"'${GENOME_ASSEMBLY}'",\n "date":"'${DATE}'"\n "version":"'${VERSION}'"\n}' > info.json

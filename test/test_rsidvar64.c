@@ -64,14 +64,14 @@ int test_get_vr64_rsid(mmfile_t vr)
     return errors;
 }
 
-int test_get_rv64_varhash(mmfile_t rv)
+int test_get_rv64_variantkey(mmfile_t rv)
 {
     int errors = 0;
     int i;
     uint64_t vh;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        vh = get_rv64_varhash(rv.src, i);
+        vh = get_rv64_variantkey(rv.src, i);
         if (vh != test_data[i].vh)
         {
             fprintf(stderr, "%s (%d) Expected %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vh, vh);
@@ -81,7 +81,7 @@ int test_get_rv64_varhash(mmfile_t rv)
     return errors;
 }
 
-int test_find_rv64_varhash_by_rsid(mmfile_t rv)
+int test_find_rv64_variantkey_by_rsid(mmfile_t rv)
 {
     int errors = 0;
     int i;
@@ -90,7 +90,7 @@ int test_find_rv64_varhash_by_rsid(mmfile_t rv)
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         first = 0;
-        vh = find_rv64_varhash_by_rsid(rv.src, &first, 9, test_data[i].rsid);
+        vh = find_rv64_variantkey_by_rsid(rv.src, &first, 9, test_data[i].rsid);
         if (first != (uint64_t)i)
         {
             fprintf(stderr, "%s (%d) Expected first %d, got %"PRIu64"\n", __func__, i, i, first);
@@ -98,19 +98,19 @@ int test_find_rv64_varhash_by_rsid(mmfile_t rv)
         }
         if (vh != test_data[i].vh)
         {
-            fprintf(stderr, "%s (%d) Expected varianthash %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vh, vh);
+            fprintf(stderr, "%s (%d) Expected variantkey %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vh, vh);
             ++errors;
         }
     }
     return errors;
 }
 
-int test_find_rv64_varhash_by_rsid_notfound(mmfile_t rv)
+int test_find_rv64_variantkey_by_rsid_notfound(mmfile_t rv)
 {
     int errors = 0;
     uint64_t vh;
     uint64_t first = 0;
-    vh = find_rv64_varhash_by_rsid(rv.src, &first, 9, 0xfffffff0);
+    vh = find_rv64_variantkey_by_rsid(rv.src, &first, 9, 0xfffffff0);
     if (first != 10)
     {
         fprintf(stderr, "%s : Expected first 10, got %"PRIu64"\n", __func__, first);
@@ -118,7 +118,7 @@ int test_find_rv64_varhash_by_rsid_notfound(mmfile_t rv)
     }
     if (vh != 0)
     {
-        fprintf(stderr, "%s : Expected varianthash 0, got %"PRIu64"\n", __func__, vh);
+        fprintf(stderr, "%s : Expected variantkey 0, got %"PRIu64"\n", __func__, vh);
         ++errors;
     }
     return errors;
@@ -292,7 +292,7 @@ int test_find_vr64_chrompos_range_notfound(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr64_rsid_by_varhash(mmfile_t vr)
+int test_find_vr64_rsid_by_variantkey(mmfile_t vr)
 {
     int errors = 0;
     int i;
@@ -301,7 +301,7 @@ int test_find_vr64_rsid_by_varhash(mmfile_t vr)
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         first = 0;
-        rsid = find_vr64_rsid_by_varhash(vr.src, &first, 9, test_data[i].vh);
+        rsid = find_vr64_rsid_by_variantkey(vr.src, &first, 9, test_data[i].vh);
         if (rsid != test_data[i].rsid)
         {
             fprintf(stderr, "%s (%d) Expected rsid %"PRIx32", got %"PRIx32"\n",  __func__, i, test_data[i].rsid, rsid);
@@ -316,13 +316,13 @@ int test_find_vr64_rsid_by_varhash(mmfile_t vr)
     return errors;
 }
 
-int test_find_vr64_rsid_by_varhash_notfound(mmfile_t vr)
+int test_find_vr64_rsid_by_variantkey_notfound(mmfile_t vr)
 {
     int errors = 0;
     uint32_t rsid;
     uint64_t first;
     first = 0;
-    rsid = find_vr64_rsid_by_varhash(vr.src, &first, 9, 0xfffffffffffffff0);
+    rsid = find_vr64_rsid_by_variantkey(vr.src, &first, 9, 0xfffffffffffffff0);
     if (rsid != 0)
     {
         fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
@@ -350,7 +350,7 @@ void benchmark_get_vr64_rsid(mmfile_t vr)
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_get_rv64_varhash(mmfile_t rv)
+void benchmark_get_rv64_variantkey(mmfile_t rv)
 {
     uint64_t tstart, tend;
     int i;
@@ -358,13 +358,13 @@ void benchmark_get_rv64_varhash(mmfile_t rv)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        get_rv64_varhash(rv.src, 3);
+        get_rv64_variantkey(rv.src, 3);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_find_rv64_varhash_by_rsid(mmfile_t rv)
+void benchmark_find_rv64_variantkey_by_rsid(mmfile_t rv)
 {
     uint64_t tstart, tend;
     uint64_t first = 0;
@@ -374,7 +374,7 @@ void benchmark_find_rv64_varhash_by_rsid(mmfile_t rv)
     for (i=0 ; i < size; i++)
     {
         first = 0;
-        find_rv64_varhash_by_rsid(rv.src, &first, 9, 0x2F81F575);
+        find_rv64_variantkey_by_rsid(rv.src, &first, 9, 0x2F81F575);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
@@ -397,7 +397,7 @@ void benchmark_find_vr64_chrompos_range(mmfile_t vr)
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-void benchmark_find_vr64_rsid_by_varhash(mmfile_t vr)
+void benchmark_find_vr64_rsid_by_variantkey(mmfile_t vr)
 {
     uint64_t tstart, tend;
     uint64_t first = 0;
@@ -407,7 +407,7 @@ void benchmark_find_vr64_rsid_by_varhash(mmfile_t vr)
     for (i=0 ; i < size; i++)
     {
         first = 0;
-        find_vr64_rsid_by_varhash(vr.src, &first, 9, 0x160017CCA313d0e0);
+        find_vr64_rsid_by_variantkey(vr.src, &first, 9, 0x160017CCA313d0e0);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
@@ -420,7 +420,7 @@ int main()
 
     uint64_t nitems; // number of binary blocks in the file
 
-    mmfile_t rv = mmap_binfile("rsid_varhash64.10.bin");
+    mmfile_t rv = mmap_binfile("rsid_variantkey64.10.bin");
     nitems = (uint64_t)(rv.size / RSIDVAR64_BIN_BLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
@@ -428,7 +428,7 @@ int main()
         return 1;
     }
 
-    mmfile_t vr = mmap_binfile("varhash64_rsid.10.bin");
+    mmfile_t vr = mmap_binfile("variantkey64_rsid.10.bin");
     nitems = (uint64_t)(vr.size / RSIDVAR64_BIN_BLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
@@ -437,23 +437,23 @@ int main()
     }
 
     errors += test_get_vr64_rsid(vr);
-    errors += test_get_rv64_varhash(rv);
-    errors += test_find_rv64_varhash_by_rsid(rv);
-    errors += test_find_rv64_varhash_by_rsid_notfound(rv);
+    errors += test_get_rv64_variantkey(rv);
+    errors += test_find_rv64_variantkey_by_rsid(rv);
+    errors += test_find_rv64_variantkey_by_rsid_notfound(rv);
     errors += test_find_vr64_chrom_range(vr);
     errors += test_find_vr64_chrom_range_notfound(vr);
     errors += test_find_vr64_pos_range(vr);
     errors += test_find_vr64_pos_range_notfound(vr);
     errors += test_find_vr64_chrompos_range(vr);
     errors += test_find_vr64_chrompos_range_notfound(vr);
-    errors += test_find_vr64_rsid_by_varhash(vr);
-    errors += test_find_vr64_rsid_by_varhash_notfound(vr);
+    errors += test_find_vr64_rsid_by_variantkey(vr);
+    errors += test_find_vr64_rsid_by_variantkey_notfound(vr);
 
     benchmark_get_vr64_rsid(vr);
-    benchmark_get_rv64_varhash(rv);
-    benchmark_find_rv64_varhash_by_rsid(rv);
+    benchmark_get_rv64_variantkey(rv);
+    benchmark_find_rv64_variantkey_by_rsid(rv);
     benchmark_find_vr64_chrompos_range(vr);
-    benchmark_find_vr64_rsid_by_varhash(vr);
+    benchmark_find_vr64_rsid_by_variantkey(vr);
 
     err = munmap_binfile(rv);
     if (err != 0)

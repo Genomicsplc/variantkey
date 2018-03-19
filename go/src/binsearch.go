@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 // Copyright (c) 2017 Nicola Asuni - Tecnick.com
 //

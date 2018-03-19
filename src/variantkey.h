@@ -1,12 +1,12 @@
-// VariantHash
+// VariantKey
 //
-// varianthash.h
+// variantkey.h
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @copyright  2017-2018 GENOMICS plc
 // @license    MIT (see LICENSE)
-// @link       https://github.com/genomicsplc/varianthash
+// @link       https://github.com/genomicsplc/variantkey
 //
 // LICENSE
 //
@@ -30,41 +30,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-// VariantHash by Nicola Asuni
+// VariantKey by Nicola Asuni
 
 /**
- * @file varianthash.h
+ * @file variantkey.h
  * @brief File containing the definition of public functions.
  *
  * The functions provided here allows to generate or decode
- * a genetic VariantHash128 and VariantHash64.
+ * a genetic VariantKey128 and VariantKey64.
  */
 
-#ifndef VARIANTHASH_H
-#define VARIANTHASH_H
+#ifndef VARIANTKEY_H
+#define VARIANTKEY_H
 
 #include "farmhash64.h"
 
 /**
- * VariantHash128 struct
+ * VariantKey128 struct
  */
-typedef struct varhash128_t
+typedef struct variantkey128_t
 {
     uint32_t assembly; //!< Genome Assembly encoded number.
     uint32_t chrom;    //!< Chromosome encoded number.
     uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
     uint32_t refalt;   //!< Hash code for Reference and Alternate
-} varhash128_t;
+} variantkey128_t;
 
 /**
- * VariantHash64 struct
+ * VariantKey64 struct
  */
-typedef struct varhash64_t
+typedef struct variantkey64_t
 {
     uint8_t chrom;     //!< Chromosome encoded number.
     uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
     uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 24 bits are used)
-} varhash64_t;
+} variantkey64_t;
 
 /** @brief Fast ASCII Uppercase function for a-z letters
  *
@@ -158,7 +158,7 @@ size_t decode_refalt_32bit(uint32_t code, char *ref, char *alt);
  */
 size_t decode_refalt_24bit(uint32_t code, char *ref, char *alt);
 
-/** @brief Returns a VariantHash128 structure based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
+/** @brief Returns a VariantKey128 structure based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
  *
  * @param assembly  String identifying the Genome Assembly. It should be in the form used by
  *                  Genome Reference Consortium (https://www.ncbi.nlm.nih.gov/grc),
@@ -170,9 +170,9 @@ size_t decode_refalt_24bit(uint32_t code, char *ref, char *alt);
  *                  The value in the pos field refers to the position of the first nucleotide in the String.
  * @param alt       Alternate non-reference allele string.
  *
- * @return      A varhash128_t structure.
+ * @return      A variantkey128_t structure.
  */
-varhash128_t varianthash128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt);
+variantkey128_t variantkey128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt);
 
 
 /** @brief Returns a 64-bit variant code based on CHROM, POS (0-base), REF, ALT.
@@ -183,11 +183,11 @@ varhash128_t varianthash128(const char *assembly, const char *chrom, uint32_t po
  *                  The value in the pos field refers to the position of the first nucleotide in the String.
  * @param alt       Alternate non-reference allele string.
  *
- * @return      VariantHash 64-bit code.
+ * @return      VariantKey 64-bit code.
  */
-uint64_t varianthash64(const char *chrom, uint32_t pos, const char *ref, const char *alt);
+uint64_t variantkey64(const char *chrom, uint32_t pos, const char *ref, const char *alt);
 
-/** @brief Returns VariantHash128 hexadecimal string (32 characters).
+/** @brief Returns VariantKey128 hexadecimal string (32 characters).
  *
  * The string represent a 128 bit number or:
  *   - 32 bit  (4 bytes, 8 hex bytes) for ASSBLY Hash
@@ -197,16 +197,16 @@ uint64_t varianthash64(const char *chrom, uint32_t pos, const char *ref, const c
  *
  * @param str   String buffer to be returned.
  * @param size  Size of the string buffer.
- * @param vh    Variant hash structure to be processed.
+ * @param vh    VariantKey structure to be processed.
  *
  * @return      Upon successful return, these function returns the number of characters processed
  *              (excluding the null byte used to end output to strings).
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t varianthash128_string(char *str, size_t size, varhash128_t vh);
+size_t variantkey128_string(char *str, size_t size, variantkey128_t vh);
 
-/** @brief Returns VariantHash64 hexadecimal string (16 characters).
+/** @brief Returns VariantKey64 hexadecimal string (16 characters).
  *
  * The string represent a 64 bit number or:
  *   -  8 bit  (1 byte,  2 hex bytes) for CHROM
@@ -215,37 +215,37 @@ size_t varianthash128_string(char *str, size_t size, varhash128_t vh);
  *
  * @param str   String buffer to be returned.
  * @param size  Size of the string buffer.
- * @param vh    Variant hash structure to be processed.
+ * @param vh    VariantKey structure to be processed.
  *
  * @return      Upon successful return, these function returns the number of characters processed
  *              (excluding the null byte used to end output to strings).
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t varianthash64_string(char *str, size_t size, uint64_t vh);
+size_t variantkey64_string(char *str, size_t size, uint64_t vh);
 
-/** @brief Parses a VariantHash128 hex string and returns the components as varhash128_t structure.
+/** @brief Parses a VariantKey128 hex string and returns the components as variantkey128_t structure.
  *
- * @param vh VariantHash128 hexadecimal string (32 characters).
+ * @param vh VariantKey128 hexadecimal string (32 characters).
  *
- * @return A varhash128_t structure.
+ * @return A variantkey128_t structure.
  */
-varhash128_t parse_varianthash128_string(const char *vs);
+variantkey128_t parse_variantkey128_string(const char *vs);
 
-/** @brief Parses a VariantHash64 hex string and returns the code.
+/** @brief Parses a VariantKey64 hex string and returns the code.
  *
- * @param vh VariantHash64 hexadecimal string (16 characters).
+ * @param vh VariantKey64 hexadecimal string (16 characters).
  *
- * @return A VariantHash64 code
+ * @return A VariantKey64 code
  */
-uint64_t parse_varianthash64_string(const char *vs);
+uint64_t parse_variantkey64_string(const char *vs);
 
-/** @brief Parses a VariantHash64 code and returns the components as varhash64_t structure.
+/** @brief Parses a VariantKey64 code and returns the components as variantkey64_t structure.
  *
- * @param code VariantHash64 code.
+ * @param code VariantKey64 code.
  *
- * @return A varhash64_t structure.
+ * @return A variantkey64_t structure.
  */
-varhash64_t split_varianthash64(uint64_t code);
+variantkey64_t split_variantkey64(uint64_t code);
 
-#endif  // VARIANTHASH_H
+#endif  // VARIANTKEY_H

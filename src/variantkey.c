@@ -1,12 +1,12 @@
-// VariantHash
+// VariantKey
 //
-// varianthash.c
+// variantkey.c
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @copyright  2017-2018 GENOMICS plc
 // @license    MIT (see LICENSE)
-// @link       https://github.com/genomicsplc/varianthash
+// @link       https://github.com/genomicsplc/variantkey
 //
 // LICENSE
 //
@@ -30,13 +30,13 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
-// VariantHash by Nicola Asuni
+// VariantKey by Nicola Asuni
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
-#include "varianthash.h"
+#include "variantkey.h"
 
 
 int aztoupper(int c)
@@ -230,20 +230,20 @@ size_t decode_refalt_24bit(uint32_t code, char *ref, char *alt)
     return decode_refalt(code, ref, alt, 20);
 }
 
-varhash128_t varianthash128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt)
+variantkey128_t variantkey128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt)
 {
-    return (varhash128_t)
+    return (variantkey128_t)
     {
         encode_assembly_32bit(assembly), encode_chrom_32bit(chrom), pos, encode_refalt_32bit(ref, alt)
     };
 }
 
-uint64_t varianthash64(const char *chrom, uint32_t pos, const char *ref, const char *alt)
+uint64_t variantkey64(const char *chrom, uint32_t pos, const char *ref, const char *alt)
 {
     return (((uint64_t)encode_chrom_8bit(chrom) << 56) | ((uint64_t)pos << 24) | (uint64_t)encode_refalt_24bit(ref, alt));
 }
 
-size_t varianthash128_string(char *str, size_t size, varhash128_t vh)
+size_t variantkey128_string(char *str, size_t size, variantkey128_t vh)
 {
     size_t slen = 33; // = 32 hex chars + '\0'
     if (slen > size)
@@ -256,7 +256,7 @@ size_t varianthash128_string(char *str, size_t size, varhash128_t vh)
     return (end - it);
 }
 
-size_t varianthash64_string(char *str, size_t size, uint64_t vh)
+size_t variantkey64_string(char *str, size_t size, uint64_t vh)
 {
     size_t slen = 17; // = 16 hex chars + '\0'
     if (slen > size)
@@ -269,9 +269,9 @@ size_t varianthash64_string(char *str, size_t size, uint64_t vh)
     return (end - it);
 }
 
-varhash128_t parse_varianthash128_string(const char *vs)
+variantkey128_t parse_variantkey128_string(const char *vs)
 {
-    varhash128_t vh = {0,0,0,0};
+    variantkey128_t vh = {0,0,0,0};
     size_t slen = strlen(vs);
     if (slen != 32)
     {
@@ -293,7 +293,7 @@ varhash128_t parse_varianthash128_string(const char *vs)
     return vh;
 }
 
-uint64_t parse_varianthash64_string(const char *vs)
+uint64_t parse_variantkey64_string(const char *vs)
 {
     if (strlen(vs) != 16)
     {
@@ -302,9 +302,9 @@ uint64_t parse_varianthash64_string(const char *vs)
     return (uint64_t)strtoull(vs, NULL, 16);
 }
 
-varhash64_t split_varianthash64(uint64_t code)
+variantkey64_t split_variantkey64(uint64_t code)
 {
-    varhash64_t vh = {0,0,0};
+    variantkey64_t vh = {0,0,0};
     vh.chrom = (uint8_t)((code & 0xFF00000000000000) >> 56);
     vh.pos = (uint32_t)((code & 0x00FFFFFFFF000000) >> 24);
     vh.refalt = (uint32_t)(code & 0x0000000000FFFFFF);

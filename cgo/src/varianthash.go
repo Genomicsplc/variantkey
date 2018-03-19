@@ -1,11 +1,11 @@
-package varianthash
+package variantkey
 
 /*
 #include "../../src/uint128.h"
 #include "../../src/farmhash64.h"
 #include "../../src/farmhash64.c"
-#include "../../src/varianthash.h"
-#include "../../src/varianthash.c"
+#include "../../src/variantkey.h"
+#include "../../src/variantkey.c"
 #include "../../src/binsearch.h"
 #include "../../src/binsearch.c"
 #include "../../src/rsidvar.h"
@@ -29,17 +29,17 @@ func castGoUint128(u Uint128) C.uint128_t {
 	return c
 }
 
-// TVariantHash contains a representation of a genetic variant hash
-type TVariantHash struct {
+// TVariantKey contains a representation of a genetic variant key
+type TVariantKey struct {
 	Assembly uint32 `json:"assembly"`
 	Chrom    uint32 `json:"chrom"`
 	Pos      uint32 `json:"pos"`
 	RefAlt   uint32 `json:"refalt"`
 }
 
-// castCVariantHash convert C varianthash_t to GO TVariantHash.
-func castCVariantHash(vh C.varhash_t) TVariantHash {
-	return TVariantHash{
+// castCVariantKey convert C variantkey_t to GO TVariantKey.
+func castCVariantKey(vh C.variantkey_t) TVariantKey {
+	return TVariantKey{
 		Assembly: uint32(vh.assembly),
 		Chrom:    uint32(vh.chrom),
 		Pos:      uint32(vh.pos),
@@ -47,9 +47,9 @@ func castCVariantHash(vh C.varhash_t) TVariantHash {
 	}
 }
 
-// castGoVariantHash convert GO TVariantHash to C varianthash_t.
-func castGoVariantHash(vh TVariantHash) C.varhash_t {
-	var cvh C.varhash_t
+// castGoVariantKey convert GO TVariantKey to C variantkey_t.
+func castGoVariantKey(vh TVariantKey) C.variantkey_t {
+	var cvh C.variantkey_t
 	cvh.assembly = C.uint32_t(vh.Assembly)
 	cvh.chrom = C.uint32_t(vh.Chrom)
 	cvh.pos = C.uint32_t(vh.Pos)
@@ -100,8 +100,8 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 	return uint32(C.encode_ref_alt((*C.char)(pref), (*C.char)(palt)))
 }
 
-// VariantHash returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
-func VariantHash(assembly, chrom string, pos uint32, ref, alt string) TVariantHash {
+// VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
+func VariantKey(assembly, chrom string, pos uint32, ref, alt string) TVariantKey {
 	bassembly := StringToNTBytes(assembly)
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)
@@ -122,12 +122,12 @@ func VariantHash(assembly, chrom string, pos uint32, ref, alt string) TVariantHa
 	if len(alt) > 0 {
 		palt = unsafe.Pointer(&balt[0]) // #nosec
 	}
-	return castCVariantHash(C.variant_hash((*C.char)(passembly), (*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt)))
+	return castCVariantKey(C.variant_hash((*C.char)(passembly), (*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt)))
 }
 
-// String representation of the TVariantHash
-func (v TVariantHash) String() string {
-	var cvh C.varhash_t
+// String representation of the TVariantKey
+func (v TVariantKey) String() string {
+	var cvh C.variantkey_t
 	cvh.assembly = C.uint32_t(v.Assembly)
 	cvh.chrom = C.uint32_t(v.Chrom)
 	cvh.pos = C.uint32_t(v.Pos)
@@ -138,14 +138,14 @@ func (v TVariantHash) String() string {
 	return C.GoStringN(cstr, C.int(32))
 }
 
-// DecodeVariantHashString parses a variant hash string and returns the components as TVariantHash structure.
-func DecodeVariantHashString(s string) TVariantHash {
+// DecodeVariantKeyString parses a variant key string and returns the components as TVariantKey structure.
+func DecodeVariantKeyString(s string) TVariantKey {
 	b := StringToNTBytes(s)
 	var p unsafe.Pointer
 	if len(s) > 0 {
 		p = unsafe.Pointer(&b[0]) // #nosec
 	}
-	return castCVariantHash(C.decode_variant_hash_string((*C.char)(p)))
+	return castCVariantKey(C.decode_variant_hash_string((*C.char)(p)))
 }
 
 // --- FARMHASH64 ---
@@ -280,27 +280,27 @@ func (mf TMMFile) FindLastUint128(blklen, blkpos, first, last uint64, search Uin
 
 // --- RSIDVAR ---
 
-// GetVRRsid returns the RSID at the specified position of the varhash_rsid.bin file.
+// GetVRRsid returns the RSID at the specified position of the variantkey_rsid.bin file.
 func (mf TMMFile) GetVRRsid(item uint64) uint32 {
 	return uint32(C.get_vr_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// GetRVVarhash returns the VariantHash at the specified position of the rsid_varhash.bin file.
-func (mf TMMFile) GetRVVarhash(item uint64) TVariantHash {
-	return castCVariantHash(C.get_rv_varhash((*C.uchar)(mf.Src), C.uint64_t(item)))
+// GetRVVarhash returns the VariantKey at the specified position of the rsid_variantkey.bin file.
+func (mf TMMFile) GetRVVarhash(item uint64) TVariantKey {
+	return castCVariantKey(C.get_rv_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// FindRVVarhashByRsid search for the specified RSID and returns the first occurrence of VariantHash, item position.
-func (mf TMMFile) FindRVVarhashByRsid(first, last uint64, rsid uint32) (TVariantHash, uint64) {
+// FindRVVarhashByRsid search for the specified RSID and returns the first occurrence of VariantKey, item position.
+func (mf TMMFile) FindRVVarhashByRsid(first, last uint64, rsid uint32) (TVariantKey, uint64) {
 	cfirst := C.uint64_t(first)
-	vh := castCVariantHash(C.find_rv_varhash_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
+	vh := castCVariantKey(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
 	return vh, uint64(cfirst)
 }
 
-// FindVRRsidByVarshash search for the specified VariantHash and returns the first occurrence of RSID, item position.
-func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantHash) (uint32, uint64) {
+// FindVRRsidByVarshash search for the specified VariantKey and returns the first occurrence of RSID, item position.
+func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantKey) (uint32, uint64) {
 	cfirst := C.uint64_t(first)
-	rsid := uint32(C.find_vr_rsid_by_varhash((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), castGoVariantHash(vh)))
+	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), castGoVariantKey(vh)))
 	return rsid, uint64(cfirst)
 }
 

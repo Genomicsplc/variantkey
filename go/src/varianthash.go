@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 import (
 	"fmt"
@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// TVariantHash contains a representation of a genetic variant hash
-type TVariantHash struct {
+// TVariantKey contains a representation of a genetic variant key
+type TVariantKey struct {
 	Assembly uint32 `json:"assembly"`
 	Chrom    uint32 `json:"chrom"`
 	Pos      uint32 `json:"pos"`
@@ -58,9 +58,9 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 	return FarmHash32(ra)
 }
 
-// VariantHash returns a Genetic Variant Hash based on CHROM, POS (0-base), REF, ALT.
-func VariantHash(assembly, chrom string, pos uint32, ref, alt string) TVariantHash {
-	return TVariantHash{
+// VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
+func VariantKey(assembly, chrom string, pos uint32, ref, alt string) TVariantKey {
+	return TVariantKey{
 		EncodeAssembly(assembly),
 		EncodeChrom(chrom),
 		pos,
@@ -68,15 +68,15 @@ func VariantHash(assembly, chrom string, pos uint32, ref, alt string) TVariantHa
 	}
 }
 
-// String representation of the TVariantHash
-func (v TVariantHash) String() string {
+// String representation of the TVariantKey
+func (v TVariantKey) String() string {
 	return fmt.Sprintf("%08x%08x%08x%08x", v.Assembly, v.Chrom, v.Pos, v.RefAlt)
 
 }
 
-// DecodeVariantHashString parses a VariantHash string and returns the components.
-func DecodeVariantHashString(vh string) TVariantHash {
-	ret := TVariantHash{}
+// DecodeVariantKeyString parses a VariantKey string and returns the components.
+func DecodeVariantKeyString(vh string) TVariantKey {
+	ret := TVariantKey{}
 	assembly, err := strconv.ParseUint(vh[0:8], 16, 32)
 	if err == nil {
 		ret.Assembly = uint32(assembly)

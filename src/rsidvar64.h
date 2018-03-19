@@ -23,40 +23,40 @@
  * @brief File containing the definition of public functions.
  *
  * The functions provided here allows to search RSID and
- * VariantHash64 from binary files made of adjacent
+ * VariantKey64 from binary files made of adjacent
  * constant-length binary blocks sorted in ascending order.
  *
- * The functions provided here allows fast search for RSID and VariantHash64 values from binary files
+ * The functions provided here allows fast search for RSID and VariantKey64 values from binary files
  * made of adjacent constant-length binary blocks sorted in ascending order.
  *
  * The input binary files can be generated using the rsidvar64.sh script in the resources/tools folder.
  *
- * The rsid_varhash64.bin file contains adjacent 12 bytes binary blocks
+ * The rsid_variantkey64.bin file contains adjacent 12 bytes binary blocks
  * with the following structure:
  *
  *     00 01 02 03 04          05 06 07    08 09 10 11
  *     +---------+ +---------+ +---------+ +---------+
  *     |  RSID   | |  CHROM  | |   POS   | | REF_ALT |
  *     +---------+ +---------+ +---------+ +---------+
- *                 |          VARIANT_HASH           |
+ *                 |          VARIANTKEY           |
  *                 +---------------------------------+
  *
  *
- * The varhash64_rsid.bin file contains adjacent 12 bytes binary blocks
+ * The variantkey64_rsid.bin file contains adjacent 12 bytes binary blocks
  * with the following structure:
  *
  *     00          01 02 03 04 05 06 07    08 09 10 11
  *     +---------+ +---------+ +---------+ +---------+
  *     |  CHROM  | |   POS   | | REF_ALT | |  RSID   |
  *     +---------+ +---------+ +---------+ +---------+
- *     |          VARIANT_HASH           |
+ *     |          VARIANTKEY           |
  *     +---------------------------------+
  */
 
 #ifndef RSIDVAR64_H
 #define RSIDVAR64_H
 
-#include "varianthash.h"
+#include "variantkey.h"
 #include "binsearch.h"
 
 #define RSIDVAR64_BIN_BLKLEN 12 //!< Length of a binary block containing RSID + VARHASH64
@@ -82,17 +82,17 @@
 uint32_t get_vr64_rsid(const unsigned char *src, uint64_t item);
 
 /**
- * Returns the VariantHash64 at the specified position.
+ * Returns the VariantKey64 at the specified position.
  *
  * @param src       Memory mapped file address.
  * @param item      Binary block number.
  *
- * @return variant hash data
+ * @return variant key data
  */
-uint64_t get_rv64_varhash(const unsigned char *src, uint64_t item);
+uint64_t get_rv64_variantkey(const unsigned char *src, uint64_t item);
 
 /**
- * Search for the specified RSID and returns the first occurrence of VariantHash64.
+ * Search for the specified RSID and returns the first occurrence of VariantKey64.
  *
  * @param src       Memory mapped file address.
  * @param first     Pointer to the first element of the range to search (min value = 0).
@@ -100,22 +100,22 @@ uint64_t get_rv64_varhash(const unsigned char *src, uint64_t item);
  * @param last      Last element of the range to search (max value = nitems - 1).
  * @param rsid      RSID to search.
  *
- * @return VariantHash64 data or zero data if not found
+ * @return VariantKey64 data or zero data if not found
  */
-uint64_t find_rv64_varhash_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid);
+uint64_t find_rv64_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid);
 
 /**
- * Search for the specified VariantHash and returns the first occurrence of RSID.
+ * Search for the specified VariantKey and returns the first occurrence of RSID.
  *
  * @param src       Memory mapped file address.
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
  * @param last      Last element of the range to search (max value = nitems - 1).
- * @param vh        VariantHash.
+ * @param vh        VariantKey.
  *
  * @return RS ID or 0 if not found
  */
-uint32_t find_vr64_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vh);
+uint32_t find_vr64_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vh);
 
 /**
  * Search for the specified CHROM range and returns the first occurrence of RSID.

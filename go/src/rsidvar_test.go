@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 import "testing"
 
@@ -149,7 +149,7 @@ func TestFindVRRsidByVarshash(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := TVariantHash{
+			vh := TVariantKey{
 				Assembly: testDataVR[i].assembly,
 				Chrom:    testDataVR[i].chrom,
 				Pos:      testDataVR[i].pos,
@@ -167,7 +167,7 @@ func TestFindVRRsidByVarshash(t *testing.T) {
 }
 
 func TestFindVRRsidByVarshashNotFound(t *testing.T) {
-	vh := TVariantHash{}
+	vh := TVariantKey{}
 	vh.Assembly = 0xfffffff0
 	vh.Chrom = 0xfffffff0
 	vh.Pos = 0xfffffff0
@@ -182,7 +182,7 @@ func TestFindVRRsidByVarshashNotFound(t *testing.T) {
 }
 
 func BenchmarkFindVRRsidByVarshash(b *testing.B) {
-	vh := TVariantHash{
+	vh := TVariantKey{
 		Assembly: 0x8b29d2c7,
 		Chrom:    0x00000003,
 		Pos:      0x000124a3,

@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 // The code in this file is an extract from:
 // https://github.com/dgryski/go-farm/commits/master

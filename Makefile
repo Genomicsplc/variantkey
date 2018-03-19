@@ -1,7 +1,7 @@
 # MAKEFILE
 #
 # @author      Nicola Asuni <nicola.asuni@genomicsplc.com>
-# @link        https://github.com/genomicsplc/varianthash
+# @link        https://github.com/genomicsplc/variantkey
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
@@ -20,7 +20,7 @@ OWNER=GENOMICSplc
 VENDOR=genomicsplc
 
 # Project name
-PROJECT=varianthash
+PROJECT=variantkey
 
 # Project version
 VERSION=$(shell cat VERSION)
@@ -81,11 +81,11 @@ test:
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	make | tee make.log ; test $${PIPESTATUS[0]} -eq 0 && \
 	lcov --zerocounters --directory . && \
-	lcov --capture --initial --directory . --output-file coverage/varianthash && \
+	lcov --capture --initial --directory . --output-file coverage/variantkey && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0 && \
-	lcov --no-checksum --directory . --capture --output-file coverage/varianthash.info && \
-	lcov --remove coverage/varianthash.info "/test_*" --output-file coverage/varianthash.info && \
-	genhtml -o coverage -t "VariantHash Test Coverage" coverage/varianthash.info
+	lcov --no-checksum --directory . --capture --output-file coverage/variantkey.info && \
+	lcov --remove coverage/variantkey.info "/test_*" --output-file coverage/variantkey.info && \
+	genhtml -o coverage -t "VariantKey Test Coverage" coverage/variantkey.info
 ifeq ($(VH_BUILD_DOXYGEN),ON)
 	cd target && \
 	make doc | tee doc.log ; test $${PIPESTATUS[0]} -eq 0

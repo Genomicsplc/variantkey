@@ -3,7 +3,7 @@ same license. The copyrights of each library is detailed below.
 
 MIT LICENSE
 
-Copyright (c) 2017 GENOMICS plc (varianthash, rsidvar)
+Copyright (c) 2017 GENOMICS plc (variantkey, rsidvar)
 Copyright (c) 2017 Nicola Asuni - Tecnick.com (binsearch)
 Copyright (c) 2014 Google, Inc. (farmhash) - https://github.com/tecnickcom/farmhash64
 

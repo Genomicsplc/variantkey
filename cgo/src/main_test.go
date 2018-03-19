@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 import "testing"
 import "os"
@@ -15,12 +15,12 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	rv, err = MmapBinFile("../../test/rsid_varhash.10.bin")
+	rv, err = MmapBinFile("../../test/rsid_variantkey.10.bin")
 	if err != nil {
 		return
 	}
 
-	vr, err = MmapBinFile("../../test/varhash_rsid.10.bin")
+	vr, err = MmapBinFile("../../test/variantkey_rsid.10.bin")
 	if err != nil {
 		return
 	}
