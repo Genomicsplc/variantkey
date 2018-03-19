@@ -52,7 +52,13 @@ setup(
         'Programming Language :: Python :: 3',
     ],
     extras_require = {
-        'test': ['pytest', 'pytest-benchmark'],
+        'test': [
+            'coverage',
+            'pytest',
+            'pytest-benchmark',
+            'pytest-cov',
+            'pytest-pep8',
+        ],
     },
     cmdclass = {'test': RunTests},
 )
