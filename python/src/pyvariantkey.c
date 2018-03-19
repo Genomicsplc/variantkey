@@ -524,7 +524,7 @@ static PyObject* py_find_vr128_pos_range(PyObject *Py_UNUSED(ignored), PyObject 
     uint64_t first, last;
     uint32_t pos_start, pos_end;
     PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKIII", &mfsrc, &first, &last, &pos_start, &pos_end))
+    if (!PyArg_ParseTuple(args, "OKKII", &mfsrc, &first, &last, &pos_start, &pos_end))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
     uint32_t h = find_vr128_pos_range(src, &first, &last, pos_start, pos_end);
