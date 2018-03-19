@@ -573,6 +573,8 @@ variantsTestData = [
     ("GRCh37.p13.b146", "mt", 16528, "t", "c", 0x6674240e, 0x00000019, 0x00004090, 0x01418000, "6674240e000000190000409001418000", 0x19, 0x00004090, 0x0a0c00, 0x19000040900a0c00, "19000040900a0c00"),
 ]
 
+chromTestEncodeData = ["NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "MT"]
+chromTestDecodeData = ["NA", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "MT"]
 
 class TestFunctions(TestCase):
 
@@ -582,34 +584,118 @@ class TestFunctions(TestCase):
             self.assertEqual(h, o_assembly)
 
     def test_encode_chrom_32bit(self):
-        for i_assembly ,i_chrom ,i_pos ,i_ref ,i_alt ,o_assembly ,o_chrom, o_pos, o_refalt, o_key, os_chrom, os_pos, os_refalt, os_vh, os_key in variantsTestData:
-            h = vh.encode_chrom_32bit(i_chrom)
-            self.assertEqual(h, o_chrom)
+        for i in range(0, 26):
+            c = vh.encode_chrom_32bit(chromTestEncodeData[i])
+            self.assertEqual(c, i)
+        chrom = vh.encode_chrom_32bit("WRONG")
+        self.assertEqual(chrom, 0)
 
     def test_encode_chrom_8bit(self):
-        for i_assembly ,i_chrom ,i_pos ,i_ref ,i_alt ,o_assembly ,o_chrom, o_pos, o_refalt, o_key, os_chrom, os_pos, os_refalt, os_vh, os_key in variantsTestData:
-            h = vh.encode_chrom_8bit(i_chrom)
-            self.assertEqual(h, os_chrom)
+        for i in range(0, 26):
+            c = vh.encode_chrom_8bit(chromTestEncodeData[i])
+            self.assertEqual(c, i)
+        chrom = vh.encode_chrom_32bit("WRONG")
+        self.assertEqual(chrom, 0)
 
-#static PyObject *py_decode_chrom_32bit(PyObject *self, PyObject *args);
-#static PyObject *py_decode_chrom_8bit(PyObject *self, PyObject *args);
+    def test_decode_chrom_32bit(self):
+        for i in range(0, 26):
+            chrom = vh.decode_chrom_32bit(i)
+            self.assertEqual(chrom, chromTestDecodeData[i])
 
+    def test_decode_chrom_8bit(self):
+        for i in range(0, 26):
+            chrom = vh.decode_chrom_8bit(i)
+            self.assertEqual(chrom, chromTestDecodeData[i])
 
     def test_encode_refalt_32bit(self):
-        for i_assembly ,i_chrom ,i_pos ,i_ref ,i_alt ,o_assembly ,o_chrom, o_pos, o_refalt, o_key, os_chrom, os_pos, os_refalt, os_vh, os_key in variantsTestData:
-            h = vh.encode_refalt_32bit(i_ref, i_alt)
-            self.assertEqual(h, o_refalt)
+        input_data = ["A", "M", "Z", "az", "A*Z", "ACGT", "ACGTA", "AcGTtAc", "ACGTACT", "CCCCCCCcCCCCCCcCCCCC"]
+        expected_data = [
+            0x00108000,0x00108000,0x00168000,0x00d08000,0x001d0000,
+            0x01a08000,0x0010e800,0x021d0400,0x0010ef40,0x041de820,
+            0x00108cf4,0x06119e81,0xb5c5da67,0x97700ee5,0xe49340db,
+            0x9c066fee,0x9d3555e9,0xea72d6ab,0xdba230ad,0xfa70226e,
+            0x00d68000,0x00d68000,0x00dd0000,0x01a68000,0x00d0e800,
+            0x021d3400,0x00d0ef40,0x041de9a0,0x00d08cf4,0x06119e8d,
+            0xe0791284,0xc3788d03,0x8a92f03d,0xb2e8593c,0xf40962d3,
+            0xe32edae5,0xdc97a44b,0xe72a1fa4,0x01ad0000,0x01ad0000,
+            0x01a0e800,0x021d6800,0x01a0ef40,0x041deb40,0x01a08cf4,
+            0x06119e9a,0x91e237a1,0x80b89ed9,0xfd044cc3,0xce6c0671,
+            0x820254b0,0xb0002ec2,0xbadccec1,0xc225892e,0x021d0740,
+            0x021d0740,0x021d077a,0x041de83a,0x8ea868e8,0x8bbe922f,
+            0xce17687d,0x90be4b52,0xc51e23bc,0xa3bd6334,0x9004f160,
+            0xb547514e,0xc50056ac,0x94c752da,0xf875db8e,0xf875db8e,
+            0x869940a0,0xc1e61a70,0xf94e721a,0xa5709dfe,0xb4386cdb,
+            0xf9fc8209,0x8f271551,0xad0cbf09,0xdd9fb1b1,0xda8a3268,
+            0x9c65f732,0x9c65f732,0x838c173e,0xafdd410e,0xa75c4bc5,
+            0x9764b54d,0xb1f4734a,0x9b0bac60,0xedbcef9c,0xba2c7364,
+            0x95977d80,0x95977d80,0xd98df72b,0x89d491c0,0xfb93966e,
+            0xdda0d5b3,0xc7e82726,0xa42e27fa,0x934d719a,0x934d719a,
+            0xd5c91e68,0xa336a850,0xe9c0edf0,0xc2e06860,0x9b7aa616,
+            0x9b7aa616,0xe661e3e5,0xb365ebc7,0xebfb8693,0xebfb8693
+        ]
+        k = 0
+        for i in range(0, 10):
+            for j in range(i, 10):
+                h = vh.encode_refalt_32bit(input_data[i], input_data[j]);
+                self.assertEqual(h, expected_data[k])
+                ra = vh.decode_refalt_32bit(h)
+                if ra[0] != "":
+                    self.assertEqual(ra[0], input_data[i].upper())
+                    self.assertEqual(ra[1], input_data[j].upper())
+                k += 1
+                h = vh.encode_refalt_32bit(input_data[j], input_data[i]);
+                self.assertEqual(h, expected_data[k])
+                ra = vh.decode_refalt_32bit(h)
+                if ra[0] != "":
+                    self.assertEqual(ra[0], input_data[j].upper())
+                    self.assertEqual(ra[1], input_data[i].upper())
+                k += 1
 
     def test_encode_refalt_24bit(self):
-        for i_assembly ,i_chrom ,i_pos ,i_ref ,i_alt ,o_assembly ,o_chrom, o_pos, o_refalt, o_key, os_chrom, os_pos, os_refalt, os_vh, os_key in variantsTestData:
-            h = vh.encode_refalt_24bit(i_ref, i_alt)
-            self.assertEqual(h, os_refalt)
-
-#static PyObject *py_decode_refalt_32bit(PyObject *self, PyObject *args);
-#static PyObject *py_decode_refalt_24bit(PyObject *self, PyObject *args);
-
-
-
+        input_data = ["A", "M", "Z", "az", "A*Z", "ACGT", "ACGTA", "AcGTtAc", "ACGTACT", "CCCCCCCcCCCCCCcCCCCC"]
+        expected_data = [
+            0x00008400,0x00008400,0x0000b400,0x00068400,0x0000e800,
+            0x000d0400,0x00008740,0x0010e820,0x0000877a,0x0020ef41,
+            0x00c33969,0x00cfa3c7,0x00b5c5da,0x0097700e,0x00e49340,
+            0x009c066f,0x009d3555,0x00ea72d6,0x00dba230,0x00fa7022,
+            0x0006b400,0x0006b400,0x0006e800,0x000d3400,0x00068740,
+            0x0010e9a0,0x0006877a,0x0020ef4d,0x00f81533,0x0082221b,
+            0x00e07912,0x00c3788d,0x008a92f0,0x00b2e859,0x00f40962,
+            0x00e32eda,0x00dc97a4,0x00e72a1f,0x000d6800,0x000d6800,
+            0x000d0740,0x0010eb40,0x000d077a,0x0020ef5a,0x009c71be,
+            0x00faca90,0x0091e237,0x0080b89e,0x00fd044c,0x00ce6c06,
+            0x00820254,0x00b0002e,0x00badcce,0x00c22589,0x0010e83a,
+            0x0010e83a,0x00c1527a,0x008668fc,0x008ea868,0x008bbe92,
+            0x00ce1768,0x0090be4b,0x00c51e23,0x00a3bd63,0x009004f1,
+            0x00b54751,0x00c50056,0x0094c752,0x00f875db,0x00f875db,
+            0x00869940,0x00c1e61a,0x00f94e72,0x00a5709d,0x00b4386c,
+            0x00f9fc82,0x008f2715,0x00ad0cbf,0x00dd9fb1,0x00da8a32,
+            0x009c65f7,0x009c65f7,0x00838c17,0x00afdd41,0x00a75c4b,
+            0x009764b5,0x00b1f473,0x009b0bac,0x00edbcef,0x00ba2c73,
+            0x0095977d,0x0095977d,0x00d98df7,0x0089d491,0x00fb9396,
+            0x00dda0d5,0x00c7e827,0x00a42e27,0x00934d71,0x00934d71,
+            0x00d5c91e,0x00a336a8,0x00e9c0ed,0x00c2e068,0x009b7aa6,
+            0x009b7aa6,0x00e661e3,0x00b365eb,0x00ebfb86,0x00ebfb86
+        ]
+        k = 0
+        for i in range(0, 10):
+            for j in range(i, 10):
+                h = vh.encode_refalt_24bit(input_data[i], input_data[j]);
+                print(k, i, j, input_data[i], input_data[j], h, expected_data[k])
+                self.assertEqual(h, expected_data[k])
+                ra = vh.decode_refalt_24bit(h)
+                if ra[0] != "":
+                    self.assertEqual(ra[0], input_data[i].upper())
+                    self.assertEqual(ra[1], input_data[j].upper())
+                k += 1
+                h = vh.encode_refalt_24bit(input_data[j], input_data[i]);
+                print(k, j, i, input_data[j], input_data[i], h, expected_data[k])
+                self.assertEqual(h, expected_data[k])
+                ra = vh.decode_refalt_24bit(h)
+                if ra[0] != "":
+                    self.assertEqual(ra[0], input_data[j].upper())
+                    self.assertEqual(ra[1], input_data[i].upper())
+                k += 1
 
     def test_variantkey128(self):
         for i_assembly ,i_chrom ,i_pos ,i_ref ,i_alt ,o_assembly ,o_chrom, o_pos, o_refalt, o_key, os_chrom, os_pos, os_refalt, os_vh, os_key in variantsTestData:
@@ -673,16 +759,24 @@ class TestBenchmark(object):
 
     def test_variantkey128_benchmark(self, benchmark):
         benchmark(vh.variantkey128, "GRCh37.p13.b146", "MT", 16527, "C", "T")
+        
+    def test_variantkey64_benchmark(self, benchmark):
+        benchmark(vh.variantkey64, "MT", 16527, "C", "T")
 
     def test_variantkey128_string_benchmark(self, benchmark):
         benchmark(vh.variantkey128_string, 0x6674240e, 0x00000018, 0x0006ce1a, 0xc28546e0)
 
+    def test_variantkey64_string_benchmark(self, benchmark):
+        benchmark(vh.variantkey64_string, 0x180006ce1ac28546)
+
     def test_parse_variantkey128_string_benchmark(self, benchmark):
-        benchmark(
-            vh.parse_variantkey128_string,
-            "6674240e000000180006ce1ac28546e0")
+        benchmark(vh.parse_variantkey128_string, "6674240e000000180006ce1ac28546e0")
 
     def test_parse_variantkey128_bytes_benchmark(self, benchmark):
-        benchmark(
-            vh.parse_variantkey128_string,
-            b"6674240e000000180006ce1ac28546e0")
+        benchmark(vh.parse_variantkey128_string, b"6674240e000000180006ce1ac28546e0")
+
+    def test_parse_variantkey64_string_benchmark(self, benchmark):
+        benchmark(vh.parse_variantkey64_string, "180006ce1ac28546")
+
+    def test_parse_variantkey64_bytes_benchmark(self, benchmark):
+        benchmark(vh.parse_variantkey64_string, b"180006ce1ac28546")
