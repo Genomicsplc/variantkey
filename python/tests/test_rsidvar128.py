@@ -1,4 +1,4 @@
-"""Tests for variantkey module."""
+"""Tests for variantkey128 module."""
 
 
 import variantkey as bs

@@ -578,6 +578,7 @@ static PyObject* py_get_rv64_variantkey(PyObject *Py_UNUSED(ignored), PyObject *
 
 static PyObject* py_find_rv64_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
+    PyObject *result;
     uint64_t first, last;
     uint32_t rsid;
     PyObject* mfsrc = NULL;
@@ -585,7 +586,10 @@ static PyObject* py_find_rv64_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), P
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
     uint64_t h = find_rv64_variantkey_by_rsid(src, &first, last, rsid);
-    return Py_BuildValue("K", h);
+    result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
+    return result;
 }
 
 static PyObject* py_find_vr64_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
