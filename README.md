@@ -18,7 +18,7 @@ internal numerical variant IDs that can be used to match and cross-reference gen
 **IMPORTANT**: This model assumes that the variants have been:
 
 a. **decomposed** to convert multialleic variants to bialleic ones (`REF` and single `ALT`).  
-This can be done in [VCF]() files using the [vt decompose](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
+This can be done in [VCF]() files using the [vt decompose -s](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.
 
 b. **normalized** as in ["Unified representation of genetic variants" - Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).
 This can be done in VCF files using the [vt normalize](https://genome.sph.umich.edu/wiki/Vt#Decompose) tool.

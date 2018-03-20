@@ -38,7 +38,7 @@ cat ${REFERENCE_GENOME_FASTA_FILE} | sed 's/>chrM/>MT/g' | sed 's/>chr/>/g' > ge
 vt index ${VCF_INPUT_FILE}
 
 # Decompose multiallelic variants into biallelic variants
-vt decompose ${VCF_INPUT_FILE} -o decomposed.vcf
+vt decompose -s ${VCF_INPUT_FILE} -o decomposed.vcf
 
 # Normalize variants (https://academic.oup.com/bioinformatics/article/31/13/2202/196142)
 vt normalize decomposed.vcf -m -r genome.fa -o normalized.vcf

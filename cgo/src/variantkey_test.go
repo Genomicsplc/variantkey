@@ -2,21 +2,26 @@ package variantkey
 
 import "testing"
 
-// TVariant contains a representation of a genetic variant key
-type TVariant struct {
-	assembly  string
-	chrom     string
-	pos       uint32
-	ref       string
-	alt       string
-	hassembly uint32
-	hchrom    uint32
-	hpos      uint32
-	hrefalt   uint32
-	hash      string
+// TVariant contains test data
+type TVariantData struct {
+	iassembly string
+	ichrom    string
+	ipos      uint32
+	iref      string
+	ialt      string
+	oassembly uint32
+	ochrom    uint32
+	opos      uint32
+	orefalt   uint32
+	okey      string
+	oschrom   uint8
+	ospos     uint32
+	osrefalt  uint32
+	osvh      uint64
+	oskey     string
 }
 
-var variantsTestData = []TVariant{
+var variantsTestData = []TVariantData{
 	{"GRCh37.p13.b146", "chr1", 324674, "C", "T", 0x6674240e, 0x00000001, 0x0004f442, 0x003a0000, "6674240e000000010004f442003a0000", 0x01, 0x0004f442, 0x01d000, 0x010004f44201d000, "010004f44201d000"},
 	{"GRCh37.p13.b146", "CHR1", 324675, "G", "C", 0x6674240e, 0x00000001, 0x0004f443, 0x00718000, "6674240e000000010004f44300718000", 0x01, 0x0004f443, 0x038c00, 0x010004f443038c00, "010004f443038c00"},
 	{"GRCh37.p13.b146", "1", 324676, "ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", "A", 0x6674240e, 0x00000001, 0x0004f444, 0xbbd88164, "6674240e000000010004f444bbd88164", 0x01, 0x0004f444, 0xbbd881, 0x010004f444bbd881, "010004f444bbd881"},
@@ -585,49 +590,119 @@ var variantsTestData = []TVariant{
 	{"GRCh37.p13.b146", "mt", 16528, "t", "c", 0x6674240e, 0x00000019, 0x00004090, 0x01418000, "6674240e000000190000409001418000", 0x19, 0x00004090, 0x0a0c00, 0x19000040900a0c00, "19000040900a0c00"},
 }
 
-func TestEncodeAssembly(t *testing.T) {
-	ae := EncodeAssembly(variantsTestData[0].assembly)
-	if ae != variantsTestData[0].hassembly {
-		t.Errorf("The assembly hash is different, got: %d expected %d", ae, variantsTestData[0].hassembly)
+func TestEncodeAssembly32bit(t *testing.T) {
+	h := EncodeAssembly32bit(variantsTestData[0].iassembly)
+	if h != variantsTestData[0].oassembly {
+		t.Errorf("The assembly code is different, got: %d expected %d", h, variantsTestData[0].oassembly)
 	}
 }
 
-func TestEncodeChrom(t *testing.T) {
+func TestEncodeChrom32bit(t *testing.T) {
 	cdata := []string{
-		"", "1", "2", "3", "4", "5", "6", "7", "8", "9",
-		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19",
-		"20", "21", "22",
-		"X", "Y", "XY", "MT",
+		"NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
+		"11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22",
+		"X", "Y", "MT",
 	}
 	for k, v := range cdata {
 		k := k
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			ce := EncodeChrom(v)
-			if ce != uint32(k) {
-				t.Errorf("The chrom hash is different, got: %d expected %d", ce, k)
+			h := EncodeChrom32bit(v)
+			if h != uint32(k) {
+				t.Errorf("The chrom code is different, got: %d expected %d", h, k)
 			}
 		})
 	}
-	ce := EncodeChrom("#")
-	if 0 != ce {
-		t.Errorf("The chrom hash is different, got: %d expected 0", ce)
+	h := EncodeChrom32bit("WRONG")
+	if h != 0 {
+		t.Errorf("The chrom code is different, got: %d expected 0", h)
 	}
 }
 
-func TestEncodeRefAlt(t *testing.T) {
+func TestEncodeChrom8bit(t *testing.T) {
+	cdata := []string{
+		"NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
+		"11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22",
+		"X", "Y", "MT",
+	}
+	for k, v := range cdata {
+		k := k
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h := EncodeChrom8bit(v)
+			if h != uint8(k) {
+				t.Errorf("The chrom code is different, got: %d expected %d", h, k)
+			}
+		})
+	}
+	h := EncodeChrom8bit("WRONG")
+	if h != 0 {
+		t.Errorf("The chrom code is different, got: %d expected 0", h)
+	}
+}
+
+func TestDecodeChrom32bit(t *testing.T) {
+	cdata := []string{
+        "NA", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+        "21", "22", "X", "Y", "MT",
+	}
+	for k, v := range cdata {
+		k := uint32(k)
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h := DecodeChrom32bit(k)
+			if h != v {
+				t.Errorf("The chrom code is different, got: %s expected %s", h, v)
+			}
+		})
+	}
+	h := DecodeChrom32bit(73)
+	if h != "NA" {
+		t.Errorf("The chrom code is different, got: %s expected NA", h)
+	}
+}
+
+func TestDecodeChrom8bit(t *testing.T) {
+	cdata := []string{
+        "NA", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
+        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+        "21", "22", "X", "Y", "MT",
+	}
+	for k, v := range cdata {
+		k := uint8(k)
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h := DecodeChrom8bit(k)
+			if h != v {
+				t.Errorf("The chrom code is different, got: %s expected %s", h, v)
+			}
+		})
+	}
+	h := DecodeChrom8bit(73)
+	if h != "NA" {
+		t.Errorf("The chrom code is different, got: %s expected NA", h)
+	}
+}
+
+/*
+func TestEncodeRefAlt32bit(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h := EncodeRefAlt(v.ref, v.alt)
+			h := EncodeRefAlt32bit(v.ref, v.alt)
 			if h != v.hrefalt {
-				t.Errorf("The ref+alt hash is different, got: %x expected %x\n", h, v.hrefalt)
+				t.Errorf("The ref+alt code is different, got: %x expected %x\n", h, v.hrefalt)
 			}
 		})
 	}
 }
+
 
 func TestVariantKey(t *testing.T) {
 	for _, v := range variantsTestData {
@@ -715,3 +790,4 @@ func BenchmarkDecodeVariantKey(b *testing.B) {
 		DecodeVariantKeyString(bs)
 	}
 }
+*/

@@ -3,24 +3,34 @@ package variantkey
 import "testing"
 import "os"
 
-var rv, vr TMMFile
+var rv128, vr128, rv64, vr64 TMMFile
 
 func TestMain(m *testing.M) {
 	var err error
 
 	// memory map the input files
 
-	mf, err = MmapBinFile("../../test/test_data.bin")
+	mf, err = MmapBinFile("../../test/data/test_data.bin")
 	if err != nil {
 		return
 	}
 
-	rv, err = MmapBinFile("../../test/rsid_variantkey.10.bin")
+	rv128, err = MmapBinFile("../../test/data/rsid_variantkey128.10.bin")
 	if err != nil {
 		return
 	}
 
-	vr, err = MmapBinFile("../../test/variantkey_rsid.10.bin")
+	vr128, err = MmapBinFile("../../test/data/variantkey128_rsid.10.bin")
+	if err != nil {
+		return
+	}
+
+	rv64, err = MmapBinFile("../../test/data/rsid_variantkey64.10.bin")
+	if err != nil {
+		return
+	}
+
+	vr64, err = MmapBinFile("../../test/data/variantkey64_rsid.10.bin")
 	if err != nil {
 		return
 	}
@@ -34,12 +44,22 @@ func TestMain(m *testing.M) {
 		retCode++
 	}
 
-	err = rv.Close()
+	err = rv128.Close()
 	if err != nil {
 		retCode++
 	}
 
-	err = vr.Close()
+	err = vr128.Close()
+	if err != nil {
+		retCode++
+	}
+
+	err = rv64.Close()
+	if err != nil {
+		retCode++
+	}
+
+	err = vr64.Close()
 	if err != nil {
 		retCode++
 	}
