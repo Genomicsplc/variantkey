@@ -204,6 +204,10 @@ size_t decode_refalt(uint32_t code, char *ref, char *alt, uint8_t pos)
     {
         pos -= 5;
         alt[i] = decode_refalt_char(code, pos);
+        if (alt[i] == 0)
+        {
+            return i;
+        }
         i++;
     }
     alt[i] = 0;

@@ -175,7 +175,7 @@ func DecodeRefAlt32bit(c uint32) (string, string) {
 	var calt *C.char = C.CString("00000")
 	defer C.free(unsafe.Pointer(calt)) // #nosec
 	len := C.decode_refalt_32bit(C.uint32_t(c), cref, calt)
-	return C.GoStringN(cref, C.int(5-len)), C.GoStringN(calt, C.int(len))
+	return C.GoStringN(cref, C.int(C.strlen(cref))), C.GoStringN(calt, C.int(len))
 }
 
 // DecodeRefAlt24bit decode 24 bit Ref+Alt code to string
@@ -185,7 +185,7 @@ func DecodeRefAlt24bit(c uint32) (string, string) {
 	var calt *C.char = C.CString("0000")
 	defer C.free(unsafe.Pointer(calt)) // #nosec
 	len := C.decode_refalt_24bit(C.uint32_t(c), cref, calt)
-	return C.GoStringN(cref, C.int(4-len)), C.GoStringN(calt, C.int(len))
+	return C.GoStringN(cref, C.int(C.strlen(cref))), C.GoStringN(calt, C.int(len))
 }
 
 // VariantKey128 returns a Genetic Variant Key based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
@@ -274,8 +274,8 @@ func ParseVariantKey64String(s string) uint64 {
 	return uint64(C.parse_variantkey64_string((*C.char)(p)))
 }
 
-// SplitVariantKey128String parses a variant key string and returns the components as TVariantKey128 structure.
-func SplitVariantKey128String(v uint64) TVariantKey64 {
+// SplitVariantKey64String parses a variant key string and returns the components as TVariantKey128 structure.
+func SplitVariantKey64String(v uint64) TVariantKey64 {
 	return castCVariantKey64(C.split_variantkey64(C.uint64_t(v)))
 }
 

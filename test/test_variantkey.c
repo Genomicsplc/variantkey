@@ -868,7 +868,7 @@ int test_encode_refalt_32bit()
             h = encode_refalt_32bit(input_data[j], input_data[i]);
             if (h != expected_data[k])
             {
-                fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[i], input_data[j]);
+                fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[j], input_data[i]);
                 ++errors;
             }
             k++;
@@ -942,7 +942,7 @@ int test_encode_refalt_24bit()
             h = encode_refalt_24bit(input_data[j], input_data[i]);
             if (h != expected_data[k])
             {
-                fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[i], input_data[j]);
+                fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[j], input_data[i]);
                 ++errors;
             }
             k++;
