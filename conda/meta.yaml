@@ -1,0 +1,27 @@
+package:
+  name: variantkey
+  version: 1.0.0.1
+
+source:
+  path: ..
+
+requirements:
+  build:
+    - setuptools
+  run:
+    - python
+
+test:
+  requires:
+    - setuptools
+    - coverage
+    - pytest
+    - pytest-pep8
+    - pytest-cov
+    - pytest-benchmark
+  imports:
+    - variantkey
+
+about:
+  home: https://github.com/genomicsplc/variantkey
+  license: MIT

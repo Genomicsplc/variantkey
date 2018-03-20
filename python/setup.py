@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 
 from codecs import open
+from os.path import abspath, dirname, join
 from subprocess import call
 from setuptools import setup, find_packages, Extension, Command
+from variantkey import __version__ as VERSION
+
 
 class RunTests(Command):
     """Run all tests."""
@@ -23,23 +26,22 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version='2.0.6',
+    version=VERSION,
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
-    long_description=open('../README.md', 'r').read(),
+    long_description="Generate and process numerical representations for genetic variants",
     author='Nicola Asuni',
     author_email='nicola.asuni@genomicsplc.com',
     url='https://github.com/genomicsplc/variantkey',
-    packages=find_packages('src', exclude=['docs', 'tests*']),
-    package_dir={'': 'src'},
+    packages=find_packages(exclude=['docs', 'tests*']),
     ext_modules=[
         Extension('variantkey', [
-            '../src/binsearch.c',
+             '../src/binsearch.c',
             '../src/farmhash64.c',
             '../src/rsidvar64.c',
             '../src/rsidvar128.c',
             '../src/variantkey.c',
-            'src/pyvariantkey.c'
+            'variantkey/pyvariantkey.c'
         ], extra_compile_args=["-O3"])
     ],
     classifiers=[
@@ -51,7 +53,7 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 3',
     ],
-    extras_require = {
+    extras_require={
         'test': [
             'coverage',
             'pytest',
@@ -60,5 +62,5 @@ setup(
             'pytest-pep8',
         ],
     },
-    cmdclass = {'test': RunTests},
+    cmdclass={'test': RunTests},
 )

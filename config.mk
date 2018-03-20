@@ -10,3 +10,6 @@ CMAKE_C_FLAGS=
 # options: ../../resources/cmake/mingw64-cross.cmake
 #          ../../resources/cmake/mingw32-cross.cmake
 CMAKE_TOOLCHAIN_FILE=
+
+# Conda channels
+ARTIFACTORY_CONDA_CHANNELS=-c bioconda -c conda-forge -c https://repo.continuum.io/pkgs/main -c https://repo.continuum.io/pkgs/free

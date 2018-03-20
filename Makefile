@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python pytest go cgo doc format clean
+.PHONY: help qa test tidy build python pytest version conda go cgo doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -34,6 +34,9 @@ PKGNAME=${VENDOR}-${PROJECT}
 # Current directory
 CURRENTDIR=$(shell pwd)
 
+# Conda environment
+CONDA_ENV=${CURRENTDIR}/../env-${PROJECT}
+
 # Include default build configuration
 include $(CURRENTDIR)/config.mk
 
@@ -52,6 +55,8 @@ help:
 	@echo "    make build   : Build the library"
 	@echo "    make python  : Build the python module"
 	@echo "    make pytest  : Test the python module"
+	@echo "    make version : Set version from VERSION file"
+	@echo "    make conda   : Build a conda package for the python wrapper"
 	@echo "    make go      : Test the native golang module"
 	@echo "    make cgo     : Test the golang cgo module"
 	@echo "    make doc     : Generate source code documentation"
@@ -114,11 +119,10 @@ build:
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0
 
-
 # Set the version from VERSION file
 version:
-	#sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" python/conda/meta.yaml
-	sed -i "s/version=.*,$$/version='$(VERSION)',/" python/setup.py
+	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" conda/meta.yaml
+	sed -i "s/__version__.*$$/__version__ = '$(VERSION)'/" python/variantkey/__init__.py
 
 # Build the python module
 python: version
@@ -132,6 +136,11 @@ python: version
 pytest:
 	cd python && \
 	python3 setup.py test
+
+# Build a conda package
+conda: version
+	./conda/setup-conda.sh && \
+	${CONDA_ENV}/bin/conda build --prefix-length 160 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) conda
 
 # Test golang module
 go:
@@ -153,8 +162,8 @@ format:
 	astyle --style=allman --recursive --suffix=none 'src/*.h'
 	astyle --style=allman --recursive --suffix=none 'src/*.c'
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
-	astyle --style=allman --recursive --suffix=none 'python/src/*.h'
-	astyle --style=allman --recursive --suffix=none 'python/src/*.c'
+	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.h'
+	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.c'
 	#autopep8 --in-place ./python/tests/*.py
 	cd cgo && make format
 	cd go && make format

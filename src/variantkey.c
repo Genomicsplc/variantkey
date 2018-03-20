@@ -56,15 +56,13 @@ uint32_t encode_assembly_32bit(const char *assembly)
 uint32_t encode_chrom_32bit(const char *chrom)
 {
     uint32_t h;
-    size_t slen = strlen(chrom);
     // remove "chr" prefix
-    if ((slen > 3)
+    if ((strlen(chrom) > 3)
             && ((chrom[0] == 'C') || (chrom[0] == 'c'))
             && ((chrom[1] == 'H') || (chrom[1] == 'h'))
             && ((chrom[2] == 'R') || (chrom[2] == 'r')))
     {
         chrom += 3;
-        slen -= 3;
     }
     char *endptr;
     h = (uint32_t)strtoul(chrom, &endptr, 10);

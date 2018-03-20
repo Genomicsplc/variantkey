@@ -11,7 +11,7 @@ include ../src/rsidvar64.h
 include ../src/rsidvar128.h
 include ../src/uint128.h
 include ../src/variantkey.h
-include src/pyvariantkey.h
+include variantkey/pyvariantkey.h
 prune .cache
 prune .git
 prune build
