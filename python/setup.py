@@ -42,7 +42,7 @@ setup(
             '../src/rsidvar128.c',
             '../src/variantkey.c',
             'variantkey/pyvariantkey.c'
-        ], extra_compile_args=["-O3"])
+        ], include_dirs=['../src', 'variantkey'], extra_compile_args=["-O3"])
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
@@ -50,8 +50,6 @@ setup(
         'Intended Audience :: Developers',
         'Programming Language :: C',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 3',
     ],
     extras_require={
         'test': [
