@@ -872,14 +872,13 @@ int test_parse_variantkey_string()
     return errors;
 }
 
-/*
 int test_parse_variantkey_string_error()
 {
     int errors = 0;
-    uint64_t h = parse_variantkey64_string("ERROR");
+    uint64_t h = parse_variantkey_string("ERROR");
     if (h != 0)
     {
-        fprintf(stderr, "%s : hash should be 0\n", __func__);
+        fprintf(stderr, "%s : variantkey should be 0\n", __func__);
         ++errors;
     }
     return errors;
@@ -889,23 +888,23 @@ int test_decode_variantkey()
 {
     int errors = 0;
     int i;
-    variantkey64_t h;
+    variantkey_t h;
     for (i=0 ; i < k_test_size; i++)
     {
-        h = split_variantkey64(test_data[i].os_vh);
-        if (h.chrom != test_data[i].os_chrom)
+        h = decode_variantkey(test_data[i].vk);
+        if (h.chrom != test_data[i].vkchrom)
         {
-            fprintf(stderr, "%s (%d): Unexpected chrom encode hash: got %x instead of %x\n", __func__, i, h.chrom, test_data[i].os_chrom);
+            fprintf(stderr, "%s (%d): Unexpected chrom code: expected 0x%02"PRIx8", got 0x%02"PRIx8"\n", __func__, i, test_data[i].vkchrom, h.chrom);
             ++errors;
         }
-        if (h.pos != test_data[i].os_pos)
+        if (h.pos != test_data[i].vkpos)
         {
-            fprintf(stderr, "%s (%d): Unexpected pos encode hash: got %x instead of %x\n", __func__, i, h.pos, test_data[i].os_pos);
+            fprintf(stderr, "%s (%d): Unexpected pos code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkpos, h.pos);
             ++errors;
         }
-        if (h.refalt != test_data[i].os_refalt)
+        if (h.refalt != test_data[i].vkrefalt)
         {
-            fprintf(stderr, "%s (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", __func__, i, h.refalt, test_data[i].os_refalt);
+            fprintf(stderr, "%s (%d): Unexpected ref+alt code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkrefalt, h.refalt);
             ++errors;
         }
     }
@@ -920,11 +919,27 @@ void benchmark_variantkey()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        variantkey64("Y", 445974, "A", "G");
+        variantkey("Y", 1, 445974, "A", 1, "G", 1);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
+
+void benchmark_variantkey_string()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    char vs[17] = "";
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        variantkey_string(0x880082d600138000, vs, 17);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 
 void benchmark_parse_variantkey_string()
 {
@@ -934,7 +949,7 @@ void benchmark_parse_variantkey_string()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        parse_variantkey64_string("0a00019081b3b049");
+        parse_variantkey_string("880082d600138000");
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
@@ -948,12 +963,12 @@ void benchmark_decode_variantkey()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        decode_variantkey(0x0a00019081b3b049);
+        decode_variantkey(0x880082d600138000);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
-*/
+
 int main()
 {
     static int errors = 0;
@@ -965,13 +980,14 @@ int main()
     errors += test_variantkey();
     errors += test_variantkey_string();
     errors += test_variantkey_string_error();
-    //errors += test_parse_variantkey_string();
-    //errors += test_parse_variantkey_string_error();
-    //errors += test_decode_variantkey();
+    errors += test_parse_variantkey_string();
+    errors += test_parse_variantkey_string_error();
+    errors += test_decode_variantkey();
 
-    //benchmark_variantkey();
-    //benchmark_parse_variantkey_string();
-    //benchmark_decode_variantkey();
+    benchmark_variantkey();
+    benchmark_variantkey_string();
+    benchmark_parse_variantkey_string();
+    benchmark_decode_variantkey();
 
     return errors;
 }
