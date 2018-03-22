@@ -97,23 +97,13 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 	return uint32(C.encode_refalt((*C.char)(pref), sizeref, (*C.char)(palt), sizealt))
 }
 
-// DecodeRefAlt32bit decode 32 bit Ref+Alt code to string
-func DecodeRefAlt32bit(c uint32) (string, string) {
+// DecodeRefAlt decode Ref+Alt code to string
+func DecodeRefAlt(c uint32) (string, string) {
 	var cref *C.char = C.CString("00000")
 	defer C.free(unsafe.Pointer(cref)) // #nosec
 	var calt *C.char = C.CString("00000")
 	defer C.free(unsafe.Pointer(calt)) // #nosec
-	len := C.decode_refalt_32bit(C.uint32_t(c), cref, calt)
-	return C.GoStringN(cref, C.int(C.strlen(cref))), C.GoStringN(calt, C.int(len))
-}
-
-// DecodeRefAlt24bit decode 24 bit Ref+Alt code to string
-func DecodeRefAlt24bit(c uint32) (string, string) {
-	var cref *C.char = C.CString("0000")
-	defer C.free(unsafe.Pointer(cref)) // #nosec
-	var calt *C.char = C.CString("0000")
-	defer C.free(unsafe.Pointer(calt)) // #nosec
-	len := C.decode_refalt_24bit(C.uint32_t(c), cref, calt)
+	len := C.decode_refalt(C.uint32_t(c), cref, calt)
 	return C.GoStringN(cref, C.int(C.strlen(cref))), C.GoStringN(calt, C.int(len))
 }
 

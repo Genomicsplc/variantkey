@@ -57,14 +57,8 @@ uint8_t encode_chrom(const char *chrom, size_t size)
             && ((chrom[2] == 'R') || (chrom[2] == 'r')))
     {
         chrom += 3;
+        size -= 3;
     }
-    char *endptr;
-    h = (uint8_t)strtoul(chrom, &endptr, 10);
-    if (*endptr == '\0')
-    {
-        return h; // numerical chromosome
-    }
-    // HUMAN
     if ((chrom[0] == 'X') || (chrom[0] == 'x'))
     {
         return 23;
@@ -76,6 +70,15 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     if ((chrom[0] == 'M') || (chrom[0] == 'm'))
     {
         return 25;
+    }
+    char cs[size+1];
+    strncpy(cs, chrom, size);
+    cs[size] = '\0';
+    char *endptr;
+    h = (uint8_t)strtoul(cs, &endptr, 10);
+    if (*endptr == '\0')
+    {
+        return h; // numerical chromosome
     }
     return 0; // NA
 }
@@ -200,6 +203,9 @@ size_t variantkey_string(uint64_t code, char *str, size_t size)
 
 uint64_t parse_variantkey_string(const char *vs)
 {
+    char cs[17];
+    strncpy(cs, vs, 16);
+    cs[16] = '\0';
     char *endptr;
     uint64_t k = (uint64_t)strtoull(vs, &endptr, 16);
     if (*endptr == '\0')
