@@ -45,6 +45,11 @@
 
 #include "farmhash64.h"
 
+/** Check if the specified bit is set
+@param var Number to check
+@param pos bit position. The first position on the righ is 0.
+@return 1 if bit is set, 0 otherwise.
+*/
 #define CHECK_BIT(var,pos) (((var)>>(pos)) & 1)
 
 /**
@@ -114,14 +119,14 @@ size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_
 
 /** @brief Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
  *
- * @param chrom    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
- * @param size     Length of the chrom string, excluding the terminating null byte.
- * @param pos      Position. The reference position, with the 1st base having position 0.
- * @param ref      Reference allele. String containing a sequence of nucleotide letters.
- *                 The value in the pos field refers to the position of the first nucleotide in the String.
- * @param sizeref  Length of the ref string, excluding the terminating null byte.
- * @param alt      Alternate non-reference allele string.
- * @param sizealt  Length of the alt string, excluding the terminating null byte.
+ * @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param sizechrom  Length of the chrom string, excluding the terminating null byte.
+ * @param pos        Position. The reference position, with the 1st base having position 0.
+ * @param ref        Reference allele. String containing a sequence of nucleotide letters.
+ *                   The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param sizeref    Length of the ref string, excluding the terminating null byte.
+ * @param alt        Alternate non-reference allele string.
+ * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
  * @return      VariantKey 64 bit code.
  */
