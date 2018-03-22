@@ -32,5 +32,5 @@ SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
 file (COPY test_variantkey.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_variantkey test_variantkey.c variantkey)
 
-#file (COPY test_rsidvar.c data/rsid_variantkey.10.bin data/variantkey_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-#SMOKE_TEST (test_rsidvar test_rsidvar.c variantkey)
+file (COPY test_rsidvar.c data/rsid_variantkey.10.bin data/variantkey_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_rsidvar test_rsidvar.c variantkey)
