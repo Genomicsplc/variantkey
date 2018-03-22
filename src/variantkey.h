@@ -46,25 +46,14 @@
 #include "farmhash64.h"
 
 /**
- * VariantKey128 struct
+ * VariantKey struct
  */
-typedef struct variantkey128_t
+typedef struct variantkey_t
 {
-    uint32_t assembly; //!< Genome Assembly encoded number.
-    uint32_t chrom;    //!< Chromosome encoded number.
-    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
-    uint32_t refalt;   //!< Hash code for Reference and Alternate
-} variantkey128_t;
-
-/**
- * VariantKey64 struct
- */
-typedef struct variantkey64_t
-{
-    uint8_t chrom;     //!< Chromosome encoded number.
-    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0.
-    uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 24 bits are used)
-} variantkey64_t;
+    uint8_t chrom;     //!< Chromosome encoded number (only the LSB 5 bit are used)
+    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0 (only the LSB 28 bit are used)
+    uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 31 bits are used)
+} variantkey_t;
 
 /** @brief Fast ASCII Uppercase function for a-z letters
  *
@@ -74,178 +63,100 @@ typedef struct variantkey64_t
  */
 int aztoupper(int c);
 
-/** @brief Returns 32-bit genome assembly encoding.
+/** @brief Returns chromosome encoding.
  *
- * @param assembly Genome Assembly string.
- *
- * @return Chrom encoding
- */
-uint32_t encode_assembly_32bit(const char *assembly);
-
-/** @brief Returns 32-bit chromosome encoding.
- *
- * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param chrom  Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param size   Length of the chrom string, excluding the terminating null byte.
  *
  * @return Chrom encoding
  */
-uint32_t encode_chrom_32bit(const char *chrom);
+uint8_t encode_chrom(const char *chrom, size_t size);
 
-/** @brief Returns 8-bit chromosome encoding.
- *
- * @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
- *
- * @return Chrom encoding
- */
-uint8_t encode_chrom_8bit(const char *chrom);
-
-/** @brief Decode the 32-bit CHROM code.
+/** @brief Decode the CHROM code.
  *
  * @param code   CHROM code.
- * @param chrom  CHROM string buffer to be returned.
+ * @param chrom  CHROM string buffer to be returned. Its size should be enough to contain the results (max 4 bytes).
  *
  * @return If successful, the total number of characters written is returned excluding the null-character appended
  *         at the end of the string, otherwise a negative number is returned in case of failure.
  */
-size_t decode_chrom_32bit(uint32_t code, char *chrom);
+size_t decode_chrom(uint8_t code, char *chrom);
 
-/** @brief Decode the 8-bit CHROM code.
+/** @brief Returns reference+alternate encoding.
  *
- * @param code   CHROM code.
- * @param chrom  CHROM string buffer to be returned.
+ * @param ref      Reference allele. String containing a sequence of nucleotide letters.
+ *                 The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param sizeref  Length of the ref string, excluding the terminating null byte.
+ * @param alt      Alternate non-reference allele string.
+ * @param sizealt  Length of the alt string, excluding the terminating null byte.
  *
- * @return If successful, the total number of characters written is returned excluding the null-character appended
- *         at the end of the string, otherwise a negative number is returned in case of failure.
+ * @return Ref+Alt code
  */
-size_t decode_chrom_8bit(uint8_t code, char *chrom);
+uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt);
 
-/** @brief Returns 32-bit reference+alternate encoding.
+/** @brief Decode the 32 bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
  *
- * @param ref   Reference allele. String containing a sequence of nucleotide letters.
- *              The value in the pos field refers to the position of the first nucleotide in the String.
- * @param alt   Alternate non-reference allele string.
+ * @param code     REF+ALT code
+ * @param ref      REF string buffer to be returned.
+ * @param sizeref  Pointer to the size of the ref buffer, excluding the terminating null byte.
+ *                 This will contain the final ref size.
+ * @param alt      ALT string buffer to be returned.
+ * @param sizealt  Pointer to the size of the alt buffer, excluding the terminating null byte.
+ *                 This will contain the final alt size.
  *
- * @return 32-bit hash code
+ * @return      If the code is reversible (less than 6 nucleotides in total), then
+ *              the total number of characters of REF+ALT is returned.
+ *              Otherwise 0 is returned.
  */
-uint32_t encode_refalt_32bit(const char *ref, const char *alt);
+size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
-/** @brief Returns 24-bit reference+alternate encoding.
+/** @brief Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
  *
- * @param ref   Reference allele. String containing a sequence of nucleotide letters.
- *              The value in the pos field refers to the position of the first nucleotide in the String.
- * @param alt   Alternate non-reference allele string.
+ * @param chrom    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param size     Length of the chrom string, excluding the terminating null byte.
+ * @param pos      Position. The reference position, with the 1st base having position 0.
+ * @param ref      Reference allele. String containing a sequence of nucleotide letters.
+ *                 The value in the pos field refers to the position of the first nucleotide in the String.
+ * @param sizeref  Length of the ref string, excluding the terminating null byte.
+ * @param alt      Alternate non-reference allele string.
+ * @param sizealt  Length of the alt string, excluding the terminating null byte.
  *
- * @return 24-bit hash code (in 32 bit unsignd integer)
+ * @return      VariantKey 64 bit code.
  */
-uint32_t encode_refalt_24bit(const char *ref, const char *alt);
+uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt);
 
-/** @brief Decode the 32-bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
- *
- * @param code  REF+ALT code
- * @param ref   REF string buffer to be returned.
- * @param alt   ALT string buffer to be returned.
- *
- * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
- */
-size_t decode_refalt_32bit(uint32_t code, char *ref, char *alt);
-
-/** @brief Decode the 24-bit REF+ALT code if reversible (if it has less than 4 nucleotides in total).
- *
- * @param code  REF+ALT code
- * @param ref   REF string buffer to be returned.
- * @param alt   ALT string buffer to be returned.
- *
- * @return      Returns the number of characters in the "alt" string if the code is reversible, 0 otherwise.
- */
-size_t decode_refalt_24bit(uint32_t code, char *ref, char *alt);
-
-/** @brief Returns a VariantKey128 structure based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
- *
- * @param assembly  String identifying the Genome Assembly. It should be in the form used by
- *                  Genome Reference Consortium (https://www.ncbi.nlm.nih.gov/grc),
- *                  including the patch number and build number separated by a dot.
- *                  For example: `GRCh37.p13.b150`.
- * @param chrom     Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
- * @param pos       Position. The reference position, with the 1st base having position 0.
- * @param ref       Reference allele. String containing a sequence of nucleotide letters.
- *                  The value in the pos field refers to the position of the first nucleotide in the String.
- * @param alt       Alternate non-reference allele string.
- *
- * @return      A variantkey128_t structure.
- */
-variantkey128_t variantkey128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt);
-
-
-/** @brief Returns a 64-bit variant code based on CHROM, POS (0-base), REF, ALT.
- *
- * @param chrom     Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
- * @param pos       Position. The reference position, with the 1st base having position 0.
- * @param ref       Reference allele. String containing a sequence of nucleotide letters.
- *                  The value in the pos field refers to the position of the first nucleotide in the String.
- * @param alt       Alternate non-reference allele string.
- *
- * @return      VariantKey 64-bit code.
- */
-uint64_t variantkey64(const char *chrom, uint32_t pos, const char *ref, const char *alt);
-
-/** @brief Returns VariantKey128 hexadecimal string (32 characters).
- *
- * The string represent a 128 bit number or:
- *   - 32 bit  (4 bytes, 8 hex bytes) for ASSBLY Hash
- *   - 32 bit  (4 bytes, 8 hex bytes) for CHROM
- *   - 32 bit  (4 bytes, 8 hex bytes) for POS
- *   - 32 bit  (4 bytes, 8 hex bytes) for REF+ALT Hash
- *
- * @param str   String buffer to be returned.
- * @param size  Size of the string buffer.
- * @param vh    VariantKey structure to be processed.
- *
- * @return      Upon successful return, these function returns the number of characters processed
- *              (excluding the null byte used to end output to strings).
- *              If the buffer size is not sufficient, then the return value is the number of characters required for
- *              buffer string, including the terminating null byte.
- */
-size_t variantkey128_string(char *str, size_t size, variantkey128_t vh);
-
-/** @brief Returns VariantKey64 hexadecimal string (16 characters).
+/** @brief Returns VariantKey hexadecimal string (16 characters).
  *
  * The string represent a 64 bit number or:
- *   -  8 bit  (1 byte,  2 hex bytes) for CHROM
- *   - 32 bit  (4 bytes, 8 hex bytes) for POS
- *   - 24 bit  (3 bytes, 8 hex bytes) for REF+ALT Hash
+ *   -  5 bit for CHROM
+ *   - 28 bit for POS
+ *   - 31 bit for REF+ALT
  *
+ * @param code  VariantKey code.
  * @param str   String buffer to be returned.
  * @param size  Size of the string buffer.
- * @param vh    VariantKey structure to be processed.
  *
  * @return      Upon successful return, these function returns the number of characters processed
  *              (excluding the null byte used to end output to strings).
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t variantkey64_string(char *str, size_t size, uint64_t vh);
+size_t variantkey_string(uint64_t code, char *str, size_t size);
 
-/** @brief Parses a VariantKey128 hex string and returns the components as variantkey128_t structure.
+/** @brief Parses a VariantKey hex string and returns the code.
  *
- * @param vh VariantKey128 hexadecimal string (32 characters).
+ * @param vs    VariantKey hexadecimal string (it must contain 16 hexadecimal characters).
  *
- * @return A variantkey128_t structure.
+ * @return A VariantKey code
  */
-variantkey128_t parse_variantkey128_string(const char *vs);
+uint64_t parse_variantkey_string(const char *vs);
 
-/** @brief Parses a VariantKey64 hex string and returns the code.
+/** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
  *
- * @param vh VariantKey64 hexadecimal string (16 characters).
+ * @param code VariantKey code.
  *
- * @return A VariantKey64 code
+ * @return A variantkey_t structure.
  */
-uint64_t parse_variantkey64_string(const char *vs);
-
-/** @brief Parses a VariantKey64 code and returns the components as variantkey64_t structure.
- *
- * @param code VariantKey64 code.
- *
- * @return A variantkey64_t structure.
- */
-variantkey64_t split_variantkey64(uint64_t code);
+variantkey_t decode_variantkey64(uint64_t code);
 
 #endif  // VARIANTKEY_H

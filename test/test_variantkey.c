@@ -673,35 +673,7 @@ int test_azoupper()
     return errors;
 }
 
-int test_encode_chrom_32bit()
-{
-    int errors = 0;
-    uint32_t i, chrom;
-    static const char *chrom_data[25] =
-    {
-        "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
-        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-        "21", "22", "X", "Y", "MT"
-    };
-    for (i=0 ; i < 25; i++)
-    {
-        chrom = encode_chrom_32bit(chrom_data[i]);
-        if (chrom != i+1)
-        {
-            fprintf(stderr, "%s : expecting %u, got %u\n", __func__, i+1, chrom);
-            ++errors;
-        }
-    }
-    chrom = encode_chrom_32bit("WRONG");
-    if (chrom != 0)
-    {
-        fprintf(stderr, "%s (wrong): expecting 0, got %u\n", __func__, chrom);
-        ++errors;
-    }
-    return errors;
-}
-
-int test_encode_chrom_8bit()
+int test_encode_chrom()
 {
     int errors = 0;
     uint8_t i, chrom;
@@ -713,14 +685,14 @@ int test_encode_chrom_8bit()
     };
     for (i=0 ; i < 25; i++)
     {
-        chrom = encode_chrom_8bit(chrom_data[i]);
+        chrom = encode_chrom(chrom_data[i], strlen(chrom_data[i]));
         if (chrom != i+1)
         {
             fprintf(stderr, "%s : expecting %u, got %u\n", __func__, i+1, chrom);
             ++errors;
         }
     }
-    chrom = encode_chrom_8bit("WRONG");
+    chrom = encode_chrom("WRONG", 5);
     if (chrom != 0)
     {
         fprintf(stderr, "%s (wrong): expecting 0, got %u\n", __func__, chrom);
@@ -729,10 +701,10 @@ int test_encode_chrom_8bit()
     return errors;
 }
 
-int test_decode_chrom_32bit()
+int test_decode_chrom()
 {
     int errors = 0;
-    uint32_t i;
+    uint8_t i;
     char chrom[3];
     size_t clen;
     static const char *chrom_data[26] =
@@ -744,7 +716,7 @@ int test_decode_chrom_32bit()
     for (i=0 ; i < 26; i++)
     {
         chrom[0] = '\0';
-        clen = decode_chrom_32bit(i, chrom);
+        clen = decode_chrom(i, chrom);
         if (strcmp(chrom, chrom_data[i]) != 0)
         {
             fprintf(stderr, "%s : expecting %s, got %s\n", __func__, chrom_data[i], chrom);
@@ -757,7 +729,7 @@ int test_decode_chrom_32bit()
         }
     }
     chrom[0] = '\0';
-    decode_chrom_32bit(73, chrom);
+    decode_chrom(73, chrom);
     if (strcmp(chrom, "NA") != 0)
     {
         fprintf(stderr, "%s : (NA) expecting NA, got %s\n", __func__, chrom);
@@ -766,43 +738,7 @@ int test_decode_chrom_32bit()
     return errors;
 }
 
-int test_decode_chrom_8bit()
-{
-    int errors = 0;
-    uint32_t i;
-    char chrom[3];
-    size_t clen;
-    static const char *chrom_data[26] =
-    {
-        "NA", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
-        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-        "21", "22", "X", "Y", "MT"
-    };
-    for (i=0 ; i < 26; i++)
-    {
-        chrom[0] = '\0';
-        clen = decode_chrom_8bit(i, chrom);
-        if (strcmp(chrom, chrom_data[i]) != 0)
-        {
-            fprintf(stderr, "%s : expecting %s, got %s\n", __func__, chrom_data[i], chrom);
-            ++errors;
-        }
-        if (clen <= 0)
-        {
-            fprintf(stderr, "%s : expecting string lenght greater than 0\n", __func__);
-            ++errors;
-        }
-    }
-    chrom[0] = '\0';
-    decode_chrom_8bit(73, chrom);
-    if (strcmp(chrom, "NA") != 0)
-    {
-        fprintf(stderr, "%s : (NA) expecting NA, got %s\n", __func__, chrom);
-        ++errors;
-    }
-    return errors;
-}
-
+/*
 int test_encode_refalt_32bit()
 {
     int errors = 0;
@@ -1261,16 +1197,15 @@ void benchmark_parse_variantkey64_string()
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
-
+*/
 int main()
 {
     static int errors = 0;
 
     errors += test_azoupper();
-    errors += test_encode_chrom_32bit();
-    errors += test_encode_chrom_8bit();
-    errors += test_decode_chrom_32bit();
-    errors += test_decode_chrom_8bit();
+    errors += test_encode_chrom();
+    errors += test_decode_chrom();
+    /*
     errors += test_encode_refalt_32bit();
     errors += test_encode_refalt_24bit();
     errors += test_variantkey128();
@@ -1289,6 +1224,7 @@ int main()
     benchmark_variantkey64();
     benchmark_parse_variantkey128_string();
     benchmark_parse_variantkey64_string();
+    */
 
     return errors;
 }

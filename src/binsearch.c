@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Nicola Asuni - Tecnick.com
+// Copyright (c) 2017-2018 Nicola Asuni - Tecnick.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -56,43 +56,43 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
-uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i)
+uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
-    return ((uint8_t)src[i]);
+    return ((((uint8_t)src[i]) << bitstart) >> (7 - bitend + bitstart));
 }
 
-uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i)
+uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
-    return (((uint16_t)src[i] << 8)
-            | (uint16_t)src[i+1]);
+    return (((((uint16_t)src[i] << 8)
+              | (uint16_t)src[i+1]) << bitstart) >> (15 - bitend + bitstart));
 }
 
-uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
+uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
-    return (((uint32_t)src[i] << 24)
-            | ((uint32_t)src[i+1] << 16)
-            | ((uint32_t)src[i+2] << 8)
-            | (uint32_t)src[i+3]);
+    return (((((uint32_t)src[i] << 24)
+              | ((uint32_t)src[i+1] << 16)
+              | ((uint32_t)src[i+2] << 8)
+              | (uint32_t)src[i+3]) << bitstart) >> (31 - bitend + bitstart));
 }
 
-uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i)
+uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
-    return (((uint64_t)src[i] << 56)
-            | ((uint64_t)src[i+1] << 48)
-            | ((uint64_t)src[i+2] << 40)
-            | ((uint64_t)src[i+3] << 32)
-            | ((uint64_t)src[i+4] << 24)
-            | ((uint64_t)src[i+5] << 16)
-            | ((uint64_t)src[i+6] << 8)
-            | (uint64_t)src[i+7]);
+    return (((((uint64_t)src[i] << 56)
+              | ((uint64_t)src[i+1] << 48)
+              | ((uint64_t)src[i+2] << 40)
+              | ((uint64_t)src[i+3] << 32)
+              | ((uint64_t)src[i+4] << 24)
+              | ((uint64_t)src[i+5] << 16)
+              | ((uint64_t)src[i+6] << 8)
+              | (uint64_t)src[i+7]) << bitstart) >> (63 - bitend + bitstart));
 }
 
-uint128_t bytes_to_uint128_t(const unsigned char *src, uint64_t i)
+uint128_t bytes_to_uint128_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
     return (uint128_t)
     {
-        .lo = bytes_to_uint64_t(src, i),
-         .hi = bytes_to_uint64_t(src, i + 8)
+        .lo = bytes_to_uint64_t(src, i, bitstart, 63),
+         .hi = (bytes_to_uint64_t(src, i + 8, 0, (bitend - 64)) << (127 - bitend))
     };
 }
 
@@ -117,7 +117,7 @@ int compare_uint128_t(uint128_t a, uint128_t b)
 }
 
 #define define_find_first(T) \
-uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
     uint64_t i, middle, found = (*last + 1); \
     T x; \
@@ -126,7 +126,7 @@ uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkp
     { \
         middle = (*first + ((*last - *first) >> 1)); \
         i = get_address(blklen, blkpos, middle); \
-        x = bytes_to_##T(src, i); \
+        x = bytes_to_##T(src, i, bitstart, bitend); \
         cmp = compare_##T(x, search); \
         if (cmp == 0) \
         { \
@@ -162,7 +162,7 @@ define_find_first(uint64_t)
 define_find_first(uint128_t)
 
 #define define_find_last(T) \
-uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
     uint64_t i, middle, found = (*last + 1); \
     T x; \
@@ -171,7 +171,7 @@ uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpo
     { \
         middle = (*first + ((*last - *first) >> 1)); \
         i = get_address(blklen, blkpos, middle); \
-        x = bytes_to_##T(src, i); \
+        x = bytes_to_##T(src, i, bitstart, bitend); \
         cmp = compare_##T(x, search); \
         if (cmp == 0) \
         { \

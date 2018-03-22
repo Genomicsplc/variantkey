@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Nicola Asuni - Tecnick.com
+// Copyright (c) 2017-2018 Nicola Asuni - Tecnick.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -48,8 +48,8 @@
 #ifndef BINSEARCH_H
 #define BINSEARCH_H
 
-#include <inttypes.h>
 #include "uint128.h"
+#include <inttypes.h>
 
 /**
  * Struct containing the memory mapped file info.
@@ -99,11 +99,13 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item);
  */
 #define define_declare_bytes_to(T) \
 /** Convert bytes in big-endian format to unsigned integer
-@param src Memory mapped file address.
-@param i   Start position.
+@param src      Memory mapped file address.
+@param i        Start position.
+@param bitstart First bit position to consider (usually 0).
+@param bitend   Last bit position to consider (usually the last bit, e.g. 7 for uint8_t, 15 for uint16_t, etc).
 @return Converted number
 */ \
-T bytes_to_##T(const unsigned char *src, uint64_t i);
+T bytes_to_##T(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend);
 
 define_declare_bytes_to(uint8_t)
 define_declare_bytes_to(uint16_t)
@@ -141,12 +143,14 @@ The values in the file must encoded in big-endian format and sorted in ascending
 @param src       Memory mapped file address.
 @param blklen    Length of the binary block in bytes.
 @param blkpos    Indicates the position of the number to search inside a binary block.
+@param bitstart  First bit position to consider (usually 0).
+@param bitend    Last bit position to consider (usually the last bit, e.g. 7 for uint8_t, 15 for uint16_t, etc).
 @param first     Pointer to the first element of the range to search (min value = 0).
 @param last      Pointer to the last element of the range to search (max value = nitems - 1).
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
 define_declare_find_first(uint8_t)
 define_declare_find_first(uint16_t)
@@ -167,12 +171,14 @@ The values in the file must encoded in big-endian format and sorted in ascending
 @param src       Memory mapped file address.
 @param blklen    Length of the binary block in bytes.
 @param blkpos    Indicates the position of the number to search inside a binary block.
+@param bitstart  First bit position to consider (usually 0).
+@param bitend    Last bit position to consider (usually the last bit, e.g. 7 for uint8_t, 15 for uint16_t, etc).
 @param first     Pointer to the first element of the range to search (min value = 0).
 @param last      Pointer to the last element of the range to search (max value = nitems - 1).
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
 define_declare_find_last(uint8_t)
 define_declare_find_last(uint16_t)

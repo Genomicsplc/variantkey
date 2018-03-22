@@ -1,4 +1,4 @@
-// Copyright (c) 2017 Nicola Asuni - Tecnick.com
+// Copyright (c) 2017-2018 Nicola Asuni - Tecnick.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -30,12 +30,12 @@
 #include <inttypes.h>
 
 /**
- * Struct containing 128 bits as 2 64bit unsigned integer
+ * Struct containing 128 bit as 2x64 bit unsigned integer
  */
 typedef struct uint128_t
 {
-    uint64_t lo; /*!< low 64 bits */
-    uint64_t hi; /*!< high 64 bits */
+    uint64_t lo; /*!< low 64 bits MSB */
+    uint64_t hi; /*!< high 64 bits LSB */
 } uint128_t;
 
 

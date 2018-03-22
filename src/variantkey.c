@@ -48,16 +48,11 @@ int aztoupper(int c)
     return c;
 }
 
-uint32_t encode_assembly_32bit(const char *assembly)
+uint8_t encode_chrom(const char *chrom, size_t size)
 {
-    return farmhash32(assembly, strlen(assembly));
-}
-
-uint32_t encode_chrom_32bit(const char *chrom)
-{
-    uint32_t h;
+    uint8_t h;
     // remove "chr" prefix
-    if ((strlen(chrom) > 3)
+    if ((size > 3)
             && ((chrom[0] == 'C') || (chrom[0] == 'c'))
             && ((chrom[1] == 'H') || (chrom[1] == 'h'))
             && ((chrom[2] == 'R') || (chrom[2] == 'r')))
@@ -65,7 +60,7 @@ uint32_t encode_chrom_32bit(const char *chrom)
         chrom += 3;
     }
     char *endptr;
-    h = (uint32_t)strtoul(chrom, &endptr, 10);
+    h = (uint8_t)strtoul(chrom, &endptr, 10);
     if (*endptr == '\0')
     {
         return h; // numerical chromosome
@@ -86,12 +81,7 @@ uint32_t encode_chrom_32bit(const char *chrom)
     return 0; // NA
 }
 
-uint8_t encode_chrom_8bit(const char *chrom)
-{
-    return (uint8_t)(encode_chrom_32bit(chrom) & 0x000000FF);
-}
-
-size_t decode_chrom_32bit(uint32_t code, char *chrom)
+size_t decode_chrom(uint8_t code, char *chrom)
 {
     if ((code < 1) || (code > 25))
     {
@@ -99,36 +89,34 @@ size_t decode_chrom_32bit(uint32_t code, char *chrom)
     }
     if (code < 23)
     {
-        return sprintf(chrom, "%"PRIu32, code);
+        return sprintf(chrom, "%"PRIu8, code);
     }
     const char *map[] = {"X", "Y", "MT"};
     return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
-size_t decode_chrom_8bit(uint8_t code, char *chrom)
+uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
-    return decode_chrom_32bit((uint32_t)code, chrom);
-}
-
-uint32_t encode_hash_refalt_32bit(const char *ref, const char *alt, size_t slen)
-{
+    size_t slen = sizeref + sizealt;
     char ra[slen + 2];
     char *it = ra;
-    while ((*it++ = aztoupper(*ref++))) {};
-    it[-1] = '_';
-    while ((*it++ = aztoupper(*alt++))) {};
-    return (farmhash32(ra, slen + 1) | 0x80000000);
+    while ((*it++ = aztoupper(*ref++)) && (sizeref > 0))
+    {
+        sizeref--;
+    };
+    it[-1] = '+';
+    while ((*it++ = aztoupper(*alt++)) && (sizealt > 0))
+    {
+        sizealt--;
+    };
+    it[-1] = '\0';
+    return (farmhash32(ra, slen + 1) | 0x40000000); // set bit to indicate HASH mode
 }
 
-uint32_t encode_hash_refalt_24bit(const char *ref, const char *alt, size_t slen)
-{
-    return (encode_hash_refalt_32bit(ref, alt, slen) >> 8);
-}
-
-void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str)
+void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
 {
     int c;
-    while ((c = aztoupper(*str++)))
+    while ((c = aztoupper(*str++)) && (size > 0))
     {
         if (c == '*')
         {
@@ -136,43 +124,28 @@ void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str)
         }
         *pos -= 5;
         *h |= (((c - 64) & 0x1F) << *pos);
+        size--;
     };
 }
 
-uint32_t encode_rev_refalt(const char *ref, const char *alt, size_t lenref, uint8_t pos)
+uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     uint32_t h = 0;
-    if (lenref > 1)
-    {
-        h = (uint32_t)(lenref - 1) << pos; // length of REF - 1
-    }
-    encode_refalt_str(&h, &pos, ref);
-    encode_refalt_str(&h, &pos, alt);
+    h |= (uint32_t)(sizeref - 1) << 27; // length of REF - 1
+    h |= (uint32_t)(sizealt - 1) << 25; // length of ALT - 1
+    uint8_t pos = 25;
+    encode_refalt_str(&h, &pos, ref, sizeref);
+    encode_refalt_str(&h, &pos, alt, sizealt);
     return h;
 }
 
-uint32_t encode_refalt_32bit(const char *ref, const char *alt)
+uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
-    // pos = floor((32 bit - 2 bit for REF-1 lenght - 1 bit for hash/rev) / 5 bit for each nucleotide) * 5 bit for each nucleotide;
-    size_t lenref = strlen(ref);
-    size_t slen = lenref + strlen(alt);
-    if (slen > 5)
+    if ((sizeref + sizealt) > 5)
     {
-        return encode_hash_refalt_32bit(ref, alt, slen);
+        return encode_refalt_hash(ref, sizeref, alt, sizealt);
     }
-    return encode_rev_refalt(ref, alt, lenref, 25);
-}
-
-uint32_t encode_refalt_24bit(const char *ref, const char *alt)
-{
-    // pos = floor((24 bit - 2 bit for REF-1 lenght - 1 bit for hash/rev) / 5 bit for each nucleotide) * 5 bit for each nucleotide;
-    size_t lenref = strlen(ref);
-    size_t slen = lenref + strlen(alt);
-    if (slen > 4)
-    {
-        return encode_hash_refalt_24bit(ref, alt, slen);
-    }
-    return encode_rev_refalt(ref, alt, lenref, 20);
+    return encode_refalt_rev(ref, sizeref, alt, sizealt);
 }
 
 char decode_refalt_char(uint32_t code, int pos)
@@ -182,83 +155,46 @@ char decode_refalt_char(uint32_t code, int pos)
     {
         return '*';
     }
-    if (c > 0)
-    {
-        return (c + 64);
-    }
-    return c;
+    return (c + 64);
 }
 
-size_t decode_refalt(uint32_t code, char *ref, char *alt, uint8_t pos)
+size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    size_t lenref = 1 + (code >> pos);
+    *sizeref = 1 + (code >> 27);
+    *sizealt = 1 + (code >> 25);
+    uint8_t pos = 25;
     size_t i = 0;
-    for(i = 0; i < lenref; i++)
+    for(i = 0; i < *sizeref; i++)
     {
         pos -= 5;
         ref[i] = decode_refalt_char(code, pos);
     }
-    ref[i] = 0;
+    ref[i] = '\0';
     i = 0;
-    while (pos >= 5)
+    for(i = 0; i < *sizealt; i++)
     {
         pos -= 5;
         alt[i] = decode_refalt_char(code, pos);
-        if (alt[i] == 0)
-        {
-            return i;
-        }
-        i++;
     }
-    alt[i] = 0;
-    return i;
+    alt[i] = '\0';
+    return (*sizeref + *sizealt);
 }
 
-size_t decode_refalt_32bit(uint32_t code, char *ref, char *alt)
+size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    if ((code & 0x80000000) > 0)
+    if ((code & (1 << 1)))
     {
         return 0; // non reversible encoding
     }
-    return decode_refalt(code, ref, alt, 25);
+    return decode_refalt_rev(code, ref, sizeref, alt, sizealt);
 }
 
-size_t decode_refalt_24bit(uint32_t code, char *ref, char *alt)
+uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
-    if ((code & 0x800000) > 0)
-    {
-        return 0; // non reversible encoding
-    }
-    return decode_refalt(code, ref, alt, 20);
+    return (((uint64_t)encode_chrom(chrom, sizechrom) << 59) | ((uint64_t)pos << 31) | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
 }
 
-variantkey128_t variantkey128(const char *assembly, const char *chrom, uint32_t pos, const char *ref, const char *alt)
-{
-    return (variantkey128_t)
-    {
-        encode_assembly_32bit(assembly), encode_chrom_32bit(chrom), pos, encode_refalt_32bit(ref, alt)
-    };
-}
-
-uint64_t variantkey64(const char *chrom, uint32_t pos, const char *ref, const char *alt)
-{
-    return (((uint64_t)encode_chrom_8bit(chrom) << 56) | ((uint64_t)pos << 24) | (uint64_t)encode_refalt_24bit(ref, alt));
-}
-
-size_t variantkey128_string(char *str, size_t size, variantkey128_t vh)
-{
-    size_t slen = 33; // = 32 hex chars + '\0'
-    if (slen > size)
-    {
-        return slen;
-    }
-    char* it = str;
-    const char* end = it + size;
-    it += snprintf(it, (end - it), "%08"PRIx32"%08"PRIx32"%08"PRIx32"%08"PRIx32"", vh.assembly, vh.chrom, vh.pos, vh.refalt);
-    return (end - it);
-}
-
-size_t variantkey64_string(char *str, size_t size, uint64_t vh)
+size_t variantkey_string(uint64_t code, char *str, size_t size)
 {
     size_t slen = 17; // = 16 hex chars + '\0'
     if (slen > size)
@@ -267,49 +203,29 @@ size_t variantkey64_string(char *str, size_t size, uint64_t vh)
     }
     char* it = str;
     const char* end = it + size;
-    it += snprintf(it, (end - it), "%016"PRIx64"", vh);
+    it += snprintf(it, (end - it), "%016"PRIx64"", code);
     return (end - it);
 }
 
-variantkey128_t parse_variantkey128_string(const char *vs)
+uint64_t parse_variantkey_string(const char *vs)
 {
-    variantkey128_t vh = {0,0,0,0};
-    size_t slen = strlen(vs);
-    if (slen != 32)
+    char *endptr;
+    uint64_t k = (uint64_t)strtoull(vs, &endptr, 16);
+    if (*endptr == '\0')
     {
-        return vh;
+        return k;
     }
-    char tmp[33];
-    strncpy(tmp, vs, slen);
-    tmp[32] = 0;
-    char* it = tmp + 24;
-    vh.refalt = (uint32_t)strtoul(it, NULL, 16);
-    *it = 0;
-    it = tmp + 16;
-    vh.pos = (uint32_t)strtoul(it, NULL, 16);
-    *it = 0;
-    it = tmp + 8;
-    vh.chrom = (uint32_t)strtoul(it, NULL, 16);
-    *it = 0;
-    vh.assembly = (uint32_t)strtoul(tmp, NULL, 16);
-    return vh;
+    return 0;
 }
 
-uint64_t parse_variantkey64_string(const char *vs)
+variantkey_t decode_variantkey64(uint64_t code)
 {
-    if (strlen(vs) != 16)
-    {
-        return 0;
-    }
-    return (uint64_t)strtoull(vs, NULL, 16);
+    variantkey_t v = {0,0,0};
+    // CHROM:   11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+    v.chrom = (uint8_t)((code & 0xF800000000000000) >> 59);
+    // POS:     00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
+    v.pos = (uint32_t)((code & 0x07FFFFFF80000000) >> 31);
+    // REF+ALT: 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
+    v.refalt = (uint32_t)(code & 0x000000007FFFFFFF);
+    return v;
 }
-
-variantkey64_t split_variantkey64(uint64_t code)
-{
-    variantkey64_t vh = {0,0,0};
-    vh.chrom = (uint8_t)((code & 0xFF00000000000000) >> 56);
-    vh.pos = (uint32_t)((code & 0x00FFFFFFFF000000) >> 24);
-    vh.refalt = (uint32_t)(code & 0x0000000000FFFFFF);
-    return vh;
-}
-
