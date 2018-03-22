@@ -8,10 +8,8 @@ package variantkey
 #include "../../src/variantkey.c"
 #include "../../src/binsearch.h"
 #include "../../src/binsearch.c"
-#include "../../src/rsidvar128.h"
-#include "../../src/rsidvar128.c"
-#include "../../src/rsidvar64.h"
-#include "../../src/rsidvar64.c"
+#include "../../src/rsidvar.h"
+#include "../../src/rsidvar.c"
 */
 import "C"
 import "unsafe"
@@ -31,52 +29,24 @@ func castGoUint128(u Uint128) C.uint128_t {
 	return c
 }
 
-// TVariantKey128 contains a representation of a genetic variant key
-type TVariantKey128 struct {
-	Assembly uint32 `json:"assembly"`
-	Chrom    uint32 `json:"chrom"`
-	Pos      uint32 `json:"pos"`
-	RefAlt   uint32 `json:"refalt"`
-}
-
-// TVariantKey64 contains a representation of a genetic variant key
-type TVariantKey64 struct {
+// TVariantKey contains a representation of a genetic variant key
+type TVariantKey struct {
 	Chrom  uint8  `json:"chrom"`
 	Pos    uint32 `json:"pos"`
 	RefAlt uint32 `json:"refalt"`
 }
 
-// castCVariantKey128 convert C variantkey128_t to GO TVariantKey128.
-func castCVariantKey128(vh C.variantkey128_t) TVariantKey128 {
-	return TVariantKey128{
-		Assembly: uint32(vh.assembly),
-		Chrom:    uint32(vh.chrom),
-		Pos:      uint32(vh.pos),
-		RefAlt:   uint32(vh.refalt),
-	}
-}
-
-// castCVariantKey64 convert C variantkey64_t to GO TVariantKey64.
-func castCVariantKey64(vh C.variantkey64_t) TVariantKey64 {
-	return TVariantKey64{
+// castCVariantKey convert C variantkey64_t to GO TVariantKey.
+func castCVariantKey(vh C.variantkey64_t) TVariantKey {
+	return TVariantKey{
 		Chrom:  uint8(vh.chrom),
 		Pos:    uint32(vh.pos),
 		RefAlt: uint32(vh.refalt),
 	}
 }
 
-// castGoVariantKey128 convert GO TVariantKey128 to C variantkey128_t.
-func castGoVariantKey128(vh TVariantKey128) C.variantkey128_t {
-	var cvh C.variantkey128_t
-	cvh.assembly = C.uint32_t(vh.Assembly)
-	cvh.chrom = C.uint32_t(vh.Chrom)
-	cvh.pos = C.uint32_t(vh.Pos)
-	cvh.refalt = C.uint32_t(vh.RefAlt)
-	return cvh
-}
-
-// castGoVariantKey64 convert GO TVariantKey64 to C variantkey64_t.
-func castGoVariantKey64(vh TVariantKey64) C.variantkey64_t {
+// castGoVariantKey convert GO TVariantKey to C variantkey64_t.
+func castGoVariantKey(vh TVariantKey) C.variantkey64_t {
 	var cvh C.variantkey64_t
 	cvh.chrom = C.uint8_t(vh.Chrom)
 	cvh.pos = C.uint32_t(vh.Pos)
@@ -92,80 +62,39 @@ func StringToNTBytes(s string) []byte {
 	return b
 }
 
-// EncodeAssembly32bit returns 32-bit genome assembly encoding.
-func EncodeAssembly32bit(assembly string) uint32 {
-	bassembly := StringToNTBytes(assembly)
-	var passembly unsafe.Pointer
-	if len(bassembly) > 0 {
-		passembly = unsafe.Pointer(&bassembly[0]) // #nosec
-	}
-	return uint32(C.encode_assembly_32bit((*C.char)(passembly)))
-}
-
-// EncodeChrom32bit returns 32-bit chromosome encoding.
-func EncodeChrom32bit(chrom string) uint32 {
-	bchrom := StringToNTBytes(chrom)
+// EncodeChrom returns chromosome encoding.
+func EncodeChrom(chrom string) uint8 {
+	bchrom := StringToNTBytes(chrom, len(chrom))
 	var pchrom unsafe.Pointer
 	if len(bchrom) > 0 {
 		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
 	}
-	return uint32(C.encode_chrom_32bit((*C.char)(pchrom)))
+	return uint8(C.encode_chrom((*C.char)(pchrom)))
 }
 
-// EncodeChrom8bit returns 8-bit chromosome encoding.
-func EncodeChrom8bit(chrom string) uint8 {
-	bchrom := StringToNTBytes(chrom)
-	var pchrom unsafe.Pointer
-	if len(bchrom) > 0 {
-		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
-	}
-	return uint8(C.encode_chrom_8bit((*C.char)(pchrom)))
-}
-
-// DecodeChrom32bit decode 32 bit chrom to string
-func DecodeChrom32bit(c uint32) string {
-	var cstr *C.char = C.CString("0000000000")
-	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	len := C.decode_chrom_32bit(C.uint32_t(c), cstr)
-	return C.GoStringN(cstr, C.int(len))
-}
-
-// DecodeChrom8bit decode 8 bit chrom to string
-func DecodeChrom8bit(c uint8) string {
+// DecodeChrom decode chrom to string
+func DecodeChrom(c uint8) string {
 	var cstr *C.char = C.CString("000")
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	len := C.decode_chrom_8bit(C.uint8_t(c), cstr)
+	len := C.decode_chrom(C.uint8_t(c), cstr)
 	return C.GoStringN(cstr, C.int(len))
 }
 
-// EncodeRefAlt32bit returns 32-bit reference+alternate code.
-func EncodeRefAlt32bit(ref string, alt string) uint32 {
+// EncodeRefAlt returns reference+alternate code.
+func EncodeRefAlt(ref string, alt string) uint32 {
 	bref := StringToNTBytes(ref)
 	balt := StringToNTBytes(alt)
 	var pref unsafe.Pointer
 	var palt unsafe.Pointer
-	if len(ref) > 0 {
+	var sizeref = len(ref)
+	var sizealt = len(alt)
+	if sizeref > 0 {
 		pref = unsafe.Pointer(&bref[0]) // #nosec
 	}
-	if len(alt) > 0 {
+	if sizealt > 0 {
 		palt = unsafe.Pointer(&balt[0]) // #nosec
 	}
-	return uint32(C.encode_refalt_32bit((*C.char)(pref), (*C.char)(palt)))
-}
-
-// EncodeRefAlt24bit returns 24-bit reference+alternate code.
-func EncodeRefAlt24bit(ref string, alt string) uint32 {
-	bref := StringToNTBytes(ref)
-	balt := StringToNTBytes(alt)
-	var pref unsafe.Pointer
-	var palt unsafe.Pointer
-	if len(ref) > 0 {
-		pref = unsafe.Pointer(&bref[0]) // #nosec
-	}
-	if len(alt) > 0 {
-		palt = unsafe.Pointer(&balt[0]) // #nosec
-	}
-	return uint32(C.encode_refalt_24bit((*C.char)(pref), (*C.char)(palt)))
+	return uint32(C.encode_refalt((*C.char)(pref), sizeref, (*C.char)(palt), sizealt))
 }
 
 // DecodeRefAlt32bit decode 32 bit Ref+Alt code to string
@@ -213,8 +142,8 @@ func VariantKey128(assembly, chrom string, pos uint32, ref, alt string) TVariant
 	return castCVariantKey128(C.variantkey128((*C.char)(passembly), (*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt)))
 }
 
-// VariantKey64 returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
-func VariantKey64(chrom string, pos uint32, ref, alt string) uint64 {
+// VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
+func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)
 	balt := StringToNTBytes(alt)
@@ -246,8 +175,8 @@ func (v TVariantKey128) String() string {
 	return C.GoStringN(cstr, C.int(32))
 }
 
-// VariantKey64String provides a string representation of the VariantKey 64bit
-func VariantKey64String(v uint64) string {
+// VariantKeyString provides a string representation of the VariantKey 64bit
+func VariantKeyString(v uint64) string {
 	var cstr *C.char = C.CString("0000000000000000")
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
 	C.variantkey64_string(cstr, C.size_t(17), C.uint64_t(v))
@@ -264,8 +193,8 @@ func ParseVariantKey128String(s string) TVariantKey128 {
 	return castCVariantKey128(C.parse_variantkey128_string((*C.char)(p)))
 }
 
-// ParseVariantKey64String parses a variant key string and returns the code.
-func ParseVariantKey64String(s string) uint64 {
+// ParseVariantKeyString parses a variant key string and returns the code.
+func ParseVariantKeyString(s string) uint64 {
 	b := StringToNTBytes(s)
 	var p unsafe.Pointer
 	if len(s) > 0 {
@@ -274,9 +203,9 @@ func ParseVariantKey64String(s string) uint64 {
 	return uint64(C.parse_variantkey64_string((*C.char)(p)))
 }
 
-// SplitVariantKey64String parses a variant key string and returns the components as TVariantKey128 structure.
-func SplitVariantKey64String(v uint64) TVariantKey64 {
-	return castCVariantKey64(C.split_variantkey64(C.uint64_t(v)))
+// SplitVariantKeyString parses a variant key string and returns the components as TVariantKey128 structure.
+func SplitVariantKeyString(v uint64) TVariantKey {
+	return castCVariantKey(C.split_variantkey64(C.uint64_t(v)))
 }
 
 // --- FARMHASH64 ---
@@ -453,57 +382,7 @@ func (mf TMMFile) FindLastUint128(blklen, blkpos, first, last uint64, search Uin
 	return ret, uint64(cfirst), uint64(clast)
 }
 
-// --- RSIDVAR128 ---
-
-// GetVR128Rsid returns the RSID at the specified position of the variantkey_rsid.bin file.
-func (mf TMMFile) GetVR128Rsid(item uint64) uint32 {
-	return uint32(C.get_vr128_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
-}
-
-// GetRV128Variantkey returns the VariantKey at the specified position of the rsid_variantkey.bin file.
-func (mf TMMFile) GetRV128Variantkey(item uint64) TVariantKey128 {
-	return castCVariantKey128(C.get_rv128_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
-}
-
-// FindRV128VariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey, item position.
-func (mf TMMFile) FindRV128VariantkeyByRsid(first, last uint64, rsid uint32) (TVariantKey128, uint64) {
-	cfirst := C.uint64_t(first)
-	vh := castCVariantKey128(C.find_rv128_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
-	return vh, uint64(cfirst)
-}
-
-// FindVR128RsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID, item position.
-func (mf TMMFile) FindVR128RsidByVariantkey(first uint64, last uint64, vh TVariantKey128) (uint32, uint64) {
-	cfirst := C.uint64_t(first)
-	rsid := uint32(C.find_vr128_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), castGoVariantKey128(vh)))
-	return rsid, uint64(cfirst)
-}
-
-// FindVR128ChromRange search for the specified CHROM range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVR128ChromRange(first, last uint64, chrom uint32) (uint32, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr128_chrom_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint32_t(chrom)))
-	return rsid, uint64(cfirst), uint64(clast)
-}
-
-// FindVR128PosRange search for the specified POS range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVR128PosRange(first, last uint64, posStart, posEnd uint32) (uint32, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr128_pos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint32_t(posStart), C.uint32_t(posEnd)))
-	return rsid, uint64(cfirst), uint64(clast)
-}
-
-// FindVR128ChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVR128ChromposRange(first, last uint64, chrom, posStart, posEnd uint32) (uint32, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr128_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint32_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))
-	return rsid, uint64(cfirst), uint64(clast)
-}
-
-// --- RSIDVAR64 ---
+// --- RSIDVAR ---
 
 // GetVR64Rsid returns the RSID at the specified position of the variantkey_rsid.bin file.
 func (mf TMMFile) GetVR64Rsid(item uint64) uint32 {

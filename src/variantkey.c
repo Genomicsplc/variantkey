@@ -99,15 +99,9 @@ uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, si
     size_t slen = sizeref + sizealt;
     char ra[slen + 2];
     char *it = ra;
-    while ((*it++ = aztoupper(*ref++)) && (sizeref > 0))
-    {
-        sizeref--;
-    };
+    while ((*it++ = aztoupper(*ref++)) && (sizeref--)) {};
     it[-1] = '+';
-    while ((*it++ = aztoupper(*alt++)) && (sizealt > 0))
-    {
-        sizealt--;
-    };
+    while ((*it++ = aztoupper(*alt++)) && (sizealt--)) {};
     it[-1] = '\0';
     return (farmhash32(ra, slen + 1) | 0x40000000); // set bit to indicate HASH mode [01000000 00000000 00000000 00000000]
 }
@@ -115,7 +109,7 @@ uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, si
 void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
 {
     int c;
-    while ((c = aztoupper(*str++)) && (size > 0))
+    while ((c = aztoupper(*str++)) && (size--))
     {
         if (c == '*')
         {
@@ -123,7 +117,6 @@ void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
         }
         *pos -= 5;
         *h |= (((c - 64) & 0x1F) << *pos);
-        size--;
     };
 }
 
