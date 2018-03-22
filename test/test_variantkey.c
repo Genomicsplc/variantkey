@@ -855,24 +855,24 @@ int test_variantkey_string_error()
     return errors;
 }
 
-/*
 int test_parse_variantkey_string()
 {
     int errors = 0;
     int i;
-    uint64_t h;
+    uint64_t vk;
     for (i=0 ; i < k_test_size; i++)
     {
-        h = parse_variantkey64_string(test_data[i].os_key);
-        if (h != test_data[i].os_vh)
+        vk = parse_variantkey_string(test_data[i].vs);
+        if (vk != test_data[i].vk)
         {
-            fprintf(stderr, "%s (%d): Unexpected hash: got 0x%016"PRIx64" instead of 0x%016"PRIx64"\n", __func__, i, h, test_data[i].os_vh);
+            fprintf(stderr, "%s (%d): Unexpected variantkey: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, i, test_data[i].vk, vk);
             ++errors;
         }
     }
     return errors;
 }
 
+/*
 int test_parse_variantkey_string_error()
 {
     int errors = 0;
