@@ -7,8 +7,7 @@ include ../README.md
 include ../LICENSE
 include ../src/binsearch.h
 include ../src/farmhash64.h
-include ../src/rsidvar64.h
-include ../src/rsidvar128.h
+include ../src/rsidvar.h
 include ../src/uint128.h
 include ../src/variantkey.h
 include variantkey/pyvariantkey.h

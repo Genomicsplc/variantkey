@@ -38,8 +38,7 @@ setup(
         Extension('variantkey', [
              '../src/binsearch.c',
             '../src/farmhash64.c',
-            '../src/rsidvar64.c',
-            '../src/rsidvar128.c',
+            '../src/rsidvar.c',
             '../src/variantkey.c',
             'variantkey/pyvariantkey.c'
         ], include_dirs=['../src', 'variantkey'], extra_compile_args=["-O3"])

@@ -21,72 +21,35 @@
 #endif
 #endif
 
-static PyObject* py_encode_assembly_32bit(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    const char *assembly;
-    if (!PyArg_ParseTuple(args, "s", &assembly))
-        return NULL;
-    uint32_t h = encode_assembly_32bit(assembly);
-    return Py_BuildValue("I", h);
-}
-
-static PyObject* py_encode_chrom_32bit(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_encode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom;
     if (!PyArg_ParseTuple(args, "s", &chrom))
         return NULL;
-    uint32_t h = encode_chrom_32bit(chrom);
-    return Py_BuildValue("I", h);
-}
-
-static PyObject* py_encode_chrom_8bit(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    const char *chrom;
-    if (!PyArg_ParseTuple(args, "s", &chrom))
-        return NULL;
-    uint8_t h = encode_chrom_8bit(chrom);
+    uint8_t h = encode_chrom(chrom, strlen(chrom));
     return Py_BuildValue("B", h);
 }
 
-static PyObject* py_decode_chrom_32bit(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    uint32_t code;
-    if (!PyArg_ParseTuple(args, "I", &code))
-        return NULL;
-    char chrom[11] = "";
-    decode_chrom_32bit(code, chrom);
-    return Py_BuildValue("s", chrom);
-}
-
-static PyObject* py_decode_chrom_8bit(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_decode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     uint8_t code;
     if (!PyArg_ParseTuple(args, "B", &code))
         return NULL;
     char chrom[3] = "";
-    decode_chrom_8bit(code, chrom);
+    decode_chrom(code, chrom);
     return Py_BuildValue("s", chrom);
 }
 
-static PyObject* py_encode_refalt_32bit(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_encode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *ref, *alt;
     if (!PyArg_ParseTuple(args, "ss", &ref, &alt))
         return NULL;
-    uint32_t h = encode_refalt_32bit(ref, alt);
+    uint32_t h = encode_refalt(ref, strlen(ref), alt, strlen(alt));
     return Py_BuildValue("I", h);
 }
 
-static PyObject* py_encode_refalt_24bit(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    const char *ref, *alt;
-    if (!PyArg_ParseTuple(args, "ss", &ref, &alt))
-        return NULL;
-    uint32_t h = encode_refalt_24bit(ref, alt);
-    return Py_BuildValue("I", h);
-}
-
-static PyObject* py_decode_refalt_32bit(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint32_t code;
@@ -94,110 +57,54 @@ static PyObject* py_decode_refalt_32bit(PyObject *Py_UNUSED(ignored), PyObject *
         return NULL;
     char ref[6] = "";
     char alt[6] = "";
-    decode_refalt_32bit(code, ref, alt);
+    size_t sizeref = 0;
+    size_t sizealt = 0;
+    decode_refalt(code, ref, &sizeref, alt, &sizealt);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("s", ref));
     PyTuple_SetItem(result, 1, Py_BuildValue("s", alt));
+    PyTuple_SetItem(result, 2, Py_BuildValue("K", sizeref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("K", sizealt));
     return result;
 }
 
-static PyObject* py_decode_refalt_24bit(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint32_t code;
-    if (!PyArg_ParseTuple(args, "I", &code))
-        return NULL;
-    char ref[5] = "";
-    char alt[5] = "";
-    decode_refalt_24bit(code, ref, alt);
-    result = PyTuple_New(2);
-    PyTuple_SetItem(result, 0, Py_BuildValue("s", ref));
-    PyTuple_SetItem(result, 1, Py_BuildValue("s", alt));
-    return result;
-}
-
-static PyObject* py_variantkey128(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    const char *assembly, *chrom, *ref, *alt;
-    uint32_t pos;
-    if (!PyArg_ParseTuple(args, "ssIss", &assembly, &chrom, &pos, &ref, &alt))
-        return NULL;
-    variantkey128_t h = variantkey128(assembly, chrom, pos, ref, alt);
-    result = PyTuple_New(4);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
-    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
-    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 3, Py_BuildValue("I", h.refalt));
-    return result;
-}
-
-static PyObject* py_variantkey64(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom, *ref, *alt;
     uint32_t pos;
     if (!PyArg_ParseTuple(args, "sIss", &chrom, &pos, &ref, &alt))
         return NULL;
-    uint64_t h = variantkey64(chrom, pos, ref, alt);
+    uint64_t h = variantkey(chrom, strlen(chrom), pos, ref, strlen(ref), alt, strlen(alt));
     return Py_BuildValue("K", h);
 }
 
-static PyObject* py_variantkey128_string(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    uint32_t assembly, chrom, pos, refalt;
-    Py_ssize_t slen = 0;
-    if (!PyArg_ParseTuple(args, "IIII", &assembly, &chrom, &pos, &refalt))
-        return NULL;
-    variantkey128_t h = {assembly, chrom, pos, refalt};
-    slen = variantkey128_string("", slen, h);
-    char str[slen];
-    variantkey128_string(str, slen, h);
-    return PyBytes_FromString(str);
-}
-
-static PyObject* py_variantkey64_string(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     uint64_t code;
     Py_ssize_t slen = 0;
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
-    slen = variantkey64_string("", slen, code);
-    char str[slen];
-    variantkey64_string(str, slen, code);
+    char str[17];
+    variantkey64_string(code, str, 17);
     return PyBytes_FromString(str);
 }
 
-static PyObject* py_parse_variantkey128_string(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    const char *vs;
-    if (!PyArg_ParseTuple(args, "s#", &vs))
-        return NULL;
-    variantkey128_t h = parse_variantkey128_string(vs);
-    result = PyTuple_New(4);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
-    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
-    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 3, Py_BuildValue("I", h.refalt));
-    return result;
-}
-
-static PyObject* py_parse_variantkey64_string(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_parse_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *vs;
     if (!PyArg_ParseTuple(args, "s#", &vs))
         return NULL;
-    uint64_t h = parse_variantkey64_string(vs);
+    uint64_t h = parse_variantkey_string(vs);
     return Py_BuildValue("K", h);
 }
 
-static PyObject* py_split_variantkey64(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t code;
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
-    variantkey64_t h = split_variantkey64(code);
+    variantkey_t h = decode_variantkey(code);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
@@ -436,147 +343,31 @@ static PyObject* py_find_last_uint128(PyObject *Py_UNUSED(ignored), PyObject *ar
     return result;
 }
 
-// --- RSIDVAR128 ---
+// --- RSIDVAR ---
 
-static PyObject* py_get_vr128_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_get_vr_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     uint64_t item;
     PyObject* mfsrc = NULL;
     if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = get_vr128_rsid(src, item);
+    uint32_t h = get_vr_rsid(src, item);
     return Py_BuildValue("I", h);
 }
 
-static PyObject* py_get_rv128_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t item;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    variantkey128_t h = get_rv128_variantkey(src, item);
-    result = PyTuple_New(4);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
-    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
-    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 3, Py_BuildValue("I", h.refalt));
-    return result;
-}
-
-static PyObject* py_find_rv128_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    uint32_t rsid;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKI", &mfsrc, &first, &last, &rsid))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    variantkey128_t h = find_rv128_variantkey_by_rsid(src, &first, last, rsid);
-    result = PyTuple_New(5);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h.assembly));
-    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.chrom));
-    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 3, Py_BuildValue("I", h.refalt));
-    PyTuple_SetItem(result, 4, Py_BuildValue("K", first));
-    return result;
-}
-
-static PyObject* py_find_vr128_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    variantkey128_t vh;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKIIII", &mfsrc, &first, &last, &vh.assembly, &vh.chrom, &vh.pos, &vh.refalt))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr128_rsid_by_variantkey(src, &first, last, vh);
-    result = PyTuple_New(2);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
-    return result;
-}
-
-static PyObject* py_find_vr128_chrom_range(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    uint32_t chrom;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKI", &mfsrc, &first, &last, &chrom))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr128_chrom_range(src, &first, &last, chrom);
-    result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", last));
-    return result;
-}
-
-static PyObject* py_find_vr128_pos_range(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    uint32_t pos_start, pos_end;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKII", &mfsrc, &first, &last, &pos_start, &pos_end))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr128_pos_range(src, &first, &last, pos_start, pos_end);
-    result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", last));
-    return result;
-}
-
-static PyObject* py_find_vr128_chrompos_range(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    uint32_t chrom, pos_start, pos_end;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKIII", &mfsrc, &first, &last, &chrom, &pos_start, &pos_end))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr128_chrompos_range(src, &first, &last, chrom, pos_start, pos_end);
-    result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", last));
-    return result;
-}
-
-// --- RSIDVAR64 ---
-
-static PyObject* py_get_vr64_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_get_rv_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     uint64_t item;
     PyObject* mfsrc = NULL;
     if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = get_vr64_rsid(src, item);
-    return Py_BuildValue("I", h);
-}
-
-static PyObject* py_get_rv64_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    uint64_t item;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OK", &mfsrc, &item))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint64_t h = get_rv64_variantkey(src, item);
+    uint64_t h = get_rv_variantkey(src, item);
     return Py_BuildValue("K", h);
 }
 
-static PyObject* py_find_rv64_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_find_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t first, last;
@@ -585,14 +376,14 @@ static PyObject* py_find_rv64_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), P
     if (!PyArg_ParseTuple(args, "OKKI", &mfsrc, &first, &last, &rsid))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint64_t h = find_rv64_variantkey_by_rsid(src, &first, last, rsid);
+    uint64_t h = find_rv_variantkey_by_rsid(src, &first, last, rsid);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
     return result;
 }
 
-static PyObject* py_find_vr64_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_find_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t first, last, vh;
@@ -600,48 +391,14 @@ static PyObject* py_find_vr64_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), P
     if (!PyArg_ParseTuple(args, "OKKK", &mfsrc, &first, &last, &vh))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr64_rsid_by_variantkey(src, &first, last, vh);
+    uint32_t h = find_vr_rsid_by_variantkey(src, &first, last, vh);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
     return result;
 }
 
-static PyObject* py_find_vr64_chrom_range(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    uint8_t chrom;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKB", &mfsrc, &first, &last, &chrom))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr64_chrom_range(src, &first, &last, chrom);
-    result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", last));
-    return result;
-}
-
-static PyObject* py_find_vr64_pos_range(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t first, last;
-    uint32_t pos_start, pos_end;
-    PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKII", &mfsrc, &first, &last, &pos_start, &pos_end))
-        return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr64_pos_range(src, &first, &last, pos_start, pos_end);
-    result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", last));
-    return result;
-}
-
-static PyObject* py_find_vr64_chrompos_range(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
     uint64_t first, last;
@@ -651,7 +408,7 @@ static PyObject* py_find_vr64_chrompos_range(PyObject *Py_UNUSED(ignored), PyObj
     if (!PyArg_ParseTuple(args, "OKKIII", &mfsrc, &first, &last, &chrom, &pos_start, &pos_end))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr64_chrompos_range(src, &first, &last, chrom, pos_start, pos_end);
+    uint32_t h = find_vr_chrompos_range(src, &first, &last, chrom, pos_start, pos_end);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
@@ -664,22 +421,14 @@ static PyObject* py_find_vr64_chrompos_range(PyObject *Py_UNUSED(ignored), PyObj
 static PyMethodDef PyVariantKeyMethods[] =
 {
     // VARIANTKEY
-    {"encode_assembly_32bit", py_encode_assembly_32bit, METH_VARARGS, PYENCODEASSEMBLY32BIT_DOCSTRING},
-    {"encode_chrom_32bit", py_encode_chrom_32bit, METH_VARARGS, PYENCODECHROM32BIT_DOCSTRING},
-    {"encode_chrom_8bit", py_encode_chrom_8bit, METH_VARARGS, PYENCODECHROM8BIT_DOCSTRING},
-    {"decode_chrom_32bit", py_decode_chrom_32bit, METH_VARARGS, PYDECODECHROM32BIT_DOCSTRING},
-    {"decode_chrom_8bit", py_decode_chrom_8bit, METH_VARARGS, PYDECODECHROM8BIT_DOCSTRING},
-    {"encode_refalt_32bit", py_encode_refalt_32bit, METH_VARARGS, PYENCODEREFALT32BIT_DOCSTRING},
-    {"encode_refalt_24bit", py_encode_refalt_24bit, METH_VARARGS, PYENCODEREFALT24BIT_DOCSTRING},
-    {"decode_refalt_32bit", py_decode_refalt_32bit, METH_VARARGS, PYDECODEREFALT32BIT_DOCSTRING},
-    {"decode_refalt_24bit", py_decode_refalt_24bit, METH_VARARGS, PYDECODEREFALT24BIT_DOCSTRING},
-    {"variantkey128", py_variantkey128, METH_VARARGS, PYVARIANTKEY128_DOCSTRING},
-    {"variantkey64", py_variantkey64, METH_VARARGS, PYVARIANTKEY64_DOCSTRING},
-    {"variantkey128_string", py_variantkey128_string, METH_VARARGS, PYVARIANTKEY128STRING_DOCSTRING},
-    {"variantkey64_string", py_variantkey64_string, METH_VARARGS, PYVARIANTKEY64STRING_DOCSTRING},
-    {"parse_variantkey128_string", py_parse_variantkey128_string, METH_VARARGS, PYPARSEVARIANTKEY128STRING_DOCSTRING},
-    {"parse_variantkey64_string", py_parse_variantkey64_string, METH_VARARGS, PYPARSEVARIANTKEY64STRING_DOCSTRING},
-    {"split_variantkey64", py_split_variantkey64, METH_VARARGS, PYSPLITVARIANTKEY64_DOCSTRING},
+    {"encode_chrom", py_encode_chrom, METH_VARARGS, PYENCODECHROM_DOCSTRING},
+    {"decode_chrom", py_decode_chrom, METH_VARARGS, PYDECODECHROM_DOCSTRING},
+    {"encode_refalt", py_encode_refalt, METH_VARARGS, PYENCODEREFALT_DOCSTRING},
+    {"decode_refalt", py_decode_refalt, METH_VARARGS, PYDECODEREFALT_DOCSTRING},
+    {"variantkey", py_variantkey, METH_VARARGS, PYVARIANTKEY_DOCSTRING},
+    {"variantkey_string", py_variantkey_string, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
+    {"parse_variantkey_string", py_parse_variantkey_string, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
+    {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
 
     // FARMHASH
     {"farmhash64", py_farmhash64, METH_VARARGS, PYFARMHASH64_DOCSTRING},
@@ -700,23 +449,12 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"find_first_uint128", py_find_first_uint128, METH_VARARGS, PYFINDFIRSTUINT128_DOCSTRING},
     {"find_last_uint128", py_find_last_uint128, METH_VARARGS, PYFINDLASTUINT128_DOCSTRING},
 
-    // RSIDVAR128
-    {"get_vr128_rsid", py_get_vr128_rsid, METH_VARARGS, PYGETVR128RSID_DOCSTRING},
-    {"get_rv128_variantkey", py_get_rv128_variantkey, METH_VARARGS, PYGETRV128VARIANTKEY_DOCSTRING},
-    {"find_rv128_variantkey_by_rsid", py_find_rv128_variantkey_by_rsid, METH_VARARGS, PYFINDRV128VARIANTKEYBYRSID_DOCSTRING},
-    {"find_vr128_rsid_by_variantkey", py_find_vr128_rsid_by_variantkey, METH_VARARGS, PYFINDVR128RSIDBYVARIANTKEY_DOCSTRING},
-    {"find_vr128_chrom_range", py_find_vr128_chrom_range, METH_VARARGS, PYFINDVR128CHROMRANGE_DOCSTRING},
-    {"find_vr128_pos_range", py_find_vr128_pos_range, METH_VARARGS, PYFINDVR128POSRANGE_DOCSTRING},
-    {"find_vr128_chrompos_range", py_find_vr128_chrompos_range, METH_VARARGS, PYFINDVR128CHROMPOSRANGE_DOCSTRING},
-
-    // RSIDVAR64
-    {"get_vr64_rsid", py_get_vr64_rsid, METH_VARARGS, PYGETVR64RSID_DOCSTRING},
-    {"get_rv64_variantkey", py_get_rv64_variantkey, METH_VARARGS, PYGETRV64VARIANTKEY_DOCSTRING},
-    {"find_rv64_variantkey_by_rsid", py_find_rv64_variantkey_by_rsid, METH_VARARGS, PYFINDRV64VARIANTKEYBYRSID_DOCSTRING},
-    {"find_vr64_rsid_by_variantkey", py_find_vr64_rsid_by_variantkey, METH_VARARGS, PYFINDVR64RSIDBYVARIANTKEY_DOCSTRING},
-    {"find_vr64_chrom_range", py_find_vr64_chrom_range, METH_VARARGS, PYFINDVR64CHROMRANGE_DOCSTRING},
-    {"find_vr64_pos_range", py_find_vr64_pos_range, METH_VARARGS, PYFINDVR64POSRANGE_DOCSTRING},
-    {"find_vr64_chrompos_range", py_find_vr64_chrompos_range, METH_VARARGS, PYFINDVR64CHROMPOSRANGE_DOCSTRING},
+    // RSIDVAR
+    {"get_vr_rsid", py_get_vr_rsid, METH_VARARGS, PYGETVRRSID_DOCSTRING},
+    {"get_rv_variantkey", py_get_rv_variantkey, METH_VARARGS, PYGETRVVARIANTKEY_DOCSTRING},
+    {"find_rv_variantkey_by_rsid", py_find_rv_variantkey_by_rsid, METH_VARARGS, PYFINDRVVARIANTKEYBYRSID_DOCSTRING},
+    {"find_vr_rsid_by_variantkey", py_find_vr_rsid_by_variantkey, METH_VARARGS, PYFINDVRRSIDBYVARIANTKEY_DOCSTRING},
+    {"find_vr_chrompos_range", py_find_vr_chrompos_range, METH_VARARGS, PYFINDVRCHROMPOSRANGE_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
 };
