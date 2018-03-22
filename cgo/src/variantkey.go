@@ -36,22 +36,13 @@ type TVariantKey struct {
 	RefAlt uint32 `json:"refalt"`
 }
 
-// castCVariantKey convert C variantkey64_t to GO TVariantKey.
-func castCVariantKey(vh C.variantkey64_t) TVariantKey {
+// castCVariantKey convert C variantkey_t to GO TVariantKey.
+func castCVariantKey(vh C.variantkey_t) TVariantKey {
 	return TVariantKey{
 		Chrom:  uint8(vh.chrom),
 		Pos:    uint32(vh.pos),
 		RefAlt: uint32(vh.refalt),
 	}
-}
-
-// castGoVariantKey convert GO TVariantKey to C variantkey64_t.
-func castGoVariantKey(vh TVariantKey) C.variantkey64_t {
-	var cvh C.variantkey64_t
-	cvh.chrom = C.uint8_t(vh.Chrom)
-	cvh.pos = C.uint32_t(vh.Pos)
-	cvh.refalt = C.uint32_t(vh.RefAlt)
-	return cvh
 }
 
 // StringToNTBytes safely convert a string to byte array with an extra null terminator
@@ -64,12 +55,13 @@ func StringToNTBytes(s string) []byte {
 
 // EncodeChrom returns chromosome encoding.
 func EncodeChrom(chrom string) uint8 {
-	bchrom := StringToNTBytes(chrom, len(chrom))
+	bchrom := StringToNTBytes(chrom)
+	sizechrom := len(chrom)
 	var pchrom unsafe.Pointer
-	if len(bchrom) > 0 {
+	if sizechrom > 0 {
 		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
 	}
-	return uint8(C.encode_chrom((*C.char)(pchrom)))
+	return uint8(C.encode_chrom((*C.char)(pchrom), C.size_t(sizechrom)))
 }
 
 // DecodeChrom decode chrom to string
@@ -84,52 +76,29 @@ func DecodeChrom(c uint8) string {
 func EncodeRefAlt(ref string, alt string) uint32 {
 	bref := StringToNTBytes(ref)
 	balt := StringToNTBytes(alt)
+	sizeref := len(ref)
+	sizealt := len(alt)
 	var pref unsafe.Pointer
 	var palt unsafe.Pointer
-	var sizeref = len(ref)
-	var sizealt = len(alt)
 	if sizeref > 0 {
 		pref = unsafe.Pointer(&bref[0]) // #nosec
 	}
 	if sizealt > 0 {
 		palt = unsafe.Pointer(&balt[0]) // #nosec
 	}
-	return uint32(C.encode_refalt((*C.char)(pref), sizeref, (*C.char)(palt), sizealt))
+	return uint32(C.encode_refalt((*C.char)(pref), C.size_t(sizeref), (*C.char)(palt), C.size_t(sizealt)))
 }
 
 // DecodeRefAlt decode Ref+Alt code to string
-func DecodeRefAlt(c uint32) (string, string) {
+func DecodeRefAlt(c uint32) (string, string, uint8, uint8, uint8) {
 	var cref *C.char = C.CString("00000")
 	defer C.free(unsafe.Pointer(cref)) // #nosec
 	var calt *C.char = C.CString("00000")
 	defer C.free(unsafe.Pointer(calt)) // #nosec
-	len := C.decode_refalt(C.uint32_t(c), cref, calt)
-	return C.GoStringN(cref, C.int(C.strlen(cref))), C.GoStringN(calt, C.int(len))
-}
-
-// VariantKey128 returns a Genetic Variant Key based on ASSEMBLY, CHROM, POS (0-base), REF, ALT.
-func VariantKey128(assembly, chrom string, pos uint32, ref, alt string) TVariantKey128 {
-	bassembly := StringToNTBytes(assembly)
-	bchrom := StringToNTBytes(chrom)
-	bref := StringToNTBytes(ref)
-	balt := StringToNTBytes(alt)
-	var passembly unsafe.Pointer
-	var pchrom unsafe.Pointer
-	var pref unsafe.Pointer
-	var palt unsafe.Pointer
-	if len(assembly) > 0 {
-		passembly = unsafe.Pointer(&bassembly[0]) // #nosec
-	}
-	if len(chrom) > 0 {
-		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
-	}
-	if len(ref) > 0 {
-		pref = unsafe.Pointer(&bref[0]) // #nosec
-	}
-	if len(alt) > 0 {
-		palt = unsafe.Pointer(&balt[0]) // #nosec
-	}
-	return castCVariantKey128(C.variantkey128((*C.char)(passembly), (*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt)))
+	csizeref := C.size_t(0)
+	csizealt := C.size_t(0)
+	len := C.decode_refalt(C.uint32_t(c), cref, &csizeref, calt, &csizealt)
+	return C.GoStringN(cref, C.int(csizeref)), C.GoStringN(calt, C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint8(len)
 }
 
 // VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
@@ -137,65 +106,46 @@ func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)
 	balt := StringToNTBytes(alt)
+	sizechrom := len(chrom)
+	sizeref := len(ref)
+	sizealt := len(alt)
 	var pchrom unsafe.Pointer
 	var pref unsafe.Pointer
 	var palt unsafe.Pointer
-	if len(chrom) > 0 {
+	if sizechrom > 0 {
 		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
 	}
-	if len(ref) > 0 {
+	if sizeref > 0 {
 		pref = unsafe.Pointer(&bref[0]) // #nosec
 	}
-	if len(alt) > 0 {
+	if sizealt > 0 {
 		palt = unsafe.Pointer(&balt[0]) // #nosec
 	}
-	return uint64(C.variantkey64((*C.char)(pchrom), C.uint32_t(pos), (*C.char)(pref), (*C.char)(palt)))
-}
-
-// String representation of the TVariantKey128
-func (v TVariantKey128) String() string {
-	var cvh C.variantkey128_t
-	cvh.assembly = C.uint32_t(v.Assembly)
-	cvh.chrom = C.uint32_t(v.Chrom)
-	cvh.pos = C.uint32_t(v.Pos)
-	cvh.refalt = C.uint32_t(v.RefAlt)
-	var cstr *C.char = C.CString("00000000000000000000000000000000")
-	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	C.variantkey128_string(cstr, C.size_t(33), cvh)
-	return C.GoStringN(cstr, C.int(32))
+	return uint64(C.variantkey((*C.char)(pchrom), C.size_t(len(chrom)), C.uint32_t(pos), (*C.char)(pref), C.size_t(len(ref)), (*C.char)(palt), C.size_t(len(alt))))
 }
 
 // VariantKeyString provides a string representation of the VariantKey 64bit
 func VariantKeyString(v uint64) string {
 	var cstr *C.char = C.CString("0000000000000000")
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	C.variantkey64_string(cstr, C.size_t(17), C.uint64_t(v))
+	C.variantkey_string(C.uint64_t(v), cstr, C.size_t(17))
 	return C.GoStringN(cstr, C.int(16))
-}
-
-// ParseVariantKey128String parses a variant key string and returns the components as TVariantKey128 structure.
-func ParseVariantKey128String(s string) TVariantKey128 {
-	b := StringToNTBytes(s)
-	var p unsafe.Pointer
-	if len(s) > 0 {
-		p = unsafe.Pointer(&b[0]) // #nosec
-	}
-	return castCVariantKey128(C.parse_variantkey128_string((*C.char)(p)))
 }
 
 // ParseVariantKeyString parses a variant key string and returns the code.
 func ParseVariantKeyString(s string) uint64 {
 	b := StringToNTBytes(s)
+	size := len(s)
 	var p unsafe.Pointer
-	if len(s) > 0 {
+	if size > 0 {
 		p = unsafe.Pointer(&b[0]) // #nosec
 	}
-	return uint64(C.parse_variantkey64_string((*C.char)(p)))
+	return uint64(C.parse_variantkey_string((*C.char)(p)))
 }
 
-// SplitVariantKeyString parses a variant key string and returns the components as TVariantKey128 structure.
-func SplitVariantKeyString(v uint64) TVariantKey {
-	return castCVariantKey(C.split_variantkey64(C.uint64_t(v)))
+// DecodeVariantKeyg parses a variant key string and returns the components as TVariantKey128 structure.
+func DecodeVariantKey(v uint64) TVariantKey {
+	return castCVariantKey(C.decode_variantkey(C.uint64_t(v)))
 }
 
 // --- FARMHASH64 ---
@@ -205,7 +155,7 @@ func FarmHash64(s []byte) uint64 {
 	slen := len(s)
 	var p unsafe.Pointer
 	if slen > 0 {
-		p = unsafe.Pointer(&s[0]) /* #nosec */
+		p = unsafe.Pointer(&s[0]) // #nosec
 	}
 	return uint64(C.farmhash64((*C.char)(p), C.size_t(slen)))
 }
@@ -215,7 +165,7 @@ func FarmHash32(s []byte) uint32 {
 	slen := len(s)
 	var p unsafe.Pointer
 	if slen > 0 {
-		p = unsafe.Pointer(&s[0]) /* #nosec */
+		p = unsafe.Pointer(&s[0]) // #nosec
 	}
 	return uint32(C.farmhash32((*C.char)(p), C.size_t(slen)))
 }
@@ -235,7 +185,7 @@ func MmapBinFile(file string) (TMMFile, error) {
 	flen := len(bfile)
 	var p unsafe.Pointer
 	if flen > 0 {
-		p = unsafe.Pointer(&bfile[0]) /* #nosec */
+		p = unsafe.Pointer(&bfile[0]) // #nosec
 	}
 	mf := (C.mmap_binfile((*C.char)(p)))
 	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
@@ -266,10 +216,10 @@ func GetAddress(blklen, blkpos, item uint64) uint64 {
 // binary file containing adjacent blocks of sorted binary data.
 // The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint8(blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint8(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
+	ret := uint64(C.find_first_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -277,10 +227,10 @@ func (mf TMMFile) FindFirstUint8(blklen, blkpos, first, last uint64, search uint
 // binary file containing adjacent blocks of sorted binary data.
 // The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint8(blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint8(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
+	ret := uint64(C.find_last_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -288,10 +238,10 @@ func (mf TMMFile) FindLastUint8(blklen, blkpos, first, last uint64, search uint8
 // binary file containing adjacent blocks of sorted binary data.
 // The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint16(blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint16(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
+	ret := uint64(C.find_first_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -299,10 +249,10 @@ func (mf TMMFile) FindFirstUint16(blklen, blkpos, first, last uint64, search uin
 // binary file containing adjacent blocks of sorted binary data.
 // The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint16(blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint16(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
+	ret := uint64(C.find_last_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -310,10 +260,10 @@ func (mf TMMFile) FindLastUint16(blklen, blkpos, first, last uint64, search uint
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint32(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
+	ret := uint64(C.find_first_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -321,10 +271,10 @@ func (mf TMMFile) FindFirstUint32(blklen, blkpos, first, last uint64, search uin
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint32(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
+	ret := uint64(C.find_last_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -332,10 +282,10 @@ func (mf TMMFile) FindLastUint32(blklen, blkpos, first, last uint64, search uint
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint64(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
+	ret := uint64(C.find_first_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -343,10 +293,10 @@ func (mf TMMFile) FindFirstUint64(blklen, blkpos, first, last uint64, search uin
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint64(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
+	ret := uint64(C.find_last_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -354,10 +304,10 @@ func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint
 // binary file containing adjacent blocks of sorted binary data.
 // The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint128(blklen, blkpos, first, last uint64, search Uint128) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint128(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search Uint128) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_uint128_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, castGoUint128(search)))
+	ret := uint64(C.find_first_uint128_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, castGoUint128(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
@@ -365,59 +315,43 @@ func (mf TMMFile) FindFirstUint128(blklen, blkpos, first, last uint64, search Ui
 // binary file containing adjacent blocks of sorted binary data.
 // The 128 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint128(blklen, blkpos, first, last uint64, search Uint128) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint128(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search Uint128) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_uint128_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, castGoUint128(search)))
+	ret := uint64(C.find_last_uint128_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, castGoUint128(search)))
 	return ret, uint64(cfirst), uint64(clast)
 }
 
 // --- RSIDVAR ---
 
-// GetVR64Rsid returns the RSID at the specified position of the variantkey_rsid.bin file.
-func (mf TMMFile) GetVR64Rsid(item uint64) uint32 {
-	return uint32(C.get_vr64_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
+// GetVRRsid returns the RSID at the specified position of the variantkey_rsid.bin file.
+func (mf TMMFile) GetVRRsid(item uint64) uint32 {
+	return uint32(C.get_vr_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// GetRV64Variantkey returns the VariantKey at the specified position of the rsid_variantkey.bin file.
-func (mf TMMFile) GetRV64Variantkey(item uint64) uint64 {
-	return uint64(C.get_rv64_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
+// GetRVVariantkey returns the VariantKey at the specified position of the rsid_variantkey.bin file.
+func (mf TMMFile) GetRVVariantkey(item uint64) uint64 {
+	return uint64(C.get_rv_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// FindRV64VariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey, item position.
-func (mf TMMFile) FindRV64VariantkeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
+// FindRVVariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey, item position.
+func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
 	cfirst := C.uint64_t(first)
-	vh := uint64(C.find_rv64_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
+	vh := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
 	return vh, uint64(cfirst)
 }
 
-// FindVR64RsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID, item position.
-func (mf TMMFile) FindVR64RsidByVariantkey(first uint64, last uint64, vh uint64) (uint32, uint64) {
+// FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID, item position.
+func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vh uint64) (uint32, uint64) {
 	cfirst := C.uint64_t(first)
-	rsid := uint32(C.find_vr64_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vh)))
+	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vh)))
 	return rsid, uint64(cfirst)
 }
 
-// FindVR64ChromRange search for the specified CHROM range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVR64ChromRange(first, last uint64, chrom uint8) (uint32, uint64, uint64) {
+// FindVRChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
+func (mf TMMFile) FindVRChromposRange(first, last uint64, chrom uint8, posStart, posEnd uint32) (uint32, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr64_chrom_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom)))
-	return rsid, uint64(cfirst), uint64(clast)
-}
-
-// FindVR64PosRange search for the specified POS range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVR64PosRange(first, last uint64, posStart, posEnd uint32) (uint32, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr64_pos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint32_t(posStart), C.uint32_t(posEnd)))
-	return rsid, uint64(cfirst), uint64(clast)
-}
-
-// FindVR64ChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVR64ChromposRange(first, last uint64, chrom uint8, posStart, posEnd uint32) (uint32, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr64_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))
+	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))
 	return rsid, uint64(cfirst), uint64(clast)
 }
