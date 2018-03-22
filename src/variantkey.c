@@ -169,7 +169,6 @@ size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, s
         ref[i] = decode_refalt_char(code, pos);
     }
     ref[i] = '\0';
-    i = 0;
     for(i = 0; i < *sizealt; i++)
     {
         pos -= 5;

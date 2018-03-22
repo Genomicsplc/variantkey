@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 #include "rsidvar.h"
-#include <stdio.h>
 
 uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)
 {
