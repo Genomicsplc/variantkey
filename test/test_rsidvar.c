@@ -236,7 +236,6 @@ int test_find_vr_chrompos_range_notfound(mmfile_t vr)
     return errors;
 }
 
-/*
 void benchmark_get_vr_rsid(mmfile_t vr)
 {
     uint64_t tstart, tend;
@@ -281,6 +280,22 @@ void benchmark_find_rv_variantkey_by_rsid(mmfile_t rv)
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
+void benchmark_find_vr_rsid_by_variantkey(mmfile_t vr)
+{
+    uint64_t tstart, tend;
+    uint64_t first = 0;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        first = 0;
+        find_vr_rsid_by_variantkey(vr.src, &first, 9, 0x160017CCA313d0e0);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+}
+
 void benchmark_find_vr_chrompos_range(mmfile_t vr)
 {
     uint64_t tstart, tend;
@@ -297,23 +312,6 @@ void benchmark_find_vr_chrompos_range(mmfile_t vr)
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
-
-void benchmark_find_vr_rsid_by_variantkey(mmfile_t vr)
-{
-    uint64_t tstart, tend;
-    uint64_t first = 0;
-    int i;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        first = 0;
-        find_vr_rsid_by_variantkey(vr.src, &first, 9, 0x160017CCA313d0e0);
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
-}
-*/
 
 int main()
 {
@@ -347,11 +345,11 @@ int main()
     errors += test_find_vr_chrompos_range(vr);
     errors += test_find_vr_chrompos_range_notfound(vr);
 
-    //benchmark_get_vr_rsid(vr);
-    //benchmark_get_rv_variantkey(rv);
-    //benchmark_find_rv_variantkey_by_rsid(rv);
-    //benchmark_find_vr_chrompos_range(vr);
-    //benchmark_find_vr_rsid_by_variantkey(vr);
+    benchmark_get_vr_rsid(vr);
+    benchmark_get_rv_variantkey(rv);
+    benchmark_find_rv_variantkey_by_rsid(rv);
+    benchmark_find_vr_rsid_by_variantkey(vr);
+    benchmark_find_vr_chrompos_range(vr);
 
     err = munmap_binfile(rv);
     if (err != 0)
