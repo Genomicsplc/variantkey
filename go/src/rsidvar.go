@@ -1,64 +1,52 @@
 package variantkey
 
 const (
-	rvBinBlkLen = 20 // length of a binary block containing rsid + variantkey
-
-	rvBposRsid     = 0  // rv offset of rs id
-	rvBposAssembly = 4  // rv offset of genome assembly hash
-	rvBposChrom    = 8  // rv offset of chrom
-	rvBposPos      = 12 // rv offset of pos
-	rvBposRefAlt   = 16 // rv offset of ref_alt hash
-
-	vrBposAssembly = 0 // rv offset of genome assembly hash
-	vrBposChrom    = 4 // vr offset of chrom
-	//vrBposPos   = 8  // vr offset of pos
-	//vrBposRefAlt   = 12  // vr offset of ref_alt hash
-	vrBposRsid = 16 // vr offset of rs id
+	BinBlkLen = 12 // Length in bytes of a binary block containing RSID + VARIANTKEY
+	rvPosRSID = 0  // RSIDVAR byte offset of RSID
+	rvPosVK   = 4  // RSIDVAR byte offset of VARIANTKEY
+	vrPosVK   = 0  // VARRSID byte offset of VARIANTKEY
+	vrPosRSID = 8  // VARRSID byte offset of RSID
 )
 
-// GetVRRsid returns the RSID at the specified position of the variantkey_rsid.bin file.
+// GetVRRsid returns the RSID at the specified position in the VR file.
 func (mf TMMFile) GetVRRsid(item uint64) uint32 {
-	return mf.BytesToUint32(int(GetAddress(rvBinBlkLen, vrBposRsid, item)))
+	return mf.BytesToUint32(int(GetAddress(BinBlkLen, vrPosRSID, item)), 0, 31)
 }
 
-// GetRVVarhash returns the VariantKey at the specified position of the rsid_variantkey.bin file.
-func (mf TMMFile) GetRVVarhash(item uint64) TVariantKey {
-	i := GetAddress(rvBinBlkLen, 0, item)
-	return TVariantKey{
-		Assembly: mf.BytesToUint32(int(i + rvBposAssembly)),
-		Chrom:    mf.BytesToUint32(int(i + rvBposChrom)),
-		Pos:      mf.BytesToUint32(int(i + rvBposPos)),
-		RefAlt:   mf.BytesToUint32(int(i + rvBposRefAlt)),
-	}
+// GetRVVariantkey returns the VariantKey at the specified position in the RV file.
+func (mf TMMFile) GetRVVariantkey(item uint64) uint64 {
+	i := GetAddress(BinBlkLen, 0, item)
+	return mf.BytesToUint64(int(i+rvPosVK), 0, 63)
 }
 
-// FindRVVarhashByRsid search for the specified RSID and returns the first occurrence of VariantKey, item position.
-func (mf TMMFile) FindRVVarhashByRsid(first, last uint64, rsid uint32) (TVariantKey, uint64) {
-	firstItem, _, _ := mf.FindFirstUint32(rvBinBlkLen, 0, first, last, rsid)
+// FindRVVariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
+func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
+	firstItem, _, _ := mf.FindFirstUint32(BinBlkLen, rvPosRSID, 0, 31, first, last, rsid)
 	if firstItem > last {
-		return TVariantKey{}, firstItem
+		return 0, firstItem
 	}
-	return mf.GetRVVarhash(firstItem), firstItem
+	return mf.GetRVVariantkey(firstItem), firstItem
 }
 
-// FindVRRsidByVarshash search for the specified VariantKey and returns the first occurrence of RSID, item position.
-func (mf TMMFile) FindVRRsidByVarshash(first uint64, last uint64, vh TVariantKey) (uint32, uint64) {
-	firstItem, _, _ := mf.FindFirstUint128(rvBinBlkLen, 0, first, last, Uint128{Lo: (uint64(vh.Assembly)<<32 | uint64(vh.Chrom)), Hi: (uint64(vh.Pos)<<32 | uint64(vh.RefAlt))})
+// FindVRRsidByVarshash search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
+func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vk uint64) (uint32, uint64) {
+	firstItem, _, _ := mf.FindFirstUint64(BinBlkLen, vrPosVK, 0, 63, first, last, vk)
 	if firstItem > last {
 		return 0, firstItem
 	}
 	return mf.GetVRRsid(firstItem), firstItem
 }
 
-// FindVRChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVRChromposRange(first, last uint64, chrom, posStart, posEnd uint32) (uint32, uint64, uint64) {
-	firstItem, f, _ := mf.FindFirstUint64(rvBinBlkLen, vrBposChrom, first, last, (uint64(chrom)<<32 | uint64(posStart)))
+// FindVRChromPosRange search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
+func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posStart, posEnd uint32) (uint32, uint64, uint64) {
+	ckey := (uint64(chrom) << 59)
+	firstItem, f, _ := mf.FindFirstUint64(BinBlkLen, vrPosVK, 0, 32, first, last, (ckey|(uint64(posStart)<<31))>>31)
 	if firstItem > last {
 		firstItem = f
 	}
 	if f > last {
 		return 0, firstItem, last
 	}
-	lastItem, _, _ := mf.FindLastUint64(rvBinBlkLen, vrBposChrom, firstItem, last, (uint64(chrom)<<32 | uint64(posEnd)))
+	lastItem, _, _ := mf.FindLastUint64(BinBlkLen, vrPosVK, 0, 32, firstItem, last, (ckey|(uint64(posEnd)<<31))>>31)
 	return mf.GetVRRsid(firstItem), firstItem, lastItem
 }

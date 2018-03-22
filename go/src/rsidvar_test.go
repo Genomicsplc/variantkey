@@ -2,46 +2,27 @@ package variantkey
 
 import "testing"
 
-var testDataRV = []struct {
-	rsid     uint32
-	assembly uint32
-	chrom    uint32
-	pos      uint32
-	refalt   uint32
+var testData = []struct {
+	rsid   uint32
+	vk     uint64
+	chrom  uint8
+	pos    uint32
+	refalt uint32
 }{
-	{0x00000001, 0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb},
-	{0x00000002, 0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3},
-	{0x00000003, 0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f},
-	{0x00000004, 0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae},
-	{0x00000005, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f},
-	{0x00000006, 0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc},
-	{0x00000007, 0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a},
-	{0x00000008, 0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb},
-	{0x00000009, 0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb},
-	{0x0000000a, 0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c},
-}
-
-var testDataVR = []struct {
-	assembly uint32
-	chrom    uint32
-	pos      uint32
-	refalt   uint32
-	rsid     uint32
-}{
-	{0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb, 0x00000009},
-	{0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a, 0x00000007},
-	{0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f, 0x00000005},
-	{0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f, 0x00000003},
-	{0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb, 0x00000001},
-	{0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3, 0x00000002},
-	{0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae, 0x00000004},
-	{0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc, 0x00000006},
-	{0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb, 0x00000008},
-	{0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c, 0x0000000a},
+	{0X00000001, 0X08027A2580338000, 0X01, 0X0004F44B, 0X00338000},
+	{0X00000007, 0X4800A1FE439E3918, 0X09, 0X000143FC, 0X439E3918},
+	{0X0000000B, 0X4800A1FE7555EB16, 0X09, 0X000143FC, 0X7555EB16},
+	{0X00000061, 0X80010274003A0000, 0X10, 0X000204E8, 0X003A0000},
+	{0X00000065, 0X8001028D00138000, 0X10, 0X0002051A, 0X00138000},
+	{0X000003E5, 0X80010299007A0000, 0X10, 0X00020532, 0X007A0000},
+	{0X000003F1, 0XA0012B62003A0000, 0X14, 0X000256C4, 0X003A0000},
+	{0X000026F5, 0XA0012B6280708000, 0X14, 0X000256C5, 0X00708000},
+	{0X000186A3, 0XA0012B65E3256692, 0X14, 0X000256CB, 0X63256692},
+	{0X00019919, 0XA0012B67D5439803, 0X14, 0X000256CF, 0X55439803},
 }
 
 func TestGetVRRsid(t *testing.T) {
-	for i, tt := range testDataVR {
+	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
@@ -61,103 +42,70 @@ func BenchmarkGetVRRsid(b *testing.B) {
 	}
 }
 
-func TestGetRVVarhash(t *testing.T) {
-	for i, tt := range testDataRV {
+func TestGetRVVariantkey(t *testing.T) {
+	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := rv.GetRVVarhash(uint64(i))
-			if vh.Assembly != tt.assembly {
-				t.Errorf("Expected assembly %x, got %x", tt.assembly, vh.Assembly)
-			}
-			if vh.Chrom != tt.chrom {
-				t.Errorf("Expected chrom %x, got %x", tt.chrom, vh.Chrom)
-			}
-			if vh.Pos != tt.pos {
-				t.Errorf("Expected pos %x, got %x", tt.pos, vh.Pos)
-			}
-			if vh.RefAlt != tt.refalt {
-				t.Errorf("Expected refalt %x, got %x", tt.refalt, vh.RefAlt)
+			vk := rv.GetRVVariantkey(uint64(i))
+			if vk != tt.vk {
+				t.Errorf("Expected VariantKey %x, got %x", tt.vk, vk)
 			}
 		})
 	}
 }
 
-func BenchmarkGetRVVarhash(b *testing.B) {
+func BenchmarkGetRVVariantkey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		rv.GetRVVarhash(3)
+		rv.GetRVVariantkey(3)
 	}
 }
 
-func TestFindRVVarhashByRsid(t *testing.T) {
-	for i, tt := range testDataRV {
+func TestFindRVVariantkeyByRsid(t *testing.T) {
+	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh, first := rv.FindRVVarhashByRsid(0, 9, tt.rsid)
+			vk, first := rv.FindRVVariantkeyByRsid(0, 9, tt.rsid)
 			if first != uint64(i) {
 				t.Errorf("Expected first %d, got %d", i, first)
 			}
-			if vh.Assembly != tt.assembly {
-				t.Errorf("Expected assembly %x, got %x", tt.assembly, vh.Assembly)
-			}
-			if vh.Chrom != tt.chrom {
-				t.Errorf("Expected chrom %x, got %x", tt.chrom, vh.Chrom)
-			}
-			if vh.Pos != tt.pos {
-				t.Errorf("Expected pos %x, got %x", tt.pos, vh.Pos)
-			}
-			if vh.RefAlt != tt.refalt {
-				t.Errorf("Expected refalt %x, got %x", tt.refalt, vh.RefAlt)
+			if vk != tt.vk {
+				t.Errorf("Expected VariantKey %x, got %x", tt.vk, vk)
 			}
 		})
 	}
 }
 
-func TestFindRVVarhashByRsidNotFound(t *testing.T) {
-	vh, first := rv.FindRVVarhashByRsid(0, 9, 0xfffffff0)
+func TestFindRVVariantkeyByRsidNotFound(t *testing.T) {
+	vk, first := rv.FindRVVariantkeyByRsid(0, 9, 0xfffffff0)
 	if first != 10 {
 		t.Errorf("Expected first 10, got %d", first)
 	}
-	if vh.Assembly != 0 {
-		t.Errorf("Expected assembly 0, got %x", vh.Assembly)
-	}
-	if vh.Chrom != 0 {
-		t.Errorf("Expected chrom 0, got %x", vh.Chrom)
-	}
-	if vh.Pos != 0 {
-		t.Errorf("Expected pos0, got %x", vh.Pos)
-	}
-	if vh.RefAlt != 0 {
-		t.Errorf("Expected refalt 0, got %x", vh.RefAlt)
+	if vk != 0 {
+		t.Errorf("ExpectedVariantKey 0, got %x", vk)
 	}
 }
 
-func BenchmarkFindRVVarhashByRsid(b *testing.B) {
+func BenchmarkFindRVVariantkeyByRsid(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		rv.FindRVVarhashByRsid(0, 9, 0x387351cb)
+		rv.FindRVVariantkeyByRsid(0, 9, 0x2F81F575)
 	}
 }
 
-func TestFindVRRsidByVarshash(t *testing.T) {
-	for i, tt := range testDataVR {
+func TestFindVRRsidByVariantkey(t *testing.T) {
+	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := TVariantKey{
-				Assembly: testDataVR[i].assembly,
-				Chrom:    testDataVR[i].chrom,
-				Pos:      testDataVR[i].pos,
-				RefAlt:   testDataVR[i].refalt,
-			}
-			rsid, first := vr.FindVRRsidByVarshash(0, 9, vh)
+			rsid, first := vr.FindVRRsidByVariantkey(0, 9, tt.vk)
 			if rsid != tt.rsid {
-				t.Errorf("%d. Expected %x, got %x", i, tt.rsid, rsid)
+				t.Errorf("%d. Expected rsid %x, got %x", i, tt.rsid, rsid)
 			}
 			if first != uint64(i) {
 				t.Errorf("%d. Expected first %d, got %d", i, i, first)
@@ -166,13 +114,8 @@ func TestFindVRRsidByVarshash(t *testing.T) {
 	}
 }
 
-func TestFindVRRsidByVarshashNotFound(t *testing.T) {
-	vh := TVariantKey{}
-	vh.Assembly = 0xfffffff0
-	vh.Chrom = 0xfffffff0
-	vh.Pos = 0xfffffff0
-	vh.RefAlt = 0xfffffff0
-	rsid, first := vr.FindVRRsidByVarshash(0, 9, vh)
+func TestFindVRRsidByVariantkeyNotFound(t *testing.T) {
+	rsid, first := vr.FindVRRsidByVariantkey(0, 9, 0xfffffffffffffff0)
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
@@ -181,34 +124,28 @@ func TestFindVRRsidByVarshashNotFound(t *testing.T) {
 	}
 }
 
-func BenchmarkFindVRRsidByVarshash(b *testing.B) {
-	vh := TVariantKey{
-		Assembly: 0x8b29d2c7,
-		Chrom:    0x00000003,
-		Pos:      0x000124a3,
-		RefAlt:   0x8ffb1a03,
-	}
+func BenchmarkFindVRRsidByVariantkey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRRsidByVarshash(0, 9, vh)
+		vr.FindVRRsidByVariantkey(0, 9, 0X160017CCA313D0E0)
 	}
 }
 
-func TestFindVRChromposRange(t *testing.T) {
-	rsid, first, last := vr.FindVRChromposRange(0, 9, testDataVR[4].chrom, testDataVR[4].pos, testDataVR[4].pos)
-	if rsid != testDataVR[4].rsid {
-		t.Errorf("Expected rsid %x, got %x", testDataVR[4].rsid, rsid)
+func TestFindVRChromPosRange(t *testing.T) {
+	rsid, first, last := vr.FindVRChromPosRange(0, 9, testData[6].chrom, testData[7].pos, testData[8].pos)
+	if rsid != testData[7].rsid {
+		t.Errorf("Expected rsid %x, got %x", testData[7].rsid, rsid)
 	}
-	if first != 4 {
+	if first != 7 {
 		t.Errorf("Expected first 4, got %d", first)
 	}
-	if last != 4 {
+	if last != 8 {
 		t.Errorf("Expected last 4, got %d", last)
 	}
 }
 
-func TestFindVRChromposRangeNotFound(t *testing.T) {
-	rsid, first, last := vr.FindVRChromposRange(0, 9, 0xfffffff0, 0xffffff00, 0xfffffff0)
+func TestFindVRChromPosRangeNotFound(t *testing.T) {
+	rsid, first, last := vr.FindVRChromPosRange(0, 9, 0xff, 0xffffff00, 0xfffffff0)
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
@@ -220,9 +157,9 @@ func TestFindVRChromposRangeNotFound(t *testing.T) {
 	}
 }
 
-func BenchmarkFindVRChromposRange(b *testing.B) {
+func BenchmarkFindVRChromPosRange(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRChromposRange(0, 9, 0x00000005, 0x00006f88, 0x00006ed7)
+		vr.FindVRChromPosRange(0, 9, 0x19, 0x001AF8FD, 0x001C8F2A)
 	}
 }

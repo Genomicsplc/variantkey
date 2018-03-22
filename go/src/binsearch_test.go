@@ -1,7 +1,6 @@
 package variantkey
 
 import "testing"
-import "os"
 
 var mf TMMFile
 
