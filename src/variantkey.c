@@ -110,7 +110,7 @@ uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, si
         sizealt--;
     };
     it[-1] = '\0';
-    return (farmhash32(ra, slen + 1) | 0x40000000); // set bit to indicate HASH mode
+    return (farmhash32(ra, slen + 1) | 0x40000000); // set bit to indicate HASH mode [01000000 00000000 00000000 00000000]
 }
 
 void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
@@ -160,8 +160,8 @@ char decode_refalt_char(uint32_t code, int pos)
 
 size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    *sizeref = 1 + (code >> 27);
-    *sizealt = 1 + (code >> 25);
+    *sizeref = 1 + ((code & 0x18000000) >> 27); // [000 11 00 00000 00000 00000 00000 00000]
+    *sizealt = 1 + ((code & 0x06000000) >> 25); // [000 00 11 00000 00000 00000 00000 00000]
     uint8_t pos = 25;
     size_t i = 0;
     for(i = 0; i < *sizeref; i++)
@@ -182,7 +182,7 @@ size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, s
 
 size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    if ((code & (1 << 1)))
+    if (CHECK_BIT(code, 30))
     {
         return 0; // non reversible encoding
     }

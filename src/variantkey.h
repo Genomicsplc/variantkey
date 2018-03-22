@@ -45,6 +45,8 @@
 
 #include "farmhash64.h"
 
+#define CHECK_BIT(var,pos) (((var)>>(pos)) & 1)
+
 /**
  * VariantKey struct
  */
