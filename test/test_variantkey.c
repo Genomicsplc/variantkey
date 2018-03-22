@@ -850,38 +850,7 @@ int test_variantkey()
     return errors;
 }
 
-int test_variantkey128_string()
-{
-    int errors = 0;
-    int i;
-    char vs[512] = "";
-    for (i=0 ; i < k_test_size; i++)
-    {
-        variantkey128_t h = {test_data[i].o_assembly, test_data[i].o_chrom, test_data[i].o_pos, test_data[i].o_refalt};
-        variantkey128_string(vs, 512, h);
-        if (strcmp(vs, test_data[i].o_key) != 0)
-        {
-            fprintf(stderr, "%s (%d): Unexpected value: got %s instead of %s\n", __func__, i, vs, test_data[i].o_key);
-            ++errors;
-        }
-    }
-    return errors;
-}
-
-int test_variantkey128_string_error()
-{
-    int errors = 0;
-    variantkey128_t h = {test_data[0].o_assembly, test_data[0].o_chrom, test_data[0].o_pos, test_data[0].o_refalt};
-    size_t l = variantkey128_string("", 32, h);
-    if (l != 33)
-    {
-        fprintf(stderr, "%s : An error was expected\n", __func__);
-        ++errors;
-    }
-    return errors;
-}
-
-int test_variantkey64_string()
+int test_variantkey_string()
 {
     int errors = 0;
     int i;
@@ -900,7 +869,7 @@ int test_variantkey64_string()
     return errors;
 }
 
-int test_variantkey64_string_error()
+int test_variantkey_string_error()
 {
     int errors = 0;
     uint64_t h = test_data[0].os_vh;
@@ -913,66 +882,7 @@ int test_variantkey64_string_error()
     return errors;
 }
 
-int test_parse_variantkey128_string()
-{
-    int errors = 0;
-    int i;
-    variantkey128_t h;
-    for (i=0 ; i < k_test_size; i++)
-    {
-        h = parse_variantkey128_string(test_data[i].o_key);
-        if (h.assembly != test_data[i].o_assembly)
-        {
-            fprintf(stderr, "%s (%d): Unexpected assembly encode hash: got %x instead of %x\n", __func__, i, h.assembly, test_data[i].o_assembly);
-            ++errors;
-        }
-        if (h.chrom != test_data[i].o_chrom)
-        {
-            fprintf(stderr, "%s (%d): Unexpected chrom encode hash: got %x instead of %x\n", __func__, i, h.chrom, test_data[i].o_chrom);
-            ++errors;
-        }
-        if (h.pos != test_data[i].o_pos)
-        {
-            fprintf(stderr, "%s (%d): Unexpected pos encode hash: got %x instead of %x\n", __func__, i, h.pos, test_data[i].o_pos);
-            ++errors;
-        }
-        if (h.refalt != test_data[i].o_refalt)
-        {
-            fprintf(stderr, "%s (%d): Unexpected ref+alt encode hash: got %x instead of %x\n", __func__, i, h.refalt, test_data[i].o_refalt);
-            ++errors;
-        }
-    }
-    return errors;
-}
-
-int test_parse_variantkey128_string_error()
-{
-    int errors = 0;
-    variantkey128_t h = parse_variantkey128_string("ERROR");
-    if (h.assembly != 0)
-    {
-        fprintf(stderr, "%s : assembly should be 0\n", __func__);
-        ++errors;
-    }
-    if (h.chrom != 0)
-    {
-        fprintf(stderr, "%s : chrom should be 0\n", __func__);
-        ++errors;
-    }
-    if (h.pos != 0)
-    {
-        fprintf(stderr, "%s : pos should be 0\n", __func__);
-        ++errors;
-    }
-    if (h.refalt != 0)
-    {
-        fprintf(stderr, "%s : refalt should be 0\n", __func__);
-        ++errors;
-    }
-    return errors;
-}
-
-int test_parse_variantkey64_string()
+int test_parse_variantkey_string()
 {
     int errors = 0;
     int i;
@@ -989,7 +899,7 @@ int test_parse_variantkey64_string()
     return errors;
 }
 
-int test_parse_variantkey64_string_error()
+int test_parse_variantkey_string_error()
 {
     int errors = 0;
     uint64_t h = parse_variantkey64_string("ERROR");
@@ -1001,7 +911,7 @@ int test_parse_variantkey64_string_error()
     return errors;
 }
 
-int test_split_variantkey64()
+int test_decode_variantkey()
 {
     int errors = 0;
     int i;
@@ -1028,21 +938,7 @@ int test_split_variantkey64()
     return errors;
 }
 
-void benchmark_variantkey128()
-{
-    uint64_t tstart, tend;
-    int i;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        variantkey128("GRCh37.p13.b146", "Y", 445974, "A", "G");
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
-}
-
-void benchmark_variantkey64()
+void benchmark_variantkey()
 {
     uint64_t tstart, tend;
     int i;
@@ -1056,21 +952,7 @@ void benchmark_variantkey64()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
-void benchmark_parse_variantkey128_string()
-{
-    uint64_t tstart, tend;
-    int i;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        parse_variantkey128_string("6674240e0000000d0122be1bee705e5b");
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
-}
-
-void benchmark_parse_variantkey64_string()
+void benchmark_parse_variantkey_string()
 {
     uint64_t tstart, tend;
     int i;
@@ -1079,6 +961,20 @@ void benchmark_parse_variantkey64_string()
     for (i=0 ; i < size; i++)
     {
         parse_variantkey64_string("0a00019081b3b049");
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
+void benchmark_decode_variantkey()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        decode_variantkey(0x0a00019081b3b049);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
@@ -1102,6 +998,6 @@ int main()
     //benchmark_variantkey();
     //benchmark_parse_variantkey_string();
     //benchmark_decode_variantkey();
-    
+
     return errors;
 }
