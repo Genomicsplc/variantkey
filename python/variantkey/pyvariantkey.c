@@ -59,7 +59,7 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
     size_t sizeref = 0;
     size_t sizealt = 0;
     decode_refalt(code, ref, &sizeref, alt, &sizealt);
-    result = PyTuple_New(2);
+    result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, Py_BuildValue("s", ref));
     PyTuple_SetItem(result, 1, Py_BuildValue("s", alt));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", sizeref));
