@@ -816,7 +816,7 @@ int test_encode_refalt()
 }
 /*
 
-int test_variantkey64()
+int test_variantkey()
 {
     int errors = 0;
     int i;
@@ -1092,22 +1092,16 @@ int main()
     errors += test_encode_chrom();
     errors += test_decode_chrom();
     errors += test_encode_refalt();
-    //errors += test_variantkey128();
-    //errors += test_variantkey64();
-    //errors += test_variantkey128_string();
-    //errors += test_variantkey128_string_error();
-    //errors += test_variantkey64_string();
-    //errors += test_variantkey64_string_error();
-    //errors += test_parse_variantkey128_string();
-    //errors += test_parse_variantkey128_string_error();
-    //errors += test_parse_variantkey64_string();
-    //errors += test_parse_variantkey64_string_error();
-    //errors += test_split_variantkey64();
+    //errors += test_variantkey();
+    //errors += test_variantkey_string();
+    //errors += test_variantkey_string_error();
+    //errors += test_parse_variantkey_string();
+    //errors += test_parse_variantkey_string_error();
+    //errors += test_decode_variantkey();
 
-    //benchmark_variantkey128();
-    //benchmark_variantkey64();
-    //benchmark_parse_variantkey128_string();
-    //benchmark_parse_variantkey64_string();
-
+    //benchmark_variantkey();
+    //benchmark_parse_variantkey_string();
+    //benchmark_decode_variantkey();
+    
     return errors;
 }

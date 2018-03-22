@@ -159,6 +159,6 @@ uint64_t parse_variantkey_string(const char *vs);
  *
  * @return A variantkey_t structure.
  */
-variantkey_t decode_variantkey64(uint64_t code);
+variantkey_t decode_variantkey(uint64_t code);
 
 #endif  // VARIANTKEY_H

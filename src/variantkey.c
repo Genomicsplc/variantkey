@@ -218,7 +218,7 @@ uint64_t parse_variantkey_string(const char *vs)
     return 0;
 }
 
-variantkey_t decode_variantkey64(uint64_t code)
+variantkey_t decode_variantkey(uint64_t code)
 {
     variantkey_t v = {0,0,0};
     // CHROM:   11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
