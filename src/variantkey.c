@@ -40,20 +40,9 @@ int aztoupper(int c)
 {
     if ((c >= 'a') && (c <= 'z'))
     {
-        return (c ^ 32);
+        return (c ^ ('a' - 'A'));
     }
     return c;
-}
-
-uint8_t decstr_to_uint8_t(const char *str, size_t size)
-{
-    uint8_t v = 0;
-    size_t i;
-    for (i = 0; i < size; i++)
-    {
-        v = ((v * 10) + (str[i] - '0'));
-    }
-    return v;
 }
 
 uint8_t encode_chrom(const char *chrom, size_t size)
@@ -83,7 +72,14 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     {
         return 0;
     }
-    return decstr_to_uint8_t(chrom, size);
+    // convert digits
+    uint8_t v = 0;
+    size_t i;
+    for (i = 0; i < size; i++)
+    {
+        v = ((v * 10) + (chrom[i] - '0'));
+    }
+    return v;
 }
 
 size_t decode_chrom(uint8_t code, char *chrom)
