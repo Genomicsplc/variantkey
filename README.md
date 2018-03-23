@@ -140,7 +140,7 @@ The python module is located in the `python` directory.
 A shared library can be built using the following command inside the python directory (requires python-dev):
 
 ```
-make build python pytest
+make python
 ```
 
 ### Usage Example
@@ -148,14 +148,17 @@ make build python pytest
 ```
 import variantkey as vh
 
-vk = vh.variantkey("6", 193330, "TCA", "TGTCG")
+vk = vh.variantkey("X", 193330, "TCA", "TGTCG")
 print(vk)
 
 s = vh.variantkey_string(vk)
 print(s)
 
-d = vh.decode_variantkey(vk)
-print(d[0], d[1], d[2])
+v = vh.parse_variantkey_string(s)
+print(v)
+
+chrom, pos, refalt = vh.decode_variantkey(v)
+print(chrom, pos, refalt)
 ```
 
 
