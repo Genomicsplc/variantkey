@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python pytest version conda go doc format clean
+.PHONY: help qa test tidy build python version conda go doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -53,8 +53,7 @@ help:
 	@echo "    make test    : Run the unit tests"
 	@echo "    make tidy    : Check the code using clang-tidy"
 	@echo "    make build   : Build the library"
-	@echo "    make python  : Build the python module"
-	@echo "    make pytest  : Test the python module"
+	@echo "    make python  : Build and test the python module"
 	@echo "    make version : Set version from VERSION file"
 	@echo "    make conda   : Build a conda package for the python wrapper"
 	@echo "    make go      : Test the golang cgo module"
@@ -129,11 +128,7 @@ python: version
 	rm -rf ./build && \
 	python3 setup.py build_ext --include-dirs=../src && \
 	rm -f tests/*.so && \
-	find build/ -iname '*.so' -exec cp {} tests/ \;
-
-# Test python module
-pytest:
-	cd python && \
+	find build/ -iname '*.so' -exec cp {} tests/ \; && \
 	python3 setup.py test
 
 # Build a conda package
