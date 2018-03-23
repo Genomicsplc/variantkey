@@ -56,16 +56,6 @@ uint8_t encode_chrom(const char *chrom, size_t size)
         chrom += 3;
         size -= 3;
     }
-    if ((chrom[0] >= '0') && (chrom[0] <= '9'))
-    {
-        uint8_t v = 0;
-        size_t i;
-        for (i = 0; i < size; i++)
-        {
-            v = ((v * 10) + (chrom[i] - '0'));
-        }
-        return v;
-    }
     if ((chrom[0] == 'X') || (chrom[0] == 'x'))
     {
         return 23;
@@ -78,7 +68,17 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     {
         return 25;
     }
-    return 0; // NA
+    if ((chrom[0] < '0') || (chrom[0] > '9')) // NA
+    {
+        return 0;
+    }
+    uint8_t v = 0;
+    size_t i;
+    for (i = 0; i < size; i++)
+    {
+        v = ((v * 10) + (chrom[i] - '0'));
+    }
+    return v;
 }
 
 size_t decode_chrom(uint8_t code, char *chrom)
@@ -114,7 +114,7 @@ void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
     {
         if (c == '*')
         {
-            c = 91;
+            c = 91; // move to character after 'Z' = '['
         }
         *pos -= 5;
         *h |= (((c - 64) & 0x1F) << *pos);
@@ -124,8 +124,8 @@ void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
 uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     uint32_t h = 0;
-    h |= (uint32_t)(sizeref - 1) << 27; // length of REF - 1
-    h |= (uint32_t)(sizealt - 1) << 25; // length of ALT - 1
+    h |= ((uint32_t)(sizeref - 1) << 27); // length of REF - 1
+    h |= ((uint32_t)(sizealt - 1) << 25); // length of ALT - 1
     uint8_t pos = 25;
     encode_refalt_str(&h, &pos, ref, sizeref);
     encode_refalt_str(&h, &pos, alt, sizealt);
@@ -209,17 +209,17 @@ uint64_t parse_variantkey_string(const char *vs)
         b = vs[i];
         if (b >= 'a')
         {
-            b -= ('a' - 10);
+            b -= ('a' - 10); // a-f
         }
         else
         {
             if (b >= 'A')
             {
-                b -= ('A' - 10);
+                b -= ('A' - 10); // A-F
             }
             else
             {
-                b -= '0';
+                b -= '0'; // 0-9
             }
         }
         v = ((v << 4) | b);

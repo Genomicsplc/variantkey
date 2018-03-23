@@ -576,6 +576,7 @@ variantsTestData = [
 chromTestEncodeData = ["NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "MT"]
 chromTestDecodeData = ["NA", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "X", "Y", "MT"]
 
+
 class TestFunctions(TestCase):
 
     def test_encode_chrom(self):
@@ -593,32 +594,32 @@ class TestFunctions(TestCase):
     def test_encode_refalt(self):
         input_data = ["A", "M", "Z", "az", "A*Z", "ACGT", "ACGTA", "AcGTtAc", "ACGTACT", "CCCCCCCcCCCCCCcCCCCC"]
         expected_data = [
-        0x00108000,0x00108000,0x00168000,0x00d08000,0x001d0000,0x01a08000,0x0210e800,0x081d0400,0x0410ef40,0x101de820,
-        0x06108cf4,0x18119e81,0x4c3017de,0xef7494fe,0xdcb453cd,0x5aba347a,0x63eff9ec,0x475550c2,0xf1fb3b85,0xee075c9c,
-        0x00d68000,0x00d68000,0x00dd0000,0x01a68000,0x02d0e800,0x081d3400,0x04d0ef40,0x101de9a0,0x06d08cf4,0x18119e8d,
-        0x4a5177fd,0xe4e00909,0x54e3a6ce,0x4c3d4fb1,0x5432a9e6,0xef010384,0x50373705,0x79f9e84f,0x01ad0000,0x01ad0000,
-        0x03a0e800,0x081d6800,0x05a0ef40,0x101deb40,0x07a08cf4,0x18119e9a,0x40e68d74,0x6894c5ee,0xc102b519,0x6275f781,
-        0xfaefd5d9,0xdf3f3bce,0xf3c7cc60,0x699a4ac3,0x0a1d0740,0x0a1d0740,0x0c1d077a,0x121de83a,0x54feab68,0xd5ca0ddf,
-        0x5e788333,0xd9e11d7d,0x43e0acf5,0xd65d4f84,0x647b23c3,0xcd938dd6,0x6d7967a7,0xdad1229e,0x43287a76,0x43287a76,
-        0xed451b5c,0x42b2c26f,0xfcdcc79a,0x4c79eace,0x7481d87b,0x7742cf59,0x44249760,0xeeb095a9,0x59e904de,0x6a93a36c,
-        0xd8d84bd1,0xd8d84bd1,0x653337f6,0x7c0fdabb,0xc503119d,0x7925950e,0xc1cb80f4,0x76f690d2,0xc6d42f6a,0x68e50925,
-        0x69414bad,0x69414bad,0xeab6100b,0xf74e0dea,0x48752fcd,0x5f3c4f77,0x545ec8cf,0xc53a4673,0x79a32223,0x79a32223,
-        0xd68f02b6,0xd6543146,0x41b71dee,0xc9d0589d,0x4b850e60,0x4b850e60,0x7a188fcd,0x45f3132b,0xed20fe35,0xed20fe35,
+            0x00108000, 0x00108000, 0x00168000, 0x00d08000, 0x001d0000, 0x01a08000, 0x0210e800, 0x081d0400, 0x0410ef40, 0x101de820,
+            0x06108cf4, 0x18119e81, 0x4c3017de, 0xef7494fe, 0xdcb453cd, 0x5aba347a, 0x63eff9ec, 0x475550c2, 0xf1fb3b85, 0xee075c9c,
+            0x00d68000, 0x00d68000, 0x00dd0000, 0x01a68000, 0x02d0e800, 0x081d3400, 0x04d0ef40, 0x101de9a0, 0x06d08cf4, 0x18119e8d,
+            0x4a5177fd, 0xe4e00909, 0x54e3a6ce, 0x4c3d4fb1, 0x5432a9e6, 0xef010384, 0x50373705, 0x79f9e84f, 0x01ad0000, 0x01ad0000,
+            0x03a0e800, 0x081d6800, 0x05a0ef40, 0x101deb40, 0x07a08cf4, 0x18119e9a, 0x40e68d74, 0x6894c5ee, 0xc102b519, 0x6275f781,
+            0xfaefd5d9, 0xdf3f3bce, 0xf3c7cc60, 0x699a4ac3, 0x0a1d0740, 0x0a1d0740, 0x0c1d077a, 0x121de83a, 0x54feab68, 0xd5ca0ddf,
+            0x5e788333, 0xd9e11d7d, 0x43e0acf5, 0xd65d4f84, 0x647b23c3, 0xcd938dd6, 0x6d7967a7, 0xdad1229e, 0x43287a76, 0x43287a76,
+            0xed451b5c, 0x42b2c26f, 0xfcdcc79a, 0x4c79eace, 0x7481d87b, 0x7742cf59, 0x44249760, 0xeeb095a9, 0x59e904de, 0x6a93a36c,
+            0xd8d84bd1, 0xd8d84bd1, 0x653337f6, 0x7c0fdabb, 0xc503119d, 0x7925950e, 0xc1cb80f4, 0x76f690d2, 0xc6d42f6a, 0x68e50925,
+            0x69414bad, 0x69414bad, 0xeab6100b, 0xf74e0dea, 0x48752fcd, 0x5f3c4f77, 0x545ec8cf, 0xc53a4673, 0x79a32223, 0x79a32223,
+            0xd68f02b6, 0xd6543146, 0x41b71dee, 0xc9d0589d, 0x4b850e60, 0x4b850e60, 0x7a188fcd, 0x45f3132b, 0xed20fe35, 0xed20fe35,
         ]
         k = 0
         for i in range(0, 10):
             for j in range(i, 10):
-                h = vh.encode_refalt(input_data[i], input_data[j]);
+                h = vh.encode_refalt(input_data[i], input_data[j])
                 self.assertEqual(h, expected_data[k])
                 res = vh.decode_refalt(h)
-                #if sr > 0:
+                # if sr > 0:
                 #    self.assertEqual(r, input_data[i].upper())
                 #    self.assertEqual(a, input_data[j].upper())
                 k += 1
-                h = vh.encode_refalt(input_data[j], input_data[i]);
+                h = vh.encode_refalt(input_data[j], input_data[i])
                 self.assertEqual(h, expected_data[k])
                 res = vh.decode_refalt(h)
-                #if sr > 0:
+                # if sr > 0:
                 #    self.assertEqual(r, input_data[j].upper())
                 #    self.assertEqual(a, input_data[i].upper())
                 k += 1

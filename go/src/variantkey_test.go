@@ -708,6 +708,13 @@ func BenchmarkEncodeRefAlt(b *testing.B) {
 	}
 }
 
+func BenchmarkDecodeRefAlt(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		DecodeRefAlt(0x00168000)
+	}
+}
+
 func TestVariantKey(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
