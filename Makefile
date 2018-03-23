@@ -1,11 +1,11 @@
 # MAKEFILE
 #
 # @author      Nicola Asuni <nicola.asuni@genomicsplc.com>
-# @link        https://github.com/genomicsplc/varianthash
+# @link        https://github.com/genomicsplc/variantkey
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python pytest go cgo doc format clean
+.PHONY: help qa test tidy build python version conda go doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -20,7 +20,7 @@ OWNER=GENOMICSplc
 VENDOR=genomicsplc
 
 # Project name
-PROJECT=varianthash
+PROJECT=variantkey
 
 # Project version
 VERSION=$(shell cat VERSION)
@@ -33,6 +33,9 @@ PKGNAME=${VENDOR}-${PROJECT}
 
 # Current directory
 CURRENTDIR=$(shell pwd)
+
+# Conda environment
+CONDA_ENV=${CURRENTDIR}/../env-${PROJECT}
 
 # Include default build configuration
 include $(CURRENTDIR)/config.mk
@@ -50,16 +53,16 @@ help:
 	@echo "    make test    : Run the unit tests"
 	@echo "    make tidy    : Check the code using clang-tidy"
 	@echo "    make build   : Build the library"
-	@echo "    make python  : Build the python module"
-	@echo "    make pytest  : Test the python module"
-	@echo "    make go      : Test the native golang module"
-	@echo "    make cgo     : Test the golang cgo module"
+	@echo "    make python  : Build and test the python module"
+	@echo "    make version : Set version from VERSION file"
+	@echo "    make conda   : Build a conda package for the python wrapper"
+	@echo "    make go      : Test the golang cgo module"
 	@echo "    make doc     : Generate source code documentation"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-all: clean format qa build doc go cgo python pytest
+all: clean format qa build doc go python pytest
 
 # Alias for test
 qa: test tidy
@@ -81,11 +84,11 @@ test:
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	make | tee make.log ; test $${PIPESTATUS[0]} -eq 0 && \
 	lcov --zerocounters --directory . && \
-	lcov --capture --initial --directory . --output-file coverage/varianthash && \
+	lcov --capture --initial --directory . --output-file coverage/variantkey && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0 && \
-	lcov --no-checksum --directory . --capture --output-file coverage/varianthash.info && \
-	lcov --remove coverage/varianthash.info "/test_*" --output-file coverage/varianthash.info && \
-	genhtml -o coverage -t "VariantHash Test Coverage" coverage/varianthash.info
+	lcov --no-checksum --directory . --capture --output-file coverage/variantkey.info && \
+	lcov --remove coverage/variantkey.info "/test_*" --output-file coverage/variantkey.info && \
+	genhtml -o coverage -t "VariantKey Test Coverage" coverage/variantkey.info
 ifeq ($(VH_BUILD_DOXYGEN),ON)
 	cd target && \
 	make doc | tee doc.log ; test $${PIPESTATUS[0]} -eq 0
@@ -114,27 +117,28 @@ build:
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0
 
+# Set the version from VERSION file
+version:
+	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" conda/meta.yaml
+	sed -i "s/__version__.*$$/__version__ = '$(VERSION)'/" python/variantkey/__init__.py
+
 # Build the python module
-python:
+python: version
 	cd python && \
 	rm -rf ./build && \
 	python3 setup.py build_ext --include-dirs=../src && \
 	rm -f tests/*.so && \
-	find build/ -iname '*.so' -exec cp {} tests/ \;
-
-# Test python module
-pytest:
-	cd python && \
+	find build/ -iname '*.so' -exec cp {} tests/ \; && \
 	python3 setup.py test
 
-# Test golang module
+# Build a conda package
+conda: version
+	./conda/setup-conda.sh && \
+	${CONDA_ENV}/bin/conda build --prefix-length 160 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) conda
+
+# Test golang go module
 go:
 	cd go && \
-	make deps qa
-
-# Test golang cgo module
-cgo:
-	cd cgo && \
 	make deps qa
 
 # Generate source code documentation
@@ -147,18 +151,14 @@ format:
 	astyle --style=allman --recursive --suffix=none 'src/*.h'
 	astyle --style=allman --recursive --suffix=none 'src/*.c'
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
-	astyle --style=allman --recursive --suffix=none 'python/src/*.h'
-	astyle --style=allman --recursive --suffix=none 'python/src/*.c'
-	#autopep8 --in-place --aggressive --aggressive ./python/tests/*.py
-	cd cgo && make format
+	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.h'
+	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.c'
+	autopep8 --in-place  --max-line-length=255 ./python/tests/*.py
 	cd go && make format
 
 # Remove any build artifact
 clean:
-	rm -rf ./target
-	rm -rf ./python/build
-	rm -rf ./python/.cache
-	rm -rf ./python/tests/*.so
-	rm -rf ./python/tests/__pycache__
-	rm -rf ./cgo/target
-	rm -rf ./go/target
+	rm -rf target
+	rm -rf ./go/target ./go/src.test
+	rm -rf ./python/htmlcov ./python/build ./python/dist ./python/.cache ./python/.benchmarks ./python/tests/*.so ./python/tests/__pycache__ ./python/variantkey/__pycache__ ./python/variantkey.egg-info
+	find . -type f -name '*.pyc' -exec rm -f {} \;

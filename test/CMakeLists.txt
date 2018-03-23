@@ -24,13 +24,13 @@ function(SMOKE_TEST test_name test_file dependencies)
 endfunction(SMOKE_TEST)
 
 file (COPY test_farmhash64.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_farmhash test_farmhash64.c varianthash)
+SMOKE_TEST (test_farmhash test_farmhash64.c variantkey)
 
-file (COPY test_binsearch.c test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_binsearch test_binsearch.c varianthash)
+file (COPY test_binsearch.c data/test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
 
-file (COPY test_varianthash.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_varianthash test_varianthash.c varianthash)
+file (COPY test_variantkey.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_variantkey test_variantkey.c variantkey)
 
-file (COPY test_rsidvar.c rsid_varhash.10.bin varhash_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_rsidvar test_rsidvar.c varianthash)
+file (COPY test_rsidvar.c data/rsid_variantkey.10.bin data/variantkey_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_rsidvar test_rsidvar.c variantkey)

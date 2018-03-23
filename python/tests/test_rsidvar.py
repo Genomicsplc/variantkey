@@ -1,35 +1,23 @@
-"""Tests for libpyvarianthash module."""
+"""Tests for variantkey64 module."""
 
 
-import libpyvarianthash as bs
+import variantkey as bs
 import os
 import time
 from unittest import TestCase
 
-testDataRV = [
-	(0, 0x00000001, 0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb),
-	(1, 0x00000002, 0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3),
-	(2, 0x00000003, 0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f),
-	(3, 0x00000004, 0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae),
-	(4, 0x00000005, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f),
-	(5, 0x00000006, 0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc),
-	(6, 0x00000007, 0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a),
-	(7, 0x00000008, 0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb),
-	(8, 0x00000009, 0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb),
-	(9, 0x0000000a, 0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c),
-]
 
-testDataVR = [
-	(0, 0x8b29d2c7, 0x00000001, 0x0004f442, 0x387351cb, 0x00000009),
-	(1, 0x8b29d2c7, 0x00000002, 0x00006d6d, 0x181d293a, 0x00000007),
-	(2, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x4c61400f, 0x00000005),
-	(3, 0x8b29d2c7, 0x00000004, 0x0000ec56, 0xcef1000f, 0x00000003),
-	(4, 0x8b29d2c7, 0x00000005, 0x00006edf, 0x387351cb, 0x00000001),
-	(5, 0x8b29d2c7, 0x00000007, 0x0022e9c0, 0xd0b64ba3, 0x00000002),
-	(6, 0x8b29d2c7, 0x00000008, 0x00028f54, 0x8a59f7ae, 0x00000004),
-	(7, 0x8b29d2c7, 0x00000009, 0x000143fc, 0x6bddcdbc, 0x00000006),
-	(8, 0x8b29d2c7, 0x0000000a, 0x00019015, 0x387351cb, 0x00000008),
-	(9, 0x8b29d2c7, 0x0000000b, 0x00032edc, 0x145dc65c, 0x0000000a),
+testData = [
+    (0, 0X00000001, 0X08027A2580338000, 0X01, 0X0004F44B, 0X00338000),
+    (1, 0X00000007, 0X4800A1FE439E3918, 0X09, 0X000143FC, 0X439E3918),
+    (2, 0X0000000B, 0X4800A1FE7555EB16, 0X09, 0X000143FC, 0X7555EB16),
+    (3, 0X00000061, 0X80010274003A0000, 0X10, 0X000204E8, 0X003A0000),
+    (4, 0X00000065, 0X8001028D00138000, 0X10, 0X0002051A, 0X00138000),
+    (5, 0X000003E5, 0X80010299007A0000, 0X10, 0X00020532, 0X007A0000),
+    (6, 0X000003F1, 0XA0012B62003A0000, 0X14, 0X000256C4, 0X003A0000),
+    (7, 0X000026F5, 0XA0012B6280708000, 0X14, 0X000256C5, 0X00708000),
+    (8, 0X000186A3, 0XA0012B65E3256692, 0X14, 0X000256CB, 0X63256692),
+    (9, 0X00019919, 0XA0012B67D5439803, 0X14, 0X000256CF, 0X55439803),
 ]
 
 
@@ -41,76 +29,67 @@ class TestFunctions(TestCase):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/rsid_varhash.10.bin")
+            "/../../test/data/rsid_variantkey.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
-        if rvfd < 0 or rvsize != 200:
-            assert False, "Unable to open the rsid_varhash.10.bin file"
+        if rvfd < 0 or rvsize != 120:
+            assert False, "Unable to open the rsid_variantkey.10.bin file"
         global vrsrc, vrfd, vrsize
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/varhash_rsid.10.bin")
+            "/../../test/data/variantkey_rsid.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
-        if vrfd < 0 or vrsize != 200:
-            assert False, "Unable to open the varhash_rsid.10.bin file"
+        if vrfd < 0 or vrsize != 120:
+            assert False, "Unable to open the variantkey_rsid.10.bin file"
 
     @classmethod
     def tearDownClass(cls):
         global rvsrc, rvfd, rvsize
         h = bs.munmap_binfile(rvsrc, rvfd, rvsize)
         if h != 0:
-            assert False, "Error while closing the rsid_varhash.10.bin memory-mapped file"
+            assert False, "Error while closing the rsid_variantkey.10.bin memory-mapped file"
         global vrsrc, vrfd, vrsize
         h = bs.munmap_binfile(vrsrc, vrfd, vrsize)
         if h != 0:
-            assert False, "Error while closing the varhash_rsid.10.bin memory-mapped file"
+            assert False, "Error while closing the variantkey_rsid.10.bin memory-mapped file"
 
     def test_get_vr_rsid(self):
-        for item, assembly, chrom, pos, refalt, rsid in testDataVR:
+        for item, rsid, vkey, chrom, pos, refalt in testData:
             xrsid = bs.get_vr_rsid(vrsrc, item)
             self.assertEqual(xrsid, rsid)
 
-    def test_get_rv_varhash(self):
-        for item, rsid, assembly, chrom, pos, refalt in testDataRV:
-            xassembly, xchrom, xpos, xrefalt = bs.get_rv_varhash(rvsrc, item)
-            self.assertEqual(xassembly, assembly)
-            self.assertEqual(xchrom, chrom)
-            self.assertEqual(xpos, pos)
-            self.assertEqual(xrefalt, refalt)
+    def test_get_rv_variantkey(self):
+        for item, rsid, vkey, chrom, pos, refalt in testData:
+            vk = bs.get_rv_variantkey(rvsrc, item)
+            self.assertEqual(vk, vkey)
 
-    def test_find_rv_varhash_by_rsid(self):
-        for item, rsid, assembly, chrom, pos, refalt in testDataRV:
-            xassembly, xchrom, xpos, xrefalt, xitem = bs.find_rv_varhash_by_rsid(rvsrc, 0, 9, rsid)
-            self.assertEqual(xassembly, assembly)
-            self.assertEqual(xchrom, chrom)
-            self.assertEqual(xpos, pos)
-            self.assertEqual(xrefalt, refalt)
-            self.assertEqual(xitem, item)
+    def test_find_rv_variantkey_by_rsid(self):
+        for item, rsid, vkey, chrom, pos, refalt in testData:
+            vk, first = bs.find_rv_variantkey_by_rsid(rvsrc, 0, 9, rsid)
+            self.assertEqual(vk, vkey)
+            self.assertEqual(first, item)
 
-    def test_find_rv_varhash_by_rsid_notfound(self):
-        xassembly, xchrom, xpos, xrefalt, xitem = bs.find_rv_varhash_by_rsid(rvsrc, 0, 9, 0xfffffff0)
-        self.assertEqual(xassembly, 0)
-        self.assertEqual(xchrom, 0)
-        self.assertEqual(xpos, 0)
-        self.assertEqual(xrefalt, 0)
-        self.assertEqual(xitem, 10)
+    def test_find_rv_variantkey_by_rsid_notfound(self):
+        vk, first = bs.find_rv_variantkey_by_rsid(rvsrc, 0, 9, 0xfffffff0)
+        self.assertEqual(vk, 0)
+        self.assertEqual(first, 10)
 
-    def test_find_vr_rsid_by_varhash(self):
-        for item, assembly, chrom, pos, refalt, rsid in testDataVR:
-            xrsid, xitem = bs.find_vr_rsid_by_varhash(vrsrc, 0, 9, assembly, chrom, pos, refalt)
-            self.assertEqual(xrsid, rsid)
-            self.assertEqual(xitem, item)
+    def test_find_vr_rsid_by_variantkey(self):
+        for item, rsid, vkey, chrom, pos, refalt in testData:
+            rx, first = bs.find_vr_rsid_by_variantkey(vrsrc, 0, 9, vkey)
+            self.assertEqual(rx, rsid)
+            self.assertEqual(first, item)
 
-    def test_find_vr_rsid_by_varhash_notfound(self):
-        xrsid, xitem = bs.find_vr_rsid_by_varhash(vrsrc, 0, 9, 0xfffffff0, 0xfffffff0, 0xfffffff0, 0xfffffff0)
-        self.assertEqual(xrsid, 0)
-        self.assertEqual(xitem, 10)
+    def test_find_vr_rsid_by_variantkey_notfound(self):
+        rx, first = bs.find_vr_rsid_by_variantkey(vrsrc, 0, 9, 0xfffffffffffffff0)
+        self.assertEqual(rx, 0)
+        self.assertEqual(first, 10)
 
     def test_find_vr_chrompos_range(self):
-        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, testDataVR[4][2], testDataVR[4][3], testDataVR[4][3])
-        self.assertEqual(xrsid, testDataVR[4][5])
-        self.assertEqual(xfirst, 4)
-        self.assertEqual(xlast, 4)
+        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, testData[6][3], testData[7][4], testData[8][4])
+        self.assertEqual(xrsid, testData[7][1])
+        self.assertEqual(xfirst, 7)
+        self.assertEqual(xlast, 8)
 
     def test_find_vr_chrompos_range_notfound(self):
         xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, 0xfffffff0, 0xffffff00, 0xfffffff0)
@@ -131,10 +110,10 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/rsid_varhash.10.bin")
+            "/../../test/data/rsid_variantkey.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
-        if rvfd < 0 or rvsize != 200:
-            assert False, "Unable to open the rsid_varhash.10.bin file"
+        if rvfd < 0 or rvsize != 120:
+            assert False, "Unable to open the rsid_variantkey.10.bin file"
         global vrsrc, vrfd, vrsize
         if vrfd >= 0:
             pass
@@ -142,10 +121,10 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/varhash_rsid.10.bin")
+            "/../../test/data/variantkey_rsid.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
-        if vrfd < 0 or vrsize != 200:
-            assert False, "Unable to open the varhash_rsid.10.bin file"
+        if vrfd < 0 or vrsize != 120:
+            assert False, "Unable to open the variantkey_rsid.10.bin file"
 
     def test_get_vr_rsid(self, benchmark):
         benchmark.pedantic(
@@ -155,26 +134,26 @@ class TestBenchmark(object):
             iterations=1,
             rounds=10000)
 
-    def test_get_rv_varhash(self, benchmark):
+    def test_get_rv_variantkey(self, benchmark):
         benchmark.pedantic(
-            bs.get_rv_varhash,
+            bs.get_rv_variantkey,
             args=[rvsrc, 3],
             setup=setup,
             iterations=1,
             rounds=10000)
 
-    def test_find_rv_varhash_by_rsid(self, benchmark):
+    def test_find_rv_variantkey_by_rsid(self, benchmark):
         benchmark.pedantic(
-            bs.find_rv_varhash_by_rsid,
-            args=[rvsrc, 0, 9, 0x387351cb],
+            bs.find_rv_variantkey_by_rsid,
+            args=[rvsrc, 0, 9, 0x2F81F575],
             setup=setup,
             iterations=1,
             rounds=10000)
 
-    def test_find_vr_rsid_by_varhash(self, benchmark):
+    def test_find_vr_rsid_by_variantkey(self, benchmark):
         benchmark.pedantic(
-            bs.find_vr_rsid_by_varhash,
-            args=[vrsrc, 0, 9, 0x8b29d2c7, 0x00000003, 0x000124a3, 0x8ffb1a03],
+            bs.find_vr_rsid_by_variantkey,
+            args=[vrsrc, 0, 9, 0X160017CCA313D0E0],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -182,7 +161,7 @@ class TestBenchmark(object):
     def test_find_vr_chrompos_range(self, benchmark):
         benchmark.pedantic(
             bs.find_vr_chrompos_range,
-            args=[vrsrc, 0, 9, 0x00000005, 0x00006f88, 0x00006ed7],
+            args=[vrsrc, 0, 9, 0x19, 0x001AF8FD, 0x001C8F2A],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -193,10 +172,10 @@ class TestBenchmark(object):
         rvfd = -1
         rvsize = 0
         if h != 0:
-            assert False, "Error while closing the rsid_varhash.10.bin memory-mapped file"
+            assert False, "Error while closing the rsid_variantkey.10.bin memory-mapped file"
         global vrsrc, vrfd, vrsize
         h = bs.munmap_binfile(vrsrc, vrfd, vrsize)
         vrfd = -1
         vrsize = 0
         if h != 0:
-            assert False, "Error while closing the varhash_rsid.10.bin memory-mapped file"
+            assert False, "Error while closing the variantkey_rsid.10.bin memory-mapped file"

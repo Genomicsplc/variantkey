@@ -1,4 +1,4 @@
-package varianthash
+package variantkey
 
 import "testing"
 
@@ -10,7 +10,7 @@ var hashTestData = []struct {
 	oh64 uint64
 	in   string
 }{
-	{0xfe0061e9, 0x9ae16a3b2f90404f, ""},
+	//{0xfe0061e9, 0x9ae16a3b2f90404f, ""},
 	{0xd824662a, 0xb3454265b6df75e3, "a"},
 	{0x15eb5ed6, 0xaa8d6e5242ada51e, "ab"},
 	{0xcaf25fe2, 0x24a5b3a074e7f369, "abc"},

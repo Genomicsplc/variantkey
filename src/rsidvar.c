@@ -1,4 +1,4 @@
-// Copyright (c) 2017 GENOMICS plc
+// Copyright (c) 2017-2018 GENOMICS plc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -22,43 +22,31 @@
 
 uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)
 {
-    return bytes_to_uint32_t(src, get_address(RSIDVAR_BIN_BLKLEN, VARRSID_BPOS_RSID, item));
+    return bytes_to_uint32_t(src, get_address(BINBLKLEN, VRPOS_RSID, item), 0, 31);
 }
 
-varhash_t get_rv_varhash(const unsigned char *src, uint64_t item)
+uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item)
 {
-    uint64_t i = get_address(RSIDVAR_BIN_BLKLEN, 0, item);
-    return (varhash_t)
-    {
-        .assembly = bytes_to_uint32_t(src, i + RSIDVAR_BPOS_ASSBLY),
-         .chrom = bytes_to_uint32_t(src, i + RSIDVAR_BPOS_CHROM),
-          .pos = bytes_to_uint32_t(src, i + RSIDVAR_BPOS_POS),
-           .refalt = bytes_to_uint32_t(src, i + RSIDVAR_BPOS_REFALT)
-    };
+    uint64_t i = get_address(BINBLKLEN, 0, item);
+    return bytes_to_uint64_t(src, i + RVPOS_VK, 0, 63);
 }
 
-varhash_t find_rv_varhash_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
+uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
 {
     uint64_t max = last;
-    uint64_t found = find_first_uint32_t(src, RSIDVAR_BIN_BLKLEN, 0, first, &max, rsid);
+    uint64_t found = find_first_uint32_t(src, BINBLKLEN, RVPOS_RSID, 0, 31, first, &max, rsid);
     if (found > last)
     {
-        return (varhash_t)
-        {
-            .assembly = 0, .chrom = 0, .pos = 0, .refalt = 0
-        };
+        return 0;
     }
     *first = found;
-    return get_rv_varhash(src, found);
+    return get_rv_variantkey(src, found);
 }
 
-uint32_t find_vr_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint64_t last, varhash_t vh)
+uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vh)
 {
     uint64_t max = last;
-    uint64_t found = find_first_uint128_t(src, RSIDVAR_BIN_BLKLEN, 0, first, &max, (uint128_t)
-    {
-        ((uint64_t)vh.assembly << 32 | (uint64_t)vh.chrom), ((uint64_t)vh.pos << 32 | (uint64_t)vh.refalt)
-    });
+    uint64_t found = find_first_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 63, first, &max, vh);
     if (found > last)
     {
         return 0; // not found
@@ -67,11 +55,12 @@ uint32_t find_vr_rsid_by_varhash(const unsigned char *src, uint64_t *first, uint
     return get_vr_rsid(src, found);
 }
 
-uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint32_t chrom, uint32_t pos_start, uint32_t pos_end)
+uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_start, uint32_t pos_end)
 {
+    uint64_t ckey = ((uint64_t)chrom << 59);
     uint64_t min = *first;
     uint64_t max = *last;
-    *first = find_first_uint64_t(src, RSIDVAR_BIN_BLKLEN, VARRSID_BPOS_CHROM, &min, &max, ((uint64_t)chrom << 32 | (uint64_t)pos_start));
+    *first = find_first_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 32, &min, &max, (ckey | ((uint64_t)pos_start << 31)) >> 31);
     if (*first > *last)
     {
         *first = min;
@@ -85,7 +74,7 @@ uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint6
         return 0;
     }
     max = *last;
-    uint64_t end = find_last_uint64_t(src, RSIDVAR_BIN_BLKLEN, VARRSID_BPOS_CHROM, &min, &max, ((uint64_t)chrom << 32 | (uint64_t)pos_end));
+    uint64_t end = find_last_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 32, &min, &max, (ckey | ((uint64_t)pos_end << 31)) >> 31);
     if (end > *last)
     {
         *last = max;

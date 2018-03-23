@@ -5,9 +5,12 @@ exclude .travis.yml
 include setup.cfg
 include ../README.md
 include ../LICENSE
+include ../src/binsearch.h
 include ../src/farmhash64.h
-include ../src/variantahash.h
-include src/pyvariantahash.h
+include ../src/rsidvar.h
+include ../src/uint128.h
+include ../src/variantkey.h
+include variantkey/pyvariantkey.h
 prune .cache
 prune .git
 prune build
@@ -15,3 +18,13 @@ prune dist
 prune htmlcov
 recursive-exclude *.egg-info *
 recursive-include tests *
+
+
+
+
+
+
+
+
+
+
