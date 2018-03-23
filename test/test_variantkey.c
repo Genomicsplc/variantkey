@@ -670,18 +670,18 @@ int test_encode_chrom()
 {
     int errors = 0;
     uint8_t i, chrom;
-    static const char *chrom_data[25] =
+    static const char *chrom_data[26] =
     {
-        "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
+        "NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
         "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
         "21", "22", "X", "Y", "MT"
     };
-    for (i=0 ; i < 25; i++)
+    for (i=0 ; i < 26; i++)
     {
         chrom = encode_chrom(chrom_data[i], strlen(chrom_data[i]));
-        if (chrom != i+1)
+        if (chrom != i)
         {
-            fprintf(stderr, "%s : '%s' expecting %u, got %u\n", __func__, chrom_data[i], i+1, chrom);
+            fprintf(stderr, "%s : '%s' expecting %u, got %u\n", __func__, chrom_data[i], i, chrom);
             ++errors;
         }
     }
@@ -854,6 +854,12 @@ int test_parse_variantkey_string()
     int errors = 0;
     int i;
     uint64_t vk;
+    vk = parse_variantkey_string("1234567890AbCdEf");
+    if (vk != 0x1234567890abcdef)
+    {
+        fprintf(stderr, "%s : Unexpected variantkey: expected 0x1234567890abcdef, got 0x%016"PRIx64"\n", __func__, vk);
+        ++errors;
+    }
     for (i=0 ; i < k_test_size; i++)
     {
         vk = parse_variantkey_string(test_data[i].vs);
@@ -862,18 +868,6 @@ int test_parse_variantkey_string()
             fprintf(stderr, "%s (%d): Unexpected variantkey: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, i, test_data[i].vk, vk);
             ++errors;
         }
-    }
-    return errors;
-}
-
-int test_parse_variantkey_string_error()
-{
-    int errors = 0;
-    uint64_t h = parse_variantkey_string("ERROR");
-    if (h != 0)
-    {
-        fprintf(stderr, "%s : variantkey should be 0\n", __func__);
-        ++errors;
     }
     return errors;
 }
@@ -975,7 +969,6 @@ int main()
     errors += test_variantkey_string();
     errors += test_variantkey_string_error();
     errors += test_parse_variantkey_string();
-    errors += test_parse_variantkey_string_error();
     errors += test_decode_variantkey();
 
     benchmark_variantkey();

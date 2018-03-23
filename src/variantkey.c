@@ -34,8 +34,6 @@
 
 #include <inttypes.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include "variantkey.h"
 
 int aztoupper(int c)
@@ -47,7 +45,7 @@ int aztoupper(int c)
     return c;
 }
 
-uint8_t str_to_uint8_t(const char *str, size_t size)
+uint8_t decstr_to_uint8_t(const char *str, size_t size)
 {
     uint8_t v = 0;
     size_t i;
@@ -77,11 +75,15 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     {
         return 24;
     }
-    if ((chrom[0] == 'M') || (chrom[0] == 'm'))
+    if ((chrom[0] == 'M') || (chrom[0] == 'm')) // MT
     {
         return 25;
     }
-    return str_to_uint8_t(chrom, size);
+    if ((chrom[0] < '0') || (chrom[0] > '9')) // NA
+    {
+        return 0;
+    }
+    return decstr_to_uint8_t(chrom, size);
 }
 
 size_t decode_chrom(uint8_t code, char *chrom)
@@ -204,16 +206,30 @@ size_t variantkey_string(uint64_t code, char *str, size_t size)
 
 uint64_t parse_variantkey_string(const char *vs)
 {
-    char cs[17];
-    strncpy(cs, vs, 16);
-    cs[16] = '\0';
-    char *endptr;
-    uint64_t k = (uint64_t)strtoull(vs, &endptr, 16);
-    if (*endptr == '\0')
+    uint64_t v = 0;
+    uint8_t b;
+    size_t i;
+    for (i = 0; i < 16; i++)
     {
-        return k;
+        b = vs[i];
+        if (vs[i] >= 'a')
+        {
+            b -= ('a' - 10);
+        }
+        else
+        {
+            if (b >= 'A')
+            {
+                b -= ('A' - 10);
+            }
+            else
+            {
+                b -= '0';
+            }
+        }
+        v = ((v << 4) | b);
     }
-    return 0;
+    return v;
 }
 
 variantkey_t decode_variantkey(uint64_t code)
