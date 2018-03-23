@@ -83,7 +83,7 @@ static PyObject* py_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *ar
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
     char str[17];
-    variantkey_string(code, str, 17);
+    variantkey_string(code, str);
     return PyBytes_FromString(str);
 }
 

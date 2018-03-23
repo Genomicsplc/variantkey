@@ -91,9 +91,9 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 
 // DecodeRefAlt decode Ref+Alt code to string
 func DecodeRefAlt(c uint32) (string, string, uint8, uint8, uint8) {
-	var cref *C.char = C.CString("00000")
+	var cref *C.char = C.CString("000000")
 	defer C.free(unsafe.Pointer(cref)) // #nosec
-	var calt *C.char = C.CString("00000")
+	var calt *C.char = C.CString("000000")
 	defer C.free(unsafe.Pointer(calt)) // #nosec
 	csizeref := C.size_t(0)
 	csizealt := C.size_t(0)
@@ -126,9 +126,9 @@ func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 
 // VariantKeyString provides a string representation of the VariantKey 64bit
 func VariantKeyString(v uint64) string {
-	var cstr *C.char = C.CString("0000000000000000")
+	var cstr *C.char = C.CString("00000000000000000")
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	C.variantkey_string(C.uint64_t(v), cstr, C.size_t(17))
+	C.variantkey_string(C.uint64_t(v), cstr)
 	return C.GoStringN(cstr, C.int(16))
 }
 

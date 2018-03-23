@@ -826,25 +826,12 @@ int test_variantkey_string()
     char vs[17] = "";
     for (i=0 ; i < k_test_size; i++)
     {
-        variantkey_string(test_data[i].vk, vs, 17);
+        variantkey_string(test_data[i].vk, vs);
         if (strcmp(vs, test_data[i].vs))
         {
             fprintf(stderr, "%s (%d): Unexpected variantkey: expected %s, got %s\n", __func__, i, test_data[i].vs, vs);
             ++errors;
         }
-    }
-    return errors;
-}
-
-int test_variantkey_string_error()
-{
-    int errors = 0;
-    char vs[8] = "";
-    size_t l = variantkey_string(test_data[0].vk, vs, 8);
-    if (l != 17)
-    {
-        fprintf(stderr, "%s : An error was expected\n", __func__);
-        ++errors;
     }
     return errors;
 }
@@ -922,7 +909,7 @@ void benchmark_variantkey_string()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        variantkey_string(0x880082d600138000, vs, 17);
+        variantkey_string(0x880082d600138000, vs);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
@@ -967,7 +954,6 @@ int main()
     errors += test_encode_refalt();
     errors += test_variantkey();
     errors += test_variantkey_string();
-    errors += test_variantkey_string_error();
     errors += test_parse_variantkey_string();
     errors += test_decode_variantkey();
 

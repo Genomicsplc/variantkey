@@ -174,29 +174,23 @@ size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, s
 
 size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    if (CHECK_BIT(code, 30))
+    if (code & 0x40000000)   // 30th bit set from the right
     {
-        return 0; // non reversible encoding
+        return 0; // non-reversible encoding
     }
     return decode_refalt_rev(code, ref, sizeref, alt, sizealt);
 }
 
 uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
-    return (((uint64_t)encode_chrom(chrom, sizechrom) << 59) | ((uint64_t)pos << 31) | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
+    return (((uint64_t)encode_chrom(chrom, sizechrom) << 59)
+            | ((uint64_t)pos << 31)
+            | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
 }
 
-size_t variantkey_string(uint64_t code, char *str, size_t size)
+size_t variantkey_string(uint64_t code, char *str)
 {
-    size_t slen = 17; // = 16 hex chars + '\0'
-    if (slen > size)
-    {
-        return slen;
-    }
-    char* it = str;
-    const char* end = it + size;
-    it += snprintf(it, (end - it), "%016"PRIx64"", code);
-    return (end - it);
+    return sprintf(str, "%016"PRIx64"", code);
 }
 
 uint64_t parse_variantkey_string(const char *vs)

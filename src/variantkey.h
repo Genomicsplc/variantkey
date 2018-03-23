@@ -45,13 +45,6 @@
 
 #include "farmhash64.h"
 
-/** Check if the specified bit is set
-@param var Number to check
-@param pos bit position. The first position on the righ is 0.
-@return 1 if bit is set, 0 otherwise.
-*/
-#define CHECK_BIT(var,pos) (((var)>>(pos)) & 1)
-
 /**
  * VariantKey struct
  */
@@ -140,15 +133,14 @@ uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const cha
  *   - 31 bit for REF+ALT
  *
  * @param code  VariantKey code.
- * @param str   String buffer to be returned.
- * @param size  Size of the string buffer.
+ * @param str   String buffer to be returned (it must be sized 17 bytes at leasr).
  *
  * @return      Upon successful return, these function returns the number of characters processed
  *              (excluding the null byte used to end output to strings).
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t variantkey_string(uint64_t code, char *str, size_t size);
+size_t variantkey_string(uint64_t code, char *str);
 
 /** @brief Parses a VariantKey hex string and returns the code.
  *
