@@ -737,7 +737,7 @@ func TestClose(t *testing.T) {
 func TestCloseError(t *testing.T) {
 	lmf := TMMFile{}
 	err := lmf.Close()
-	if err != nil {
+	if err == nil {
 		t.Errorf("An error was expected")
 	}
 }

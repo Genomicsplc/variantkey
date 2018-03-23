@@ -1,8 +1,7 @@
 package variantkey
 
 import "testing"
-
-//import "strings"
+import "strings"
 
 // TVariant contains test data
 type TVariantData struct {
@@ -609,6 +608,18 @@ func TestEncodeChrom(t *testing.T) {
 	}
 }
 
+func BenchmarkEncodeChrom(b *testing.B) {
+	cdata := []string{
+		"NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
+		"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+		"21", "22", "X", "Y", "MT",
+	}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		EncodeChrom(cdata[(i % 26)])
+	}
+}
+
 func TestDecodeChrom(t *testing.T) {
 	cdata := []string{
 		"NA", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10",
@@ -632,7 +643,13 @@ func TestDecodeChrom(t *testing.T) {
 	}
 }
 
-/*
+func BenchmarkDecodeChrom(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		DecodeChrom(uint8(i % 26))
+	}
+}
+
 func TestEncodeRefAlt(t *testing.T) {
 	var lenref, lenalt uint8
 	cdata := []string{"A", "M", "Z", "az", "A*Z", "ACGT", "ACGTA", "AcGTtAc", "ACGTACT", "CCCCCCCcCCCCCCcCCCCC"}
@@ -683,6 +700,14 @@ func TestEncodeRefAlt(t *testing.T) {
 	}
 }
 
+func BenchmarkEncodeRefAlt(b *testing.B) {
+	cdata := []string{"A", "t", "az", "A*G", "GT"}
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		EncodeRefAlt(cdata[i%4], cdata[(i%4)+1])
+	}
+}
+
 func TestVariantKey(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
@@ -697,16 +722,11 @@ func TestVariantKey(t *testing.T) {
 }
 
 func BenchmarkVariantKey(b *testing.B) {
-	chrom := "Y"
-	pos := uint32(445974)
-	ref := "A"
-	alt := "G"
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		VariantKey(chrom, pos, ref, alt)
+		VariantKey("19", uint32(i), "A", "G")
 	}
 }
-*/
 
 func TestVariantKeyString(t *testing.T) {
 	for _, v := range variantsTestData {
