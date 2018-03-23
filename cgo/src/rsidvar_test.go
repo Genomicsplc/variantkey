@@ -131,8 +131,8 @@ func BenchmarkFindVRRsidByVariantkey(b *testing.B) {
 	}
 }
 
-func TestFindVRChromposRange(t *testing.T) {
-	rsid, first, last := vr.FindVRChromposRange(0, 9, testData[6].chrom, testData[7].pos, testData[8].pos)
+func TestFindVRChromPosRange(t *testing.T) {
+	rsid, first, last := vr.FindVRChromPosRange(0, 9, testData[6].chrom, testData[7].pos, testData[8].pos)
 	if rsid != testData[7].rsid {
 		t.Errorf("Expected rsid %x, got %x", testData[7].rsid, rsid)
 	}
@@ -144,8 +144,8 @@ func TestFindVRChromposRange(t *testing.T) {
 	}
 }
 
-func TestFindVRChromposRangeNotFound(t *testing.T) {
-	rsid, first, last := vr.FindVRChromposRange(0, 9, 0xff, 0xffffff00, 0xfffffff0)
+func TestFindVRChromPosRangeNotFound(t *testing.T) {
+	rsid, first, last := vr.FindVRChromPosRange(0, 9, 0xff, 0xffffff00, 0xfffffff0)
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
@@ -157,9 +157,9 @@ func TestFindVRChromposRangeNotFound(t *testing.T) {
 	}
 }
 
-func BenchmarkFindVRChromposRange(b *testing.B) {
+func BenchmarkFindVRChromPosRange(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRChromposRange(0, 9, 0x19, 0x001AF8FD, 0x001C8F2A)
+		vr.FindVRChromPosRange(0, 9, 0x19, 0x001AF8FD, 0x001C8F2A)
 	}
 }

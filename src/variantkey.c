@@ -47,9 +47,19 @@ int aztoupper(int c)
     return c;
 }
 
+uint8_t str_to_uint8_t(const char *str, size_t size)
+{
+    uint8_t v = 0;
+    size_t i;
+    for (i = 0; i < size; i++)
+    {
+        v = ((v * 10) + (str[i] - '0'));
+    }
+    return v;
+}
+
 uint8_t encode_chrom(const char *chrom, size_t size)
 {
-    uint8_t h;
     // remove "chr" prefix
     if ((size > 3)
             && ((chrom[0] == 'C') || (chrom[0] == 'c'))
@@ -71,16 +81,7 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     {
         return 25;
     }
-    char cs[size+1];
-    strncpy(cs, chrom, size);
-    cs[size] = '\0';
-    char *endptr;
-    h = (uint8_t)strtoul(cs, &endptr, 10);
-    if (*endptr == '\0')
-    {
-        return h; // numerical chromosome
-    }
-    return 0; // NA
+    return str_to_uint8_t(chrom, size);
 }
 
 size_t decode_chrom(uint8_t code, char *chrom)

@@ -324,32 +324,32 @@ func (mf TMMFile) FindLastUint128(blklen, blkpos uint64, bitstart, bitend uint8,
 
 // --- RSIDVAR ---
 
-// GetVRRsid returns the RSID at the specified position of the variantkey_rsid.bin file.
+// GetVRRsid returns the RSID at the specified position in the VR file.
 func (mf TMMFile) GetVRRsid(item uint64) uint32 {
 	return uint32(C.get_vr_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// GetRVVariantkey returns the VariantKey at the specified position of the rsid_variantkey.bin file.
+// GetRVVariantkey returns the VariantKey at the specified position in the RV file.
 func (mf TMMFile) GetRVVariantkey(item uint64) uint64 {
 	return uint64(C.get_rv_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// FindRVVariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey, item position.
+// FindRVVariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
 func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	vh := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
 	return vh, uint64(cfirst)
 }
 
-// FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID, item position.
-func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vh uint64) (uint32, uint64) {
+// FindVRRsidByVarshash search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
+func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vk uint64) (uint32, uint64) {
 	cfirst := C.uint64_t(first)
-	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vh)))
+	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vk)))
 	return rsid, uint64(cfirst)
 }
 
-// FindVRChromposRange search for the specified CHROM-POS range and returns the first occurrence of RSID, item position, last position.
-func (mf TMMFile) FindVRChromposRange(first, last uint64, chrom uint8, posStart, posEnd uint32) (uint32, uint64, uint64) {
+// FindVRChromPosRange search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
+func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posStart, posEnd uint32) (uint32, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))

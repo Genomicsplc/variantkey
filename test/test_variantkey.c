@@ -681,15 +681,9 @@ int test_encode_chrom()
         chrom = encode_chrom(chrom_data[i], strlen(chrom_data[i]));
         if (chrom != i+1)
         {
-            fprintf(stderr, "%s : expecting %u, got %u\n", __func__, i+1, chrom);
+            fprintf(stderr, "%s : '%s' expecting %u, got %u\n", __func__, chrom_data[i], i+1, chrom);
             ++errors;
         }
-    }
-    chrom = encode_chrom("WRONG", 5);
-    if (chrom != 0)
-    {
-        fprintf(stderr, "%s (wrong): expecting 0, got %u\n", __func__, chrom);
-        ++errors;
     }
     return errors;
 }
