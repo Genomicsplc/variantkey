@@ -56,6 +56,16 @@ uint8_t encode_chrom(const char *chrom, size_t size)
         chrom += 3;
         size -= 3;
     }
+    if ((chrom[0] >= '0') && (chrom[0] <= '9'))
+    {
+        uint8_t v = 0;
+        size_t i;
+        for (i = 0; i < size; i++)
+        {
+            v = ((v * 10) + (chrom[i] - '0'));
+        }
+        return v;
+    }
     if ((chrom[0] == 'X') || (chrom[0] == 'x'))
     {
         return 23;
@@ -68,18 +78,7 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     {
         return 25;
     }
-    if ((chrom[0] < '0') || (chrom[0] > '9')) // NA
-    {
-        return 0;
-    }
-    // convert digits
-    uint8_t v = 0;
-    size_t i;
-    for (i = 0; i < size; i++)
-    {
-        v = ((v * 10) + (chrom[i] - '0'));
-    }
-    return v;
+    return 0; // NA
 }
 
 size_t decode_chrom(uint8_t code, char *chrom)
@@ -208,7 +207,7 @@ uint64_t parse_variantkey_string(const char *vs)
     for (i = 0; i < 16; i++)
     {
         b = vs[i];
-        if (vs[i] >= 'a')
+        if (b >= 'a')
         {
             b -= ('a' - 10);
         }

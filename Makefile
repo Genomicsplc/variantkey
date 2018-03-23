@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python pytest version conda go cgo doc format clean
+.PHONY: help qa test tidy build python pytest version conda go doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -57,14 +57,13 @@ help:
 	@echo "    make pytest  : Test the python module"
 	@echo "    make version : Set version from VERSION file"
 	@echo "    make conda   : Build a conda package for the python wrapper"
-	@echo "    make go      : Test the native golang module"
-	@echo "    make cgo     : Test the golang cgo module"
+	@echo "    make go      : Test the golang cgo module"
 	@echo "    make doc     : Generate source code documentation"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-all: clean format qa build doc go cgo python pytest
+all: clean format qa build doc go python pytest
 
 # Alias for test
 qa: test tidy
@@ -142,14 +141,9 @@ conda: version
 	./conda/setup-conda.sh && \
 	${CONDA_ENV}/bin/conda build --prefix-length 160 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) conda
 
-# Test golang module
+# Test golang go module
 go:
 	cd go && \
-	make deps qa
-
-# Test golang cgo module
-cgo:
-	cd cgo && \
 	make deps qa
 
 # Generate source code documentation
@@ -164,16 +158,12 @@ format:
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.h'
 	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.c'
-	#autopep8 --in-place ./python/tests/*.py
-	cd cgo && make format
+	autopep8 --in-place  --max-line-length=255 ./python/tests/*.py
 	cd go && make format
 
 # Remove any build artifact
 clean:
-	rm -rf ./target
-	rm -rf ./python/build
-	rm -rf ./python/.cache
-	rm -rf ./python/tests/*.so
-	rm -rf ./python/tests/__pycache__
-	rm -rf ./cgo/target
-	rm -rf ./go/target
+	rm -rf target
+	rm -rf ./go/target ./go/src.test
+	rm -rf ./python/htmlcov ./python/build ./python/dist ./python/.cache ./python/.benchmarks ./python/tests/*.so ./python/tests/__pycache__ ./python/variantkey/__pycache__ ./python/variantkey.egg-info
+	find . -type f -name '*.pyc' -exec rm -f {} \;
