@@ -110,20 +110,6 @@ define_declare_bytes_to(uint32_t)
 define_declare_bytes_to(uint64_t)
 
 /**
- * Define generic comparison function for unsigned integers
- */
-#define define_declare_compare(T) \
-/** Compare two uinsigned integers
-@param a First integer to compare
-@param b Second integer to compare
-@return Negative value if a < b, positive value if a > b and zero if a == b.
-*/ \
-int compare_##T(T a, T b);
-
-define_declare_compare(uint32_t)
-define_declare_compare(uint64_t)
-
-/**
  * Generic function to search for the first occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *

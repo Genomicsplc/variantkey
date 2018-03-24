@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include "variantkey.h"
 
-int aztoupper(int c)
+inline int aztoupper(int c)
 {
     if ((c >= 'a') && (c <= 'z'))
     {
@@ -45,7 +45,7 @@ int aztoupper(int c)
     return c;
 }
 
-uint8_t encode_chrom(const char *chrom, size_t size)
+inline uint8_t encode_chrom(const char *chrom, size_t size)
 {
     // remove "chr" prefix
     if ((size > 3)
@@ -81,7 +81,7 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     return v;
 }
 
-size_t decode_chrom(uint8_t code, char *chrom)
+inline size_t decode_chrom(uint8_t code, char *chrom)
 {
     if ((code < 1) || (code > 25))
     {
@@ -95,7 +95,7 @@ size_t decode_chrom(uint8_t code, char *chrom)
     return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
-void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
+static inline void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
 {
     int c;
     while ((c = aztoupper(*str++)) && (size--))
@@ -109,7 +109,7 @@ void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
     }
 }
 
-uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     uint32_t h = 0;
     h |= ((uint32_t)(sizeref - 1) << 27); // length of REF - 1
@@ -121,7 +121,7 @@ uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, siz
 }
 
 // Mix two 32 bit hash numbers using the MurmurHash3 algorithm
-uint32_t muxhash(uint32_t k, uint32_t h)
+static inline uint32_t muxhash(uint32_t k, uint32_t h)
 {
     k *= 0xcc9e2d51;
     k = (k >> 17) | (k << (32 - 17));
@@ -132,7 +132,7 @@ uint32_t muxhash(uint32_t k, uint32_t h)
 }
 
 // Return a 32 bit hash of a nucleotide string
-uint32_t hash32(const char *str, size_t size)
+static inline uint32_t hash32(const char *str, size_t size)
 {
     uint32_t h = 0;
     uint32_t k;
@@ -154,7 +154,7 @@ uint32_t hash32(const char *str, size_t size)
     return h;
 }
 
-uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     // 0xC0000000 is the separator character between REF and ALT [11000000 00000000 00000000 00000000]
     uint32_t h = muxhash(hash32(alt, sizealt), muxhash(0xC0000000, hash32(ref, sizeref)));
@@ -167,7 +167,7 @@ uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, si
     return (h | 0x40000000); // 0x40000000 is the set bit to indicate HASH mode [01000000 00000000 00000000 00000000]
 }
 
-uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     if ((sizeref + sizealt) > 5)
     {
@@ -176,7 +176,7 @@ uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t 
     return encode_refalt_rev(ref, sizeref, alt, sizealt);
 }
 
-char decode_refalt_char(uint32_t code, int pos)
+static inline char decode_refalt_char(uint32_t code, int pos)
 {
     char c = ((code >> pos) & 0x1F);
     if (c == 27)
@@ -186,7 +186,7 @@ char decode_refalt_char(uint32_t code, int pos)
     return (c + 64);
 }
 
-size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     *sizeref = 1 + ((code & 0x18000000) >> 27); // [000 11 00 00000 00000 00000 00000 00000]
     *sizealt = 1 + ((code & 0x06000000) >> 25); // [000 00 11 00000 00000 00000 00000 00000]
@@ -207,7 +207,7 @@ size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, s
     return (*sizeref + *sizealt);
 }
 
-size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+inline size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     if (code & 0x40000000)   // 30th bit set from the right
     {
@@ -216,19 +216,19 @@ size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_
     return decode_refalt_rev(code, ref, sizeref, alt, sizealt);
 }
 
-uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     return (((uint64_t)encode_chrom(chrom, sizechrom) << 59)
             | ((uint64_t)pos << 31)
             | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
 }
 
-size_t variantkey_string(uint64_t code, char *str)
+inline size_t variantkey_string(uint64_t code, char *str)
 {
     return sprintf(str, "%016"PRIx64"", code);
 }
 
-uint64_t parse_variantkey_string(const char *vs)
+inline uint64_t parse_variantkey_string(const char *vs)
 {
     uint64_t v = 0;
     uint8_t b;
@@ -256,7 +256,7 @@ uint64_t parse_variantkey_string(const char *vs)
     return v;
 }
 
-variantkey_t decode_variantkey(uint64_t code)
+inline variantkey_t decode_variantkey(uint64_t code)
 {
     variantkey_t v = {0,0,0};
     // CHROM:   11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
