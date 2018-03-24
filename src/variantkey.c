@@ -138,17 +138,18 @@ uint32_t hash32(const char *str, size_t size)
     uint32_t k;
     uint8_t pos;
     size_t len = 6;
-    if (size < len)
+    while (size > 0)
     {
-        len = size;
-    }
-    while (size >= len)
-    {
+        if (size < len)
+        {
+            len = size;
+        }
         k = 0;
         pos = 30;
         encode_refalt_str(&k, &pos, str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(k, h);
         size -= len;
+        str += len;
     }
     return h;
 }
