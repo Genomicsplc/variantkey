@@ -64,20 +64,20 @@ static test_data_t test_data[566] =
 {
     {"chr1", 324674, "C", "T", 0x08027a21003a0000, "08027a21003a0000", 0x01, 0x0004f442, 0x003a0000},
     {"CHR1", 324675, "G", "C", 0x08027a2180718000, "08027a2180718000", 0x01, 0x0004f443, 0x00718000},
-    {"1", 324676, "ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", "A", 0x08027a226e125c3c, "08027a226e125c3c", 0x01, 0x0004f444, 0x6e125c3c},
-    {"1", 324681, "ACCAGGCCCAGCTCATGCTTCTTTGCAGCCTCT", "A", 0x08027a24f21a9b54, "08027a24f21a9b54", 0x01, 0x0004f449, 0x721a9b54},
+    {"1", 324676, "ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", "A", 0x08027a22da5f16b0, "08027a22da5f16b0", 0x01, 0x0004f445, 0x5a5f16b0},
+    {"1", 324681, "ACCAGGCCCAGCTCATGCTTCTTTGCAGCCTCT", "A", 0x08027a24ce91a718, "08027a24ce91a718", 0x01, 0x0004f449, 0x4e91a718},
     {"1", 324683, "C", "G", 0x08027a2580338000, "08027a2580338000", 0x01, 0x0004f44b, 0x00338000},
     {"1", 324692, "C", "G", 0x08027a2a00338000, "08027a2a00338000", 0x01, 0x0004f454, 0x00338000},
-    {"1", 324695, "ATGCTTCTTTGCAGCCTCTCCAGGCCCAGCTCC", "A", 0x08027a2bf8b61586, "08027a2bf8b61586", 0x01, 0x0004f457, 0x78b61586},
+    {"1", 324695, "ATGCTTCTTTGCAGCCTCTCCAGGCCCAGCTCC", "A", 0x08027a2bf0e16024, "08027a2bf0e16024", 0x01, 0x0004f457, 0x70e16024},
     {"1", 324728, "T", "C", 0x08027a3c01418000, "08027a3c01418000", 0x01, 0x0004f478, 0x01418000},
-    {"1", 324738, "TGGCCCCTCCAGGCCCAGCCTCTGCCTCCCGTC", "T", 0x08027a417472868f, "08027a417472868f", 0x01, 0x0004f482, 0x7472868f},
+    {"1", 324738, "TGGCCCCTCCAGGCCCAGCCTCTGCCTCCCGTC", "T", 0x08027a4154319a6b, "08027a4154319a6b", 0x01, 0x0004f482, 0x54319a6b},
     {"1", 324739, "G", "C", 0x08027a4180718000, "08027a4180718000", 0x01, 0x0004f483, 0x00718000},
     {"1", 324750, "G", "T", 0x08027a47007a0000, "08027a47007a0000", 0x01, 0x0004f48e, 0x007a0000},
     {"2", 28001, "G", "A", 0x100036b080708000, "100036b080708000", 0x02, 0x00006d61, 0x00708000},
     {"2", 28003, "G", "C", 0x100036b180718000, "100036b180718000", 0x02, 0x00006d63, 0x00718000},
     {"2", 28005, "A", "G", 0x100036b280138000, "100036b280138000", 0x02, 0x00006d65, 0x00138000},
     {"2", 28013, "T", "C", 0x100036b681418000, "100036b681418000", 0x02, 0x00006d6d, 0x01418000},
-    {"2", 28017, "CAATTGTGAAGCAGTG", "C", 0x100036b8e9afda60, "100036b8e9afda60", 0x02, 0x00006d71, 0x69afda60},
+    {"2", 28017, "CAATTGTGAAGCAGTG", "C", 0x100036b8e07bf7cc, "100036b8e07bf7cc", 0x02, 0x00006d71, 0x607bf7cc},
     {"2", 28045, "A", "G", 0x100036c680138000, "100036c680138000", 0x02, 0x00006d8d, 0x00138000},
     {"2", 28056, "A", "G", 0x100036cc00138000, "100036cc00138000", 0x02, 0x00006d98, 0x00138000},
     {"2", 28057, "T", "C", 0x100036cc81418000, "100036cc81418000", 0x02, 0x00006d99, 0x01418000},
@@ -96,8 +96,8 @@ static test_data_t test_data[566] =
     {"3", 74930, "C", "T", 0x18009259003a0000, "18009259003a0000", 0x03, 0x000124b2, 0x003a0000},
     {"3", 74931, "A", "T", 0x18009259801a0000, "18009259801a0000", 0x03, 0x000124b3, 0x001a0000},
     {"3", 74958, "C", "T", 0x18009267003a0000, "18009267003a0000", 0x03, 0x000124ce, 0x003a0000},
-    {"3", 74970, "CTATT", "C", 0x1800926d707c7dd4, "1800926d707c7dd4", 0x03, 0x000124da, 0x707c7dd4},
-    {"3", 74970, "CTATT", "C", 0x1800926d707c7dd4, "1800926d707c7dd4", 0x03, 0x000124da, 0x707c7dd4},
+    {"3", 74970, "CTATT", "C", 0x1800926de8060837, "1800926de8060837", 0x03, 0x000124db, 0x68060837},
+    {"3", 74970, "CTATT", "C", 0x1800926de8060837, "1800926de8060837", 0x03, 0x000124db, 0x68060837},
     {"4", 60482, "T", "C", 0x2000762101418000, "2000762101418000", 0x04, 0x0000ec42, 0x01418000},
     {"4", 60502, "A", "AT", 0x2000762b0210d000, "2000762b0210d000", 0x04, 0x0000ec56, 0x0210d000},
     {"4", 60502, "AT", "A", 0x2000762b081a0400, "2000762b081a0400", 0x04, 0x0000ec56, 0x081a0400},
@@ -134,12 +134,12 @@ static test_data_t test_data[566] =
     {"6", 193297, "CT", "C", 0x30017988883a0c00, "30017988883a0c00", 0x06, 0x0002f311, 0x083a0c00},
     {"6", 193309, "A", "G", 0x3001798e80138000, "3001798e80138000", 0x06, 0x0002f31d, 0x00138000},
     {"6", 193311, "G", "A", 0x3001798f80708000, "3001798f80708000", 0x06, 0x0002f31f, 0x00708000},
-    {"6", 193321, "CGTGT", "C", 0x30017994f52e3e88, "30017994f52e3e88", 0x06, 0x0002f329, 0x752e3e88},
-    {"6", 193321, "CGTGT", "C", 0x30017994f52e3e88, "30017994f52e3e88", 0x06, 0x0002f329, 0x752e3e88},
+    {"6", 193321, "CGTGT", "C", 0x30017994df023014, "30017994df023014", 0x06, 0x0002f329, 0x5f023014},
+    {"6", 193321, "CGTGT", "C", 0x30017994df023014, "30017994df023014", 0x06, 0x0002f329, 0x5f023014},
     {"6", 193321, "CGT", "C", 0x300179949033d060, "300179949033d060", 0x06, 0x0002f329, 0x1033d060},
     {"6", 193322, "G", "A", 0x3001799500708000, "3001799500708000", 0x06, 0x0002f32a, 0x00708000},
-    {"6", 193329, "TCA", "TGTCG", 0x30017998e91c027f, "30017998e91c027f", 0x06, 0x0002f331, 0x691c027f},
-    {"6", 193329, "TCAT", "TGTC", 0x30017998f4b662d0, "30017998f4b662d0", 0x06, 0x0002f331, 0x74b662d0},
+    {"6", 193329, "TCA", "TGTCG", 0x30017998e4af6d30, "30017998e4af6d30", 0x06, 0x0002f331, 0x64af6d30},
+    {"6", 193329, "TCAT", "TGTC", 0x30017998d531700f, "30017998d531700f", 0x06, 0x0002f331, 0x5531700f},
     {"6", 193331, "A", "G", 0x3001799980138000, "3001799980138000", 0x06, 0x0002f333, 0x00138000},
     {"6", 193335, "GTA", "G", 0x3001799b907a04e0, "3001799b907a04e0", 0x06, 0x0002f337, 0x107a04e0},
     {"6", 193335, "GTA", "G", 0x3001799b907a04e0, "3001799b907a04e0", 0x06, 0x0002f337, 0x107a04e0},
@@ -148,17 +148,17 @@ static test_data_t test_data[566] =
     {"7", 2287999, "G", "A", 0x381174bf80708000, "381174bf80708000", 0x07, 0x0022e97f, 0x00708000},
     {"7", 2288016, "G", "A", 0x381174c800708000, "381174c800708000", 0x07, 0x0022e990, 0x00708000},
     {"7", 2288048, "G", "A", 0x381174d800708000, "381174d800708000", 0x07, 0x0022e9b0, 0x00708000},
-    {"7", 2288064, "A", "ATTCT", 0x381174e0ecb0df34, "381174e0ecb0df34", 0x07, 0x0022e9c1, 0x6cb0df34},
+    {"7", 2288064, "A", "ATTCT", 0x381174e06dce0dcf, "381174e06dce0dcf", 0x07, 0x0022e9c0, 0x6dce0dcf},
     {"7", 2288095, "C", "T", 0x381174ef803a0000, "381174ef803a0000", 0x07, 0x0022e9df, 0x003a0000},
     {"7", 2288096, "G", "T", 0x381174f0007a0000, "381174f0007a0000", 0x07, 0x0022e9e0, 0x007a0000},
     {"7", 2288143, "C", "A", 0x3811750780308000, "3811750780308000", 0x07, 0x0022ea0f, 0x00308000},
     {"7", 2288144, "G", "A", 0x3811750800708000, "3811750800708000", 0x07, 0x0022ea10, 0x00708000},
     {"7", 2288159, "T", "A", 0x3811750f81408000, "3811750f81408000", 0x07, 0x0022ea1f, 0x01408000},
-    {"7", 2288180, "GCTTTT", "G", 0x3811751a4efd3fdb, "3811751a4efd3fdb", 0x07, 0x0022ea34, 0x4efd3fdb},
+    {"7", 2288180, "GCTTTT", "G", 0x3811751ac9536b5d, "3811751ac9536b5d", 0x07, 0x0022ea35, 0x49536b5d},
     {"7", 2288181, "CT", "C", 0x3811751a883a0c00, "3811751a883a0c00", 0x07, 0x0022ea35, 0x083a0c00},
-    {"7", 2288181, "CTTTTTT", "C", 0x3811751ad680105b, "3811751ad680105b", 0x07, 0x0022ea35, 0x5680105b},
+    {"7", 2288181, "CTTTTTT", "C", 0x3811751afb85a6f6, "3811751afb85a6f6", 0x07, 0x0022ea35, 0x7b85a6f6},
     {"7", 2288181, "CTT", "C", 0x3811751a903a5060, "3811751a903a5060", 0x07, 0x0022ea35, 0x103a5060},
-    {"7", 2288181, "CTTTTTT", "C", 0x3811751ad680105b, "3811751ad680105b", 0x07, 0x0022ea35, 0x5680105b},
+    {"7", 2288181, "CTTTTTT", "C", 0x3811751afb85a6f6, "3811751afb85a6f6", 0x07, 0x0022ea35, 0x7b85a6f6},
     {"7", 2288181, "C", "CT", 0x3811751a8231d000, "3811751a8231d000", 0x07, 0x0022ea35, 0x0231d000},
     {"8", 167607, "G", "C", 0x4001475b80718000, "4001475b80718000", 0x08, 0x00028eb7, 0x00718000},
     {"8", 167613, "C", "T", 0x4001475e803a0000, "4001475e803a0000", 0x08, 0x00028ebd, 0x003a0000},
@@ -172,7 +172,7 @@ static test_data_t test_data[566] =
     {"8", 167809, "G", "A", 0x400147c080708000, "400147c080708000", 0x08, 0x00028f81, 0x00708000},
     {"8", 167814, "C", "A", 0x400147c300308000, "400147c300308000", 0x08, 0x00028f86, 0x00308000},
     {"8", 167821, "C", "T", 0x400147c6803a0000, "400147c6803a0000", 0x08, 0x00028f8d, 0x003a0000},
-    {"8", 167827, "CTTCCTGTCTTTATTTTGT", "C", 0x400147c9f2404dee, "400147c9f2404dee", 0x08, 0x00028f93, 0x72404dee},
+    {"8", 167827, "CTTCCTGTCTTTATTTTGT", "C", 0x400147c9f154658c, "400147c9f154658c", 0x08, 0x00028f93, 0x7154658c},
     {"8", 167839, "A", "C", 0x400147cf80118000, "400147cf80118000", 0x08, 0x00028f9f, 0x00118000},
     {"8", 167839, "AT", "A", 0x400147cf881a0400, "400147cf881a0400", 0x08, 0x00028f9f, 0x081a0400},
     {"8", 167841, "T", "G", 0x400147d081438000, "400147d081438000", 0x08, 0x00028fa1, 0x01438000},
@@ -181,8 +181,8 @@ static test_data_t test_data[566] =
     {"9", 82863, "A", "G", 0x4800a1d780138000, "4800a1d780138000", 0x09, 0x000143af, 0x00138000},
     {"9", 82869, "G", "A", 0x4800a1da80708000, "4800a1da80708000", 0x09, 0x000143b5, 0x00708000},
     {"9", 82893, "CT", "C", 0x4800a1e6883a0c00, "4800a1e6883a0c00", 0x09, 0x000143cd, 0x083a0c00},
-    {"9", 82940, "TTG", "TCA", 0x4800a1fe439e3918, "4800a1fe439e3918", 0x09, 0x000143fc, 0x439e3918},
-    {"9", 82940, "TTGC", "TCGG", 0x4800a1fe7555eb16, "4800a1fe7555eb16", 0x09, 0x000143fc, 0x7555eb16},
+    {"9", 82940, "TTG", "TCA", 0x4800a1fef5445b4a, "4800a1fef5445b4a", 0x09, 0x000143fd, 0x75445b4a},
+    {"9", 82940, "TTGC", "TCGG", 0x4800a1fe4356bf33, "4800a1fe4356bf33", 0x09, 0x000143fc, 0x4356bf33},
     {"9", 82941, "T", "C", 0x4800a1fe81418000, "4800a1fe81418000", 0x09, 0x000143fd, 0x01418000},
     {"9", 82943, "C", "G", 0x4800a1ff80338000, "4800a1ff80338000", 0x09, 0x000143ff, 0x00338000},
     {"9", 82998, "A", "C", 0x4800a21b00118000, "4800a21b00118000", 0x09, 0x00014436, 0x00118000},
@@ -193,7 +193,7 @@ static test_data_t test_data[566] =
     {"9", 83037, "A", "G", 0x4800a22e80138000, "4800a22e80138000", 0x09, 0x0001445d, 0x00138000},
     {"9", 83041, "A", "T", 0x4800a230801a0000, "4800a230801a0000", 0x09, 0x00014461, 0x001a0000},
     {"9", 83044, "G", "C", 0x4800a23200718000, "4800a23200718000", 0x09, 0x00014464, 0x00718000},
-    {"9", 83045, "G", "GTCTTC", 0x4800a232d209738e, "4800a232d209738e", 0x09, 0x00014465, 0x5209738e},
+    {"9", 83045, "G", "GTCTTC", 0x4800a232ebe1707c, "4800a232ebe1707c", 0x09, 0x00014465, 0x6be1707c},
     {"9", 83046, "C", "CAT", 0x4800a23304318680, "4800a23304318680", 0x09, 0x00014466, 0x04318680},
     {"9", 83046, "C", "CCAT", 0x4800a23306318c34, "4800a23306318c34", 0x09, 0x00014466, 0x06318c34},
     {"9", 83052, "G", "C", 0x4800a23600718000, "4800a23600718000", 0x09, 0x0001446c, 0x00718000},
@@ -213,7 +213,7 @@ static test_data_t test_data[566] =
     {"10", 102484, "C", "T", 0x5000c82a003a0000, "5000c82a003a0000", 0x0a, 0x00019054, 0x003a0000},
     {"10", 102501, "G", "A", 0x5000c83280708000, "5000c83280708000", 0x0a, 0x00019065, 0x00708000},
     {"10", 102512, "A", "G", 0x5000c83800138000, "5000c83800138000", 0x0a, 0x00019070, 0x00138000},
-    {"10", 102529, "GCTACGCACTTGTAGATAACCAGGTCTCATGAAAA", "G", 0x5000c840dc0b5a1b, "5000c840dc0b5a1b", 0x0a, 0x00019081, 0x5c0b5a1b},
+    {"10", 102529, "GCTACGCACTTGTAGATAACCAGGTCTCATGAAAA", "G", 0x5000c840e5501a16, "5000c840e5501a16", 0x0a, 0x00019081, 0x65501a16},
     {"10", 102533, "C", "T", 0x5000c842803a0000, "5000c842803a0000", 0x0a, 0x00019085, 0x003a0000},
     {"10", 102534, "G", "A", 0x5000c84300708000, "5000c84300708000", 0x0a, 0x00019086, 0x00708000},
     {"10", 102540, "G", "T", 0x5000c846007a0000, "5000c846007a0000", 0x0a, 0x0001908c, 0x007a0000},
@@ -232,8 +232,8 @@ static test_data_t test_data[566] =
     {"11", 208618, "G", "C", 0x5801977500718000, "5801977500718000", 0x0b, 0x00032eea, 0x00718000},
     {"11", 208640, "G", "C", 0x5801978000718000, "5801978000718000", 0x0b, 0x00032f00, 0x00718000},
     {"11", 208644, "C", "T", 0x58019782003a0000, "58019782003a0000", 0x0b, 0x00032f04, 0x003a0000},
-    {"11", 208687, "CTTAAAGCGCCACCAGACGCTGCGCCCCG", "C", 0x58019797d0ec00f0, "58019797d0ec00f0", 0x0b, 0x00032f2f, 0x50ec00f0},
-    {"11", 208687, "CTTAAAGCGCCACCAGACGCTGCGCCCCG", "C", 0x58019797d0ec00f0, "58019797d0ec00f0", 0x0b, 0x00032f2f, 0x50ec00f0},
+    {"11", 208687, "CTTAAAGCGCCACCAGACGCTGCGCCCCG", "C", 0x58019797c2622da0, "58019797c2622da0", 0x0b, 0x00032f2f, 0x42622da0},
+    {"11", 208687, "CTTAAAGCGCCACCAGACGCTGCGCCCCG", "C", 0x58019797c2622da0, "58019797c2622da0", 0x0b, 0x00032f2f, 0x42622da0},
     {"11", 208707, "T", "C", 0x580197a181418000, "580197a181418000", 0x0b, 0x00032f43, 0x01418000},
     {"11", 208715, "G", "C", 0x580197a580718000, "580197a580718000", 0x0b, 0x00032f4b, 0x00718000},
     {"11", 208740, "C", "T", 0x580197b2003a0000, "580197b2003a0000", 0x0b, 0x00032f64, 0x003a0000},
@@ -274,9 +274,9 @@ static test_data_t test_data[566] =
     {"13", 19054093, "ATG", "A", 0x68915f06901a1c20, "68915f06901a1c20", 0x0d, 0x0122be0d, 0x101a1c20},
     {"13", 19054095, "G", "A", 0x68915f0780708000, "68915f0780708000", 0x0d, 0x0122be0f, 0x00708000},
     {"13", 19054099, "TA", "T", 0x68915f098940d000, "68915f098940d000", 0x0d, 0x0122be13, 0x0940d000},
-    {"13", 19054107, "TAAATATTG", "TAAATATTT", 0x68915f0dee2e25aa, "68915f0dee2e25aa", 0x0d, 0x0122be1b, 0x6e2e25aa},
+    {"13", 19054107, "TAAATATTG", "TAAATATTT", 0x68915f0dc7d258a6, "68915f0dc7d258a6", 0x0d, 0x0122be1b, 0x47d258a6},
     {"13", 19054108, "A", "G", 0x68915f0e00138000, "68915f0e00138000", 0x0d, 0x0122be1c, 0x00138000},
-    {"13", 19054116, "GTATAA", "G", 0x68915f12726a4f66, "68915f12726a4f66", 0x0d, 0x0122be24, 0x726a4f66},
+    {"13", 19054116, "GTATAA", "G", 0x68915f12dfe77d09, "68915f12dfe77d09", 0x0d, 0x0122be25, 0x5fe77d09},
     {"13", 19054125, "AT", "A", 0x68915f16881a0400, "68915f16881a0400", 0x0d, 0x0122be2d, 0x081a0400},
     {"13", 19054169, "T", "TTA", 0x68915f2c854a5020, "68915f2c854a5020", 0x0d, 0x0122be59, 0x054a5020},
     {"13", 19054192, "A", "G", 0x68915f3800138000, "68915f3800138000", 0x0d, 0x0122be70, 0x00138000},
@@ -300,7 +300,7 @@ static test_data_t test_data[566] =
     {"14", 19046485, "A", "G", 0x7091502a80138000, "7091502a80138000", 0x0e, 0x0122a055, 0x00138000},
     {"14", 19046486, "T", "G", 0x7091502b01438000, "7091502b01438000", 0x0e, 0x0122a056, 0x01438000},
     {"14", 19046492, "C", "A", 0x7091502e00308000, "7091502e00308000", 0x0e, 0x0122a05c, 0x00308000},
-    {"14", 19046500, "TTCTACAAAAAG", "T", 0x7091503256873dae, "7091503256873dae", 0x0e, 0x0122a064, 0x56873dae},
+    {"14", 19046500, "TTCTACAAAAAG", "T", 0x70915032cfc17cdb, "70915032cfc17cdb", 0x0e, 0x0122a065, 0x4fc17cdb},
     {"14", 19046511, "G", "A", 0x7091503780708000, "7091503780708000", 0x0e, 0x0122a06f, 0x00708000},
     {"14", 19046512, "A", "G", 0x7091503800138000, "7091503800138000", 0x0e, 0x0122a070, 0x00138000},
     {"14", 19046513, "G", "C", 0x7091503880718000, "7091503880718000", 0x0e, 0x0122a071, 0x00718000},
@@ -327,7 +327,7 @@ static test_data_t test_data[566] =
     {"15", 20030594, "G", "A", 0x7898d24100708000, "7898d24100708000", 0x0f, 0x0131a482, 0x00708000},
     {"15", 20030598, "A", "C", 0x7898d24300118000, "7898d24300118000", 0x0f, 0x0131a486, 0x00118000},
     {"15", 20030603, "T", "TA", 0x7898d245834a0400, "7898d245834a0400", 0x0f, 0x0131a48b, 0x034a0400},
-    {"15", 20030603, "T", "TAATA", 0x7898d245fa36ae4b, "7898d245fa36ae4b", 0x0f, 0x0131a48b, 0x7a36ae4b},
+    {"15", 20030603, "T", "TAATA", 0x7898d245dc37dc2f, "7898d245dc37dc2f", 0x0f, 0x0131a48b, 0x5c37dc2f},
     {"15", 20030606, "TA", "T", 0x7898d2470940d000, "7898d2470940d000", 0x0f, 0x0131a48e, 0x0940d000},
     {"15", 20030637, "C", "A", 0x7898d25680308000, "7898d25680308000", 0x0f, 0x0131a4ad, 0x00308000},
     {"15", 20030656, "C", "T", 0x7898d260003a0000, "7898d260003a0000", 0x0f, 0x0131a4c0, 0x003a0000},
@@ -378,7 +378,7 @@ static test_data_t test_data[566] =
     {"17", 67065, "G", "A", 0x880082fc80708000, "880082fc80708000", 0x11, 0x000105f9, 0x00708000},
     {"17", 67071, "G", "A", 0x880082ff80708000, "880082ff80708000", 0x11, 0x000105ff, 0x00708000},
     {"17", 67119, "T", "C", 0x8800831781418000, "8800831781418000", 0x11, 0x0001062f, 0x01418000},
-    {"17", 67138, "CATTAAAATTGGCCTCACTGAAATCAGGACCCCCAAGGCATTTCGTTCCCATCTCGGGCAGTTATTACAGAGCCCTTCTTCTGTGCCAAAATTGGCCTCGCTGAAATCAGGACCCCCAAGGCATTTCATTCCCATCTGGGGCAGTTATTACAGAGCCCTTCTTCTGCGC", "CAT", 0x88008321e3214740, "88008321e3214740", 0x11, 0x00010643, 0x63214740},
+    {"17", 67138, "CATTAAAATTGGCCTCACTGAAATCAGGACCCCCAAGGCATTTCGTTCCCATCTCGGGCAGTTATTACAGAGCCCTTCTTCTGTGCCAAAATTGGCCTCGCTGAAATCAGGACCCCCAAGGCATTTCATTCCCATCTGGGGCAGTTATTACAGAGCCCTTCTTCTGCGC", "CAT", 0x8800832152a15ea7, "8800832152a15ea7", 0x11, 0x00010642, 0x52a15ea7},
     {"17", 67139, "A", "G", 0x8800832180138000, "8800832180138000", 0x11, 0x00010643, 0x00138000},
     {"17", 67140, "T", "C", 0x8800832201418000, "8800832201418000", 0x11, 0x00010644, 0x01418000},
     {"17", 67158, "A", "G", 0x8800832b00138000, "8800832b00138000", 0x11, 0x00010656, 0x00138000},
@@ -407,7 +407,7 @@ static test_data_t test_data[566] =
     {"18", 85229, "G", "A", 0x9000a67680708000, "9000a67680708000", 0x12, 0x00014ced, 0x00708000},
     {"18", 85234, "C", "T", 0x9000a679003a0000, "9000a679003a0000", 0x12, 0x00014cf2, 0x003a0000},
     {"18", 85236, "G", "C", 0x9000a67a00718000, "9000a67a00718000", 0x12, 0x00014cf4, 0x00718000},
-    {"18", 85238, "G", "GGCAT", 0x9000a67bd1800103, "9000a67bd1800103", 0x12, 0x00014cf7, 0x51800103},
+    {"18", 85238, "G", "GGCAT", 0x9000a67b5343e3bf, "9000a67b5343e3bf", 0x12, 0x00014cf6, 0x5343e3bf},
     {"18", 85238, "G", "A", 0x9000a67b00708000, "9000a67b00708000", 0x12, 0x00014cf6, 0x00708000},
     {"18", 85248, "T", "C", 0x9000a68001418000, "9000a68001418000", 0x12, 0x00014d00, 0x01418000},
     {"18", 85272, "C", "A", 0x9000a68c00308000, "9000a68c00308000", 0x12, 0x00014d18, 0x00308000},
@@ -469,8 +469,8 @@ static test_data_t test_data[566] =
     {"20", 153266, "T", "C", 0xa0012b5901418000, "a0012b5901418000", 0x14, 0x000256b2, 0x01418000},
     {"20", 153284, "C", "T", 0xa0012b62003a0000, "a0012b62003a0000", 0x14, 0x000256c4, 0x003a0000},
     {"20", 153285, "G", "A", 0xa0012b6280708000, "a0012b6280708000", 0x14, 0x000256c5, 0x00708000},
-    {"20", 153291, "ATTTC", "A", 0xa0012b65e3256692, "a0012b65e3256692", 0x14, 0x000256cb, 0x63256692},
-    {"20", 153295, "CTTTGT", "C", 0xa0012b67d5439803, "a0012b67d5439803", 0x14, 0x000256cf, 0x55439803},
+    {"20", 153291, "ATTTC", "A", 0xa0012b65df96641b, "a0012b65df96641b", 0x14, 0x000256cb, 0x5f96641b},
+    {"20", 153295, "CTTTGT", "C", 0xa0012b67efd55ee3, "a0012b67efd55ee3", 0x14, 0x000256cf, 0x6fd55ee3},
     {"20", 153297, "T", "C", 0xa0012b6881418000, "a0012b6881418000", 0x14, 0x000256d1, 0x01418000},
     {"20", 153297, "T", "TC", 0xa0012b68834a0c00, "a0012b68834a0c00", 0x14, 0x000256d1, 0x034a0c00},
     {"21", 10800149, "G", "A", 0xa852660a80708000, "a852660a80708000", 0x15, 0x00a4cc15, 0x00708000},
@@ -493,13 +493,13 @@ static test_data_t test_data[566] =
     {"21", 10800280, "C", "G", 0xa852664c00338000, "a852664c00338000", 0x15, 0x00a4cc98, 0x00338000},
     {"21", 10800285, "G", "A", 0xa852664e80708000, "a852664e80708000", 0x15, 0x00a4cc9d, 0x00708000},
     {"21", 10800288, "T", "A", 0xa852665001408000, "a852665001408000", 0x15, 0x00a4cca0, 0x01408000},
-    {"21", 10800297, "A", "ATGGAG", 0xa8526654ec4a55cf, "a8526654ec4a55cf", 0x15, 0x00a4cca9, 0x6c4a55cf},
-    {"21", 10800297, "A", "ATGGAG", 0xa8526654ec4a55cf, "a8526654ec4a55cf", 0x15, 0x00a4cca9, 0x6c4a55cf},
-    {"21", 10800298, "T", "TTGGAG", 0xa8526655dd366830, "a8526655dd366830", 0x15, 0x00a4ccab, 0x5d366830},
+    {"21", 10800297, "A", "ATGGAG", 0xa8526654d492290d, "a8526654d492290d", 0x15, 0x00a4cca9, 0x5492290d},
+    {"21", 10800297, "A", "ATGGAG", 0xa8526654d492290d, "a8526654d492290d", 0x15, 0x00a4cca9, 0x5492290d},
+    {"21", 10800298, "T", "TTGGAG", 0xa8526655467fa620, "a8526655467fa620", 0x15, 0x00a4ccaa, 0x467fa620},
     {"21", 10800307, "G", "A", 0xa852665980708000, "a852665980708000", 0x15, 0x00a4ccb3, 0x00708000},
-    {"21", 10800312, "G", "GGTGGA", 0xa852665cf3dc7c1a, "a852665cf3dc7c1a", 0x15, 0x00a4ccb9, 0x73dc7c1a},
+    {"21", 10800312, "G", "GGTGGA", 0xa852665ce373ba6a, "a852665ce373ba6a", 0x15, 0x00a4ccb9, 0x6373ba6a},
     {"21", 10800317, "A", "G", 0xa852665e80138000, "a852665e80138000", 0x15, 0x00a4ccbd, 0x00138000},
-    {"21", 10800320, "GAGTGGAATGGAATAGAGTGTAGTGAAATGC", "G", 0xa852666042066ff3, "a852666042066ff3", 0x15, 0x00a4ccc0, 0x42066ff3},
+    {"21", 10800320, "GAGTGGAATGGAATAGAGTGTAGTGAAATGC", "G", 0xa8526660cc60138a, "a8526660cc60138a", 0x15, 0x00a4ccc1, 0x4c60138a},
     {"21", 10800322, "GT", "G", 0xa8526661087a1c00, "a8526661087a1c00", 0x15, 0x00a4ccc2, 0x087a1c00},
     {"21", 10800334, "A", "G", 0xa852666700138000, "a852666700138000", 0x15, 0x00a4ccce, 0x00138000},
     {"21", 10800357, "A", "G", 0xa852667280138000, "a852667280138000", 0x15, 0x00a4cce5, 0x00138000},
@@ -544,7 +544,7 @@ static test_data_t test_data[566] =
     {"X", 2789163, "G", "T", 0xb8154795807a0000, "b8154795807a0000", 0x17, 0x002a8f2b, 0x007a0000},
     {"X", 2789182, "C", "G", 0xb815479f00338000, "b815479f00338000", 0x17, 0x002a8f3e, 0x00338000},
     {"X", 2789191, "G", "A", 0xb81547a380708000, "b81547a380708000", 0x17, 0x002a8f47, 0x00708000},
-    {"X", 2789209, "TGGTGTGTA", "T", 0xb81547acd728fc26, "b81547acd728fc26", 0x17, 0x002a8f59, 0x5728fc26},
+    {"X", 2789209, "TGGTGTGTA", "T", 0xb81547ace5dfb354, "b81547ace5dfb354", 0x17, 0x002a8f59, 0x65dfb354},
     {"X", 2789229, "C", "T", 0xb81547b6803a0000, "b81547b6803a0000", 0x17, 0x002a8f6d, 0x003a0000},
     {"X", 2789344, "C", "T", 0xb81547f0003a0000, "b81547f0003a0000", 0x17, 0x002a8fe0, 0x003a0000},
     {"X", 2789360, "C", "T", 0xb81547f8003a0000, "b81547f8003a0000", 0x17, 0x002a8ff0, 0x003a0000},
@@ -560,11 +560,11 @@ static test_data_t test_data[566] =
     {"X", 2789684, "G", "A", 0xb815489a00708000, "b815489a00708000", 0x17, 0x002a9134, 0x00708000},
     {"X", 2789687, "G", "A", 0xb815489b80708000, "b815489b80708000", 0x17, 0x002a9137, 0x00708000},
     {"X", 2789724, "C", "T", 0xb81548ae003a0000, "b81548ae003a0000", 0x17, 0x002a915c, 0x003a0000},
-    {"X", 2789729, "CAAATAAATAAATAAAT", "C", 0xb81548b0e3c074e9, "b81548b0e3c074e9", 0x17, 0x002a9161, 0x63c074e9},
-    {"X", 2789729, "CAAATAAATAAATAAATAAAT", "C", 0xb81548b0e69d2ded, "b81548b0e69d2ded", 0x17, 0x002a9161, 0x669d2ded},
-    {"X", 2789729, "CAAATAAATAAATAAAT", "C", 0xb81548b0e3c074e9, "b81548b0e3c074e9", 0x17, 0x002a9161, 0x63c074e9},
-    {"X", 2789729, "CAAATAAATAAATAAATAAAT", "C", 0xb81548b0e69d2ded, "b81548b0e69d2ded", 0x17, 0x002a9161, 0x669d2ded},
-    {"X", 2789729, "CAAATAAATAAATAAAT", "C", 0xb81548b0e3c074e9, "b81548b0e3c074e9", 0x17, 0x002a9161, 0x63c074e9},
+    {"X", 2789729, "CAAATAAATAAATAAAT", "C", 0xb81548b0c39f68a0, "b81548b0c39f68a0", 0x17, 0x002a9161, 0x439f68a0},
+    {"X", 2789729, "CAAATAAATAAATAAATAAAT", "C", 0xb81548b0f9d9d0ec, "b81548b0f9d9d0ec", 0x17, 0x002a9161, 0x79d9d0ec},
+    {"X", 2789729, "CAAATAAATAAATAAAT", "C", 0xb81548b0c39f68a0, "b81548b0c39f68a0", 0x17, 0x002a9161, 0x439f68a0},
+    {"X", 2789729, "CAAATAAATAAATAAATAAAT", "C", 0xb81548b0f9d9d0ec, "b81548b0f9d9d0ec", 0x17, 0x002a9161, 0x79d9d0ec},
+    {"X", 2789729, "CAAATAAATAAATAAAT", "C", 0xb81548b0c39f68a0, "b81548b0c39f68a0", 0x17, 0x002a9161, 0x439f68a0},
     {"X", 2789801, "C", "G", 0xb81548d480338000, "b81548d480338000", 0x17, 0x002a91a9, 0x00338000},
     {"X", 2789847, "T", "G", 0xb81548eb81438000, "b81548eb81438000", 0x17, 0x002a91d7, 0x01438000},
     {"X", 2789966, "A", "C", 0xb815492700118000, "b815492700118000", 0x17, 0x002a924e, 0x00118000},
@@ -573,20 +573,20 @@ static test_data_t test_data[566] =
     {"Y", 445771, "A", "G", 0xc00366a580138000, "c00366a580138000", 0x18, 0x0006cd4b, 0x00138000},
     {"Y", 445773, "AAG", "A", 0xc00366a690109c20, "c00366a690109c20", 0x18, 0x0006cd4d, 0x10109c20},
     {"Y", 445779, "G", "A", 0xc00366a980708000, "c00366a980708000", 0x18, 0x0006cd53, 0x00708000},
-    {"Y", 445786, "GAGAA", "G", 0xc00366ad4fd26f0e, "c00366ad4fd26f0e", 0x18, 0x0006cd5a, 0x4fd26f0e},
-    {"Y", 445794, "AAGAAAGAAAG", "A", 0xc00366b14922380c, "c00366b14922380c", 0x18, 0x0006cd62, 0x4922380c},
+    {"Y", 445786, "GAGAA", "G", 0xc00366addb39ca18, "c00366addb39ca18", 0x18, 0x0006cd5b, 0x5b39ca18},
+    {"Y", 445794, "AAGAAAGAAAG", "A", 0xc00366b149eff062, "c00366b149eff062", 0x18, 0x0006cd62, 0x49eff062},
     {"Y", 445797, "A", "G", 0xc00366b280138000, "c00366b280138000", 0x18, 0x0006cd65, 0x00138000},
-    {"Y", 445808, "AAGAAAGAAAC", "A", 0xc00366b853675eef, "c00366b853675eef", 0x18, 0x0006cd70, 0x53675eef},
-    {"Y", 445818, "CAAAA", "C", 0xc00366bd651c8b16, "c00366bd651c8b16", 0x18, 0x0006cd7a, 0x651c8b16},
+    {"Y", 445808, "AAGAAAGAAAC", "A", 0xc00366b849eff062, "c00366b849eff062", 0x18, 0x0006cd70, 0x49eff062},
+    {"Y", 445818, "CAAAA", "C", 0xc00366bde8995385, "c00366bde8995385", 0x18, 0x0006cd7b, 0x68995385},
     {"Y", 445821, "A", "G", 0xc00366be80138000, "c00366be80138000", 0x18, 0x0006cd7d, 0x00138000},
     {"Y", 445832, "G", "A", 0xc00366c400708000, "c00366c400708000", 0x18, 0x0006cd88, 0x00708000},
-    {"Y", 445850, "AAAAG", "A", 0xc00366cdd5930219, "c00366cdd5930219", 0x18, 0x0006cd9b, 0x55930219},
+    {"Y", 445850, "AAAAG", "A", 0xc00366cdfcc92f3d, "c00366cdfcc92f3d", 0x18, 0x0006cd9b, 0x7cc92f3d},
     {"Y", 445876, "GGAA", "G", 0xc00366da18738427, "c00366da18738427", 0x18, 0x0006cdb4, 0x18738427},
-    {"Y", 445890, "GAAAGA", "G", 0xc00366e14b3e8d01, "c00366e14b3e8d01", 0x18, 0x0006cdc2, 0x4b3e8d01},
-    {"Y", 445897, "AAGAG", "A", 0xc00366e4c4ccd251, "c00366e4c4ccd251", 0x18, 0x0006cdc9, 0x44ccd251},
+    {"Y", 445890, "GAAAGA", "G", 0xc00366e15290bf66, "c00366e15290bf66", 0x18, 0x0006cdc2, 0x5290bf66},
+    {"Y", 445897, "AAGAG", "A", 0xc00366e4f858b6b8, "c00366e4f858b6b8", 0x18, 0x0006cdc9, 0x7858b6b8},
     {"Y", 445919, "A", "G", 0xc00366ef80138000, "c00366ef80138000", 0x18, 0x0006cddf, 0x00138000},
     {"Y", 445932, "G", "A", 0xc00366f600708000, "c00366f600708000", 0x18, 0x0006cdec, 0x00708000},
-    {"Y", 445937, "GAGAA", "G", 0xc00366f8cfd26f0e, "c00366f8cfd26f0e", 0x18, 0x0006cdf1, 0x4fd26f0e},
+    {"Y", 445937, "GAGAA", "G", 0xc00366f8db39ca18, "c00366f8db39ca18", 0x18, 0x0006cdf1, 0x5b39ca18},
     {"Y", 445948, "A", "T", 0xc00366fe001a0000, "c00366fe001a0000", 0x18, 0x0006cdfc, 0x001a0000},
     {"Y", 445955, "GAA", "G", 0xc0036701907084e0, "c0036701907084e0", 0x18, 0x0006ce03, 0x107084e0},
     {"Y", 445957, "A", "G", 0xc003670280138000, "c003670280138000", 0x18, 0x0006ce05, 0x00138000},
@@ -594,12 +594,12 @@ static test_data_t test_data[566] =
     {"Y", 445974, "A", "G", 0xc003670b00138000, "c003670b00138000", 0x18, 0x0006ce16, 0x00138000},
     {"Y", 445977, "GAA", "G", 0xc003670c907084e0, "c003670c907084e0", 0x18, 0x0006ce19, 0x107084e0},
     {"Y", 445978, "A", "G", 0xc003670d00138000, "c003670d00138000", 0x18, 0x0006ce1a, 0x00138000},
-    {"Y", 445978, "AAAGAAAGAAAGAAAGAAAG", "A", 0xc003670d5bb248d2, "c003670d5bb248d2", 0x18, 0x0006ce1a, 0x5bb248d2},
+    {"Y", 445978, "AAAGAAAGAAAGAAAGAAAG", "A", 0xc003670dc6ad9aa8, "c003670dc6ad9aa8", 0x18, 0x0006ce1b, 0x46ad9aa8},
     {"Y", 445997, "G", "GA", 0xc003671682738400, "c003671682738400", 0x18, 0x0006ce2d, 0x02738400},
     {"Y", 446013, "G", "T", 0xc003671e807a0000, "c003671e807a0000", 0x18, 0x0006ce3d, 0x007a0000},
     {"Y", 446014, "A", "G", 0xc003671f00138000, "c003671f00138000", 0x18, 0x0006ce3e, 0x00138000},
     {"Y", 446018, "A", "G", 0xc003672100138000, "c003672100138000", 0x18, 0x0006ce42, 0x00138000},
-    {"Y", 446018, "AAAGG", "A", 0xc0036721f59cc500, "c0036721f59cc500", 0x18, 0x0006ce43, 0x759cc500},
+    {"Y", 446018, "AAAGG", "A", 0xc003672163b3bb33, "c003672163b3bb33", 0x18, 0x0006ce42, 0x63b3bb33},
     {"Y", 446022, "G", "A", 0xc003672300708000, "c003672300708000", 0x18, 0x0006ce46, 0x00708000},
     {"Y", 446054, "C", "T", 0xc0036733003a0000, "c0036733003a0000", 0x18, 0x0006ce66, 0x003a0000},
     {"Y", 446055, "G", "A", 0xc003673380708000, "c003673380708000", 0x18, 0x0006ce67, 0x00708000},
@@ -629,6 +629,23 @@ static test_data_t test_data[566] =
     {"MT", 16527, "C", "T", 0xc8002047803a0000, "c8002047803a0000", 0x19, 0x0000408f, 0x003a0000},
     {"mt", 16528, "t", "c", 0xc800204801418000, "c800204801418000", 0x19, 0x00004090, 0x01418000},
 };
+
+// generate the test map
+int gentestmap()
+{
+    int i;
+    uint64_t vk;
+    char vs[17] = "";
+    variantkey_t h;
+    for (i=0 ; i < k_test_size; i++)
+    {
+        vk = variantkey(test_data[i].chrom, strlen(test_data[i].chrom), test_data[i].pos, test_data[i].ref, strlen(test_data[i].ref), test_data[i].alt, strlen(test_data[i].alt));
+        variantkey_string(vk, vs);
+        h = decode_variantkey(vk);
+        fprintf(stderr, "{\"%s\", %"PRIu32", \"%s\", \"%s\", 0x%016"PRIx64", \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"},\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk, vs, h.chrom, h.pos, h.refalt);
+    }
+    return 1;
+}
 
 // returns current time in nanoseconds
 uint64_t get_time()
@@ -688,6 +705,29 @@ int test_encode_chrom()
     return errors;
 }
 
+void benchmark_encode_chrom()
+{
+    static const char *cdata[26] =
+    {
+        "NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
+        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+        "21", "22", "X", "Y", "MT",
+    };
+    static const size_t clen[26] = {2, 1, 1, 1, 1, 1, 1, 1, 1, 4, 5, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1, 2};
+    int idx;
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        idx = i % 26;
+        encode_chrom(cdata[idx], clen[idx]);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_decode_chrom()
 {
     int errors = 0;
@@ -725,6 +765,21 @@ int test_decode_chrom()
     return errors;
 }
 
+void benchmark_decode_chrom()
+{
+    char chrom[3];
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        decode_chrom((i % 26), chrom);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_encode_refalt()
 {
     int errors = 0;
@@ -736,17 +791,28 @@ int test_encode_refalt()
     {"A", "M", "Z", "az", "A*Z", "ACGT", "ACGTA", "AcGTtAc", "ACGTACT", "CCCCCCCcCCCCCCcCCCCC"};
     static uint32_t expected_data[110] =
     {
-        0x00108000,0x00108000,0x00168000,0x00d08000,0x001d0000,0x01a08000,0x0210e800,0x081d0400,0x0410ef40,0x101de820,
-        0x06108cf4,0x18119e81,0x4c3017de,0xef7494fe,0xdcb453cd,0x5aba347a,0x63eff9ec,0x475550c2,0xf1fb3b85,0xee075c9c,
-        0x00d68000,0x00d68000,0x00dd0000,0x01a68000,0x02d0e800,0x081d3400,0x04d0ef40,0x101de9a0,0x06d08cf4,0x18119e8d,
-        0x4a5177fd,0xe4e00909,0x54e3a6ce,0x4c3d4fb1,0x5432a9e6,0xef010384,0x50373705,0x79f9e84f,0x01ad0000,0x01ad0000,
-        0x03a0e800,0x081d6800,0x05a0ef40,0x101deb40,0x07a08cf4,0x18119e9a,0x40e68d74,0x6894c5ee,0xc102b519,0x6275f781,
-        0xfaefd5d9,0xdf3f3bce,0xf3c7cc60,0x699a4ac3,0x0a1d0740,0x0a1d0740,0x0c1d077a,0x121de83a,0x54feab68,0xd5ca0ddf,
-        0x5e788333,0xd9e11d7d,0x43e0acf5,0xd65d4f84,0x647b23c3,0xcd938dd6,0x6d7967a7,0xdad1229e,0x43287a76,0x43287a76,
-        0xed451b5c,0x42b2c26f,0xfcdcc79a,0x4c79eace,0x7481d87b,0x7742cf59,0x44249760,0xeeb095a9,0x59e904de,0x6a93a36c,
-        0xd8d84bd1,0xd8d84bd1,0x653337f6,0x7c0fdabb,0xc503119d,0x7925950e,0xc1cb80f4,0x76f690d2,0xc6d42f6a,0x68e50925,
-        0x69414bad,0x69414bad,0xeab6100b,0xf74e0dea,0x48752fcd,0x5f3c4f77,0x545ec8cf,0xc53a4673,0x79a32223,0x79a32223,
-        0xd68f02b6,0xd6543146,0x41b71dee,0xc9d0589d,0x4b850e60,0x4b850e60,0x7a188fcd,0x45f3132b,0xed20fe35,0xed20fe35,
+        0x00108000,0x00108000,0x00168000,0x00d08000,0x001d0000,
+        0x01a08000,0x0210e800,0x081d0400,0x0410ef40,0x101de820,
+        0x06108cf4,0x18119e81,0x7894a942,0xc8b09aea,0xc5d479a9,
+        0x440f66aa,0x4fd7ab8c,0x5c0190d7,0x51b5b2ea,0x6d6986ac,
+        0x00d68000,0x00d68000,0x00dd0000,0x01a68000,0x02d0e800,
+        0x081d3400,0x04d0ef40,0x101de9a0,0x06d08cf4,0x18119e8d,
+        0xcf83429f,0xc840c212,0x678bee62,0xfdbc5727,0xd6574d3b,
+        0xdbc0f7a8,0x606dddcc,0x4e991444,0x01ad0000,0x01ad0000,
+        0x03a0e800,0x081d6800,0x05a0ef40,0x101deb40,0x07a08cf4,
+        0x18119e9a,0xc30b5f7a,0x4a496ced,0xe9f212d9,0x41ffe01d,
+        0xcc14f34a,0xe182ade5,0x5ad67890,0x68b85174,0x0a1d0740,
+        0x0a1d0740,0x0c1d077a,0x121de83a,0x44ecfd7d,0xfad624b4,
+        0xc79bcd65,0xc72374f4,0xd478f2e3,0x6161b362,0x6b23e0e1,
+        0xeed249e7,0x55c77b05,0x53afd762,0xe9512312,0xe9512312,
+        0xd0ff3d8c,0x5978d5c5,0x633024b5,0x58ed512c,0x5e97a871,
+        0x4619379c,0xcd46de0d,0xf69cd588,0x73342ec0,0x68ce3288,
+        0x4f2cb95d,0x4f2cb95d,0x64ec8274,0x723421f0,0x6342b513,
+        0xf59049d1,0xff7ebc36,0x506bae13,0x67c25e93,0xd13a9640,
+        0xd1f92747,0xd1f92747,0xf9735017,0xfd87724a,0xdd89fc89,
+        0xeccc4fe9,0x4d756845,0x763e93d3,0xf8215c65,0xf8215c65,
+        0xff6530ce,0x758dc208,0x4916af45,0x64a5acd4,0x5aa61be1,
+        0x5aa61be1,0xcb2264e6,0xee88bd3d,0x6500913b,0x6500913b
     };
     int k = 0;
     for (i=0 ; i < 10; i++)
@@ -802,6 +868,54 @@ int test_encode_refalt()
     return errors;
 }
 
+void benchmark_encode_refalt_rev()
+{
+    int idx;
+    static const char *cdata[5] = {"A", "t", "az", "A*G", "GT"};
+    static const size_t clen[5] = {1, 1, 2, 3, 2};
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        idx = i % 4;
+        encode_refalt(cdata[idx], clen[idx], cdata[idx+1], clen[idx+1]);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
+void benchmark_encode_refalt_hash()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        encode_refalt("GAGTGGAATGGAATAGAGTGTAGTGAAATGC", 31, "G", 1);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
+void benchmark_decode_refalt()
+{
+    char ref[6], alt[6];
+    size_t sizeref, sizealt;
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        decode_refalt(0x00168000, ref, &sizeref, alt, &sizealt);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_variantkey()
 {
     int errors = 0;
@@ -819,6 +933,20 @@ int test_variantkey()
     return errors;
 }
 
+void benchmark_variantkey()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        variantkey("Y", 1, 445974, "A", 1, "G", 1);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_variantkey_string()
 {
     int errors = 0;
@@ -834,6 +962,21 @@ int test_variantkey_string()
         }
     }
     return errors;
+}
+
+void benchmark_variantkey_string()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    char vs[17] = "";
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        variantkey_string(0x880082d600138000, vs);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int test_parse_variantkey_string()
@@ -857,6 +1000,20 @@ int test_parse_variantkey_string()
         }
     }
     return errors;
+}
+
+void benchmark_parse_variantkey_string()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        parse_variantkey_string("880082d600138000");
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int test_decode_variantkey()
@@ -886,50 +1043,6 @@ int test_decode_variantkey()
     return errors;
 }
 
-void benchmark_variantkey()
-{
-    uint64_t tstart, tend;
-    int i;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        variantkey("Y", 1, 445974, "A", 1, "G", 1);
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
-}
-
-void benchmark_variantkey_string()
-{
-    uint64_t tstart, tend;
-    int i;
-    int size = 100000;
-    char vs[17] = "";
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        variantkey_string(0x880082d600138000, vs);
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
-}
-
-
-void benchmark_parse_variantkey_string()
-{
-    uint64_t tstart, tend;
-    int i;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        parse_variantkey_string("880082d600138000");
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
-}
-
 void benchmark_decode_variantkey()
 {
     uint64_t tstart, tend;
@@ -948,6 +1061,8 @@ int main()
 {
     static int errors = 0;
 
+    //errors += gentestmap();
+
     errors += test_azoupper();
     errors += test_encode_chrom();
     errors += test_decode_chrom();
@@ -957,6 +1072,11 @@ int main()
     errors += test_parse_variantkey_string();
     errors += test_decode_variantkey();
 
+    benchmark_encode_chrom();
+    benchmark_decode_chrom();
+    benchmark_encode_refalt_rev();
+    benchmark_encode_refalt_hash();
+    benchmark_decode_refalt();
     benchmark_variantkey();
     benchmark_variantkey_string();
     benchmark_parse_variantkey_string();

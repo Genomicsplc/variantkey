@@ -23,9 +23,6 @@ function(SMOKE_TEST test_name test_file dependencies)
   do_test (${test_name})
 endfunction(SMOKE_TEST)
 
-file (COPY test_farmhash64.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_farmhash test_farmhash64.c variantkey)
-
 file (COPY test_binsearch.c data/test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
 

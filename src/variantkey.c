@@ -95,18 +95,6 @@ size_t decode_chrom(uint8_t code, char *chrom)
     return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
-uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
-{
-    size_t slen = sizeref + sizealt;
-    char ra[slen + 2];
-    char *it = ra;
-    while ((*it++ = aztoupper(*ref++)) && (sizeref--)) {};
-    it[-1] = '+';
-    while ((*it++ = aztoupper(*alt++)) && (sizealt--)) {};
-    it[-1] = '\0';
-    return (farmhash32(ra, slen + 1) | 0x40000000); // set bit to indicate HASH mode [01000000 00000000 00000000 00000000]
-}
-
 void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
 {
     int c;
@@ -118,7 +106,7 @@ void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
         }
         *pos -= 5;
         *h |= (((c - 64) & 0x1F) << *pos);
-    };
+    }
 }
 
 uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
@@ -130,6 +118,52 @@ uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, siz
     encode_refalt_str(&h, &pos, ref, sizeref);
     encode_refalt_str(&h, &pos, alt, sizealt);
     return h;
+}
+
+// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
+uint32_t muxhash(uint32_t k, uint32_t h)
+{
+    k *= 0xcc9e2d51;
+    k = (k >> 17) | (k << (32 - 17));
+    k *= 0x1b873593;
+    h ^= k;
+    h = (h >> 19) | (h << (32 - 19));
+    return ((h * 5) + 0xe6546b64);
+}
+
+// Return a 32 bit hash of a nucleotide string
+uint32_t hash32(const char *str, size_t size)
+{
+    uint32_t h = 0;
+    uint32_t k;
+    uint8_t pos;
+    size_t len = 6;
+    if (size < len)
+    {
+        len = size;
+    }
+    while (size >= len)
+    {
+        k = 0;
+        pos = 30;
+        encode_refalt_str(&k, &pos, str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
+        h = muxhash(k, h);
+        size -= len;
+    }
+    return h;
+}
+
+uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+{
+    // 0xC0000000 is the separator character between REF and ALT [11000000 00000000 00000000 00000000]
+    uint32_t h = muxhash(hash32(alt, sizealt), muxhash(0xC0000000, hash32(ref, sizeref)));
+    // finalization mix - MurmurHash3 algorithm
+    h ^= h >> 16;
+    h *= 0x85ebca6b;
+    h ^= h >> 13;
+    h *= 0xc2b2ae35;
+    h ^= h >> 16;
+    return (h | 0x40000000); // 0x40000000 is the set bit to indicate HASH mode [01000000 00000000 00000000 00000000]
 }
 
 uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
