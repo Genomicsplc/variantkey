@@ -822,7 +822,7 @@ int test_encode_refalt()
             lenref = strlen(input_data[i]);
             lenalt = strlen(input_data[j]);
             h = encode_refalt(input_data[i], lenref, input_data[j], lenalt);
-            fprintf(stderr, "0x%08"PRIx32",", h);
+            //fprintf(stderr, "0x%08"PRIx32",", h);
             if (h != expected_data[k])
             {
                 fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[i], input_data[j]);
