@@ -43,7 +43,7 @@
 #ifndef VARIANTKEY_H
 #define VARIANTKEY_H
 
-#include "farmhash64.h"
+#include <stddef.h>
 
 /**
  * VariantKey struct

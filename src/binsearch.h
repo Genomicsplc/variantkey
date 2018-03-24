@@ -48,7 +48,6 @@
 #ifndef BINSEARCH_H
 #define BINSEARCH_H
 
-#include "uint128.h"
 #include <inttypes.h>
 
 /**
@@ -107,11 +106,8 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item);
 */ \
 T bytes_to_##T(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend);
 
-define_declare_bytes_to(uint8_t)
-define_declare_bytes_to(uint16_t)
 define_declare_bytes_to(uint32_t)
 define_declare_bytes_to(uint64_t)
-define_declare_bytes_to(uint128_t)
 
 /**
  * Define generic comparison function for unsigned integers
@@ -124,11 +120,8 @@ define_declare_bytes_to(uint128_t)
 */ \
 int compare_##T(T a, T b);
 
-define_declare_compare(uint8_t)
-define_declare_compare(uint16_t)
 define_declare_compare(uint32_t)
 define_declare_compare(uint64_t)
-define_declare_compare(uint128_t)
 
 /**
  * Generic function to search for the first occurrence of an unsigned integer
@@ -152,11 +145,8 @@ The values in the file must encoded in big-endian format and sorted in ascending
  */ \
 uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
-define_declare_find_first(uint8_t)
-define_declare_find_first(uint16_t)
 define_declare_find_first(uint32_t)
 define_declare_find_first(uint64_t)
-define_declare_find_first(uint128_t)
 
 /**
  * Generic function to search for the last occurrence of an unsigned integer
@@ -180,10 +170,7 @@ The values in the file must encoded in big-endian format and sorted in ascending
 */ \
 uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
-define_declare_find_last(uint8_t)
-define_declare_find_last(uint16_t)
 define_declare_find_last(uint32_t)
 define_declare_find_last(uint64_t)
-define_declare_find_last(uint128_t)
 
 #endif  // BINSEARCH_H

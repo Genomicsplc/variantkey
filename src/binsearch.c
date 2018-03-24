@@ -56,17 +56,6 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
-uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
-{
-    return ((((uint8_t)src[i]) << bitstart) >> (7 - bitend + bitstart));
-}
-
-uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
-{
-    return (((((uint16_t)src[i] << 8)
-              | (uint16_t)src[i+1]) << bitstart) >> (15 - bitend + bitstart));
-}
-
 uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
     return (((((uint32_t)src[i] << 24)
@@ -87,34 +76,10 @@ uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i, uint8_t bitstar
               | (uint64_t)src[i+7]) << bitstart) >> (63 - bitend + bitstart));
 }
 
-uint128_t bytes_to_uint128_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
-{
-    return (uint128_t)
-    {
-        .lo = bytes_to_uint64_t(src, i, bitstart, 63),
-         .hi = (bytes_to_uint64_t(src, i + 8, 0, (bitend - 64)) << (127 - bitend))
-    };
-}
-
 #define define_compare(T) int compare_##T(T a, T b) {return (a < b) ? -1 : (a > b);}
 
-define_compare(uint8_t)
-define_compare(uint16_t)
 define_compare(uint32_t)
 define_compare(uint64_t)
-
-int compare_uint128_t(uint128_t a, uint128_t b)
-{
-    if (a.lo < b.lo)
-    {
-        return -1;
-    }
-    if (a.lo > b.lo)
-    {
-        return 1;
-    }
-    return compare_uint64_t(a.hi, b.hi);
-}
 
 #define define_find_first(T) \
 uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
@@ -155,11 +120,8 @@ uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkp
     return found; \
 }
 
-define_find_first(uint8_t)
-define_find_first(uint16_t)
 define_find_first(uint32_t)
 define_find_first(uint64_t)
-define_find_first(uint128_t)
 
 #define define_find_last(T) \
 uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
@@ -198,8 +160,5 @@ uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpo
     return found; \
 }
 
-define_find_last(uint8_t)
-define_find_last(uint16_t)
 define_find_last(uint32_t)
 define_find_last(uint64_t)
-define_find_last(uint128_t)

@@ -37,7 +37,6 @@ setup(
     ext_modules=[
         Extension('variantkey', [
              '../src/binsearch.c',
-            '../src/farmhash64.c',
             '../src/rsidvar.c',
             '../src/variantkey.c',
             'variantkey/pyvariantkey.c'

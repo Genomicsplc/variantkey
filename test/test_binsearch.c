@@ -15,102 +15,6 @@
 
 #define TEST_DATA_SIZE 13
 
-typedef struct t_test_uint8_t
-{
-    uint64_t blkpos;
-    uint64_t first;
-    uint64_t last;
-    uint8_t search;
-    uint64_t foundFirst;
-    uint64_t foundFFirst;
-    uint64_t foundFLast;
-    uint64_t foundLast;
-    uint64_t foundLFirst;
-    uint64_t foundLLast;
-} t_test_uint8_t;
-
-static t_test_uint8_t test_data_uint8_t[TEST_DATA_SIZE] =
-{
-    {6, 0, 99,  0x27, 0, 0, 1, 18, 19, 18},
-    {6, 0, 99,  0x33, 87, 87, 86, 99, 100, 99},
-    {0, 0, 99,  0x00, 0, 0, 1, 99, 100, 99},
-    {6, 0, 99,  0xff, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99,  0x27, 0, 0, 1, 18, 19, 18},
-    {6, 13, 99, 0x27, 13, 13, 12, 18, 19, 18},
-    {6, 14, 99, 0x27, 14, 14, 13, 18, 19, 18},
-    {6, 0, 0,   0x01, 1, 0, 0, 1, 0, 0},
-    {6, 0, 0,   0xf0, 1, 1, 0, 1, 1, 0},
-    {6, 99, 99, 0x01, 100, 99, 98, 100, 99, 98},
-    {6, 99, 99, 0xf0, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99,  0x28, 19, 19, 18, 44, 45, 44},
-    {6, 0, 99,  0x2A, 57, 57, 56, 61, 62, 61},
-};
-
-static t_test_uint8_t test_data_sub_uint8_t[TEST_DATA_SIZE] =
-{
-    {6, 0, 99, 0x4, 0, 0, 1, 18, 19, 18},
-    {6, 0, 99, 0x6, 80, 80, 79, 99, 100, 99},
-    {0, 0, 99, 0x0, 0, 0, 1, 99, 100, 99},
-    {6, 0, 99, 0x1f, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x4, 0, 0, 1, 18, 19, 18},
-    {6, 13, 99, 0x4, 13, 13, 12, 18, 19, 18},
-    {6, 14, 99, 0x4, 14, 14, 13, 18, 19, 18},
-    {6, 0, 0, 0x0, 1, 0, 0, 1, 0, 0},
-    {6, 0, 0, 0x1e, 1, 1, 0, 1, 1, 0},
-    {6, 99, 99, 0x0, 100, 99, 98, 100, 99, 98},
-    {6, 99, 99, 0x1e, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x5, 19, 19, 18, 79, 80, 79},
-    {6, 0, 99, 0x5, 19, 19, 18, 79, 80, 79},
-};
-
-typedef struct t_test_uint16_t
-{
-    uint64_t blkpos;
-    uint64_t first;
-    uint64_t last;
-    uint16_t search;
-    uint64_t foundFirst;
-    uint64_t foundFFirst;
-    uint64_t foundFLast;
-    uint64_t foundLast;
-    uint64_t foundLFirst;
-    uint64_t foundLLast;
-} t_test_uint16_t;
-
-static t_test_uint16_t test_data_uint16_t[TEST_DATA_SIZE] =
-{
-    {6, 0, 99,  0x2722, 0, 0, 1, 0, 1, 0},
-    {6, 0, 99,  0x33f5, 99, 99, 98, 99, 100, 99},
-    {0, 0, 99,  0x0001, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99,  0xf7f3, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99,  0x27f3, 13, 13, 12, 14, 15, 14},
-    {6, 13, 99, 0x27f3, 13, 13, 12, 14, 15, 14},
-    {6, 14, 99, 0x27f3, 14, 14, 13, 14, 15, 14},
-    {6, 0, 0,   0x0001, 1, 0, 0, 1, 0, 0},
-    {6, 0, 0,   0xfff0, 1, 1, 0, 1, 1, 0},
-    {6, 99, 99, 0x0001, 100, 99, 98, 100, 99, 98},
-    {6, 99, 99, 0xfff0, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99,  0x2805, 100, 19, 18, 100, 19, 18},
-    {6, 0, 99,  0x28ff, 100, 45, 44, 100, 45, 44},
-};
-
-static t_test_uint16_t test_data_sub_uint16_t[TEST_DATA_SIZE] =
-{
-    {6, 0, 99, 0x4e4, 0, 0, 1, 0, 1, 0},
-    {6, 0, 99, 0x67e, 99, 99, 98, 99, 100, 99},
-    {0, 0, 99, 0x0, 0, 0, 1, 99, 100, 99},
-    {6, 0, 99, 0x1efe, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x4fe, 13, 13, 12, 16, 17, 16},
-    {6, 13, 99, 0x4fe, 13, 13, 12, 16, 17, 16},
-    {6, 14, 99, 0x4fe, 14, 14, 13, 16, 17, 16},
-    {6, 0, 0, 0x0, 1, 0, 0, 1, 0, 0},
-    {6, 0, 0, 0x1ffe, 1, 1, 0, 1, 1, 0},
-    {6, 99, 99, 0x0, 100, 99, 98, 100, 99, 98},
-    {6, 99, 99, 0x1ffe, 100, 100, 99, 100, 100, 99},
-    {6, 0, 99, 0x500, 19, 19, 18, 20, 21, 20},
-    {6, 0, 99, 0x51f, 41, 41, 40, 44, 45, 44},
-};
-
 typedef struct t_test_uint32_t
 {
     uint64_t blkpos;
@@ -205,54 +109,6 @@ static t_test_uint64_t test_data_sub_uint64_t[TEST_DATA_SIZE] =
     {4, 99, 99, 0x7fffffffffffffe, 100, 100, 99, 100, 100, 99},
     {4, 0, 99, 0x500c1303de1, 19, 19, 18, 19, 20, 19},
     {4, 0, 99, 0x51f94499229, 44, 44, 43, 44, 45, 44},
-};
-
-typedef struct t_test_data_uint128_t
-{
-    uint64_t blkpos;
-    uint64_t first;
-    uint64_t last;
-    uint128_t search;
-    uint64_t foundFirst;
-    uint64_t foundFFirst;
-    uint64_t foundFLast;
-    uint64_t foundLast;
-    uint64_t foundLFirst;
-    uint64_t foundLLast;
-} t_test_data_uint128_t;
-
-static t_test_data_uint128_t test_data_uint128_t[TEST_DATA_SIZE] =
-{
-    {4, 0, 99, {0x000027225fb6e591, 0x6eb7abd92e3deb1d}, 0, 0, 1, 0, 1, 0},
-    {4, 0, 99, {0x000027c07b9621ec, 0x01f886390c06811d}, 10, 10, 9, 10, 11, 10},
-    {4, 0, 0,  {0x000027225fb6e591, 0x6eb7abd92e3deb1a}, 1, 0, 0, 1, 0, 0},
-    {4, 0, 99, {0x000027c30981ef0f, 0x500126c20c059eb5}, 12, 12, 11, 12, 13, 12},
-    {4, 0, 99, {0x000027f35fb6e591, 0x6eb7abd90889e85e}, 13, 13, 12, 13, 14, 13},
-    {4, 0, 99, {0x000027f3d41a0ce2, 0xdf116bbc0bf2cf80}, 100, 14, 13, 100, 14, 13},
-    {4, 0, 99, {0x000027f53b9e3036, 0x5103b7a62e3fbbcc}, 100, 16, 15, 100, 16, 15},
-    {4, 0, 99, {0x000027f690c4deff, 0x765f63b80bf00517}, 16, 16, 15, 16, 17, 16},
-    {4, 0, 99, {0x000033f522a78fd9, 0x1acc7b430ac5ca22}, 99, 99, 98, 99, 100, 99},
-    {4, 0, 0,  {0x0000000000000001, 0x0000000000000001}, 1, 0, 0, 1, 0, 0},
-    {4, 0, 0,  {0xfffffffffffffff0, 0xfffffffffffffff0}, 1, 1, 0, 1, 1, 0},
-    {4, 0, 99, {0x000028060981ef0f, 0x500126c22f813253}, 100, 19, 18, 100, 19, 18},
-    {4, 0, 99, {0x000028fca24c9148, 0x830a986a0be5c095}, 100, 45, 44, 100, 45, 44},
-};
-
-static t_test_data_uint128_t test_data_sub_uint128_t[TEST_DATA_SIZE] =
-{
-    {4, 0, 99, {0x000027225fb6e591, 0x6eb7abd92e3deb18}, 0, 0, 1, 0, 1, 0},
-    {4, 0, 99, {0x000027c07b9621ec, 0x01f886390c068118}, 10, 10, 9, 10, 11, 10},
-    {4, 0, 0, {0x000027225fb6e591, 0x6eb7abd92e3deb18}, 0, 0, 0, 0, 1, 0},
-    {4, 0, 99, {0x000027c30981ef0f, 0x500126c20c059eb0}, 12, 12, 11, 12, 13, 12},
-    {4, 0, 99, {0x000027f35fb6e591, 0x6eb7abd90889e858}, 13, 13, 12, 13, 14, 13},
-    {4, 0, 99, {0x000027f3d41a0ce2, 0xdf116bbc0bf2cf80}, 100, 14, 13, 100, 14, 13},
-    {4, 0, 99, {0x000027f53b9e3036, 0x5103b7a62e3fbbc8}, 100, 16, 15, 100, 16, 15},
-    {4, 0, 99, {0x000027f690c4deff, 0x765f63b80bf00510}, 16, 16, 15, 16, 17, 16},
-    {4, 0, 99, {0x000033f522a78fd9, 0x1acc7b430ac5ca20}, 99, 99, 98, 99, 100, 99},
-    {4, 0, 0, {0x0000000000000001, 0x0000000000000000}, 1, 0, 0, 1, 0, 0},
-    {4, 0, 0, {0x3ffffffffffffff0, 0xfffffffffffffff0}, 1, 1, 0, 1, 1, 0},
-    {4, 0, 99, {0x000028060981ef0f, 0x500126c22f813250}, 19, 19, 18, 19, 20, 19},
-    {4, 0, 99, {0x000028fca24c9148, 0x830a986a0be5c090}, 44, 44, 43, 44, 45, 44},
 };
 
 #define define_test_find_first(T) \
@@ -351,16 +207,10 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
     return errors; \
 }
 
-define_test_find_first(uint8_t)
-define_test_find_last(uint8_t)
-define_test_find_first(uint16_t)
-define_test_find_last(uint16_t)
 define_test_find_first(uint32_t)
 define_test_find_last(uint32_t)
 define_test_find_first(uint64_t)
 define_test_find_last(uint64_t)
-define_test_find_first(uint128_t)
-define_test_find_last(uint128_t)
 
 // returns current time in nanoseconds
 uint64_t get_time()
@@ -404,16 +254,10 @@ void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uin
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
-define_benchmark_find_first(uint8_t)
-define_benchmark_find_last(uint8_t)
-define_benchmark_find_first(uint16_t)
-define_benchmark_find_last(uint16_t)
 define_benchmark_find_first(uint32_t)
 define_benchmark_find_last(uint32_t)
 define_benchmark_find_first(uint64_t)
 define_benchmark_find_last(uint64_t)
-define_benchmark_find_first(uint128_t)
-define_benchmark_find_last(uint128_t)
 
 int test_mmap_binfile_error(const char* file)
 {
@@ -475,35 +319,17 @@ int main()
         return 1;
     }
 
-    errors += test_find_first_uint8_t(mf, blklen, 0, 7);
-    errors += test_find_last_uint8_t(mf, blklen, 0, 7);
-
-    errors += test_find_first_uint16_t(mf, blklen, 0, 15);
-    errors += test_find_last_uint16_t(mf, blklen, 0, 15);
-
     errors += test_find_first_uint32_t(mf, blklen, 0, 31);
     errors += test_find_last_uint32_t(mf, blklen, 0, 31);
 
     errors += test_find_first_uint64_t(mf, blklen, 0, 63);
     errors += test_find_last_uint64_t(mf, blklen, 0, 63);
 
-    errors += test_find_first_uint128_t(mf, blklen, 0, 127);
-    errors += test_find_last_uint128_t(mf, blklen, 0, 127);
-
-    benchmark_find_first_uint8_t(mf, blklen, nitems, 0, 7);
-    benchmark_find_last_uint8_t(mf, blklen, nitems, 0, 7);
-
-    benchmark_find_first_uint16_t(mf, blklen, 0, 15, nitems);
-    benchmark_find_last_uint16_t(mf, blklen, 0, 15, nitems);
-
     benchmark_find_first_uint32_t(mf, blklen, 0, 31, nitems);
     benchmark_find_last_uint32_t(mf, blklen, 0, 31, nitems);
 
     benchmark_find_first_uint64_t(mf, blklen, 0, 63, nitems);
     benchmark_find_last_uint64_t(mf, blklen, 0, 63, nitems);
-
-    benchmark_find_first_uint128_t(mf, blklen, 0, 127, nitems);
-    benchmark_find_last_uint128_t(mf, blklen, 0, 127, nitems);
 
     int e = munmap_binfile(mf);
     if (e != 0)
