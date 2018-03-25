@@ -83,9 +83,10 @@ The `CHROM` and `POS` sections of the VariantKey are sortable.
 The functions provided here allows fast search for RSID and VariantKey values from binary files
 made of adjacent constant-length binary blocks sorted in ascending order.
 
-The input binary files can be generated using the rsidvar.sh script in the resources/tools folder.
+The input binary files can be generated from a normalized VCF file using the `resources/tools/rsvk.sh`.  
+The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
 
-The `rsid_variantkey.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
+The `rsvk.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
     00 01 02 03 04 05 06 07 08 09 10 11
@@ -95,7 +96,7 @@ The `rsid_variantkey.bin` file contains adjacent 12 bytes (96 bit) binary blocks
 ```
 
 
-The `variantkey_rsid.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
+The `vkrs.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
     00 01 02 03 04 05 06 07 08 09 10 11
