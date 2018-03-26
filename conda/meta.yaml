@@ -8,11 +8,13 @@ source:
 requirements:
   build:
     - setuptools
+    - libgcc
   run:
     - python
 
 test:
   requires:
+    - python
     - setuptools
     - coverage
     - pytest

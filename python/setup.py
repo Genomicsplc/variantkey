@@ -39,8 +39,26 @@ setup(
              '../src/binsearch.c',
             '../src/rsidvar.c',
             '../src/variantkey.c',
-            'variantkey/pyvariantkey.c'
-        ], include_dirs=['../src', 'variantkey'], extra_compile_args=["-O3"])
+            'variantkey/pyvariantkey.c',
+        ],
+        include_dirs=[
+            '../src',
+            'variantkey',
+        ],
+        extra_compile_args=[
+            "-O3",
+            "-pedantic",
+            "-std=c99",
+            "-Wall",
+            "-Wextra",
+            "-Wno-strict-prototypes",
+            "-Wunused-value",
+            "-Wcast-align",
+            "-Wundef",
+            "-Wformat-security",
+            "-Wshadow",
+            "-I../src",
+        ])
     ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
