@@ -27,7 +27,7 @@
  *
  * The input binary files can be generated using the rsidvar.sh script in the resources/tools folder.
  *
- * The `rsid_variantkey.bin` (RV) file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
+ * The `rsvk.bin` (RV) file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
  *
  * ```
  *     00 01 02 03 04 05 06 07 08 09 10 11
@@ -37,7 +37,7 @@
  * ```
  *
  *
- * The `variantkey_rsid.bin` (VR) file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
+ * The `vkrs.bin` (VR) file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
  *
  * ```
  *     00 01 02 03 04 05 06 07 08 09 10 11

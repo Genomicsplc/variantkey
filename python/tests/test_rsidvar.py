@@ -29,29 +29,29 @@ class TestFunctions(TestCase):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/rsid_variantkey.10.bin")
+            "/../../test/data/rsvk.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
-            assert False, "Unable to open the rsid_variantkey.10.bin file"
+            assert False, "Unable to open the rsvk.10.bin file"
         global vrsrc, vrfd, vrsize
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/variantkey_rsid.10.bin")
+            "/../../test/data/vkrs.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
-            assert False, "Unable to open the variantkey_rsid.10.bin file"
+            assert False, "Unable to open the vkrs.10.bin file"
 
     @classmethod
     def tearDownClass(cls):
         global rvsrc, rvfd, rvsize
         h = bs.munmap_binfile(rvsrc, rvfd, rvsize)
         if h != 0:
-            assert False, "Error while closing the rsid_variantkey.10.bin memory-mapped file"
+            assert False, "Error while closing the rsvk.10.bin memory-mapped file"
         global vrsrc, vrfd, vrsize
         h = bs.munmap_binfile(vrsrc, vrfd, vrsize)
         if h != 0:
-            assert False, "Error while closing the variantkey_rsid.10.bin memory-mapped file"
+            assert False, "Error while closing the vkrs.10.bin memory-mapped file"
 
     def test_get_vr_rsid(self):
         for item, rsid, vkey, chrom, pos, refalt in testData:
@@ -110,10 +110,10 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/rsid_variantkey.10.bin")
+            "/../../test/data/rsvk.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
-            assert False, "Unable to open the rsid_variantkey.10.bin file"
+            assert False, "Unable to open the rsvk.10.bin file"
         global vrsrc, vrfd, vrsize
         if vrfd >= 0:
             pass
@@ -121,10 +121,10 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/variantkey_rsid.10.bin")
+            "/../../test/data/vkrs.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
-            assert False, "Unable to open the variantkey_rsid.10.bin file"
+            assert False, "Unable to open the vkrs.10.bin file"
 
     def test_get_vr_rsid(self, benchmark):
         benchmark.pedantic(
@@ -172,10 +172,10 @@ class TestBenchmark(object):
         rvfd = -1
         rvsize = 0
         if h != 0:
-            assert False, "Error while closing the rsid_variantkey.10.bin memory-mapped file"
+            assert False, "Error while closing the rsvk.10.bin memory-mapped file"
         global vrsrc, vrfd, vrsize
         h = bs.munmap_binfile(vrsrc, vrfd, vrsize)
         vrfd = -1
         vrsize = 0
         if h != 0:
-            assert False, "Error while closing the variantkey_rsid.10.bin memory-mapped file"
+            assert False, "Error while closing the vkrs.10.bin memory-mapped file"

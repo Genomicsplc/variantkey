@@ -86,8 +86,10 @@ size_t decode_chrom(uint8_t code, char *chrom);
  *
  * @param ref      Reference allele. String containing a sequence of nucleotide letters.
  *                 The value in the pos field refers to the position of the first nucleotide in the String.
+ *                 Characters must be A-Z, a-z or *
  * @param sizeref  Length of the ref string, excluding the terminating null byte.
  * @param alt      Alternate non-reference allele string.
+ *                 Characters must be A-Z, a-z or *
  * @param sizealt  Length of the alt string, excluding the terminating null byte.
  *
  * @return Ref+Alt code
@@ -117,8 +119,10 @@ size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_
  * @param pos        Position. The reference position, with the 1st base having position 0.
  * @param ref        Reference allele. String containing a sequence of nucleotide letters.
  *                   The value in the pos field refers to the position of the first nucleotide in the String.
+ *                   Characters must be A-Z, a-z or *
  * @param sizeref    Length of the ref string, excluding the terminating null byte.
  * @param alt        Alternate non-reference allele string.
+ *                   Characters must be A-Z, a-z or *
  * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
  * @return      VariantKey 64 bit code.

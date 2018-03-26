@@ -16,18 +16,18 @@ endmacro ()
 
 # create a smoke test
 function(SMOKE_TEST test_name test_file dependencies)
-  add_executable (${test_name} ${CMAKE_CURRENT_BINARY_DIR}/${test_file})
+  add_executable (${test_name} ${test_file})
   # Link the executable to the libraries
   target_link_libraries (${test_name} ${dependencies})
   # run test
   do_test (${test_name})
 endfunction(SMOKE_TEST)
 
-file (COPY test_binsearch.c data/test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file (COPY data/test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
 
-file (COPY test_variantkey.c DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file (COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_variantkey test_variantkey.c variantkey)
 
-file (COPY test_rsidvar.c data/rsid_variantkey.10.bin data/variantkey_rsid.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file (COPY data/rsvk.10.bin data/vkrs.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_rsidvar test_rsidvar.c variantkey)

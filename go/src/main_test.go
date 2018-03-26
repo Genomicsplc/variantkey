@@ -15,12 +15,12 @@ func TestMain(m *testing.M) {
 		return
 	}
 
-	rv, err = MmapBinFile("../../test/data/rsid_variantkey.10.bin")
+	rv, err = MmapBinFile("../../test/data/rsvk.10.bin")
 	if err != nil {
 		return
 	}
 
-	vr, err = MmapBinFile("../../test/data/variantkey_rsid.10.bin")
+	vr, err = MmapBinFile("../../test/data/vkrs.10.bin")
 	if err != nil {
 		return
 	}

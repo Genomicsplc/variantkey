@@ -95,17 +95,17 @@ inline size_t decode_chrom(uint8_t code, char *chrom)
     return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
-static inline void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str, size_t size)
+static inline void encode_refalt_str(uint32_t *h, uint8_t *bitpos, const char *str, size_t size)
 {
     int c;
     while ((c = aztoupper(*str++)) && (size--))
     {
         if (c == '*')
         {
-            c = 91; // move to character after 'Z' = '['
+            c = ('Z' + 1);
         }
-        *pos -= 5;
-        *h |= (((c - 64) & 0x1F) << *pos);
+        *bitpos -= 5;
+        *h |= ((c - 'A' + 1) << *bitpos); // A will be coded as 1
     }
 }
 
@@ -113,11 +113,11 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
 {
     //[00000000 00000000 00000000 00000000 0RRFF111 11222223 33334444 45555500]
     uint32_t h = 0;
-    h |= ((uint32_t)(sizeref - 1) << 29); // length of REF - 1
-    h |= ((uint32_t)(sizealt - 1) << 27); // length of ALT - 1
-    uint8_t pos = 27;
-    encode_refalt_str(&h, &pos, ref, sizeref);
-    encode_refalt_str(&h, &pos, alt, sizealt);
+    h |= ((uint32_t)(sizeref - 1) << 29); // RR: length of (REF - 1)
+    h |= ((uint32_t)(sizealt - 1) << 27); // FF: length of (ALT - 1)
+    uint8_t bitpos = 27;
+    encode_refalt_str(&h, &bitpos, ref, sizeref);
+    encode_refalt_str(&h, &bitpos, alt, sizealt);
     return h;
 }
 
@@ -137,7 +137,7 @@ static inline uint32_t hash32(const char *str, size_t size)
 {
     uint32_t h = 0;
     uint32_t k;
-    uint8_t pos;
+    uint8_t bitpos;
     size_t len = 6;
     while (size > 0)
     {
@@ -146,9 +146,9 @@ static inline uint32_t hash32(const char *str, size_t size)
             len = size;
         }
         k = 0;
-        pos = 31;
+        bitpos = 31;
         //[00000000 00000000 00000000 00000000 01111122 22233333 44444555 55666660]
-        encode_refalt_str(&k, &pos, str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
+        encode_refalt_str(&k, &bitpos, str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(k, h);
         size -= len;
         str += len;
@@ -178,32 +178,32 @@ inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, 
     return encode_refalt_rev(ref, sizeref, alt, sizealt);
 }
 
-static inline char decode_refalt_char(uint32_t code, int pos)
+static inline char decode_refalt_char(uint32_t code, int bitpos)
 {
-    char c = ((code >> pos) & 0x1F);
-    if (c == 27)
+    char c = ((code >> bitpos) & 0x1F); // 0x1F is the 5 bit mask [00011111]
+    if (c == (('Z' + 1 - 'A') + 1)) // character after Z
     {
         return '*';
     }
-    return (c + 64);
+    return (c + 'A' - 1);
 }
 
 static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     *sizeref = 1 + ((code & 0x60000000) >> 29); // [01100 00000 00000 00000 00000 00000 00]
     *sizealt = 1 + ((code & 0x18000000) >> 27); // [00011 00000 00000 00000 00000 00000 00]
-    uint8_t pos = 27;
+    uint8_t bitpos = 27;
     size_t i = 0;
     for(i = 0; i < *sizeref; i++)
     {
-        pos -= 5;
-        ref[i] = decode_refalt_char(code, pos);
+        bitpos -= 5;
+        ref[i] = decode_refalt_char(code, bitpos);
     }
     ref[i] = '\0';
     for(i = 0; i < *sizealt; i++)
     {
-        pos -= 5;
-        alt[i] = decode_refalt_char(code, pos);
+        bitpos -= 5;
+        alt[i] = decode_refalt_char(code, bitpos);
     }
     alt[i] = '\0';
     return (*sizeref + *sizealt);
