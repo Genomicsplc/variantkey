@@ -166,7 +166,7 @@ static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const
     h ^= h >> 13;
     h *= 0xc2b2ae35;
     h ^= h >> 16;
-    return (h | 0x1); // 0x1 is the set bit to indicate HASH mode [00000000 00000000 00000000 00000001]
+    return ((h >> 1) | 0x1); // 0x1 is the set bit to indicate HASH mode [00000000 00000000 00000000 00000001]
 }
 
 inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
