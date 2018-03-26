@@ -6,7 +6,7 @@
 // @link       https://github.com/genomicsplc/variantkey
 
 #define PY_SSIZE_T_CLEAN
-#include "Python.h"
+#include <Python.h>
 
 // VARIANTKEY
 static PyObject *py_encode_chrom(PyObject *self, PyObject *args);

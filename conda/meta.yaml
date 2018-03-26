@@ -8,7 +8,6 @@ source:
 requirements:
   build:
     - setuptools
-    - libgcc
   run:
     - python
 
