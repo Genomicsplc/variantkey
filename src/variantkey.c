@@ -111,10 +111,11 @@ static inline void encode_refalt_str(uint32_t *h, uint8_t *pos, const char *str,
 
 static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
+    //[00000000 00000000 00000000 00000000 0RRFF111 11222223 33334444 45555500]
     uint32_t h = 0;
-    h |= ((uint32_t)(sizeref - 1) << 27); // length of REF - 1
-    h |= ((uint32_t)(sizealt - 1) << 25); // length of ALT - 1
-    uint8_t pos = 25;
+    h |= ((uint32_t)(sizeref - 1) << 29); // length of REF - 1
+    h |= ((uint32_t)(sizealt - 1) << 27); // length of ALT - 1
+    uint8_t pos = 27;
     encode_refalt_str(&h, &pos, ref, sizeref);
     encode_refalt_str(&h, &pos, alt, sizealt);
     return h;
@@ -145,7 +146,8 @@ static inline uint32_t hash32(const char *str, size_t size)
             len = size;
         }
         k = 0;
-        pos = 30;
+        pos = 31;
+        //[00000000 00000000 00000000 00000000 01111122 22233333 44444555 55666660]
         encode_refalt_str(&k, &pos, str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(k, h);
         size -= len;
@@ -156,15 +158,15 @@ static inline uint32_t hash32(const char *str, size_t size)
 
 static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
-    // 0xC0000000 is the separator character between REF and ALT [11000000 00000000 00000000 00000000]
-    uint32_t h = muxhash(hash32(alt, sizealt), muxhash(0xC0000000, hash32(ref, sizeref)));
+    // 0x3 is the separator character between REF and ALT [00000000 00000000 00000000 00000011]
+    uint32_t h = muxhash(hash32(alt, sizealt), muxhash(0x3, hash32(ref, sizeref)));
     // finalization mix - MurmurHash3 algorithm
     h ^= h >> 16;
     h *= 0x85ebca6b;
     h ^= h >> 13;
     h *= 0xc2b2ae35;
     h ^= h >> 16;
-    return (h | 0x40000000); // 0x40000000 is the set bit to indicate HASH mode [01000000 00000000 00000000 00000000]
+    return (h | 0x1); // 0x1 is the set bit to indicate HASH mode [00000000 00000000 00000000 00000001]
 }
 
 inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
@@ -188,9 +190,9 @@ static inline char decode_refalt_char(uint32_t code, int pos)
 
 static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    *sizeref = 1 + ((code & 0x18000000) >> 27); // [000 11 00 00000 00000 00000 00000 00000]
-    *sizealt = 1 + ((code & 0x06000000) >> 25); // [000 00 11 00000 00000 00000 00000 00000]
-    uint8_t pos = 25;
+    *sizeref = 1 + ((code & 0x60000000) >> 29); // [01100 00000 00000 00000 00000 00000 00]
+    *sizealt = 1 + ((code & 0x18000000) >> 27); // [00011 00000 00000 00000 00000 00000 00]
+    uint8_t pos = 27;
     size_t i = 0;
     for(i = 0; i < *sizeref; i++)
     {
@@ -209,7 +211,7 @@ static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref
 
 inline size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    if (code & 0x40000000)   // 30th bit set from the right
+    if (code & 0x1) // check last bit
     {
         return 0; // non-reversible encoding
     }

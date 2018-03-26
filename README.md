@@ -54,10 +54,10 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     The encoding of this field depends on the tolat lenght of the `REF`+`ALT` string.  
     If the total number of nucleotides in `REF`+`ALT` is more then 5, then the "`REF+ALT`" string is encoded using an hashing algoritm and a lookup table is required to reverse the values.  
     If the total number of nucleotides in `REF`+`ALT` is 5 or less, then a reversible encoding is used:
-    * the first 2 bit are set to 0;
-    * the 3<sup>th</sup> and 4<sup>th</sup> bit indicates the number of nucleotides in `REF` minus 1;
-    * the 5<sup>th</sup> and 6<sup>th</sup> indicates the number of nucleotides in `ALT` minus 1;
+    * the 1<sup>st</sup> and 2<sup>nd</sup> bit indicates the number of nucleotides in `REF` minus 1;
+    * the 3<sup>th</sup> and 4<sup>th</sup> indicates the number of nucleotides in `ALT` minus 1;
     * the following 5 groups of 5 bit represent each a nucleotide of `REF` followed by `ALT`.
+    * the last 2 bit are set to 0;
 
 
 The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.  
