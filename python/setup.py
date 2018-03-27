@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 from codecs import open
-from os.path import abspath, dirname, join
+from os.path import dirname, join
 from subprocess import call
 from setuptools import setup, find_packages, Extension, Command
 
+def read(fname):
+    return open(join(dirname(__file__), fname)).read()
 
 class RunTests(Command):
     """Run all tests."""
@@ -25,13 +27,15 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version='1.0.0',
+    version='1.0.1',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
-    long_description="Generate and process numerical representations for genetic variants",
+    long_description=read('../README.md'),
     author='Nicola Asuni',
     author_email='nicola.asuni@genomicsplc.com',
     url='https://github.com/genomicsplc/variantkey',
+    license='MIT',
+    platforms='Linux',
     packages=find_packages(exclude=['docs', 'tests*']),
     ext_modules=[
         Extension('variantkey', [
