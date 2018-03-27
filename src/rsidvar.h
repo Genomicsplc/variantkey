@@ -52,7 +52,7 @@
 #define RSIDVAR_H
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
 #include "binsearch.h"

@@ -49,7 +49,7 @@
 #define BINSEARCH_H
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
 #include <inttypes.h>

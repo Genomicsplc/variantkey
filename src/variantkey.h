@@ -44,7 +44,7 @@
 #define VARIANTKEY_H
 
 #ifdef __cplusplus
-}
+extern "C" {
 #endif
 
 #include <stddef.h>
