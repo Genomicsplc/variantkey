@@ -43,6 +43,10 @@
 #ifndef VARIANTKEY_H
 #define VARIANTKEY_H
 
+#ifdef __cplusplus
+}
+#endif
+
 #include <stddef.h>
 
 /**
@@ -161,5 +165,9 @@ uint64_t parse_variantkey_string(const char *vs);
  * @return A variantkey_t structure.
  */
 variantkey_t decode_variantkey(uint64_t code);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // VARIANTKEY_H

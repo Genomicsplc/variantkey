@@ -4,7 +4,6 @@ from codecs import open
 from os.path import abspath, dirname, join
 from subprocess import call
 from setuptools import setup, find_packages, Extension, Command
-from variantkey import __version__ as VERSION
 
 
 class RunTests(Command):
@@ -26,7 +25,7 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version=VERSION,
+    version='1.0.0',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description="Generate and process numerical representations for genetic variants",

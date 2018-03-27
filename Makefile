@@ -120,7 +120,7 @@ build:
 # Set the version from VERSION file
 version:
 	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" conda/meta.yaml
-	sed -i "s/__version__.*$$/__version__ = '$(VERSION)'/" python/variantkey/__init__.py
+	sed -i "s/version=.*,$$/version='$(VERSION)',/" python/setup.py
 
 # Build the python module
 python: version
@@ -154,7 +154,7 @@ format:
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.h'
 	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.c'
-	autopep8 --in-place  --max-line-length=255 ./python/tests/*.py
+	autopep8 --in-place --max-line-length=255 ./python/tests/*.py
 	cd go && make format
 
 # Remove any build artifact

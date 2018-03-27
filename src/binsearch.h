@@ -48,6 +48,10 @@
 #ifndef BINSEARCH_H
 #define BINSEARCH_H
 
+#ifdef __cplusplus
+}
+#endif
+
 #include <inttypes.h>
 
 /**
@@ -158,5 +162,9 @@ uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpo
 
 define_declare_find_last(uint32_t)
 define_declare_find_last(uint64_t)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // BINSEARCH_H

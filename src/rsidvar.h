@@ -51,6 +51,10 @@
 #ifndef RSIDVAR_H
 #define RSIDVAR_H
 
+#ifdef __cplusplus
+}
+#endif
+
 #include "binsearch.h"
 #include "variantkey.h"
 
@@ -119,5 +123,9 @@ uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, u
  * @return RSID
  */
 uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_start, uint32_t pos_end);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // RSIDVAR_H
