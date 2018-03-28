@@ -3,7 +3,7 @@ set -e -u -x -o pipefail
 
 : ${MINICONDA_URL:=https://repo.continuum.io/miniconda}
 : ${MINICONDA_FILE:=Miniconda3-4.4.10-Linux-x86_64.sh}
-: ${MINICONDA_PIN_VERSION:=4.5.0}
+: ${MINICONDA_PIN_VERSION:=-}
 : ${PYTHON_VERSION:=-}
 
 if [ -x "$(command -v greadlink)" ]; then READLINK=greadlink; else READLINK=readlink; fi

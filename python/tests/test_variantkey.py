@@ -651,11 +651,6 @@ class TestFunctions(TestCase):
 
     def test_parse_variantkey_string(self):
         for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
-            h = vh.parse_variantkey_string(vs)
-            self.assertEqual(h, vk)
-
-    def test_parse_variantkey_bytes(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
             h = vh.parse_variantkey_string(vs.encode('ascii'))
             self.assertEqual(h, vk)
 
@@ -676,7 +671,4 @@ class TestBenchmark(object):
         benchmark(vh.variantkey_string, 0x880082d600138000)
 
     def test_parse_variantkey_string_benchmark(self, benchmark):
-        benchmark(vh.parse_variantkey_string, "880082d600138000")
-
-    def test_parse_variantkey_bytes_benchmark(self, benchmark):
         benchmark(vh.parse_variantkey_string, b"880082d600138000")

@@ -6,8 +6,11 @@ source:
   path: ..
 
 requirements:
-  build:
+  host:
+    - python
     - setuptools
+  build:
+    - {{ compiler('c') }}
   run:
     - python
 

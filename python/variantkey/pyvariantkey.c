@@ -89,7 +89,7 @@ static PyObject* py_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *ar
 static PyObject* py_parse_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *vs;
-    if (!PyArg_ParseTuple(args, "s#", &vs))
+    if (!PyArg_ParseTuple(args, "y", &vs))
         return NULL;
     uint64_t h = parse_variantkey_string(vs);
     return Py_BuildValue("K", h);
