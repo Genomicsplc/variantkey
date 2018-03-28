@@ -96,7 +96,7 @@ endif
 
 # use clang-tidy
 tidy:
-	clang-tidy -checks='*,-llvm-header-guard' -header-filter=.* -p . src/*.c
+	clang-tidy -checks='*,-llvm-header-guard,-android-cloexec-open' -header-filter=.* -p . src/*.c
 
 # Build the library
 build:
