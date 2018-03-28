@@ -190,8 +190,8 @@ static inline char decode_refalt_char(uint32_t code, int bitpos)
 
 static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    *sizeref = 1 + ((code & 0x60000000) >> 29); // [01100 00000 00000 00000 00000 00000 00]
-    *sizealt = 1 + ((code & 0x18000000) >> 27); // [00011 00000 00000 00000 00000 00000 00]
+    *sizeref = (size_t)((code & 0x60000000) >> 29) + 1; // [01100 00000 00000 00000 00000 00000 00]
+    *sizealt = (size_t)((code & 0x18000000) >> 27) + 1; // [00011 00000 00000 00000 00000 00000 00]
     uint8_t bitpos = 27;
     size_t i = 0;
     for(i = 0; i < *sizeref; i++)
