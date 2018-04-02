@@ -14,7 +14,7 @@
 
 This project contains tools to generate and process a 64 bit Unsigned Integer Key for Human Genetic Variants
 
-The VariantKey is sortable for chromosome and position, and it is also fully reversible for variants with up to 5 nucleotides between Reference and Alternate alleles. It can be used to sort, search and match variant-based data easily and very quickly.
+The VariantKey is sortable for chromosome and position, and it is also fully reversible for variants with up to 11 bases between Reference and Alternate alleles. It can be used to sort, search and match variant-based data easily and very quickly.
 
 **IMPORTANT**: This model assumes that the variants have been:
 
@@ -29,10 +29,10 @@ In VCF files this can be done using the [vt normalize](https://genome.sph.umich.
 The VariantKey is composed of 3 sections arranged in 64 bit:
 
 ```
-           8      16      24      32      40      48      56      64
-           |       |       |       |       |       |       |       |
+    1      8      16      24      32      40      48      56      64
+    |      |       |       |       |       |       |       |       |
     0123456789012345678901234567890123456789012345678901234567890123
-    CHROM|           POS            ||           REF+ALT           |
+    CHROM|<--------- POS ----------->||<-------- REF+ALT --------->|
       |               |                             |
       5 bit           28 bit                        31 bit
 ```
@@ -82,7 +82,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.  
 The `CHROM` and `POS` sections of the VariantKey are sortable.  
-The reversible encoding limit of 11 bases covers 99.64% (335,933,068 / 337,162,128) of the variants in the dbSNP GRCh37.p13.b150 VCF file. The remaining variants can be reversed using a lookup table.
+The reversible encoding limit of 11 bases covers 99.64% (335,932,359 / 337,162,128) of the variants in the dbSNP GRCh37.p13.b150 VCF file. The remaining variants can be reversed using a lookup table.
 
 
 ## Input values
