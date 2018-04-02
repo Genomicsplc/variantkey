@@ -71,17 +71,18 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
                                          |                                |
                                         MSB                              LSB
 ```
-    The encoding of this field depends on the total length of the `REF`+`ALT` string.  
-    If the total number of nucleotides in `REF`+`ALT` is more then 5, then the LSB bit is set to 1 and the remaining 30 bit are filled with an hash of the `REF` and `ALT` strings. A lookup table is required to reverse the values.  
-    If the total number of nucleotides in `REF`+`ALT` is 5 or less, then a reversible encoding is used:
-    * the 1<sup>st</sup> and 2<sup>nd</sup> bit indicate the number of nucleotides in `REF` minus 1;
-    * the 3<sup>rd</sup> and 4<sup>th</sup> bit indicate the number of nucleotides in `ALT` minus 1;
-    * the following 5 groups of 5 bit represent each a nucleotide of `REF` followed by `ALT`.
-    * the last 2 bit (LSB) are set to 0;
+    The encoding of this field mainly depends on the total length of the `REF`+`ALT` string.
+    If the total number of nucleotides in `REF`+`ALT` is more then 11, or if the alleles contains characters other than ACGT, then the LSB bit is set to 1 and the remaining 30 bit are filled with an hash of the `REF` and `ALT` strings. A lookup table is required to reverse the values.  
+    If the total number of nucleotides in `REF`+`ALT` is 11 or less and only contains ACGT letters, then a reversible encoding is used:
+    * the bit 1-4 bit indicate the number of bases in `REF`;
+    * the bit 5-8 bit indicate the number of bases in `ALT`;
+    * the following 11 groups of 2 bit represent each a base of `REF` followed by `ALT`.
+    * the last bit (LSB) is set to 0;
 
 
 The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.  
-The `CHROM` and `POS` sections of the VariantKey are sortable.
+The `CHROM` and `POS` sections of the VariantKey are sortable.  
+The reversible encoding limit of 11 bases covers 99.64% (335,933,068 / 337,162,128) of the variants in the dbSNP GRCh37.p13.b150 VCF file. The remaining variants can be reversed using a lookup table.
 
 
 ## Input values
