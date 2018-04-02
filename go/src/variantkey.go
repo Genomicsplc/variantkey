@@ -74,7 +74,7 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 	return uint32(C.encode_refalt((*C.char)(pref), C.size_t(sizeref), (*C.char)(palt), C.size_t(sizealt)))
 }
 
-// DecodeRefAlt decode Ref+Alt code to string
+// DecodeRefAlt decode Ref+Alt code if reversible
 func DecodeRefAlt(c uint32) (string, string, uint8, uint8, uint8) {
 	var cref *C.char = C.CString("000000")
 	defer C.free(unsafe.Pointer(cref)) // #nosec

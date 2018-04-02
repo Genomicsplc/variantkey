@@ -14,7 +14,7 @@
 
 This project contains tools to generate and process a 64 bit Unsigned Integer Key for Human Genetic Variants
 
-The VariantKey is sortable for chromosome and position, and it is also fully reversible for variants with up to 5 nucleotides between Reference and Alternate alleles. It can be used to sort, search and match variant-based data easily and very quickly.
+The VariantKey is sortable for chromosome and position, and it is also fully reversible for variants with up to 11 bases between Reference and Alternate alleles. It can be used to sort, search and match variant-based data easily and very quickly.
 
 **IMPORTANT**: This model assumes that the variants have been:
 
@@ -29,10 +29,10 @@ In VCF files this can be done using the [vt normalize](https://genome.sph.umich.
 The VariantKey is composed of 3 sections arranged in 64 bit:
 
 ```
-           8      16      24      32      40      48      56      64
-           |       |       |       |       |       |       |       |
+    1      8      16      24      32      40      48      56      64
+    |      |       |       |       |       |       |       |       |
     0123456789012345678901234567890123456789012345678901234567890123
-    CHROM|           POS            ||           REF+ALT           |
+    CHROM|<--------- POS ----------->||<-------- REF+ALT --------->|
       |               |                             |
       5 bit           28 bit                        31 bit
 ```
@@ -71,17 +71,18 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
                                          |                                |
                                         MSB                              LSB
 ```
-    The encoding of this field depends on the total length of the `REF`+`ALT` string.  
-    If the total number of nucleotides in `REF`+`ALT` is more then 5, then the LSB bit is set to 1 and the remaining 30 bit are filled with an hash of the `REF` and `ALT` strings. A lookup table is required to reverse the values.  
-    If the total number of nucleotides in `REF`+`ALT` is 5 or less, then a reversible encoding is used:
-    * the 1<sup>st</sup> and 2<sup>nd</sup> bit indicate the number of nucleotides in `REF` minus 1;
-    * the 3<sup>rd</sup> and 4<sup>th</sup> bit indicate the number of nucleotides in `ALT` minus 1;
-    * the following 5 groups of 5 bit represent each a nucleotide of `REF` followed by `ALT`.
-    * the last 2 bit (LSB) are set to 0;
+    The encoding of this field mainly depends on the total length of the `REF`+`ALT` string.
+    If the total number of nucleotides in `REF`+`ALT` is more then 11, or if the alleles contains characters other than ACGT, then the LSB bit is set to 1 and the remaining 30 bit are filled with an hash of the `REF` and `ALT` strings. A lookup table is required to reverse the values.  
+    If the total number of nucleotides in `REF`+`ALT` is 11 or less and only contains ACGT letters, then a reversible encoding is used:
+    * the bit 1-4 bit indicate the number of bases in `REF`;
+    * the bit 5-8 bit indicate the number of bases in `ALT`;
+    * the following 11 groups of 2 bit represent each a base of `REF` followed by `ALT`.
+    * the last bit (LSB) is set to 0;
 
 
 The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.  
-The `CHROM` and `POS` sections of the VariantKey are sortable.
+The `CHROM` and `POS` sections of the VariantKey are sortable.  
+The reversible encoding limit of 11 bases covers 99.64% (335,932,359 / 337,162,128) of the variants in the dbSNP GRCh37.p13.b150 VCF file. The remaining variants can be reversed using a lookup table.
 
 
 ## Input values

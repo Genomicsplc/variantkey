@@ -59,14 +59,6 @@ typedef struct variantkey_t
     uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 31 bits are used)
 } variantkey_t;
 
-/** @brief Fast ASCII Uppercase function for a-z letters
- *
- * @param c character code to convert
- *
- * @return uppercase character code
- */
-int aztoupper(int c);
-
 /** @brief Returns chromosome encoding.
  *
  * @param chrom  Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
@@ -100,7 +92,7 @@ size_t decode_chrom(uint8_t code, char *chrom);
  */
 uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt);
 
-/** @brief Decode the 32 bit REF+ALT code if reversible (if it has less than 5 nucleotides in total).
+/** @brief Decode the 32 bit REF+ALT code if reversible (if it has 11 or less bases in total and only contains ACGT letters).
  *
  * @param code     REF+ALT code
  * @param ref      REF string buffer to be returned.
@@ -110,8 +102,7 @@ uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t 
  * @param sizealt  Pointer to the size of the alt buffer, excluding the terminating null byte.
  *                 This will contain the final alt size.
  *
- * @return      If the code is reversible (less than 6 nucleotides in total), then
- *              the total number of characters of REF+ALT is returned.
+ * @return      If the code is reversible, then the total number of characters of REF+ALT is returned.
  *              Otherwise 0 is returned.
  */
 size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt);

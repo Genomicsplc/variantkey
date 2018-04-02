@@ -40,7 +40,7 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYENCODECHROM_DOCSTRING "Returns chromosome encoding."
 #define PYDECODECHROM_DOCSTRING "Decode the CHROM code."
 #define PYENCODEREFALT_DOCSTRING "Returns reference+alternate encoding."
-#define PYDECODEREFALT_DOCSTRING "Decode the 32 bit REF+ALT code if reversible (if it has less than 5 nucleotides in total)."
+#define PYDECODEREFALT_DOCSTRING "Decode the 32 bit REF+ALT code if reversible (if it has 11 or less bases in total and only contains ACGT letters)."
 #define PYVARIANTKEY_DOCSTRING "Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT."
 #define PYVARIANTKEYSTRING_DOCSTRING "Returns VariantKey hexadecimal string (16 characters)."
 #define PYPARSEVARIANTKEYSTRING_DOCSTRING "Parses a VariantKey hex string and returns the code."
