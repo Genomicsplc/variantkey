@@ -54,7 +54,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 ```
     0    5                             32
-         |                              |
+    |    |                              |
     00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
          |                              |
         MSB                            LSB
@@ -66,7 +66,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 ```
     0                                   33                               63
-                                         |                                |
+    |                                    |                                |
     00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
                                          |                                |
                                         MSB                              LSB
@@ -79,10 +79,12 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     * the following 11 groups of 2 bit represent each a base of `REF` followed by `ALT`.
     * the last bit (LSB) is set to 0;
 
+### NOTE:
 
-The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.  
-The `CHROM` and `POS` sections of the VariantKey are sortable.  
-The reversible encoding limit of 11 bases covers 99.64% (335,932,359 / 337,162,128) of the variants in the dbSNP GRCh37.p13.b150 VCF file. The remaining variants can be reversed using a lookup table.
+* The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.
+* The `CHROM` and `POS` sections of the VariantKey are sortable.
+* The reversible encoding limit of 11 bases covers 99.64% (335,932,359 / 337,162,128) of the variants in the normalized dbSNP GRCh37.p13.b150 VCF file. The remaining 1,229,769 variants can be reversed using a lookup table.
+* The normalized dbSNP GRCh37.p13.b150 VCF file contains only 825 variants with nucleotides other than ACGT.
 
 
 ## Input values
@@ -171,30 +173,23 @@ make python
 import variantkey as vk
 
 vkey = vk.variantkey("X", 193330, "GCA", "G")
-print(vkey)
-# 13259012477095908224
+print(vkey) # 13259012476408233984
 
 s = vk.variantkey_string(vkey)
-print(s)
-# b'b801799941c61380'
+print(s) # b'b801799918c90000'
 
 v = vk.parse_variantkey_string(s)
-print(v)
-# 13259012477095908224
+print(v) # 13259012476408233984
 
 chrom, pos, refalt = vk.decode_variantkey(v)
-print(chrom, pos, refalt)
-# 23 193330 1103500160
+print(chrom, pos, refalt) # 23 193330 415825920
 
 c = vk.decode_chrom(chrom)
-print(c)
-# X
+print(c) # X
 
 ref, alt, reflen, altlen = vk.decode_refalt(refalt)
-print(ref, alt, reflen, altlen)
-# GCA G 3 1
+print(ref, alt, reflen, altlen) # GCA G 3 1
 ```
-
 
 ## GO Library
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import variantkey as vk
 
 vkey = vk.variantkey("X", 193330, "GCA", "G")
