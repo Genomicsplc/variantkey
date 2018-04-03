@@ -81,20 +81,31 @@ SEXP DecodeRefAlt(SEXP code)
 
 SEXP VariantKey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
 {
-    const char* chr = CHAR(STRING_ELT(chrom, 0));
-    const char* r = CHAR(STRING_ELT(ref, 0));
-    const char* a = CHAR(STRING_ELT(alt, 0));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = variantkey(chr, strlen(chr), asReal(pos), r, strlen(r), a, strlen(a));
+    const char *chr = CHAR(STRING_ELT(chrom, 0));
+    const char *r = CHAR(STRING_ELT(ref, 0));
+    const char *a = CHAR(STRING_ELT(alt, 0));
+    char hex[17];
+    uint64_t code = variantkey(chr, strlen(chr), asReal(pos), r, strlen(r), a, strlen(a));
+    variantkey_string(code, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP DecodeVariantKey(SEXP hexcode)
+{
+    char chrom[3] = "";
+    char ref[12], alt[12];
+    size_t sizeref, sizealt;
+    const char *hex = CHAR(STRING_ELT(hexcode, 0));
+    uint64_t code = parse_variantkey_string(hex);
+    variantkey_t v = decode_variantkey(code);
+    decode_chrom(v.chrom, chrom);
+    decode_refalt(v.refalt, ref, &sizeref, alt, &sizealt);
+    const char *names[] = {"CHROM", "POS", "REF", "ALT", ""};
+    SEXP res = PROTECT(mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(res, 0, Rf_mkString(chrom));
+    SET_VECTOR_ELT(res, 1, ScalarInteger(v.pos));
+    SET_VECTOR_ELT(res, 2, Rf_mkString(ref));
+    SET_VECTOR_ELT(res, 3, Rf_mkString(alt));
     UNPROTECT(1);
     return res;
 }
-
-
-
-//size_t variantkey_string(uint64_t code, char *str);
-
-//uint64_t parse_variantkey_string(const char *vs);
-
-//variantkey_t decode_variantkey(uint64_t code);
