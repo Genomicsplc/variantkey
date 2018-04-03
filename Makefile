@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python version conda go doc format clean
+.PHONY: help qa test tidy build python version conda go r doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -57,6 +57,7 @@ help:
 	@echo "    make version : Set version from VERSION file"
 	@echo "    make conda   : Build a conda package for the python wrapper"
 	@echo "    make go      : Test the golang cgo module"
+	@echo "    make r       : Build the R module"
 	@echo "    make doc     : Generate source code documentation"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
@@ -142,6 +143,11 @@ go:
 	cd go && \
 	make deps qa
 
+# Build R module
+r:
+	cd r/src && \
+	R CMD SHLIB rvariantkey.c
+
 # Generate source code documentation
 doc:
 	cd target/build && \
@@ -154,6 +160,7 @@ format:
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.h'
 	astyle --style=allman --recursive --suffix=none 'python/variantkey/*.c'
+	astyle --style=allman --recursive --suffix=none 'r/src/*.c'
 	autopep8 --in-place --max-line-length=255 ./python/tests/*.py
 	cd go && make format
 
@@ -161,5 +168,6 @@ format:
 clean:
 	rm -rf target
 	rm -rf ./go/target ./go/src.test
+	rm -f ./r/src/*.o ./r/src/*.so
 	rm -rf ./python/htmlcov ./python/build ./python/dist ./python/.cache ./python/.benchmarks ./python/tests/*.so ./python/tests/__pycache__ ./python/variantkey/__pycache__ ./python/variantkey.egg-info
 	find . -type f -name '*.pyc' -exec rm -f {} \;
