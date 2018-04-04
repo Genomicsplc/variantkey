@@ -128,9 +128,20 @@ func ParseVariantKeyString(s string) uint64 {
 	return uint64(C.parse_variantkey_string((*C.char)(p)))
 }
 
-// DecodeVariantKeyg parses a variant key string and returns the components as TVariantKey128 structure.
+// DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
 func DecodeVariantKey(v uint64) TVariantKey {
 	return castCVariantKey(C.decode_variantkey(C.uint64_t(v)))
+}
+
+// ReverseVariantKey parses a variant key string and returns the components.
+func ReverseVariantKey(v uint64) (chrom string, pos uint32, ref string, alt string, sizeref uint8, sizealt uint8) {
+	vk := DecodeVariantKey(v)
+	chrom = DecodeChrom(vk.Chrom)
+	pos = vk.Pos
+	if (vk.RefAlt & 0x1) == 0 {
+		ref, alt, sizeref, sizealt, _ = DecodeRefAlt(vk.RefAlt)
+	}
+	return
 }
 
 // --- BINSEARCH ---

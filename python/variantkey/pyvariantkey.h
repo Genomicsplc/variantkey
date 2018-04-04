@@ -17,6 +17,7 @@ static PyObject *py_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_variantkey_string(PyObject *self, PyObject *args);
 static PyObject *py_parse_variantkey_string(PyObject *self, PyObject *args);
 static PyObject *py_decode_variantkey(PyObject *self, PyObject *args);
+static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args);
 
 // BINSEARCH
 static PyObject *py_mmap_binfile(PyObject *self, PyObject *args);
@@ -45,6 +46,7 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYVARIANTKEYSTRING_DOCSTRING "Returns VariantKey hexadecimal string (16 characters)."
 #define PYPARSEVARIANTKEYSTRING_DOCSTRING "Parses a VariantKey hex string and returns the code."
 #define PYDECODEVARIANTKEY_DOCSTRING "Decode a VariantKey code and returns the components as variantkey_t structure."
+#define PYREVERSEVARIANTKEY_DOCSTRING "Reverse a VariantKey code and returns the components."
 
 // BINSEARCH
 #define PYMMAPBINFILE_DOCSTRING "Memory map the specified file."

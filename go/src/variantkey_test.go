@@ -840,3 +840,33 @@ func BenchmarkDecodeVariantKey(b *testing.B) {
 		DecodeVariantKey(0x880082d600138000)
 	}
 }
+
+func TestReverseVariantKey(t *testing.T) {
+	for _, v := range variantsTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			chrom, pos, ref, alt, sizeref, sizealt := ReverseVariantKey(v.vk)
+			if sizealt > 0 {
+				if EncodeChrom(chrom) != v.vkchrom {
+					t.Errorf("The chrom (encoded) value is different, expected %#v got: %#v", EncodeChrom(chrom), v.vkchrom)
+				}
+				if pos != v.vkpos {
+					t.Errorf("The pos value is different, expected %#v got: %#v", pos, v.vkpos)
+				}
+				if ref != strings.ToUpper(v.ref) {
+					t.Errorf("The ref value is different, expected %#v got: %#v", ref, v.ref)
+				}
+				if alt != strings.ToUpper(v.alt) {
+					t.Errorf("The alt value is different, expected %#v got: %#v", alt, v.alt)
+				}
+				if sizeref != uint8(len(v.ref)) {
+					t.Errorf("The sizeref value is different, expected %#v got: %#v", sizeref, len(v.ref))
+				}
+				if sizealt != uint8(len(v.alt)) {
+					t.Errorf("The sizealt value is different, expected %#v got: %#v", sizealt, len(v.alt))
+				}
+			}
+		})
+	}
+}

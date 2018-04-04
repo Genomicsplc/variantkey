@@ -63,7 +63,7 @@ help:
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-all: clean format qa build doc go python pytest
+all: clean format qa build doc go python pytest r
 
 # Alias for test
 qa: test tidy

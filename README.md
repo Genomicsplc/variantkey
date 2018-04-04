@@ -170,25 +170,30 @@ make python
 ### Usage Example
 
 ```
+#!/usr/bin/env python3
+
 import variantkey as vk
 
-vkey = vk.variantkey("X", 193330, "GCA", "G")
-print(vkey) # 13259012476408233984
+vkey = vk.variantkey(b"X", 193330, b"GCA", b"G")
+print(vkey)  # 13259012476408233984
 
 s = vk.variantkey_string(vkey)
-print(s) # b'b801799918c90000'
+print(s)  # b'b801799918c90000'
 
 v = vk.parse_variantkey_string(s)
-print(v) # 13259012476408233984
+print(v)  # 13259012476408233984
+
+chrom, pos, ref, alt, sizeref, sizealt = vk.reverse_variantkey(v)
+print(chrom, pos, ref, alt, sizeref, sizealt)  # b'X' 193330 b'GCA' b'G' 3 1
 
 chrom, pos, refalt = vk.decode_variantkey(v)
-print(chrom, pos, refalt) # 23 193330 415825920
+print(chrom, pos, refalt)  # 23 193330 415825920
 
 c = vk.decode_chrom(chrom)
-print(c) # X
+print(c)  # b'X'
 
 ref, alt, reflen, altlen = vk.decode_refalt(refalt)
-print(ref, alt, reflen, altlen) # GCA G 3 1
+print(ref, alt, reflen, altlen)  # b'GCA' b'G' 3 1
 ```
 
 ## GO Library
@@ -201,4 +206,42 @@ Use the following commands to test the go wrapper and generate reports.
 
 ```
 make golang
+```
+
+## R Module
+
+Use the following commands to tbuild the R wrapper.
+
+```
+make r
+```
+
+### Usage Example
+
+```
+dyn.load("rvariantkey.so")
+
+vkey <- .Call("VariantKey", "X", 193330, "GCA", "G")
+print(vkey)
+# [1] "b801799918c90000"
+
+var <- .Call("ReverseVariantKey", vkey)
+print(var)
+# $CHROM
+# [1] "X"
+#
+# $POS
+# [1] 193330
+#
+# $REF
+# [1] "GCA"
+#
+# $ALT
+# [1] "G"
+#
+# $SIZE_REF
+# [1] 3
+#
+# $SIZE_ALT
+# [1] 1
 ```

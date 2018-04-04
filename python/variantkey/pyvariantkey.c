@@ -19,10 +19,12 @@
 #endif
 #endif
 
+#define ALLELE_BUFFSIZE 12
+
 static PyObject* py_encode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom;
-    if (!PyArg_ParseTuple(args, "s", &chrom))
+    if (!PyArg_ParseTuple(args, "y", &chrom))
         return NULL;
     uint8_t h = encode_chrom(chrom, strlen(chrom));
     return Py_BuildValue("B", h);
@@ -35,13 +37,13 @@ static PyObject* py_decode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
         return NULL;
     char chrom[3] = "";
     decode_chrom(code, chrom);
-    return Py_BuildValue("s", chrom);
+    return Py_BuildValue("y", chrom);
 }
 
 static PyObject* py_encode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *ref, *alt;
-    if (!PyArg_ParseTuple(args, "ss", &ref, &alt))
+    if (!PyArg_ParseTuple(args, "yy", &ref, &alt))
         return NULL;
     uint32_t h = encode_refalt(ref, strlen(ref), alt, strlen(alt));
     return Py_BuildValue("I", h);
@@ -53,14 +55,14 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
     uint32_t code;
     if (!PyArg_ParseTuple(args, "I", &code))
         return NULL;
-    char ref[6] = "";
-    char alt[6] = "";
+    char ref[ALLELE_BUFFSIZE] = "";
+    char alt[ALLELE_BUFFSIZE] = "";
     size_t sizeref = 0;
     size_t sizealt = 0;
     decode_refalt(code, ref, &sizeref, alt, &sizealt);
     result = PyTuple_New(4);
-    PyTuple_SetItem(result, 0, Py_BuildValue("s", ref));
-    PyTuple_SetItem(result, 1, Py_BuildValue("s", alt));
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", ref));
+    PyTuple_SetItem(result, 1, Py_BuildValue("y", alt));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", sizeref));
     PyTuple_SetItem(result, 3, Py_BuildValue("K", sizealt));
     return result;
@@ -70,7 +72,7 @@ static PyObject* py_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom, *ref, *alt;
     uint32_t pos;
-    if (!PyArg_ParseTuple(args, "sIss", &chrom, &pos, &ref, &alt))
+    if (!PyArg_ParseTuple(args, "yIyy", &chrom, &pos, &ref, &alt))
         return NULL;
     uint64_t h = variantkey(chrom, strlen(chrom), pos, ref, strlen(ref), alt, strlen(alt));
     return Py_BuildValue("K", h);
@@ -106,6 +108,30 @@ static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *ar
     PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
     PyTuple_SetItem(result, 2, Py_BuildValue("I", h.refalt));
+    return result;
+}
+
+static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t code;
+    char chrom[3] = "", ref[ALLELE_BUFFSIZE] = "", alt[ALLELE_BUFFSIZE] = "";
+    size_t sizeref = 0, sizealt = 0;
+    if (!PyArg_ParseTuple(args, "K", &code))
+        return NULL;
+    variantkey_t h = decode_variantkey(code);
+    decode_chrom(h.chrom, chrom);
+    if ((h.refalt & 0x1) == 0)
+    {
+        decode_refalt(h.refalt, ref, &sizeref, alt, &sizealt);
+    }
+    result = PyTuple_New(6);
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("y", ref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("y", alt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("K", sizeref));
+    PyTuple_SetItem(result, 5, Py_BuildValue("K", sizealt));
     return result;
 }
 
@@ -307,6 +333,8 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"variantkey_string", py_variantkey_string, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
     {"parse_variantkey_string", py_parse_variantkey_string, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
     {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
+    {"reverse_variantkey", py_reverse_variantkey, METH_VARARGS, PYREVERSEVARIANTKEY_DOCSTRING},
+
 
     // BINSEARCH
     {"mmap_binfile", py_mmap_binfile, METH_VARARGS, PYMMAPBINFILE_DOCSTRING},
