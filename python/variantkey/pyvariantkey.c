@@ -53,8 +53,8 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
     uint32_t code;
     if (!PyArg_ParseTuple(args, "I", &code))
         return NULL;
-    char ref[6] = "";
-    char alt[6] = "";
+    char ref[12] = "";
+    char alt[12] = "";
     size_t sizeref = 0;
     size_t sizealt = 0;
     decode_refalt(code, ref, &sizeref, alt, &sizealt);
