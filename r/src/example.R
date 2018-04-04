@@ -10,16 +10,22 @@ vkey <- .Call("VariantKey", "X", 193330, "GCA", "G")
 print(vkey)
 # [1] "b801799918c90000"
 
-var <- .Call("DecodeVariantKey", vkey)
+var <- .Call("ReverseVariantKey", vkey)
 print(var)
 # $CHROM
 # [1] "X"
-# 
+#
 # $POS
 # [1] 193330
-# 
+#
 # $REF
 # [1] "GCA"
-# 
+#
 # $ALT
 # [1] "G"
+#
+# $SIZE_REF
+# [1] 3
+#
+# $SIZE_ALT
+# [1] 1
