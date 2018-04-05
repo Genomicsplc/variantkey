@@ -49,7 +49,7 @@ SEXP EncodeChrom(SEXP chrom)
 SEXP DecodeChrom(SEXP code)
 {
     char chrom[3] = "";
-    decode_chrom(REAL(code)[0], chrom);
+    decode_chrom(INTEGER(code)[0], chrom);
     return Rf_mkString(chrom);
 }
 
@@ -66,9 +66,12 @@ SEXP EncodeRefAlt(SEXP ref, SEXP alt)
 
 SEXP DecodeRefAlt(SEXP code)
 {
-    char ref[12], alt[12];
-    size_t sizeref, sizealt;
-    decode_refalt(REAL(code)[0], ref, &sizeref, alt, &sizealt);
+    char ref[12] = "", alt[12] = "";
+    size_t sizeref = 0, sizealt = 0;
+    if ((INTEGER(code)[0] & 0x1) == 0)
+    {
+        decode_refalt(INTEGER(code)[0], ref, &sizeref, alt, &sizealt);
+    }
     const char *names[] = {"REF", "ALT", "REF_LEN", "ALT_LEN", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, Rf_mkString(ref));

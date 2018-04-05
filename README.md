@@ -175,25 +175,33 @@ make python
 import variantkey as vk
 
 vkey = vk.variantkey(b"X", 193330, b"GCA", b"G")
-print(vkey)  # 13259012476408233984
+print(vkey)
+# 13259012476408233984
 
 s = vk.variantkey_string(vkey)
-print(s)  # b'b801799918c90000'
+print(s)
+# b'b801799918c90000'
 
 v = vk.parse_variantkey_string(s)
-print(v)  # 13259012476408233984
+print(v)
+# 13259012476408233984
 
 chrom, pos, ref, alt, sizeref, sizealt = vk.reverse_variantkey(v)
-print(chrom, pos, ref, alt, sizeref, sizealt)  # b'X' 193330 b'GCA' b'G' 3 1
+print(chrom, pos, ref, alt, sizeref, sizealt)
+# b'X' 193330 b'GCA' b'G' 3 1
 
 chrom, pos, refalt = vk.decode_variantkey(v)
-print(chrom, pos, refalt)  # 23 193330 415825920
+print(chrom, pos, refalt)
+# 23 193330 415825920
 
 c = vk.decode_chrom(chrom)
-print(c)  # b'X'
+print(c)
+# b'X'
 
 ref, alt, reflen, altlen = vk.decode_refalt(refalt)
-print(ref, alt, reflen, altlen)  # b'GCA' b'G' 3 1
+print(ref, alt, reflen, altlen)
+# b'GCA' b'G' 3 1
+
 ```
 
 ## GO Library
@@ -219,13 +227,19 @@ make r
 ### Usage Example
 
 ```
-dyn.load("rvariantkey.so")
+#!/usr/bin/env Rscript
 
-vkey <- .Call("VariantKey", "X", 193330, "GCA", "G")
+args <- commandArgs(trailingOnly = F)  
+script.path <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
+wrapper.variantkey <- paste(script.path, "/variantkey.R", sep="")
+
+source(wrapper.variantkey)
+
+vkey <- VariantKey("X", 193330, "GCA", "G")
 print(vkey)
 # [1] "b801799918c90000"
 
-var <- .Call("ReverseVariantKey", vkey)
+var <- ReverseVariantKey(vkey)
 print(var)
 # $CHROM
 # [1] "X"
@@ -244,4 +258,5 @@ print(var)
 #
 # $SIZE_ALT
 # [1] 1
+
 ```

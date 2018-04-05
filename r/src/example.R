@@ -2,15 +2,15 @@
 
 args <- commandArgs(trailingOnly = F)  
 script.path <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-lib.variantkey <- paste(script.path, "/rvariantkey.so", sep="")
+wrapper.variantkey <- paste(script.path, "/variantkey.R", sep="")
 
-dyn.load(lib.variantkey)
+source(wrapper.variantkey)
 
-vkey <- .Call("VariantKey", "X", 193330, "GCA", "G")
+vkey <- VariantKey("X", 193330, "GCA", "G")
 print(vkey)
 # [1] "b801799918c90000"
 
-var <- .Call("ReverseVariantKey", vkey)
+var <- ReverseVariantKey(vkey)
 print(var)
 # $CHROM
 # [1] "X"

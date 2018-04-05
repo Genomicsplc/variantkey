@@ -146,7 +146,8 @@ go:
 # Build R module
 r:
 	cd r/src && \
-	R CMD SHLIB rvariantkey.c
+	R CMD SHLIB rvariantkey.c && \
+	./test_rvariantkey.R
 
 # Generate source code documentation
 doc:
