@@ -68,10 +68,7 @@ SEXP DecodeRefAlt(SEXP code)
 {
     char ref[12] = "", alt[12] = "";
     size_t sizeref = 0, sizealt = 0;
-    if ((INTEGER(code)[0] & 0x1) == 0)
-    {
-        decode_refalt(INTEGER(code)[0], ref, &sizeref, alt, &sizealt);
-    }
+    decode_refalt(INTEGER(code)[0], ref, &sizeref, alt, &sizealt);
     const char *names[] = {"REF", "ALT", "REF_LEN", "ALT_LEN", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, Rf_mkString(ref));
@@ -102,10 +99,7 @@ SEXP ReverseVariantKey(SEXP hexcode)
     uint64_t code = parse_variantkey_string(hex);
     variantkey_t v = decode_variantkey(code);
     decode_chrom(v.chrom, chrom);
-    if ((v.refalt & 0x1) == 0)
-    {
-        decode_refalt(v.refalt, ref, &sizeref, alt, &sizealt);
-    }
+    decode_refalt(v.refalt, ref, &sizeref, alt, &sizealt);
     const char *names[] = {"CHROM", "POS", "REF", "ALT", "SIZE_REF", "SIZE_ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, Rf_mkString(chrom));

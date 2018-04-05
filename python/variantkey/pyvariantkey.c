@@ -55,10 +55,8 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
     uint32_t code;
     if (!PyArg_ParseTuple(args, "I", &code))
         return NULL;
-    char ref[ALLELE_BUFFSIZE] = "";
-    char alt[ALLELE_BUFFSIZE] = "";
-    size_t sizeref = 0;
-    size_t sizealt = 0;
+    char ref[ALLELE_BUFFSIZE] = "", alt[ALLELE_BUFFSIZE] = "";
+    size_t sizeref = 0, sizealt = 0;
     decode_refalt(code, ref, &sizeref, alt, &sizealt);
     result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, Py_BuildValue("y", ref));
@@ -115,16 +113,13 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
 {
     PyObject *result;
     uint64_t code;
-    char chrom[3] = "", ref[ALLELE_BUFFSIZE] = "", alt[ALLELE_BUFFSIZE] = "";
-    size_t sizeref = 0, sizealt = 0;
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
+    char chrom[3] = "", ref[ALLELE_BUFFSIZE] = "", alt[ALLELE_BUFFSIZE] = "";
+    size_t sizeref = 0, sizealt = 0;
     variantkey_t h = decode_variantkey(code);
     decode_chrom(h.chrom, chrom);
-    if ((h.refalt & 0x1) == 0)
-    {
-        decode_refalt(h.refalt, ref, &sizeref, alt, &sizealt);
-    }
+    decode_refalt(h.refalt, ref, &sizeref, alt, &sizealt);
     result = PyTuple_New(6);
     PyTuple_SetItem(result, 0, Py_BuildValue("y", chrom));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
