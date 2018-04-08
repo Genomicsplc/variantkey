@@ -51,7 +51,7 @@ EncodeRefAlt <- function(ref, alt) {
 }
 
 DecodeRefAlt <- function(code) {
-  return(.Call("DecodeRefAlt", as.integer(code)))
+    return(.Call("DecodeRefAlt", as.integer(code)))
 }
 
 VariantKey <- function(chrom, pos, ref, alt) {

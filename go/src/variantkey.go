@@ -186,6 +186,50 @@ func GetAddress(blklen, blkpos, item uint64) uint64 {
 	return ((blklen * item) + blkpos)
 }
 
+// FindFirstUint8 search for the first occurrence of a 8 bit unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data.
+// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint8(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_first_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
+}
+
+// FindLastUint8 search for the last occurrence of a 8 bit unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data.
+// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint8(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_last_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
+}
+
+// FindFirstUint16 search for the first occurrence of a 16 bit unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data.
+// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindFirstUint16(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_first_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
+}
+
+// FindLastUint16 search for the last occurrence of a 16 bit unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data.
+// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
+// Return the item number if found or (last + 1) if not found, plus the first and last positions.
+func (mf TMMFile) FindLastUint16(blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	ret := uint64(C.find_last_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
+	return ret, uint64(cfirst), uint64(clast)
+}
+
 // FindFirstUint32 search for the first occurrence of a 32 bit unsigned integer on a memory mapped
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
@@ -249,7 +293,7 @@ func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint6
 	return vh, uint64(cfirst)
 }
 
-// FindVRRsidByVarshash search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
+// FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
 func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vk uint64) (uint32, uint64) {
 	cfirst := C.uint64_t(first)
 	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vk)))

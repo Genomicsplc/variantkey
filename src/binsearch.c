@@ -56,6 +56,17 @@ inline uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
+uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
+{
+    return ((((uint8_t)src[i]) << bitstart) >> (7 - bitend + bitstart));
+}
+
+uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
+{
+    return (((((uint16_t)src[i] << 8)
+              | (uint16_t)src[i+1]) << bitstart) >> (15 - bitend + bitstart));
+}
+
 inline uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
     return (((((uint32_t)src[i] << 24)
@@ -113,6 +124,8 @@ inline uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64
     return found; \
 }
 
+define_find_first(uint8_t)
+define_find_first(uint16_t)
 define_find_first(uint32_t)
 define_find_first(uint64_t)
 
@@ -151,5 +164,7 @@ inline uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_
     return found; \
 }
 
+define_find_last(uint8_t)
+define_find_last(uint16_t)
 define_find_last(uint32_t)
 define_find_last(uint64_t)

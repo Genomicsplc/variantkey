@@ -110,6 +110,8 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item);
 */ \
 T bytes_to_##T(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend);
 
+define_declare_bytes_to(uint8_t)
+define_declare_bytes_to(uint16_t)
 define_declare_bytes_to(uint32_t)
 define_declare_bytes_to(uint64_t)
 
@@ -135,6 +137,8 @@ The values in the file must encoded in big-endian format and sorted in ascending
  */ \
 uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
+define_declare_find_first(uint8_t)
+define_declare_find_first(uint16_t)
 define_declare_find_first(uint32_t)
 define_declare_find_first(uint64_t)
 
@@ -160,6 +164,8 @@ The values in the file must encoded in big-endian format and sorted in ascending
 */ \
 uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
+define_declare_find_last(uint8_t)
+define_declare_find_last(uint16_t)
 define_declare_find_last(uint32_t)
 define_declare_find_last(uint64_t)
 

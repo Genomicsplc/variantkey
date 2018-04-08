@@ -4,6 +4,60 @@ import "testing"
 
 var mf TMMFile
 
+var testData8 = []struct {
+	blkpos      uint64
+	first       uint64
+	last        uint64
+	search      uint8
+	foundFirst  uint64
+	foundFFirst uint64
+	foundFLast  uint64
+	foundLast   uint64
+	foundLFirst uint64
+	foundLLast  uint64
+}{
+	{6, 0, 99, 0x27, 0, 0, 1, 18, 19, 18},
+	{6, 0, 99, 0x33, 87, 87, 86, 99, 100, 99},
+	{0, 0, 99, 0x00, 0, 0, 1, 99, 100, 99},
+	{6, 0, 99, 0xff, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x27, 0, 0, 1, 18, 19, 18},
+	{6, 13, 99, 0x27, 13, 13, 12, 18, 19, 18},
+	{6, 14, 99, 0x27, 14, 14, 13, 18, 19, 18},
+	{6, 0, 0, 0x01, 1, 0, 0, 1, 0, 0},
+	{6, 0, 0, 0xf0, 1, 1, 0, 1, 1, 0},
+	{6, 99, 99, 0x01, 100, 99, 98, 100, 99, 98},
+	{6, 99, 99, 0xf0, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x28, 19, 19, 18, 44, 45, 44},
+	{6, 0, 99, 0x2A, 57, 57, 56, 61, 62, 61},
+}
+
+var testData16 = []struct {
+	blkpos      uint64
+	first       uint64
+	last        uint64
+	search      uint16
+	foundFirst  uint64
+	foundFFirst uint64
+	foundFLast  uint64
+	foundLast   uint64
+	foundLFirst uint64
+	foundLLast  uint64
+}{
+	{6, 0, 99, 0x2722, 0, 0, 1, 0, 1, 0},
+	{6, 0, 99, 0x33f5, 99, 99, 98, 99, 100, 99},
+	{0, 0, 99, 0x0001, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0xf7f3, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x27f3, 13, 13, 12, 14, 15, 14},
+	{6, 13, 99, 0x27f3, 13, 13, 12, 14, 15, 14},
+	{6, 14, 99, 0x27f3, 14, 14, 13, 14, 15, 14},
+	{6, 0, 0, 0x0001, 1, 0, 0, 1, 0, 0},
+	{6, 0, 0, 0xfff0, 1, 1, 0, 1, 1, 0},
+	{6, 99, 99, 0x0001, 100, 99, 98, 100, 99, 98},
+	{6, 99, 99, 0xfff0, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x2805, 100, 19, 18, 100, 19, 18},
+	{6, 0, 99, 0x28ff, 100, 45, 44, 100, 45, 44},
+}
+
 var testData32 = []struct {
 	blkpos      uint64
 	first       uint64
@@ -56,6 +110,60 @@ var testData64 = []struct {
 	{4, 99, 99, 0xfffffffffffffff0, 100, 100, 99, 100, 100, 99},
 	{4, 0, 99, 0x000028060981ef0a, 100, 19, 18, 100, 19, 18},
 	{4, 0, 99, 0x000028fca24c9149, 100, 45, 44, 100, 45, 44},
+}
+
+var testDataSub8 = []struct {
+	blkpos      uint64
+	first       uint64
+	last        uint64
+	search      uint8
+	foundFirst  uint64
+	foundFFirst uint64
+	foundFLast  uint64
+	foundLast   uint64
+	foundLFirst uint64
+	foundLLast  uint64
+}{
+	{6, 0, 99, 0x4, 0, 0, 1, 18, 19, 18},
+	{6, 0, 99, 0x6, 80, 80, 79, 99, 100, 99},
+	{0, 0, 99, 0x0, 0, 0, 1, 99, 100, 99},
+	{6, 0, 99, 0x1f, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x4, 0, 0, 1, 18, 19, 18},
+	{6, 13, 99, 0x4, 13, 13, 12, 18, 19, 18},
+	{6, 14, 99, 0x4, 14, 14, 13, 18, 19, 18},
+	{6, 0, 0, 0x0, 1, 0, 0, 1, 0, 0},
+	{6, 0, 0, 0x1e, 1, 1, 0, 1, 1, 0},
+	{6, 99, 99, 0x0, 100, 99, 98, 100, 99, 98},
+	{6, 99, 99, 0x1e, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x5, 19, 19, 18, 79, 80, 79},
+	{6, 0, 99, 0x5, 19, 19, 18, 79, 80, 79},
+}
+
+var testDataSub16 = []struct {
+	blkpos      uint64
+	first       uint64
+	last        uint64
+	search      uint16
+	foundFirst  uint64
+	foundFFirst uint64
+	foundFLast  uint64
+	foundLast   uint64
+	foundLFirst uint64
+	foundLLast  uint64
+}{
+	{6, 0, 99, 0x4e4, 0, 0, 1, 0, 1, 0},
+	{6, 0, 99, 0x67e, 99, 99, 98, 99, 100, 99},
+	{0, 0, 99, 0x0, 0, 0, 1, 99, 100, 99},
+	{6, 0, 99, 0x1efe, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x4fe, 13, 13, 12, 16, 17, 16},
+	{6, 13, 99, 0x4fe, 13, 13, 12, 16, 17, 16},
+	{6, 14, 99, 0x4fe, 14, 14, 13, 16, 17, 16},
+	{6, 0, 0, 0x0, 1, 0, 0, 1, 0, 0},
+	{6, 0, 0, 0x1ffe, 1, 1, 0, 1, 1, 0},
+	{6, 99, 99, 0x0, 100, 99, 98, 100, 99, 98},
+	{6, 99, 99, 0x1ffe, 100, 100, 99, 100, 100, 99},
+	{6, 0, 99, 0x500, 19, 19, 18, 20, 21, 20},
+	{6, 0, 99, 0x51f, 41, 41, 40, 44, 45, 44},
 }
 
 var testDataSub32 = []struct {
@@ -116,6 +224,110 @@ func TestGetAddress(t *testing.T) {
 	h := GetAddress(3, 5, 7)
 	if h != 26 {
 		t.Errorf("Expected 26, got %d", h)
+	}
+}
+
+func TestFindFirstUint8(t *testing.T) {
+	for _, tt := range testData8 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindFirstUint8(20, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
+			if h != tt.foundFirst {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
+			}
+			if f != tt.foundFFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundFFirst, f)
+			}
+			if l != tt.foundFLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundFLast, l)
+			}
+		})
+	}
+}
+
+func BenchmarkFindFirstUint8(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		mf.FindFirstUint8(20, testData8[4].blkpos, 0, 7, 0, 99, testData8[4].search)
+	}
+}
+
+func TestFindLastUint8(t *testing.T) {
+	for _, tt := range testData8 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindLastUint8(20, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
+			if h != tt.foundLast {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
+			}
+			if f != tt.foundLFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundLFirst, f)
+			}
+			if l != tt.foundLLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundLLast, l)
+			}
+		})
+	}
+}
+
+func BenchmarkFindLastUint8(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		mf.FindLastUint8(20, testData8[4].blkpos, 0, 7, 0, 99, testData8[4].search)
+	}
+}
+
+func TestFindFirstUint16(t *testing.T) {
+	for _, tt := range testData16 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindFirstUint16(20, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
+			if h != tt.foundFirst {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
+			}
+			if f != tt.foundFFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundFFirst, f)
+			}
+			if l != tt.foundFLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundFLast, l)
+			}
+		})
+	}
+}
+
+func BenchmarkFindFirstUint16(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		mf.FindFirstUint16(20, testData16[4].blkpos, 0, 15, 0, 99, testData16[4].search)
+	}
+}
+
+func TestFindLastUint16(t *testing.T) {
+	for _, tt := range testData16 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindLastUint16(20, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
+			if h != tt.foundLast {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
+			}
+			if f != tt.foundLFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundLFirst, f)
+			}
+			if l != tt.foundLLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundLLast, l)
+			}
+		})
+	}
+}
+
+func BenchmarkFindLastUint16(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		mf.FindLastUint16(20, testData16[4].blkpos, 0, 15, 0, 99, testData16[4].search)
 	}
 }
 
@@ -216,6 +428,82 @@ func BenchmarkFindLastUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		mf.FindLastUint64(20, testData64[4].blkpos, 0, 63, 0, 99, testData64[4].search)
+	}
+}
+
+func TestFindFirstUint8Sub(t *testing.T) {
+	for _, tt := range testDataSub8 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindFirstUint8(20, tt.blkpos, 2, 4, tt.first, tt.last, tt.search)
+			if h != tt.foundFirst {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
+			}
+			if f != tt.foundFFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundFFirst, f)
+			}
+			if l != tt.foundFLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundFLast, l)
+			}
+		})
+	}
+}
+
+func TestFindLastUint8Sub(t *testing.T) {
+	for _, tt := range testDataSub8 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindLastUint8(20, tt.blkpos, 2, 4, tt.first, tt.last, tt.search)
+			if h != tt.foundLast {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
+			}
+			if f != tt.foundLFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundLFirst, f)
+			}
+			if l != tt.foundLLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundLLast, l)
+			}
+		})
+	}
+}
+
+func TestFindFirstUint16Sub(t *testing.T) {
+	for _, tt := range testDataSub16 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindFirstUint16(20, tt.blkpos, 2, 12, tt.first, tt.last, tt.search)
+			if h != tt.foundFirst {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
+			}
+			if f != tt.foundFFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundFFirst, f)
+			}
+			if l != tt.foundFLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundFLast, l)
+			}
+		})
+	}
+}
+
+func TestFindLastUint16Sub(t *testing.T) {
+	for _, tt := range testDataSub16 {
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			h, f, l := mf.FindLastUint16(20, tt.blkpos, 2, 12, tt.first, tt.last, tt.search)
+			if h != tt.foundLast {
+				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
+			}
+			if f != tt.foundLFirst {
+				t.Errorf("Expected first 0x%x, got 0x%x", tt.foundLFirst, f)
+			}
+			if l != tt.foundLLast {
+				t.Errorf("Expected last 0x%x, got 0x%x", tt.foundLLast, l)
+			}
+		})
 	}
 }
 
