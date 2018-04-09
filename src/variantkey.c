@@ -147,18 +147,21 @@ static inline int aztoupper(int c)
     return c;
 }
 
-static inline void pack_chars(uint32_t *h, uint8_t *bitpos, const char *str, size_t size)
+static inline uint32_t pack_chars(const char *str, size_t size)
 {
     int c;
+    uint32_t h = 0;
+    uint8_t bitpos = 31;
     while ((c = aztoupper(*str++)) && (size--))
     {
         if (c == '*')
         {
             c = ('Z' + 1);
         }
-        *bitpos -= 5;
-        *h |= ((c - 'A' + 1) << *bitpos); // A will be coded as 1
+        bitpos -= 5;
+        h |= ((c - 'A' + 1) << bitpos); // A will be coded as 1
     }
+    return h;
 }
 
 // Mix two 32 bit hash numbers using the MurmurHash3 algorithm
@@ -185,10 +188,8 @@ static inline uint32_t hash32(const char *str, size_t size)
         {
             len = size;
         }
-        k = 0;
-        bitpos = 31;
         //[00000000 00000000 00000000 00000000 01111122 22233333 44444555 55666660]
-        pack_chars(&k, &bitpos, str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
+        k = pack_chars(str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(k, h);
         size -= len;
         str += len;
