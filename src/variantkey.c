@@ -179,8 +179,6 @@ static inline uint32_t muxhash(uint32_t k, uint32_t h)
 static inline uint32_t hash32(const char *str, size_t size)
 {
     uint32_t h = 0;
-    uint32_t k;
-    uint8_t bitpos;
     size_t len = 6;
     while (size > 0)
     {
@@ -189,8 +187,8 @@ static inline uint32_t hash32(const char *str, size_t size)
             len = size;
         }
         //[00000000 00000000 00000000 00000000 01111122 22233333 44444555 55666660]
-        k = pack_chars(str, len); // pack 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
-        h = muxhash(k, h);
+        // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
+        h = muxhash(pack_chars(str, len), h);
         size -= len;
         str += len;
     }
