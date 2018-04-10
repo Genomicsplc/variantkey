@@ -3,10 +3,10 @@
 // test_variantkey.js
 //
 // @category   Tools
-// @author	 Nicola Asuni <nicola.asuni@genomicsplc.com>
+// @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @copyright  2017-2018 GENOMICS plc
-// @license	MIT (see LICENSE)
-// @link	   https://github.com/genomicsplc/variantkey
+// @license    MIT (see LICENSE)
+// @link       https://github.com/genomicsplc/variantkey
 //
 // LICENSE
 //
@@ -31,6 +31,8 @@
 // THE SOFTWARE.
 //
 // VariantKey by Nicola Asuni
+
+// requires node.js
 
 var fs = require('fs');
 eval(fs.readFileSync('../src/variantkey.js')+'');
