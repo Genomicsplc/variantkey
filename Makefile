@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python version conda go r doc format clean
+.PHONY: help qa test tidy build python version conda go r js doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -58,12 +58,13 @@ help:
 	@echo "    make conda   : Build a conda package for the python wrapper"
 	@echo "    make go      : Test the golang cgo module"
 	@echo "    make r       : Build the R module"
+	@echo "    make js      : Test the Javascript module"
 	@echo "    make doc     : Generate source code documentation"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-all: clean version format qa build doc go python r
+all: clean version format qa build doc go python r js
 
 # Alias for test
 qa: test tidy
@@ -148,6 +149,11 @@ r:
 	cd r/src && \
 	R CMD SHLIB rvariantkey.c && \
 	./test_rvariantkey.R
+
+# Test the Javascript module (requires PhantomJS http://phantomjs.org)
+js:
+	cd js/test && \
+	node test_variantkey.js
 
 # Generate source code documentation
 doc:
