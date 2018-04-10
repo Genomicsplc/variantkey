@@ -1,6 +1,6 @@
 // VariantKey
 //
-// variantkey-test.c
+// test_variantkey.c
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
@@ -643,6 +643,7 @@ int gentestmap()
         variantkey_string(vk, vs);
         h = decode_variantkey(vk);
         fprintf(stderr, "{\"%s\", %"PRIu32", \"%s\", \"%s\", 0x%016"PRIx64", \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"},\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk, vs, h.chrom, h.pos, h.refalt);
+        //fprintf(stderr, "[\"%s\", %"PRIu32", \"%s\", \"%s\", {\"hi\": 0x%08"PRIx32", \"lo\": 0x%08"PRIx32"}, \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"],\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk >> 32, vk & 0xFFFFFFFF, vs, h.chrom, h.pos, h.refalt);
     }
     return 1;
 }
