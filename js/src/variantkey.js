@@ -220,8 +220,12 @@ function variantKey(chrom, pos, ref, alt) {
 	};
 }
 
+function pad16(s) {
+	return ("00000000" + s).slice(-8);
+}
+
 function variantKeyString(vk) {
-	return vk.hi.toString(16).padStart(8, '0') + vk.lo.toString(16).padStart(8, '0');
+	return pad16(vk.hi.toString(16)) + pad16(vk.lo.toString(16));
 }
 
 function parseVariantKeyString(vs) {

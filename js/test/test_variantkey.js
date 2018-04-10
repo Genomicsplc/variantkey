@@ -32,6 +32,9 @@
 //
 // VariantKey by Nicola Asuni
 
+var fs = require('fs');
+eval(fs.readFileSync('../src/variantkey.js')+'');
+
 var k_test_size = 566;
 
 var test_data = [
@@ -863,9 +866,9 @@ errors += test_parseVariantKeyString();
 errors += test_decodeVariantKey();
 errors += test_reverseVariantKey();
 
-var message = "OK";
 if (errors > 0) {
-	message = "FAILED: "+errors;
+	console.log("FAILED: "+errors);
+	process.exit(1);
+} else {
+	console.log("OK");
 }
-console.log(message);
-document.getElementById("result").innerHTML = message;
