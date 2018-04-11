@@ -1,0 +1,28 @@
+exclude .gitignore
+exclude .coverage
+exclude .coveragerc
+exclude .travis.yml
+include setup.cfg
+include ../README.md
+include ../LICENSE
+include ../src/binsearch.h
+include ../src/rsidvar.h
+include ../src/variantkey.h
+include variantkey/pyvariantkey.h
+prune .cache
+prune .git
+prune build
+prune dist
+prune htmlcov
+recursive-exclude *.egg-info *
+recursive-include tests *
+
+
+
+
+
+
+
+
+
+
