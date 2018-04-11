@@ -12,7 +12,7 @@
 
 ## Description
 
-This project contains tools to generate and process a 64 bit Unsigned Integer Key for Human Genetic Variants
+This project contains tools to generate and process a 64 bit Unsigned Integer Keys for Human Genetic Variants
 
 The VariantKey is sortable for chromosome and position, and it is also fully reversible for variants with up to 11 bases between Reference and Alternate alleles. It can be used to sort, search and match variant-based data easily and very quickly.
 
@@ -52,27 +52,27 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
                 
 * **`POS`**     : 28 bit for the reference position (`POS`), with the 1<sup>st</sup> nucleotide having position 0.
 
-```
+    ```
     0    5                             32
     |    |                              |
     00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
          |                              |
         MSB                            LSB
-```
+    ```
     The largest human chromosome contains 249M base pairs that can be easily contained in 28 bit (2^28 = 268,435,456).
                   
 
 * **`REF+ALT`** : 31 bit for the encoding of the `REF` and `ALT` strings.
 
-```
+    ```
     0                                   33                               63
     |                                    |                                |
     00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
                                          |                                |
                                         MSB                              LSB
-```
-    The encoding of this field mainly depends on the total length of the `REF`+`ALT` string.
-    If the total number of nucleotides in `REF`+`ALT` is more then 11, or if the alleles contains characters other than ACGT, then the LSB bit is set to 1 and the remaining 30 bit are filled with an hash of the `REF` and `ALT` strings. A lookup table is required to reverse the values.  
+    ```
+    The encoding of this field mainly depends on the total length of the `REF`+`ALT` string.  
+    If the total number of nucleotides in `REF`+`ALT` is more then 11, or if the alleles contains characters other than ACGT, then the LSB bit is set to 1 and the remaining 30 bit are filled with the hash of the `REF`+`ALT` string. A lookup table is required to reverse the values.  
     If the total number of nucleotides in `REF`+`ALT` is 11 or less and only contains ACGT letters, then a reversible encoding is used:
     * the bit 1-4 bit indicate the number of bases in `REF`;
     * the bit 5-8 bit indicate the number of bases in `ALT`;
@@ -83,13 +83,13 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 * The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.
 * The `CHROM` and `POS` sections of the VariantKey are sortable.
-* The reversible encoding limit of 11 bases covers 99.64% (335,932,359 / 337,162,128) of the variants in the normalized dbSNP GRCh37.p13.b150 VCF file. The remaining 1,229,769 variants can be reversed using a lookup table.
+* The limit of 11 bases for the reversible encoding covers 99.64% (335,932,359 / 337,162,128) of the variants in the normalized dbSNP GRCh37.p13.b150 VCF file. The remaining 1,229,769 variants can be reversed using a lookup table.
 * The normalized dbSNP GRCh37.p13.b150 VCF file contains only 825 variants with nucleotides other than ACGT.
 
 
 ## Input values
 
-* **`CHROM`** - *chromosome*     : Identifier from the reference genome, no white-space or leading zeros permitted.
+* **`CHROM`** - *chromosome*     : Identifier from the reference genome, no white-space permitted.
 
 * **`POS`**   - *position*       : The reference position, with the 1<sup>st</sup> nucleotide having position 0.
 
@@ -167,6 +167,14 @@ A shared library can be built using the following command inside the python dire
 make python
 ```
 
+or
+
+```
+make conda
+```
+
+to build and test the shared library as Conda package inside a Conda environment.
+
 ### Usage Example
 
 ```
@@ -178,11 +186,15 @@ vkey = vk.variantkey(b"X", 193330, b"GCA", b"G")
 print(vkey)
 # 13259012476408233984
 
-s = vk.variantkey_string(vkey)
+vkrange = vk.variantkey_range(15, 12002028, 12152133)
+print(vkrange)
+# (8672685443424190464, 8673007793604657151)
+
+s = vk.variantkey_hex(vkey)
 print(s)
 # b'b801799918c90000'
 
-v = vk.parse_variantkey_string(s)
+v = vk.parse_variantkey_hex(s)
 print(v)
 # 13259012476408233984
 
@@ -201,7 +213,6 @@ print(c)
 ref, alt, reflen, altlen = vk.decode_refalt(refalt)
 print(ref, alt, reflen, altlen)
 # b'GCA' b'G' 3 1
-
 ```
 
 ## GO Library
@@ -218,11 +229,13 @@ make golang
 
 ## R Module
 
-Use the following commands to tbuild the R wrapper.
+Use the following commands to build the R wrapper.
 
 ```
 make r
 ```
+
+In R the VariantKey is represented as hexadecimal string because there is no native support for 64 bit unsigned integers in R.
 
 ### Usage Example
 
@@ -243,20 +256,62 @@ var <- ReverseVariantKey(vkey)
 print(var)
 # $CHROM
 # [1] "X"
-#
+# 
 # $POS
 # [1] 193330
-#
+# 
 # $REF
 # [1] "GCA"
-#
+# 
 # $ALT
 # [1] "G"
-#
+# 
 # $SIZE_REF
 # [1] 3
-#
+# 
 # $SIZE_ALT
 # [1] 1
 
+vkrange <- VariantKeyRange(15, 12002028, 12152133)
+print(vkrange)
+# $MIN
+# [1] "785b917600000000"
+# 
+# $MAX
+# [1] "785cb6a2ffffffff"
+
+cc <- EncodeChrom("MT")
+print(cc)
+# [1] 25
+
+dc <- DecodeChrom(25)
+print(dc)
+# [1] "MT"
+
+era <- EncodeRefAlt("A", "T")
+print(era)
+# [1] 144179200
+
+dra <- DecodeRefAlt(144179200)
+print(dra)
+#$REF
+#[1] "A"
+#
+#$ALT
+#[1] "T"
+#
+#$REF_LEN
+#[1] 1
+#
+#$ALT_LEN
+#[1] 1
+```
+
+
+## Javascript library
+
+Use the following commands to test the Javascript implementation.
+
+```
+make js
 ```

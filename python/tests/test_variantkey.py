@@ -6,7 +6,7 @@ from unittest import TestCase
 
 variantsTestData = [
     (b"chr1", 268435455, b"C", b"T", 0x0fffffff88b80000, b"0fffffff88b80000", 0x01, 0x0fffffff, 0x08b80000),
-    (b"CHR1", 324675, b"G", b"C", 0x08027a2188c80000, b"08027a2188c80000", 0x01, 0x0004f443, 0x08c80000),
+    (b"CHR01", 324675, b"G", b"C", 0x08027a2188c80000, b"08027a2188c80000", 0x01, 0x0004f443, 0x08c80000),
     (b"1", 0, b"ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", b"A", 0x080000003c6f5d8f, b"080000003c6f5d8f", 0x01, 0x00000000, 0x3c6f5d8f),
     (b"1", 268435455, b"ACCAGGCCCAGCTCATGCTTCTTTGCAGCCTCT", b"A", 0x0fffffff8ae2503b, b"0fffffff8ae2503b", 0x01, 0x0fffffff, 0x0ae2503b),
     (b"1", 324683, b"C", b"G", 0x08027a2588b00000, b"08027a2588b00000", 0x01, 0x0004f44b, 0x08b00000),
@@ -644,14 +644,47 @@ class TestFunctions(TestCase):
             h = vh.variantkey(chrom, pos, ref, alt)
             self.assertEqual(h, vk)
 
-    def test_variantkey_string(self):
+    def test_variantkey_range(self):
+        vkrangeTestData = [
+            (1, 0, 268435455, 0x0800000000000000, 0x0fffffffffffffff),
+            (2, 268435454, 268435455, 0x17ffffff00000000, 0x17ffffffffffffff),
+            (3, 0, 1, 0x1800000000000000, 0x18000000ffffffff),
+            (4, 1000169, 267435286, 0x2007a17480000000, 0x27f85e8b7fffffff),
+            (5, 2000338, 2050373, 0x280f42e900000000, 0x280fa4a2ffffffff),
+            (6, 3000507, 3060549, 0x3016e45d80000000, 0x301759a2ffffffff),
+            (7, 4000676, 4070725, 0x381e85d200000000, 0x381f0ea2ffffffff),
+            (8, 5000845, 5080901, 0x4026274680000000, 0x4026c3a2ffffffff),
+            (9, 6001014, 6091077, 0x482dc8bb00000000, 0x482e78a2ffffffff),
+            (10, 7001183, 7101253, 0x50356a2f80000000, 0x50362da2ffffffff),
+            (11, 8001352, 8111429, 0x583d0ba400000000, 0x583de2a2ffffffff),
+            (12, 9001521, 9121605, 0x6044ad1880000000, 0x604597a2ffffffff),
+            (13, 10001690, 10131781, 0x684c4e8d00000000, 0x684d4ca2ffffffff),
+            (14, 11001859, 11141957, 0x7053f00180000000, 0x705501a2ffffffff),
+            (15, 12002028, 12152133, 0x785b917600000000, 0x785cb6a2ffffffff),
+            (16, 13002197, 13162309, 0x806332ea80000000, 0x80646ba2ffffffff),
+            (17, 14002366, 14172485, 0x886ad45f00000000, 0x886c20a2ffffffff),
+            (18, 15002535, 15182661, 0x907275d380000000, 0x9073d5a2ffffffff),
+            (19, 16002704, 16192837, 0x987a174800000000, 0x987b8aa2ffffffff),
+            (20, 17002873, 17203013, 0xa081b8bc80000000, 0xa0833fa2ffffffff),
+            (21, 18003042, 18213189, 0xa8895a3100000000, 0xa88af4a2ffffffff),
+            (22, 19003211, 19223365, 0xb090fba580000000, 0xb092a9a2ffffffff),
+            (23, 20003380, 20233541, 0xb8989d1a00000000, 0xb89a5ea2ffffffff),
+            (24, 21003549, 21243717, 0xc0a03e8e80000000, 0xc0a213a2ffffffff),
+            (25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff),
+        ]
+        for chrom, pos_min, pos_max, vk_min, vk_max in vkrangeTestData:
+            vkmin, vkmax = vh.variantkey_range(chrom, pos_min, pos_max)
+            self.assertEqual(vkmin, vk_min)
+            self.assertEqual(vkmax, vk_max)
+
+    def test_variantkey_hex(self):
         for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
-            h = vh.variantkey_string(vk)
+            h = vh.variantkey_hex(vk)
             self.assertEqual(h, vs)
 
-    def test_parse_variantkey_string(self):
+    def test_parse_variantkey_hex(self):
         for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
-            h = vh.parse_variantkey_string(vs)
+            h = vh.parse_variantkey_hex(vs)
             self.assertEqual(h, vk)
 
     def test_decode_variantkey(self):
@@ -678,8 +711,8 @@ class TestBenchmark(object):
     def test_variantkey_benchmark(self, benchmark):
         benchmark(vh.variantkey, b"MT", 16527, b"C", b"T")
 
-    def test_variantkey_string_benchmark(self, benchmark):
-        benchmark(vh.variantkey_string, 0x880082d600138000)
+    def test_variantkey_hex_benchmark(self, benchmark):
+        benchmark(vh.variantkey_hex, 0x880082d600138000)
 
-    def test_parse_variantkey_string_benchmark(self, benchmark):
-        benchmark(vh.parse_variantkey_string, b"880082d600138000")
+    def test_parse_variantkey_hex_benchmark(self, benchmark):
+        benchmark(vh.parse_variantkey_hex, b"880082d600138000")

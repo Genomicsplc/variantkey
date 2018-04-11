@@ -76,22 +76,36 @@ static PyObject* py_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
     return Py_BuildValue("K", h);
 }
 
-static PyObject* py_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_variantkey_range(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint8_t chrom;
+    uint32_t pos_min, pos_max;
+    if (!PyArg_ParseTuple(args, "BII", &chrom, &pos_min, &pos_max))
+        return NULL;
+    vkrange_t r = variantkey_range(chrom, pos_min, pos_max);
+    result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("K", r.min));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", r.max));
+    return result;
+}
+
+static PyObject* py_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     uint64_t code;
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
     char str[17];
-    variantkey_string(code, str);
+    variantkey_hex(code, str);
     return PyBytes_FromString(str);
 }
 
-static PyObject* py_parse_variantkey_string(PyObject *Py_UNUSED(ignored), PyObject *args)
+static PyObject* py_parse_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *vs;
     if (!PyArg_ParseTuple(args, "y", &vs))
         return NULL;
-    uint64_t h = parse_variantkey_string(vs);
+    uint64_t h = parse_variantkey_hex(vs);
     return Py_BuildValue("K", h);
 }
 
@@ -374,12 +388,12 @@ static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObjec
     PyObject *result;
     uint64_t first, last;
     uint8_t chrom;
-    uint32_t pos_start, pos_end;
+    uint32_t pos_min, pos_max;
     PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKIII", &mfsrc, &first, &last, &chrom, &pos_start, &pos_end))
+    if (!PyArg_ParseTuple(args, "OKKBII", &mfsrc, &first, &last, &chrom, &pos_min, &pos_max))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr_chrompos_range(src, &first, &last, chrom, pos_start, pos_end);
+    uint32_t h = find_vr_chrompos_range(src, &first, &last, chrom, pos_min, pos_max);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", first));
@@ -397,8 +411,9 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"encode_refalt", py_encode_refalt, METH_VARARGS, PYENCODEREFALT_DOCSTRING},
     {"decode_refalt", py_decode_refalt, METH_VARARGS, PYDECODEREFALT_DOCSTRING},
     {"variantkey", py_variantkey, METH_VARARGS, PYVARIANTKEY_DOCSTRING},
-    {"variantkey_string", py_variantkey_string, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
-    {"parse_variantkey_string", py_parse_variantkey_string, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
+    {"variantkey_range", py_variantkey_range, METH_VARARGS, PYVARIANTKEYRANGE_DOCSTRING},
+    {"variantkey_hex", py_variantkey_hex, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
+    {"parse_variantkey_hex", py_parse_variantkey_hex, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
     {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
     {"reverse_variantkey", py_reverse_variantkey, METH_VARARGS, PYREVERSEVARIANTKEY_DOCSTRING},
 

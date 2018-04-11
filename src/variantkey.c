@@ -264,12 +264,22 @@ inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, co
             | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
 }
 
-inline size_t variantkey_string(uint64_t code, char *str)
+vkrange_t variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
+{
+    uint64_t c = ((uint64_t)chrom << 59);
+    return (vkrange_t)
+    {
+        .min = ( c | ((uint64_t)pos_min << 31)),
+         .max = ( c | ((uint64_t)pos_max << 31) | 0x000000007FFFFFFF)
+    };
+}
+
+inline size_t variantkey_hex(uint64_t code, char *str)
 {
     return sprintf(str, "%016"PRIx64"", code);
 }
 
-inline uint64_t parse_variantkey_string(const char *vs)
+inline uint64_t parse_variantkey_hex(const char *vs)
 {
     uint64_t v = 0;
     uint8_t b;

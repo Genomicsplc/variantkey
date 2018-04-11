@@ -21,12 +21,26 @@ type TVariantKey struct {
 	RefAlt uint32 `json:"refalt"`
 }
 
+// TVKRange contains min and max VariantKey values for range searches
+type TVKRange struct {
+	Min uint64 `json:"min"`
+	Max uint64 `json:"max"`
+}
+
 // castCVariantKey convert C variantkey_t to GO TVariantKey.
 func castCVariantKey(vh C.variantkey_t) TVariantKey {
 	return TVariantKey{
 		Chrom:  uint8(vh.chrom),
 		Pos:    uint32(vh.pos),
 		RefAlt: uint32(vh.refalt),
+	}
+}
+
+// castCVKRrange convert C vkrange_t to GO TVKRange.
+func castCVKRrange(vr C.vkrange_t) TVKRange {
+	return TVKRange{
+		Min: uint64(vr.min),
+		Max: uint64(vr.max),
 	}
 }
 
@@ -109,23 +123,28 @@ func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 	return uint64(C.variantkey((*C.char)(pchrom), C.size_t(len(chrom)), C.uint32_t(pos), (*C.char)(pref), C.size_t(len(ref)), (*C.char)(palt), C.size_t(len(alt))))
 }
 
-// VariantKeyString provides a string representation of the VariantKey 64bit
-func VariantKeyString(v uint64) string {
+// Range Returns minimum and maximum variant keys for range searches.
+func Range(chrom uint8, posMin, posMax uint32) TVKRange {
+	return castCVKRrange(C.variantkey_range(C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax)))
+}
+
+// Hex provides a string representation of the VariantKey 64bit
+func Hex(v uint64) string {
 	var cstr *C.char = C.CString("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	C.variantkey_string(C.uint64_t(v), cstr)
+	C.variantkey_hex(C.uint64_t(v), cstr)
 	return C.GoStringN(cstr, C.int(16))
 }
 
-// ParseVariantKeyString parses a variant key string and returns the code.
-func ParseVariantKeyString(s string) uint64 {
+// ParseHex parses a variant key string and returns the code.
+func ParseHex(s string) uint64 {
 	b := StringToNTBytes(s)
 	size := len(s)
 	var p unsafe.Pointer
 	if size > 0 {
 		p = unsafe.Pointer(&b[0]) // #nosec
 	}
-	return uint64(C.parse_variantkey_string((*C.char)(p)))
+	return uint64(C.parse_variantkey_hex((*C.char)(p)))
 }
 
 // DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
@@ -301,9 +320,9 @@ func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vk uint64) (
 }
 
 // FindVRChromPosRange search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
-func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posStart, posEnd uint32) (uint32, uint64, uint64) {
+func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, posMax uint32) (uint32, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posStart), C.uint32_t(posEnd)))
+	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax)))
 	return rsid, uint64(cfirst), uint64(clast)
 }

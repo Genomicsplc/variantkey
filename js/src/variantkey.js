@@ -220,6 +220,19 @@ function variantKey(chrom, pos, ref, alt) {
 	};
 }
 
+function variantKeyRange(chrom, pos_min, pos_max) {
+	return {
+		"min": {
+			"hi": ((((chrom >>> 0) << 27) | (pos_min >>> 1)) >>> 0),
+			"lo": (((pos_min >>> 0) << 31) >>> 0)
+		},
+		"max": {
+			"hi": ((((chrom >>> 0) << 27) | (pos_max >>> 1)) >>> 0),
+			"lo": ((((pos_max >>> 0) << 31) | 0x7FFFFFFF) >>> 0)
+		}
+	};
+}
+
 function pad16(s) {
 	return ("00000000" + s).slice(-8);
 }
@@ -228,7 +241,7 @@ function variantKeyString(vk) {
 	return pad16(vk.hi.toString(16)) + pad16(vk.lo.toString(16));
 }
 
-function parseVariantKeyString(vs) {
+function parseHex(vs) {
 	return {
 		"hi": parseInt(vs.substring(0, 8), 16) >>> 0,
 		"lo": parseInt(vs.substring(8, 16), 16) >>> 0,

@@ -41,7 +41,7 @@ var k_test_size = 566;
 
 var test_data = [
 	["chr1", 268435455, "C", "T", {"hi": 0x0fffffff, "lo": 0x88b80000}, "0fffffff88b80000", 0x01, 0x0fffffff, 0x08b80000],
-	["CHR1", 324675, "G", "C", {"hi": 0x08027a21, "lo": 0x88c80000}, "08027a2188c80000", 0x01, 0x0004f443, 0x08c80000],
+	["CHR01", 324675, "G", "C", {"hi": 0x08027a21, "lo": 0x88c80000}, "08027a2188c80000", 0x01, 0x0004f443, 0x08c80000],
 	["1", 0, "ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", "A", {"hi": 0x08000000, "lo": 0x3c6f5d8f}, "080000003c6f5d8f", 0x01, 0x00000000, 0x3c6f5d8f],
 	["1", 268435455, "ACCAGGCCCAGCTCATGCTTCTTTGCAGCCTCT", "A", {"hi": 0x0fffffff, "lo": 0x8ae2503b}, "0fffffff8ae2503b", 0x01, 0x0fffffff, 0x0ae2503b],
 	["1", 324683, "C", "G", {"hi": 0x08027a25, "lo": 0x88b00000}, "08027a2588b00000", 0x01, 0x0004f44b, 0x08b00000],
@@ -772,6 +772,51 @@ function test_variantKey() {
 	return errors;
 }
 
+function test_variantKeyRange() {
+	var errors = 0;
+	var i;
+	var r;
+	var test_range_data = [
+		[1,         0, 268435455, {"hi":0x08000000, "lo":0x00000000}, {"hi":0x0fffffff, "lo":0xffffffff}],
+		[2, 268435454, 268435455, {"hi":0x17ffffff, "lo":0x00000000}, {"hi":0x17ffffff, "lo":0xffffffff}],
+		[3,         0,         1, {"hi":0x18000000, "lo":0x00000000}, {"hi":0x18000000, "lo":0xffffffff}],
+		[4,   1000169, 267435286, {"hi":0x2007a174, "lo":0x80000000}, {"hi":0x27f85e8b, "lo":0x7fffffff}],
+		[5,   2000338,   2050373, {"hi":0x280f42e9, "lo":0x00000000}, {"hi":0x280fa4a2, "lo":0xffffffff}],
+		[6,   3000507,   3060549, {"hi":0x3016e45d, "lo":0x80000000}, {"hi":0x301759a2, "lo":0xffffffff}],
+		[7,   4000676,   4070725, {"hi":0x381e85d2, "lo":0x00000000}, {"hi":0x381f0ea2, "lo":0xffffffff}],
+		[8,   5000845,   5080901, {"hi":0x40262746, "lo":0x80000000}, {"hi":0x4026c3a2, "lo":0xffffffff}],
+		[9,   6001014,   6091077, {"hi":0x482dc8bb, "lo":0x00000000}, {"hi":0x482e78a2, "lo":0xffffffff}],
+		[10,  7001183,   7101253, {"hi":0x50356a2f, "lo":0x80000000}, {"hi":0x50362da2, "lo":0xffffffff}],
+		[11,  8001352,   8111429, {"hi":0x583d0ba4, "lo":0x00000000}, {"hi":0x583de2a2, "lo":0xffffffff}],
+		[12,  9001521,   9121605, {"hi":0x6044ad18, "lo":0x80000000}, {"hi":0x604597a2, "lo":0xffffffff}],
+		[13, 10001690,  10131781, {"hi":0x684c4e8d, "lo":0x00000000}, {"hi":0x684d4ca2, "lo":0xffffffff}],
+		[14, 11001859,  11141957, {"hi":0x7053f001, "lo":0x80000000}, {"hi":0x705501a2, "lo":0xffffffff}],
+		[15, 12002028,  12152133, {"hi":0x785b9176, "lo":0x00000000}, {"hi":0x785cb6a2, "lo":0xffffffff}],
+		[16, 13002197,  13162309, {"hi":0x806332ea, "lo":0x80000000}, {"hi":0x80646ba2, "lo":0xffffffff}],
+		[17, 14002366,  14172485, {"hi":0x886ad45f, "lo":0x00000000}, {"hi":0x886c20a2, "lo":0xffffffff}],
+		[18, 15002535,  15182661, {"hi":0x907275d3, "lo":0x80000000}, {"hi":0x9073d5a2, "lo":0xffffffff}],
+		[19, 16002704,  16192837, {"hi":0x987a1748, "lo":0x00000000}, {"hi":0x987b8aa2, "lo":0xffffffff}],
+		[20, 17002873,  17203013, {"hi":0xa081b8bc, "lo":0x80000000}, {"hi":0xa0833fa2, "lo":0xffffffff}],
+		[21, 18003042,  18213189, {"hi":0xa8895a31, "lo":0x00000000}, {"hi":0xa88af4a2, "lo":0xffffffff}],
+		[22, 19003211,  19223365, {"hi":0xb090fba5, "lo":0x80000000}, {"hi":0xb092a9a2, "lo":0xffffffff}],
+		[23, 20003380,  20233541, {"hi":0xb8989d1a, "lo":0x00000000}, {"hi":0xb89a5ea2, "lo":0xffffffff}],
+		[24, 21003549,  21243717, {"hi":0xc0a03e8e, "lo":0x80000000}, {"hi":0xc0a213a2, "lo":0xffffffff}],
+		[25, 22003718, 268435455, {"hi":0xc8a7e003, "lo":0x00000000}, {"hi":0xcfffffff, "lo":0xffffffff}],
+	];
+	for (i=0 ; i < 25; i++) {
+		r = variantKeyRange(test_range_data[i][0], test_range_data[i][1], test_range_data[i][2]);
+		if ((r.min.hi != test_range_data[i][3].hi) || (r.min.lo != test_range_data[i][3].lo)) {
+			console.error("(",i,"): Unexpected variantkey range min: expected ",test_range_data[i][3],", got ",r.min);
+			++errors;
+		}
+		if ((r.max.hi != test_range_data[i][4].hi) || (r.max.lo != test_range_data[i][4].lo)) {
+			console.error("(",i,"): Unexpected variantkey range max: expected ",test_range_data[i][4],", got ",r.max);
+			++errors;
+		}
+	}
+	return errors;
+}
+
 function test_variantKeyString() {
 	var errors = 0;
 	var vs = "";
@@ -786,18 +831,18 @@ function test_variantKeyString() {
 	return errors;
 }
 
-function test_parseVariantKeyString() {
+function test_parseHex() {
 	var errors = 0;
 	var i;
 	var vk;
 	var exp = {"hi": 0x12345678, "lo": 0x90abcdef};
-	vk = parseVariantKeyString("1234567890AbCdEf");
+	vk = parseHex("1234567890AbCdEf");
 	if ((vk.hi != exp.hi) || (vk.lo != exp.lo)) {
 		console.error("Unexpected variantkey: expected ",exp,", got ",vk);
 		++errors;
 	}
 	for (i=0 ; i < k_test_size; i++) {
-		vk = parseVariantKeyString(test_data[i][5]);
+		vk = parseHex(test_data[i][5]);
 		if ((vk.hi != test_data[i][4].hi) || (vk.lo != test_data[i][4].lo)) {
 			console.error("(",i,"): Unexpected variantkey: expected ",test_data[i][4],", got ",vk);
 			++errors;
@@ -863,8 +908,9 @@ errors += test_encodeChrom();
 errors += test_decodeChrom();
 errors += test_encodeRefAlt();
 errors += test_variantKey();
+errors += test_variantKeyRange();
 errors += test_variantKeyString();
-errors += test_parseVariantKeyString();
+errors += test_parseHex();
 errors += test_decodeVariantKey();
 errors += test_reverseVariantKey();
 

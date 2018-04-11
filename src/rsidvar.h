@@ -116,13 +116,13 @@ uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, u
  * @param src       Memory mapped file address.
  * @param first     Pointer to the first element of the range to search (min value = 0).
  * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
- * @param chrom     Chromosome number.
- * @param pos_start Start reference position, with the 1st base having position 0.
- * @param pos_end   End reference position, with the 1st base having position 0.
+ * @param chrom     Chromosome encoded number.
+ * @param pos_min   Start reference position, with the 1st base having position 0.
+ * @param pos_max   End reference position, with the 1st base having position 0.
  *
  * @return RSID
  */
-uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_start, uint32_t pos_end);
+uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
 
 #ifdef __cplusplus
 }

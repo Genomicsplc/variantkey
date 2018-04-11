@@ -59,6 +59,15 @@ typedef struct variantkey_t
     uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 31 bits are used)
 } variantkey_t;
 
+/**
+ * Struct containing min and max VariantKey values for range searches
+ */
+typedef struct vkrange_t
+{
+    uint64_t min; //!< Minimum VariantKey value for any given REF+ALT encoding
+    uint64_t max; //!< Maximum VariantKey value for any given REF+ALT encoding
+} vkrange_t;
+
 /** @brief Returns chromosome encoding.
  *
  * @param chrom  Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
@@ -124,6 +133,16 @@ size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_
  */
 uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt);
 
+/** @brief Returns minimum and maximum variant keys for range searches
+ *
+ * @param chrom     Chromosome encoded number.
+ * @param pos_min   Start reference position, with the 1st base having position 0.
+ * @param pos_max   End reference position, with the 1st base having position 0.
+ *
+ * @return      Min and Max variant keys for any given REF+ALT encoding
+ */
+vkrange_t variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
+
 /** @brief Returns VariantKey hexadecimal string (16 characters).
  *
  * The string represent a 64 bit number or:
@@ -139,7 +158,7 @@ uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const cha
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t variantkey_string(uint64_t code, char *str);
+size_t variantkey_hex(uint64_t code, char *str);
 
 /** @brief Parses a VariantKey hex string and returns the code.
  *
@@ -147,7 +166,7 @@ size_t variantkey_string(uint64_t code, char *str);
  *
  * @return A VariantKey code
  */
-uint64_t parse_variantkey_string(const char *vs);
+uint64_t parse_variantkey_hex(const char *vs);
 
 /** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
  *

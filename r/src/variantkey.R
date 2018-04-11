@@ -58,6 +58,10 @@ VariantKey <- function(chrom, pos, ref, alt) {
     return(.Call("VariantKey", chrom, as.integer(pos), ref, alt))
 }
 
+VariantKeyRange <- function(chrom, pos_min, pos_max) {
+    return(.Call("VariantKeyRange", as.integer(chrom), as.integer(pos_min), as.integer(pos_max)))
+}
+
 ReverseVariantKey <- function(hexcode) {
     return(.Call("ReverseVariantKey", hexcode))
 }

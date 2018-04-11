@@ -63,7 +63,7 @@ typedef struct test_data_t
 static test_data_t test_data[566] =
 {
     {"chr1", 268435455, "C", "T", 0x0fffffff88b80000, "0fffffff88b80000", 0x01, 0x0fffffff, 0x08b80000},
-    {"CHR1", 324675, "G", "C", 0x08027a2188c80000, "08027a2188c80000", 0x01, 0x0004f443, 0x08c80000},
+    {"CHR01", 324675, "G", "C", 0x08027a2188c80000, "08027a2188c80000", 0x01, 0x0004f443, 0x08c80000},
     {"1", 0, "ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", "A", 0x080000003c6f5d8f, "080000003c6f5d8f", 0x01, 0x00000000, 0x3c6f5d8f},
     {"1", 268435455, "ACCAGGCCCAGCTCATGCTTCTTTGCAGCCTCT", "A", 0x0fffffff8ae2503b, "0fffffff8ae2503b", 0x01, 0x0fffffff, 0x0ae2503b},
     {"1", 324683, "C", "G", 0x08027a2588b00000, "08027a2588b00000", 0x01, 0x0004f44b, 0x08b00000},
@@ -640,7 +640,7 @@ int gentestmap()
     for (i=0 ; i < k_test_size; i++)
     {
         vk = variantkey(test_data[i].chrom, strlen(test_data[i].chrom), test_data[i].pos, test_data[i].ref, strlen(test_data[i].ref), test_data[i].alt, strlen(test_data[i].alt));
-        variantkey_string(vk, vs);
+        variantkey_hex(vk, vs);
         h = decode_variantkey(vk);
         fprintf(stderr, "{\"%s\", %"PRIu32", \"%s\", \"%s\", 0x%016"PRIx64", \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"},\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk, vs, h.chrom, h.pos, h.refalt);
         //fprintf(stderr, "[\"%s\", %"PRIu32", \"%s\", \"%s\", {\"hi\": 0x%08"PRIx32", \"lo\": 0x%08"PRIx32"}, \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"],\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk >> 32, vk & 0xFFFFFFFF, vs, h.chrom, h.pos, h.refalt);
@@ -978,14 +978,86 @@ void benchmark_variantkey()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
-int test_variantkey_string()
+int test_variantkey_range()
+{
+    int errors = 0;
+    typedef struct test_range_data_t
+    {
+        uint8_t chrom;
+        uint32_t pos_min;
+        uint32_t pos_max;
+        uint64_t vk_min;
+        uint64_t vk_max;
+    } test_range_data_t;
+    static test_range_data_t test_range_data[25] =
+    {
+        {1, 0, 268435455, 0x0800000000000000, 0x0fffffffffffffff},
+        {2, 268435454, 268435455, 0x17ffffff00000000, 0x17ffffffffffffff},
+        {3, 0, 1, 0x1800000000000000, 0x18000000ffffffff},
+        {4, 1000169, 267435286, 0x2007a17480000000, 0x27f85e8b7fffffff},
+        {5, 2000338, 2050373, 0x280f42e900000000, 0x280fa4a2ffffffff},
+        {6, 3000507, 3060549, 0x3016e45d80000000, 0x301759a2ffffffff},
+        {7, 4000676, 4070725, 0x381e85d200000000, 0x381f0ea2ffffffff},
+        {8, 5000845, 5080901, 0x4026274680000000, 0x4026c3a2ffffffff},
+        {9, 6001014, 6091077, 0x482dc8bb00000000, 0x482e78a2ffffffff},
+        {10, 7001183, 7101253, 0x50356a2f80000000, 0x50362da2ffffffff},
+        {11, 8001352, 8111429, 0x583d0ba400000000, 0x583de2a2ffffffff},
+        {12, 9001521, 9121605, 0x6044ad1880000000, 0x604597a2ffffffff},
+        {13, 10001690, 10131781, 0x684c4e8d00000000, 0x684d4ca2ffffffff},
+        {14, 11001859, 11141957, 0x7053f00180000000, 0x705501a2ffffffff},
+        {15, 12002028, 12152133, 0x785b917600000000, 0x785cb6a2ffffffff},
+        {16, 13002197, 13162309, 0x806332ea80000000, 0x80646ba2ffffffff},
+        {17, 14002366, 14172485, 0x886ad45f00000000, 0x886c20a2ffffffff},
+        {18, 15002535, 15182661, 0x907275d380000000, 0x9073d5a2ffffffff},
+        {19, 16002704, 16192837, 0x987a174800000000, 0x987b8aa2ffffffff},
+        {20, 17002873, 17203013, 0xa081b8bc80000000, 0xa0833fa2ffffffff},
+        {21, 18003042, 18213189, 0xa8895a3100000000, 0xa88af4a2ffffffff},
+        {22, 19003211, 19223365, 0xb090fba580000000, 0xb092a9a2ffffffff},
+        {23, 20003380, 20233541, 0xb8989d1a00000000, 0xb89a5ea2ffffffff},
+        {24, 21003549, 21243717, 0xc0a03e8e80000000, 0xc0a213a2ffffffff},
+        {25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff},
+    };
+    vkrange_t r;
+    int i;
+    for (i=0 ; i < 25; i++)
+    {
+        r = variantkey_range(test_range_data[i].chrom, test_range_data[i].pos_min, test_range_data[i].pos_max);
+        if (r.min != test_range_data[i].vk_min)
+        {
+            fprintf(stderr, "%s : Unexpected min value: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, test_range_data[i].vk_min, r.min);
+            ++errors;
+        }
+        if (r.max != test_range_data[i].vk_max)
+        {
+            fprintf(stderr, "%s : Unexpected max value: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, test_range_data[i].vk_max, r.max);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+void benchmark_variantkey_range()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        variantkey_range(15, 12002028, 12152133);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
+int test_variantkey_hex()
 {
     int errors = 0;
     int i;
     char vs[17] = "";
     for (i=0 ; i < k_test_size; i++)
     {
-        variantkey_string(test_data[i].vk, vs);
+        variantkey_hex(test_data[i].vk, vs);
         if (strcmp(vs, test_data[i].vs))
         {
             fprintf(stderr, "%s (%d): Unexpected variantkey: expected %s, got %s\n", __func__, i, test_data[i].vs, vs);
@@ -995,7 +1067,7 @@ int test_variantkey_string()
     return errors;
 }
 
-void benchmark_variantkey_string()
+void benchmark_variantkey_hex()
 {
     uint64_t tstart, tend;
     int i;
@@ -1004,18 +1076,18 @@ void benchmark_variantkey_string()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        variantkey_string(0xa852662880400000, vs);
+        variantkey_hex(0xa852662880400000, vs);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
-int test_parse_variantkey_string()
+int test_parse_variantkey_hex()
 {
     int errors = 0;
     int i;
     uint64_t vk;
-    vk = parse_variantkey_string("1234567890AbCdEf");
+    vk = parse_variantkey_hex("1234567890AbCdEf");
     if (vk != 0x1234567890abcdef)
     {
         fprintf(stderr, "%s : Unexpected variantkey: expected 0x1234567890abcdef, got 0x%016"PRIx64"\n", __func__, vk);
@@ -1023,7 +1095,7 @@ int test_parse_variantkey_string()
     }
     for (i=0 ; i < k_test_size; i++)
     {
-        vk = parse_variantkey_string(test_data[i].vs);
+        vk = parse_variantkey_hex(test_data[i].vs);
         if (vk != test_data[i].vk)
         {
             fprintf(stderr, "%s (%d): Unexpected variantkey: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, i, test_data[i].vk, vk);
@@ -1033,7 +1105,7 @@ int test_parse_variantkey_string()
     return errors;
 }
 
-void benchmark_parse_variantkey_string()
+void benchmark_parse_variantkey_hex()
 {
     uint64_t tstart, tend;
     int i;
@@ -1041,7 +1113,7 @@ void benchmark_parse_variantkey_string()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        parse_variantkey_string("a852662880400000");
+        parse_variantkey_hex("a852662880400000");
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
@@ -1099,8 +1171,9 @@ int main()
     errors += test_decode_chrom();
     errors += test_encode_refalt();
     errors += test_variantkey();
-    errors += test_variantkey_string();
-    errors += test_parse_variantkey_string();
+    errors += test_variantkey_range();
+    errors += test_variantkey_hex();
+    errors += test_parse_variantkey_hex();
     errors += test_decode_variantkey();
 
     benchmark_encode_chrom();
@@ -1109,8 +1182,9 @@ int main()
     benchmark_encode_refalt_hash();
     benchmark_decode_refalt();
     benchmark_variantkey();
-    benchmark_variantkey_string();
-    benchmark_parse_variantkey_string();
+    benchmark_variantkey_range();
+    benchmark_variantkey_hex();
+    benchmark_parse_variantkey_hex();
     benchmark_decode_variantkey();
 
     return errors;

@@ -5,10 +5,13 @@ import variantkey as vk
 vkey = vk.variantkey(b"X", 193330, b"GCA", b"G")
 print(vkey)  # 13259012476408233984
 
-s = vk.variantkey_string(vkey)
+vkrange = vk.variantkey_range(15, 12002028, 12152133)
+print(vkrange)  # (8672685443424190464, 8673007793604657151)
+
+s = vk.variantkey_hex(vkey)
 print(s)  # b'b801799918c90000'
 
-v = vk.parse_variantkey_string(s)
+v = vk.parse_variantkey_hex(s)
 print(v)  # 13259012476408233984
 
 chrom, pos, ref, alt, sizeref, sizealt = vk.reverse_variantkey(v)

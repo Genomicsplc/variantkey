@@ -14,8 +14,9 @@ static PyObject *py_decode_chrom(PyObject *self, PyObject *args);
 static PyObject *py_encode_refalt(PyObject *self, PyObject *args);
 static PyObject *py_decode_refalt(PyObject *self, PyObject *args);
 static PyObject *py_variantkey(PyObject *self, PyObject *args);
-static PyObject *py_variantkey_string(PyObject *self, PyObject *args);
-static PyObject *py_parse_variantkey_string(PyObject *self, PyObject *args);
+static PyObject *py_variantkey_range(PyObject *self, PyObject *args);
+static PyObject *py_variantkey_hex(PyObject *self, PyObject *args);
+static PyObject *py_parse_variantkey_hex(PyObject *self, PyObject *args);
 static PyObject *py_decode_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args);
 
@@ -47,6 +48,7 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYENCODEREFALT_DOCSTRING "Returns reference+alternate encoding."
 #define PYDECODEREFALT_DOCSTRING "Decode the 32 bit REF+ALT code if reversible (if it has 11 or less bases in total and only contains ACGT letters)."
 #define PYVARIANTKEY_DOCSTRING "Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT."
+#define PYVARIANTKEYRANGE_DOCSTRING "Returns minimum and maximum variant keys for range searches."
 #define PYVARIANTKEYSTRING_DOCSTRING "Returns VariantKey hexadecimal string (16 characters)."
 #define PYPARSEVARIANTKEYSTRING_DOCSTRING "Parses a VariantKey hex string and returns the code."
 #define PYDECODEVARIANTKEY_DOCSTRING "Decode a VariantKey code and returns the components as variantkey_t structure."
