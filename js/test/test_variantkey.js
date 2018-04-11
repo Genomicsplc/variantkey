@@ -34,8 +34,19 @@
 
 // requires node.js
 
-var fs = require('fs');
-eval(fs.readFileSync('../src/variantkey.js')+'');
+const {
+    parseHex,
+    azToUpper,
+    encodeChrom,
+    decodeChrom,
+    encodeRefAlt,
+    decodeRefAlt,
+    variantKey,
+    variantKeyRange,
+    variantKeyString,
+    decodeVariantKey,
+    reverseVariantKey
+} = require('../src/variantkey.js');
 
 var k_test_size = 566;
 
