@@ -35,17 +35,17 @@
 // requires node.js
 
 const {
-    parseHex,
-    azToUpper,
-    encodeChrom,
-    decodeChrom,
-    encodeRefAlt,
-    decodeRefAlt,
-    variantKey,
-    variantKeyRange,
-    variantKeyString,
-    decodeVariantKey,
-    reverseVariantKey
+	parseHex,
+	azToUpper,
+	encodeChrom,
+	decodeChrom,
+	encodeRefAlt,
+	decodeRefAlt,
+	variantKey,
+	variantKeyRange,
+	variantKeyString,
+	decodeVariantKey,
+	reverseVariantKey
 } = require('../src/variantkey.js');
 
 var k_test_size = 566;

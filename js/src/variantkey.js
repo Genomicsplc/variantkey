@@ -3,10 +3,10 @@
 // variantkey.js
 //
 // @category   Tools
-// @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+// @author	 Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @copyright  2017-2018 GENOMICS plc
-// @license    MIT (see LICENSE)
-// @link       https://github.com/genomicsplc/variantkey
+// @license	MIT (see LICENSE)
+// @link	   https://github.com/genomicsplc/variantkey
 //
 // LICENSE
 //
@@ -267,17 +267,17 @@ function reverseVariantKey(dvk) {
 }
 
 if (typeof(module) !== 'undefined') {
-    module.exports = {
-        encodeChrom: encodeChrom,
-        decodeChrom: decodeChrom,
-        reverseVariantKey: reverseVariantKey,
-        decodeVariantKey: decodeVariantKey,
-        parseHex: parseHex,
-        azToUpper: azToUpper,
-        encodeRefAlt: encodeRefAlt,
-        decodeRefAlt: decodeRefAlt,
-        variantKey: variantKey,
-        variantKeyRange: variantKeyRange,
-        variantKeyString: variantKeyString,
-    }
+	module.exports = {
+		encodeChrom: encodeChrom,
+		decodeChrom: decodeChrom,
+		reverseVariantKey: reverseVariantKey,
+		decodeVariantKey: decodeVariantKey,
+		parseHex: parseHex,
+		azToUpper: azToUpper,
+		encodeRefAlt: encodeRefAlt,
+		decodeRefAlt: decodeRefAlt,
+		variantKey: variantKey,
+		variantKeyRange: variantKeyRange,
+		variantKeyString: variantKeyString,
+	}
 }
