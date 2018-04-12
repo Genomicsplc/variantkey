@@ -265,3 +265,19 @@ function reverseVariantKey(dvk) {
 		"alt": ra.alt
 	}
 }
+
+if (typeof(module) !== 'undefined') {
+	module.exports = {
+		encodeChrom: encodeChrom,
+		decodeChrom: decodeChrom,
+		reverseVariantKey: reverseVariantKey,
+		decodeVariantKey: decodeVariantKey,
+		parseHex: parseHex,
+		azToUpper: azToUpper,
+		encodeRefAlt: encodeRefAlt,
+		decodeRefAlt: decodeRefAlt,
+		variantKey: variantKey,
+		variantKeyRange: variantKeyRange,
+		variantKeyString: variantKeyString,
+	}
+}
