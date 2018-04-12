@@ -3,10 +3,10 @@
 // variantkey.js
 //
 // @category   Tools
-// @author	 Nicola Asuni <nicola.asuni@genomicsplc.com>
+// @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @copyright  2017-2018 GENOMICS plc
-// @license	MIT (see LICENSE)
-// @link	   https://github.com/genomicsplc/variantkey
+// @license    MIT (see LICENSE)
+// @link       https://github.com/genomicsplc/variantkey
 //
 // LICENSE
 //
