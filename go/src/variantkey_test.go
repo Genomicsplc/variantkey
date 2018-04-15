@@ -587,8 +587,8 @@ var variantsTestData = []TVariantData{
 
 func TestEncodeChrom(t *testing.T) {
 	cdata := []string{
-		"NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
-		"11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
+		"NA", "chr01", "02", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
+		"chr011", "012", "13", "14", "15", "16", "17", "18", "19", "20",
 		"21", "22", "X", "Y", "MT",
 	}
 	for k, v := range cdata {
