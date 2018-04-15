@@ -586,10 +586,17 @@ class TestFunctions(TestCase):
         chrom = vh.encode_chrom(b"WRONG")
         self.assertEqual(chrom, 0)
 
+    def test_encode_chrom_input_type(self):
+        self.assertEqual(vh.encode_chrom(b"chr01"), vh.encode_chrom("chr01"))
+
     def test_decode_chrom(self):
         for i in range(0, 26):
             chrom = vh.decode_chrom(i)
             self.assertEqual(chrom, chromTestDecodeData[i])
+
+    def test_encode_refalt_input_type(self):
+        self.assertEqual(vh.encode_refalt(b"AC", b"GT"), vh.encode_refalt("AC", "GT"))
+        self.assertEqual(vh.encode_refalt(b"ACGTACGT", b"GTACGTAC"), vh.encode_refalt("ACGTACGT", "GTACGTAC"))
 
     def test_encode_refalt(self):
         input_data = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTacgtACGT"]
@@ -686,6 +693,9 @@ class TestFunctions(TestCase):
         for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
             h = vh.parse_variantkey_hex(vs)
             self.assertEqual(h, vk)
+
+    def test_parse_variantkey_hex_input_type(self):
+        self.assertEqual(vh.parse_variantkey_hex(b"b815481990e60000"), vh.parse_variantkey_hex("b815481990e60000"))
 
     def test_decode_variantkey(self):
         for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:

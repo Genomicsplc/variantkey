@@ -24,9 +24,10 @@
 static PyObject* py_encode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom;
-    if (!PyArg_ParseTuple(args, "y", &chrom))
+    int sizechrom;
+    if (!PyArg_ParseTuple(args, "s#", &chrom, &sizechrom))
         return NULL;
-    uint8_t h = encode_chrom(chrom, strlen(chrom));
+    uint8_t h = encode_chrom(chrom, (size_t)sizechrom);
     return Py_BuildValue("B", h);
 }
 
@@ -43,9 +44,10 @@ static PyObject* py_decode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 static PyObject* py_encode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *ref, *alt;
-    if (!PyArg_ParseTuple(args, "yy", &ref, &alt))
+    int sizeref, sizealt;
+    if (!PyArg_ParseTuple(args, "s#s#", &ref, &sizeref, &alt, &sizealt))
         return NULL;
-    uint32_t h = encode_refalt(ref, strlen(ref), alt, strlen(alt));
+    uint32_t h = encode_refalt(ref, (size_t)sizeref, alt, (size_t)sizealt);
     return Py_BuildValue("I", h);
 }
 
@@ -69,10 +71,11 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
 static PyObject* py_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom, *ref, *alt;
+    int sizechrom, sizeref, sizealt;
     uint32_t pos;
-    if (!PyArg_ParseTuple(args, "yIyy", &chrom, &pos, &ref, &alt))
+    if (!PyArg_ParseTuple(args, "s#Is#s#", &chrom, &sizechrom, &pos, &ref, &sizeref, &alt, &sizealt))
         return NULL;
-    uint64_t h = variantkey(chrom, strlen(chrom), pos, ref, strlen(ref), alt, strlen(alt));
+    uint64_t h = variantkey(chrom, (size_t)sizechrom, pos, ref, (size_t)sizeref, alt, (size_t)sizealt);
     return Py_BuildValue("K", h);
 }
 
@@ -103,9 +106,14 @@ static PyObject* py_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
 static PyObject* py_parse_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *vs;
-    if (!PyArg_ParseTuple(args, "y", &vs))
+    int sizevs;
+    if (!PyArg_ParseTuple(args, "s#", &vs, &sizevs))
         return NULL;
-    uint64_t h = parse_variantkey_hex(vs);
+    uint64_t h = 0;
+    if (sizevs == 16)
+    {
+        h = parse_variantkey_hex(vs);
+    }
     return Py_BuildValue("K", h);
 }
 
