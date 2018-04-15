@@ -233,12 +233,12 @@ function variantKeyRange(chrom, pos_min, pos_max) {
 	};
 }
 
-function pad16(s) {
+function padL08(s) {
 	return ("00000000" + s).slice(-8);
 }
 
 function variantKeyString(vk) {
-	return pad16(vk.hi.toString(16)) + pad16(vk.lo.toString(16));
+	return padL08(vk.hi.toString(16)) + padL08(vk.lo.toString(16));
 }
 
 function parseHex(vs) {
