@@ -11,7 +11,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/mman.h>
-#include "rsidvar.h"
+#include "../src/rsidvar.h"
 
 #define TEST_DATA_SIZE 10
 
