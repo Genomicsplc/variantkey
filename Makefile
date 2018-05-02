@@ -98,7 +98,7 @@ endif
 
 # use clang-tidy
 tidy:
-	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open' -header-filter=.* -p . src/*.c
+	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open' -header-filter=.* -p . src/*.c cmd/*.c
 
 # Build the library
 build:
@@ -162,6 +162,7 @@ doc:
 
 # Format the source code
 format:
+	astyle --style=allman --recursive --suffix=none 'cmd/*.c'
 	astyle --style=allman --recursive --suffix=none 'src/*.h'
 	astyle --style=allman --recursive --suffix=none 'src/*.c'
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
