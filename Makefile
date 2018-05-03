@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help qa test tidy build python version conda go r js doc format clean
+.PHONY: help qa test tidy build package_vk python version conda go r js doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -117,12 +117,17 @@ build:
 	make | tee make.log ; test $${PIPESTATUS[0]} -eq 0
 	cd target/build && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
-	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log && \
-	cd cmd && make -j package ; test $${PIPESTATUS[0]} -eq 0
+	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee build.log ; test $${PIPESTATUS[0]} -eq 0
+	make package_vk
+
+package_vk:
+	cd target/build/cmd && \
+	make -j package
 
 # Set the version from VERSION file
 version:
-	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" conda/meta.yaml
+	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" conda/vk/meta.yaml
+	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" conda/python/meta.yaml
 	sed -i "s/version=.*,$$/version='$(VERSION)',/" python/setup.py
 
 # Build the python module
@@ -137,8 +142,9 @@ python: version
 # Build a conda package
 conda: version
 	@mkdir -p target
-	./conda/setup-conda.sh && \
-	${CONDA_ENV}/bin/conda build --prefix-length 160 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) conda
+	./conda/setup-conda.sh
+	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) conda/python
+	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) conda/vk
 
 # Test golang go module
 go:

@@ -5,12 +5,13 @@ set -e -u -x -o pipefail
 : ${MINICONDA_FILE:=Miniconda3-4.4.10-Linux-x86_64.sh}
 : ${MINICONDA_PIN_VERSION:=-}
 : ${PYTHON_VERSION:=-}
+: ${ENV_NAME:=env-variantkey}
 
 if [ -x "$(command -v greadlink)" ]; then READLINK=greadlink; else READLINK=readlink; fi
 PROJECT_CONDA="$(${READLINK} -f "$(dirname "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname ${PROJECT_CONDA})"
 PROJECT_ROOT="$(dirname ${PROJECT_HOME})"
-PROJECT_ENV="${PROJECT_ROOT}/env-variantkey"
+PROJECT_ENV="${PROJECT_ROOT}/${ENV_NAME}"
 
 if [ ! -d "${PROJECT_ENV}" ]; then
     curl "${MINICONDA_URL}/${MINICONDA_FILE}" > "${PROJECT_HOME}/target/${MINICONDA_FILE}"

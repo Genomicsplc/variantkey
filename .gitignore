@@ -24,3 +24,5 @@ htmlcov
 .pytest_cache
 build
 dist
+**/env-*
+**/*.log

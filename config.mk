@@ -12,4 +12,4 @@ CMAKE_C_FLAGS=
 CMAKE_TOOLCHAIN_FILE=
 
 # Conda channels
-ARTIFACTORY_CONDA_CHANNELS=-c bioconda -c conda-forge -c https://repo.continuum.io/pkgs/main -c https://repo.continuum.io/pkgs/free
+ARTIFACTORY_CONDA_CHANNELS=-c conda-forge -c https://repo.continuum.io/pkgs/main -c https://repo.continuum.io/pkgs/free
