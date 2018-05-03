@@ -3,15 +3,21 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/cmd)
 
 # Add the binary tree directory to the search path for linking and include files
-link_directories (${PROJECT_BINARY_DIR}/src)
-include_directories (${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_BINARY_DIR}/src)
+link_directories(${PROJECT_BINARY_DIR}/src)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_BINARY_DIR}/src)
 
-file (COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-add_executable (vk vk.c)
-target_link_libraries (vk variantkey)
+file(COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_executable(vk vk.c)
+target_link_libraries(vk variantkey)
 
 # --- PACKAGING ---
-INSTALL(TARGETS vk DESTINATION bin)
+
+install(TARGETS "vk" DESTINATION "bin")
+install(FILES "../README.md" DESTINATION "share/doc/vk")
+install(FILES "../LICENSE" DESTINATION "share/doc/vk")
+install(FILES "../VERSION" DESTINATION "share/doc/vk")
+install(FILES "../RELEASE" DESTINATION "share/doc/vk")
+
 set(CPACK_GENERATOR "DEB;RPM;TGZ")
 set(CPACK_PACKAGE_NAME "vk")
 set(CPACK_PACKAGE_VENDOR "GENOMICS plc")
@@ -23,4 +29,8 @@ set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "VariantKey Fast Encoder Command Line Application")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "/usr/local/bin")
 set(CPACK_PACKAGE_CHECKSUM "SHA512")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE")
+
 INCLUDE(CPack)

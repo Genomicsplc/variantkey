@@ -20,8 +20,8 @@ set(PROJECT_VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT
 message(STATUS "PROJECT_VERSION='${PROJECT_VERSION}'")
 message(STATUS "Generator - ${CMAKE_GENERATOR}")
 
-option (BUILD_DOXYGEN "Build Doxygen" OFF)
-option (BUILD_SHARED_LIB "Build a shared library" OFF)
+option(BUILD_DOXYGEN "Build Doxygen" OFF)
+option(BUILD_SHARED_LIB "Build a shared library" OFF)
 
 if(CMAKE_COMPILER_IS_GNUCC)
     message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -77,7 +77,7 @@ add_subdirectory(cmd)
 # Build Documentation
 find_package(Doxygen QUIET)
 if(DOXYGEN_FOUND)
-    add_subdirectory (doc)
+    add_subdirectory(doc)
 else(DOXYGEN_FOUND)
     message(STATUS "Doxygen not found. Documentation will not be built.")
 endif(DOXYGEN_FOUND)
