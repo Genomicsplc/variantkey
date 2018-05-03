@@ -117,7 +117,8 @@ build:
 	make | tee make.log ; test $${PIPESTATUS[0]} -eq 0
 	cd target/build && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
-	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0
+	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log && \
+	cd cmd && make -j package ; test $${PIPESTATUS[0]} -eq 0
 
 # Set the version from VERSION file
 version:

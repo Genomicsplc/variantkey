@@ -40,7 +40,7 @@
 #include "../src/variantkey.c"
 
 #ifndef VERSION
-#define VERSION "0.0.0"
+#define VERSION "0.0.0-0"
 #endif
 
 int main(int argc, char *argv[])

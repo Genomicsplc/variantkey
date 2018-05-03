@@ -315,3 +315,8 @@ Use the following commands to test the Javascript implementation.
 ```
 make js
 ```
+
+## Command-Line tool
+
+The code inside the cmd folder is used to generate the `vk` command line tool.
+This tools requires the positional arguments CHROM, POS, ALT, REF and returns the VariantKey in hexadecimal representation.
