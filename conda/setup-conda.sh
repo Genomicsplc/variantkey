@@ -14,6 +14,7 @@ PROJECT_ROOT="$(dirname ${PROJECT_HOME})"
 PROJECT_ENV="${PROJECT_ROOT}/${ENV_NAME}"
 
 if [ ! -d "${PROJECT_ENV}" ]; then
+    mkdir -p "${PROJECT_HOME}/target"
     curl "${MINICONDA_URL}/${MINICONDA_FILE}" > "${PROJECT_HOME}/target/${MINICONDA_FILE}"
     bash "${PROJECT_HOME}/target/${MINICONDA_FILE}" -b -p "${PROJECT_ENV}"
     if [ "${MINICONDA_PIN_VERSION}" != "-" ]; then

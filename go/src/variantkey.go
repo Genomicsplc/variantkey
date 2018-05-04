@@ -3,12 +3,12 @@ package variantkey
 /*
 #include <stdlib.h>
 #include <inttypes.h>
-#include "../../src/variantkey.h"
-#include "../../src/variantkey.c"
-#include "../../src/binsearch.h"
-#include "../../src/binsearch.c"
-#include "../../src/rsidvar.h"
-#include "../../src/rsidvar.c"
+#include "../../c/src/variantkey.h"
+#include "../../c/src/variantkey.c"
+#include "../../c/src/binsearch.h"
+#include "../../c/src/binsearch.c"
+#include "../../c/src/rsidvar.h"
+#include "../../c/src/rsidvar.c"
 */
 import "C"
 import "unsafe"

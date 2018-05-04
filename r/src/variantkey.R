@@ -32,8 +32,7 @@
 #
 # VariantKey by Nicola Asuni
 
-args <- commandArgs(trailingOnly = F)  
-script.path <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
+script.path <- dirname(sys.frame(1)$ofile)
 lib.variantkey <- paste(script.path, "/rvariantkey.so", sep="")
 
 dyn.load(lib.variantkey)

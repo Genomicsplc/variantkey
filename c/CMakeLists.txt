@@ -9,8 +9,8 @@ add_definitions(-DCMAKE)
 enable_testing ()
 
 # Extract version from the VERSION file
-file(STRINGS VERSION VERSION_FILE_CONTENT)
-file(STRINGS RELEASE PROJECT_RELEASE)
+file(STRINGS ../VERSION VERSION_FILE_CONTENT)
+file(STRINGS ../RELEASE PROJECT_RELEASE)
 string(REPLACE "." ";" VERSION_FILE_PARTS ${VERSION_FILE_CONTENT})
 list(GET VERSION_FILE_PARTS 0 PROJECT_VERSION_MAJOR)
 list(GET VERSION_FILE_PARTS 1 PROJECT_VERSION_MINOR)
@@ -21,7 +21,7 @@ message(STATUS "PROJECT_VERSION='${PROJECT_VERSION}'")
 message(STATUS "Generator - ${CMAKE_GENERATOR}")
 
 option(BUILD_DOXYGEN "Build Doxygen" OFF)
-option(BUILD_SHARED_LIB "Build a shared library" OFF)
+option(BUILD_SHARED_LIB "Build a shared library" ON)
 
 if(CMAKE_COMPILER_IS_GNUCC)
     message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
@@ -72,7 +72,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
 # Add subdirectories
 add_subdirectory(src)
 add_subdirectory(test)
-add_subdirectory(cmd)
+add_subdirectory(vk)
 
 # Build Documentation
 find_package(Doxygen QUIET)

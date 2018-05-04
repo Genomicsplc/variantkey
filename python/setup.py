@@ -27,7 +27,7 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version='1.0.2',
+    version='1.1.0',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=read('../README.md'),
@@ -36,16 +36,16 @@ setup(
     url='https://github.com/genomicsplc/variantkey',
     license='MIT',
     platforms='Linux',
-    packages=find_packages(exclude=['docs', 'tests*']),
+    packages=find_packages(exclude=['doc', 'test*']),
     ext_modules=[
         Extension('variantkey', [
-             '../src/binsearch.c',
-            '../src/rsidvar.c',
-            '../src/variantkey.c',
+             '../c/src/binsearch.c',
+            '../c/src/rsidvar.c',
+            '../c/src/variantkey.c',
             'variantkey/pyvariantkey.c',
         ],
         include_dirs=[
-            '../src',
+            '../c/src',
             'variantkey',
         ],
         extra_compile_args=[
@@ -60,7 +60,7 @@ setup(
             "-Wundef",
             "-Wformat-security",
             "-Wshadow",
-            "-I../src",
+            "-I../c/src",
         ])
     ],
     classifiers=[
