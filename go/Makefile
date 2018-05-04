@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help all test format fmtcheck vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan qa deps clean nuke
+.PHONY: help all test format fmtcheck vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan qa deps clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -80,11 +80,10 @@ help:
 	@echo ""
 	@echo "    make deps        : Get the dependencies"
 	@echo "    make clean       : Remove any build artifact"
-	@echo "    make nuke        : Deletes any intermediate file"
 	@echo ""
 
 # Alias for help target
-all: help
+all: clean format deps qa
 
 # Run the unit tests
 test:
@@ -199,9 +198,5 @@ deps:
 
 # Remove any build artifact
 clean:
-	GOPATH=$(GOPATH) go clean ./...
-
-# Deletes any intermediate file
-nuke:
-	rm -rf ./target
+	rm -rf ./target src.test
 	GOPATH=$(GOPATH) go clean -i ./...

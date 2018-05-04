@@ -1,8 +1,8 @@
 #!/usr/bin/env Rscript
 
-args <- commandArgs(trailingOnly = F)  
+args <- commandArgs(trailingOnly = F)
 script.path <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-wrapper.variantkey <- paste(script.path, "/variantkey.R", sep="")
+wrapper.variantkey <- paste(script.path, "/../src/variantkey.R", sep="")
 
 source(wrapper.variantkey)
 

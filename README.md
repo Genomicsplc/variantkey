@@ -313,7 +313,7 @@ print(dra)
 Use the following commands to test the Javascript implementation.
 
 ```
-make js
+make javascript
 ```
 
 ## Command-Line tool

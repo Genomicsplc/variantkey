@@ -34,7 +34,7 @@
 
 #include <R.h>
 #include <Rdefines.h>
-#include "../../src/variantkey.c"
+#include "../../c/src/variantkey.c"
 
 SEXP EncodeChrom(SEXP chrom)
 {

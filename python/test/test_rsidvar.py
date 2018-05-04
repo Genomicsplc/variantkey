@@ -29,7 +29,7 @@ class TestFunctions(TestCase):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/rsvk.10.bin")
+            "/../../c/test/data/rsvk.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsvk.10.bin file"
@@ -37,7 +37,7 @@ class TestFunctions(TestCase):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/vkrs.10.bin")
+            "/../../c/test/data/vkrs.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the vkrs.10.bin file"
@@ -110,7 +110,7 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/rsvk.10.bin")
+            "/../../c/test/data/rsvk.10.bin")
         rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsvk.10.bin file"
@@ -121,7 +121,7 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../test/data/vkrs.10.bin")
+            "/../../c/test/data/vkrs.10.bin")
         vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the vkrs.10.bin file"

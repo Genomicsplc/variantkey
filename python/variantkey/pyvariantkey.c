@@ -6,9 +6,9 @@
 // @link       https://github.com/genomicsplc/variantkey
 
 #include <Python.h>
-#include "variantkey.h"
-#include "binsearch.h"
-#include "rsidvar.h"
+#include "../../c/src/variantkey.h"
+#include "../../c/src/binsearch.h"
+#include "../../c/src/rsidvar.h"
 #include "pyvariantkey.h"
 
 #ifndef Py_UNUSED /* This is already defined for Python 3.4 onwards */
