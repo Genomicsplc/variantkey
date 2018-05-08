@@ -112,7 +112,8 @@ package_vk: version
 
 # Set the version from VERSION file
 version:
-	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" ../conda/c.vk/meta.yaml
+	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/c.vk/meta.yaml
+	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/c.vk/meta.yaml
 
 # Generate source code documentation
 doc:

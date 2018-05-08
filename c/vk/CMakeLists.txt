@@ -34,4 +34,4 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../../LICENSE")
 #set(CPACK_SET_DESTDIR true)
 #set(CPACK_INSTALL_PREFIX /opt/genomicsplc)
 
-INCLUDE(CPack)
+include(CPack)

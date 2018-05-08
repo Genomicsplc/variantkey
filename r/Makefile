@@ -5,7 +5,22 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help build test format clean
+.PHONY: help version conda build test format clean
+
+# Project name
+PROJECT=variantkey
+
+# Project version
+VERSION=$(shell cat ../VERSION)
+
+# Project release number (packaging build number)
+RELEASE=$(shell cat ../RELEASE)
+
+# Include conda channels
+include ../conda/channels.mk
+
+# Conda environment
+CONDA_ENV=../../env-${PROJECT}
 
 # --- MAKE TARGETS ---
 
@@ -13,7 +28,6 @@
 help:
 	@echo ""
 	@echo "VariantKey R Makefile."
-	@echo "Requires: node-js and uglify-js."
 	@echo "The following commands are available:"
 	@echo ""
 	@echo "    make build   : Build the library"
@@ -23,6 +37,16 @@ help:
 	@echo ""
 
 all: clean format build test
+
+# Set the version from VERSION file
+version:
+	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/r/meta.yaml
+	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/r/meta.yaml
+
+# Build the library
+conda:
+	../conda/setup-conda.sh
+	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/r
 
 # Build a minified version of the library
 build:

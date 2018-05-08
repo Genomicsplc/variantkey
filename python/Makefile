@@ -41,7 +41,8 @@ all: clean format build
 
 # Set the version from VERSION file
 version:
-	sed -i "s/version:.*$$/version: $(VERSION).$(RELEASE)/" ../conda/python/meta.yaml
+	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/python/meta.yaml
+	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/python/meta.yaml
 	sed -i "s/version=.*,$$/version='$(VERSION)',/" setup.py
 
 # Build a minified version of the library

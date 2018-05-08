@@ -2,8 +2,6 @@
 
 *Genetic Variant Key*
 
-[![Master Build Status](https://secure.travis-ci.org/genomicsplc/variantkey.png?branch=master)](https://travis-ci.org/genomicsplc/variantkey?branch=master)
-[![Master Coverage Status](https://coveralls.io/repos/genomicsplc/variantkey/badge.svg?branch=master&service=github)](https://coveralls.io/github/genomicsplc/variantkey?branch=master)
 
 * **category**    Libraries
 * **license**     MIT (see LICENSE)
@@ -154,6 +152,24 @@ To build a shared library:
 make build
 ```
 
+### Command-Line tool
+
+The code inside the c/vk folder is used to generate the `vk` command line tool.
+This tools requires the positional arguments CHROM, POS, ALT, REF and returns the VariantKey in hexadecimal representation.
+
+
+## GO Library
+
+A go wrapper is located in the ```go``` directory.
+
+### Test
+
+Use the following commands t test the go wrapper and generate reports.
+
+```
+make go
+```
+
 
 ## Python Module
 
@@ -161,19 +177,11 @@ The python module is located in the `python` directory.
 
 ### Build
 
-A shared library can be built using the following command inside the python directory (requires python-dev):
+A shared library can be built using the following command:
 
 ```
 make python
 ```
-
-or
-
-```
-make conda
-```
-
-to build and test the shared library as Conda package inside a Conda environment.
 
 ### Usage Example
 
@@ -215,21 +223,9 @@ print(ref, alt, reflen, altlen)
 # b'GCA' b'G' 3 1
 ```
 
-## GO Library
-
-A go wrapper is located in the ```go``` directory.
-
-### Test
-
-Use the following commands to test the go wrapper and generate reports.
-
-```
-make golang
-```
-
 ## R Module
 
-Use the following commands to build the R wrapper.
+Use the following command to build the R wrapper.
 
 ```
 make r
@@ -310,13 +306,8 @@ print(dra)
 
 ## Javascript library
 
-Use the following commands to test the Javascript implementation.
+Use the following command to test the Javascript implementation.
 
 ```
 make javascript
 ```
-
-## Command-Line tool
-
-The code inside the cmd folder is used to generate the `vk` command line tool.
-This tools requires the positional arguments CHROM, POS, ALT, REF and returns the VariantKey in hexadecimal representation.

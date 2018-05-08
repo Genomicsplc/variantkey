@@ -35,7 +35,7 @@
 script.path <- dirname(sys.frame(1)$ofile)
 lib.variantkey <- paste(script.path, "/rvariantkey.so", sep="")
 
-dyn.load(lib.variantkey)
+dyn.load(lib.variantkey, character.only=TRUE)
 
 EncodeChrom <- function(chrom) {
     return(.Call("EncodeChrom", chrom))
