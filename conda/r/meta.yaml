@@ -13,14 +13,17 @@ rpaths:
   - lib/
 
 requirements:
-  build:
-    - gcc
+  host:
     - r-base
+    - r-devtools
+    - r-roxygen2
+    - r-testthat
+  build:
+    - {{ compiler('c') }}
     - r-inline
     - r-pryr
     - r-Rcpp
   run:
-    - libgcc
     - r-base
 
 test:
@@ -28,7 +31,7 @@ test:
     - r-base
     - r-testthat
   imports:
-    - r-variantkey
+    - variantkey
 
 about:
   home: https://github.com/genomicsplc/variantkey
