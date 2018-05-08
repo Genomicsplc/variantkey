@@ -1,6 +1,6 @@
 // R VariantKey Module
 //
-// rvariantkey.c
+// variantkey.c
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
@@ -34,9 +34,9 @@
 
 #include <R.h>
 #include <Rdefines.h>
-#include "../../c/src/variantkey.c"
+#include "../../../c/src/variantkey.c"
 
-SEXP EncodeChrom(SEXP chrom)
+SEXP R_encode_chrom(SEXP chrom)
 {
     const char* chr = CHAR(STRING_ELT(chrom, 0));
     SEXP res;
@@ -46,14 +46,14 @@ SEXP EncodeChrom(SEXP chrom)
     return res;
 }
 
-SEXP DecodeChrom(SEXP code)
+SEXP R_decode_chrom(SEXP code)
 {
     char chrom[3] = "";
     decode_chrom(asInteger(code), chrom);
     return Rf_mkString(chrom);
 }
 
-SEXP EncodeRefAlt(SEXP ref, SEXP alt)
+SEXP R_encode_refalt(SEXP ref, SEXP alt)
 {
     const char* r = CHAR(STRING_ELT(ref, 0));
     const char* a = CHAR(STRING_ELT(alt, 0));
@@ -64,7 +64,7 @@ SEXP EncodeRefAlt(SEXP ref, SEXP alt)
     return res;
 }
 
-SEXP DecodeRefAlt(SEXP code)
+SEXP R_decode_refalt(SEXP code)
 {
     char ref[12] = "", alt[12] = "";
     size_t sizeref = 0, sizealt = 0;
@@ -79,7 +79,7 @@ SEXP DecodeRefAlt(SEXP code)
     return res;
 }
 
-SEXP VariantKey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
+SEXP R_variantkey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
 {
     const char *chr = CHAR(STRING_ELT(chrom, 0));
     const char *r = CHAR(STRING_ELT(ref, 0));
@@ -90,7 +90,7 @@ SEXP VariantKey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
     return Rf_mkString(hex);
 }
 
-SEXP VariantKeyRange(SEXP chrom, SEXP pos_min, SEXP pos_max)
+SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max)
 {
     char vk_min[17];
     char vk_max[17];
@@ -105,7 +105,7 @@ SEXP VariantKeyRange(SEXP chrom, SEXP pos_min, SEXP pos_max)
     return res;
 }
 
-SEXP ReverseVariantKey(SEXP hexcode)
+SEXP R_reverse_variantkey(SEXP hexcode)
 {
     char chrom[3] = "";
     char ref[12] = "", alt[12] = "";

@@ -1,2 +1,9 @@
 **/*.o
 **/*.so
+**/.Rproj.user
+**/.Rhistory
+**/.RData
+variantkey.Rcheck
+variantkey/LICENSE
+variantkey/libs
+variantkey/NAMESPACE

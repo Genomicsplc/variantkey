@@ -1,0 +1,16 @@
+Package: variantkey
+Title: Genetic VariantKey
+Version: 1.2.0.1
+Authors@R: person("Nicola", "Asuni", email = "info@genomicsplc.com", role = c("aut", "cre"))
+Description: Tools to generate and process a 64 bit Unsigned Integer Keys for Human Genetic Variants.
+    The VariantKey is sortable for chromosome and position,
+    and it is also fully reversible for variants with up to 11 bases between Reference and Alternate alleles.
+    It can be used to sort, search and match variant-based data easily and very quickly.
+Depends: R (>= 3.4.1)
+License: MIT + file LICENSE
+URL: https://github.com/Genomicsplc/variantkey
+BugReports: https://github.com/Genomicsplc/variantkey/issues
+Encoding: UTF-8
+LazyData: true
+NeedsCompilation: yes
+Suggests: testthat

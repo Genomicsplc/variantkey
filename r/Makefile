@@ -36,35 +36,26 @@ help:
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-all: clean format build test
+all: clean format conda
 
 # Set the version from VERSION file
 version:
 	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/r/meta.yaml
 	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/r/meta.yaml
+	sed -i "s/Version:.*$$/Version: $(VERSION).$(RELEASE)/" variantkey/DESCRIPTION
 
 # Build the library
-conda:
+conda: version
 	../conda/setup-conda.sh
 	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/r
 
-# Build a minified version of the library
-build:
-	cd src && \
-	R CMD SHLIB rvariantkey.c
-
-# Test the library
-test:
-	cd test && \
-	./test_rvariantkey.R
-
 # Format the source code
 format:
-	astyle --style=allman --recursive --suffix=none 'src/*.c'
-	astyle --style=google --recursive --suffix=none 'src/*.R'
-	astyle --style=google --recursive --suffix=none 'test/*.R'
+	astyle --style=allman --recursive --suffix=none 'variantkey/src/*.c'
+	astyle --style=google --recursive --suffix=none 'variantkey/R/*.R'
+	astyle --style=google --recursive --suffix=none 'variantkey/tests/*.R'
 	astyle --style=google --recursive --suffix=none 'example/*.R'
 
 # Remove any build artifact
 clean:
-	rm -f src/*.o src/*.so
+	rm -rf variantkey.Rcheck
