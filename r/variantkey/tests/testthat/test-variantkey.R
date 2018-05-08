@@ -1,4 +1,4 @@
-context("VariantKey")
+context("variantkey")
 library(variantkey)
 
 # test data: chromosome name
