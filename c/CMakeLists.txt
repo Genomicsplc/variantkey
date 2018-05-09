@@ -27,7 +27,7 @@ if(CMAKE_COMPILER_IS_GNUCC)
     message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                     OUTPUT_VARIABLE GCC_VERSION)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D VERSION='\"${PROJECT_VERSION}\"' -pedantic -std=c99 -Wall -Wextra -Wno-strict-prototypes -Wunused-value -Wcast-align -Wundef -Wformat-security")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D VERSION='\"${PROJECT_VERSION}\"' -s -pedantic -std=c99 -Wall -Wextra -Wno-strict-prototypes -Wunused-value -Wcast-align -Wundef -Wformat-security")
 
     if (GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wshadow")
@@ -68,6 +68,21 @@ if(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
    # Windows specific code
    set(OS "Windows")
 endif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+
+# Common package settings
+set(CPACK_PACKAGE_VENDOR "GENOMICS plc")
+set(CPACK_PACKAGE_CONTACT "info@genomicsplc.com")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_CHECKSUM "SHA512")
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/../README.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE")
+set(CPACK_GENERATOR "DEB;RPM;TGZ")
+set(CPACK_COMPONENTS_IGNORE_GROUPS TRUE)
+set(CPACK_DEB_COMPONENT_INSTALL TRUE)
 
 # Add subdirectories
 add_subdirectory(src)
