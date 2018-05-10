@@ -379,12 +379,12 @@ static PyObject* py_find_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyO
 static PyObject* py_find_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
-    uint64_t first, last, vh;
+    uint64_t first, last, vk;
     PyObject* mfsrc = NULL;
-    if (!PyArg_ParseTuple(args, "OKKK", &mfsrc, &first, &last, &vh))
+    if (!PyArg_ParseTuple(args, "OKKK", &mfsrc, &first, &last, &vk))
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
-    uint32_t h = find_vr_rsid_by_variantkey(src, &first, last, vh);
+    uint32_t h = find_vr_rsid_by_variantkey(src, &first, last, vk);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", first));

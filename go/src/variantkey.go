@@ -28,11 +28,11 @@ type TVKRange struct {
 }
 
 // castCVariantKey convert C variantkey_t to GO TVariantKey.
-func castCVariantKey(vh C.variantkey_t) TVariantKey {
+func castCVariantKey(vk C.variantkey_t) TVariantKey {
 	return TVariantKey{
-		Chrom:  uint8(vh.chrom),
-		Pos:    uint32(vh.pos),
-		RefAlt: uint32(vh.refalt),
+		Chrom:  uint8(vk.chrom),
+		Pos:    uint32(vk.pos),
+		RefAlt: uint32(vk.refalt),
 	}
 }
 
@@ -308,8 +308,8 @@ func (mf TMMFile) GetRVVariantkey(item uint64) uint64 {
 // FindRVVariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
 func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
 	cfirst := C.uint64_t(first)
-	vh := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
-	return vh, uint64(cfirst)
+	vk := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
+	return vk, uint64(cfirst)
 }
 
 // FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.

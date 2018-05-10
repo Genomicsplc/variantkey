@@ -159,7 +159,7 @@ static inline uint32_t pack_chars(const char *str, size_t size)
             c = ('Z' + 1);
         }
         bitpos -= 5;
-        h |= ((c - 'A' + 1) << bitpos); // A will be coded as 1
+        h |= ((c - 'A' + 1) << bitpos); // 'A' will be coded as 1
     }
     return h;
 }
@@ -186,7 +186,7 @@ static inline uint32_t hash32(const char *str, size_t size)
         {
             len = size;
         }
-        //[01111122 22233333 44444555 55666660]
+        // [ 01111122 22233333 44444555 55666660 ]
         // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(pack_chars(str, len), h);
         size -= len;

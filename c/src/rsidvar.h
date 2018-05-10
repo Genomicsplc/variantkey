@@ -104,11 +104,11 @@ uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, u
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
  * @param last      Last element of the range to search (max value = nitems - 1).
- * @param vh        VariantKey.
+ * @param vk        VariantKey.
  *
  * @return RSID or 0 if not found
  */
-uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vh);
+uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vk);
 
 /**
  * Search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.

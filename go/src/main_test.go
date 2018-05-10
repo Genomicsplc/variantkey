@@ -10,17 +10,17 @@ func TestMain(m *testing.M) {
 
 	// memory map the input files
 
-	mf, err = MmapBinFile("../../test/data/test_data.bin")
+	mf, err = MmapBinFile("../../c/test/data/test_data.bin")
 	if err != nil {
 		return
 	}
 
-	rv, err = MmapBinFile("../../test/data/rsvk.10.bin")
+	rv, err = MmapBinFile("../../c/test/data/rsvk.10.bin")
 	if err != nil {
 		return
 	}
 
-	vr, err = MmapBinFile("../../test/data/vkrs.10.bin")
+	vr, err = MmapBinFile("../../c/test/data/vkrs.10.bin")
 	if err != nil {
 		return
 	}

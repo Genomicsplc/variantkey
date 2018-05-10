@@ -877,15 +877,15 @@ func TestDecodeVariantKey(t *testing.T) {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vh := DecodeVariantKey(v.vk)
-			if vh.Chrom != v.vkchrom {
-				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, vh.Chrom)
+			vk := DecodeVariantKey(v.vk)
+			if vk.Chrom != v.vkchrom {
+				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, vk.Chrom)
 			}
-			if vh.Pos != v.vkpos {
-				t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, vh.Pos)
+			if vk.Pos != v.vkpos {
+				t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, vk.Pos)
 			}
-			if vh.RefAlt != v.vkrefalt {
-				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, vh.RefAlt)
+			if vk.RefAlt != v.vkrefalt {
+				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, vk.RefAlt)
 			}
 		})
 	}
