@@ -18,8 +18,6 @@ set -e -u -x -o pipefail
 : ${VCF_INPUT_FILE:?}                 # Input VCF file
 : ${VCF_OUTPUT_NAME:?}                # Name to be used for the output VCF file (e.g. dbsnp)
 : ${REFERENCE_GENOME_FASTA_FILE:?}    # Genome reference genome FASTA file
-: ${GENOME_ASSEMBLY:?}                # Genome Assembly code (e.g. GRCh37.p13.b150)
-: ${PARALLEL:=4}                      # Number of parallel processes used by "sort"
 
 
 if [ -x "$(command -v greadlink)" ]; then READLINK=greadlink; else READLINK=readlink; fi
