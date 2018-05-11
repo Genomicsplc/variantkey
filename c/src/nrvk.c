@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <string.h>
 #include "nrvk.h"
 
 size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
@@ -32,16 +33,9 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
     uint64_t offset = bytes_to_uint64_t(src, get_address(BINBLKLEN, 8, found), 0, 63);
     *sizeref = (size_t) bytes_to_uint8_t(src, offset++, 0, 7);
     *sizealt = (size_t) bytes_to_uint8_t(src, offset++, 0, 7);
-    size_t i;
-    for (i = 0; i < *sizeref; i++)
-    {
-        ref[i] = src[offset++];
-    }
-    ref[i] = 0;
-    for (i = 0; i < *sizealt; i++)
-    {
-        alt[i] = src[offset++];
-    }
-    alt[i] = 0;
+    memcpy(ref, &src[offset], *sizeref);
+    ref[*sizeref] = 0;
+    memcpy(alt, &src[(offset + *sizeref)], *sizealt);
+    alt[*sizealt] = 0;
     return (*sizeref + *sizealt);
 }
