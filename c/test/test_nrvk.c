@@ -28,16 +28,16 @@ typedef struct test_data_t
 
 static test_data_t test_data[TEST_DATA_SIZE] =
 {
-    {0x08027A2580338000, 0x00000002, 1, 1, "C", "T"},
-    {0x4800A1FE439E3918, 0x00000003, 2, 1, "CG", "T"},
-    {0x4800A1FE7555EB16, 0x00000004, 2, 2, "CG", "TA"},
-    {0x80010274003A0000, 0x00000005, 2, 3, "CG", "TAG"},
-    {0x8001028D00138000, 0x00000006, 3, 3, "CGT", "TAG"},
-    {0x80010299007A0000, 0x00000007, 4, 3, "CGTT", "TAG"},
-    {0xA0012B62003A0000, 0x00000008, 4, 4, "CGTT", "TAGC"},
-    {0xA0012B6280708000, 0x00000009, 4, 5, "CGTT", "TAGCT"},
-    {0xA0012B65E3256692, 0x0000000A, 5, 5, "CGTTA", "TAGCT"},
-    {0xA0012B67D5439803, 0x0000000B, 5, 6, "CGTTA", "TAGCTC"},
+    {0x08027A2580338000, 0x00000004, 1, 1, "C", "T"},
+    {0x4800A1FE439E3918, 0x00000005, 2, 1, "CG", "T"},
+    {0x4800A1FE7555EB16, 0x00000006, 2, 2, "CG", "TA"},
+    {0x80010274003A0000, 0x00000007, 2, 3, "CG", "TAG"},
+    {0x8001028D00138000, 0x00000008, 3, 3, "CGT", "TAG"},
+    {0x80010299007A0000, 0x00000009, 4, 3, "CGTT", "TAG"},
+    {0xA0012B62003A0000, 0x0000000A, 4, 4, "CGTT", "TAGC"},
+    {0xA0012B6280708000, 0x0000000B, 4, 5, "CGTT", "TAGCT"},
+    {0xA0012B65E3256692, 0x0000000C, 5, 5, "CGTTA", "TAGCT"},
+    {0xA0012B67D5439803, 0x0000000D, 5, 6, "CGTTA", "TAGCTC"},
 };
 
 // returns current time in nanoseconds
@@ -57,29 +57,29 @@ int test_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         len = find_ref_alt_by_variantkey(vknr.src, last, test_data[i].vk, ref, &sizeref, alt, &sizealt);
-        if (len != test_data[i].len)
+        if (len != (test_data[i].len - 2))
         {
-            fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, len, test_data[i].len);
+            fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, test_data[i].len, len);
             ++errors;
         }
         if (sizeref != test_data[i].sizeref)
         {
-            fprintf(stderr, "%s : expecting ref size %lu, got %lu\n", __func__, test_data[i].sizeref, sizeref);
+            fprintf(stderr, "%s (%d) Expecting ref size %lu, got %lu\n", __func__, i, test_data[i].sizeref, sizeref);
             ++errors;
         }
         if (sizealt != test_data[i].sizealt)
         {
-            fprintf(stderr, "%s : expecting alt size %lu, got %lu\n", __func__, test_data[i].sizealt, sizealt);
+            fprintf(stderr, "%s (%d) Expecting alt size %lu, got %lu\n", __func__, i, test_data[i].sizealt, sizealt);
             ++errors;
         }
         if (strcasecmp(test_data[i].ref, ref) != 0)
         {
-            fprintf(stderr, "%s : REF expecting %s, got %s\n", __func__, test_data[i].ref, ref);
+            fprintf(stderr, "%s (%d) Expecting REF %s, got %s\n", __func__, i, test_data[i].ref, ref);
             ++errors;
         }
         if (strcasecmp(test_data[i].alt, alt) != 0)
         {
-            fprintf(stderr, "%s : ALT expecting %s, got %s\n", __func__, test_data[i].alt, alt);
+            fprintf(stderr, "%s (%d) Expecting ALT %s, got %s\n", __func__, i, test_data[i].alt, alt);
             ++errors;
         }
     }

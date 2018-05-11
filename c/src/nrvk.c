@@ -37,9 +37,11 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
     {
         ref[i] = src[offset++];
     }
+    ref[i] = 0;
     for (i = 0; i < *sizealt; i++)
     {
         alt[i] = src[offset++];
     }
+    alt[i] = 0;
     return (*sizeref + *sizealt);
 }
