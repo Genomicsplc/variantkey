@@ -34,10 +34,12 @@
 
 /**
  * @file variantkey.h
- * @brief File containing the definition of public functions.
+ * @brief VariantKey main functions.
  *
- * The functions provided here allows to generate or decode
- * a genetic VariantKey128 and VariantKey64.
+ * The functions provided here allows to generate and process a 64 bit Unsigned Integer Keys for Human Genetic Variants.
+ * The VariantKey is sortable for chromosome and position,
+ * and it is also fully reversible for variants with up to 11 bases between Reference and Alternate alleles.
+ * It can be used to sort, search and match variant-based data easily and very quickly.
  */
 
 #ifndef VARIANTKEY_H

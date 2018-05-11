@@ -31,3 +31,6 @@ SMOKE_TEST (test_variantkey test_variantkey.c variantkey)
 
 file (COPY data/rsvk.10.bin data/vkrs.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_rsidvar test_rsidvar.c variantkey)
+
+file (COPY data/vknr.10.bin data/vknr.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_nrvk test_nrvk.c variantkey)

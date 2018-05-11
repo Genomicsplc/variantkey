@@ -20,12 +20,12 @@
 
 /**
  * @file rsidvar.h
- * @brief File containing the definition of public functions.
+ * @brief Functions to read VariantKey-rsID binary files.
  *
- * The functions provided here allows fast search for RSID and VariantKey values from binary files
+ * The functions provided here allows fast search for rsID and VariantKey values from binary files
  * made of adjacent constant-length binary blocks sorted in ascending order.
  *
- * The input binary files can be generated using the rsidvar.sh script in the resources/tools folder.
+ * The input binary files can be generated using the vkhexbin.sh script in the resources/tools folder.
  *
  * The `rsvk.bin` (RV) file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
  *

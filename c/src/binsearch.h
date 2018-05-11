@@ -20,7 +20,7 @@
 
 /**
  * @file binsearch.h
- * @brief File containing the definition of public functions.
+ * @brief Functions to search values in binary files made of constant-length items.
  *
  * The functions provided here allows to search big-endian
  * unsigned integers in a binary file made of adjacent

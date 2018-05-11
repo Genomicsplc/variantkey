@@ -99,12 +99,12 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
-## Binary file format for RSID-VariantKey index
+## Binary file format for VariantKey-rsID index
 
-The functions provided here allows fast search for RSID and VariantKey values from binary files
+The functions provided here allows fast search for rsID and VariantKey values from binary files
 made of adjacent constant-length binary blocks sorted in ascending order.
 
-The input binary files can be generated from a normalized VCF file using the `resources/tools/rsvk.sh`.  
+The input binary files can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh`.  
 The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
 
 The `rsvk.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
@@ -116,7 +116,6 @@ The `rsvk.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the f
     +---------+ +---------------------+
 ```
 
-
 The `vkrs.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
@@ -126,7 +125,24 @@ The `vkrs.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the f
     +---------------------+ +---------+
 ```
 
- 
+
+## Binary file format for non-reversible VariantKey
+
+In order to retrieve the original REF and ALT string for the non-reversible VariantKey,
+we can use a custom binary files that maps these cases.
+
+The input binary file can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh`.  
+The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
+
+The input binary file has the following format :
+
+```
+    [8 BYTE VARIANTKEY][8 BYTE VALUE ADDRESS]...
+    [1 BYTE REF LENGTH][1 BYTE ALT LENGTH][REF STRING][ALT STRING]...
+    [4 BYTE NUM VARIANTS]
+```
+
+
 ## C Library
 
 This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.  
