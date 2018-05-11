@@ -3,8 +3,8 @@
 # vkhexbin.sh
 #
 # Process the variantKey HEX file to generate the final binary counterparts:
-# - vkrs.bin : VariantKey to RSid
-# - rsvk.bin : RSid to VariantKey
+# - vkrs.bin : VariantKey to rsID
+# - rsvk.bin : rsID to VariantKey
 # - vknr.bin : Non-reversible VariantKey REF+ALT map
 #
 # Requires:
@@ -29,6 +29,8 @@ set -e -u -x -o pipefail
 bcftools +variantkey-hex ${VCF_INPUT_FILE}
 
 # --- VARIANTKEY -> RSID BINARY FILE ----------------------------------------------------------------------------------
+# Hexadecimal format : [16 BYTE VARIANTKEY][1 BYTE TAB][8 BYTE RSID][1 BYTE NEWLINE]...
+# Binary format      : [8 BYTE VARIANTKEY][4 BYTE RSID]...
 
 # sort by VariantKey 
 LC_ALL=C sort --parallel=${PARALLEL} --output=vkrs.hex vkrs.unsorted.hex
@@ -44,6 +46,8 @@ rm -f vkrs.hex
 
 
 # --- RSID -> VARIANTKEY BINARY FILE ----------------------------------------------------------------------------------
+# Hexadecimal format : [8 BYTE RSID][1 BYTE TAB][16 BYTE VARIANTKEY][1 BYTE NEWLINE]
+# Binary format      : [4 BYTE RSID][8 BYTE VARIANTKEY]
 
 # sort by RSID
 LC_ALL=C sort --parallel=${PARALLEL} --output=rsvk.hex rsvk.unsorted.hex
@@ -59,6 +63,12 @@ rm -f rsvk.hex
 
 
 # --- NON-REVERSIBLE VARIANTKEY BINARY FILE ---------------------------------------------------------------------------
+# Hexadecimal format : [16 BYTE VARIANTKEY][1 BYTE TAB][16 BYTE VALUE ADDRESS][1 BYTE NEWLINE]...
+#                      [2 BYTE REF LENGTH][1 BYTE TAB][2 BYTE ALT LENGTH][1 BYTE TAB][REF STRING HEX][1 BYTE TAB][ALT STRING HEX]...
+#                      [8 BYTE NUM VARIANTS]
+# Binary format      : [8 BYTE VARIANTKEY][8 BYTE VALUE ADDRESS]...
+#                      [1 BYTE REF LENGTH][1 BYTE ALT LENGTH][REF STRING][ALT STRING]...
+#                      [4 BYTE NUM VARIANTS]
 
 # sort by VariantKey 
 LC_ALL=C sort --parallel=${PARALLEL} --output=vknr.sorted.hex vknr.unsorted.hex
@@ -73,7 +83,7 @@ cut -f2 vknr.sorted.hex > vknr.pos.hex
 NVAR=$(($(stat -c%s vknr.vk.hex) / 17))
 
 # address of the first value
-OFFSET=$((${NVAR} * 64))
+OFFSET=$((${NVAR} * 16))
 OFFSETHEX=$(printf "%016x" ${OFFSET})
 
 # build offset file
