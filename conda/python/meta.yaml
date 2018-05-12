@@ -1,6 +1,6 @@
 package:
   name: variantkey
-  version: 1.3.0
+  version: 2.0.0
 
 source:
   path: ../..
@@ -23,9 +23,9 @@ test:
     - setuptools
     - coverage
     - pytest
-    - pytest-pep8
     - pytest-cov
     - pytest-benchmark
+    - pycodestyle
   imports:
     - variantkey
 

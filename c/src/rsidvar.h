@@ -67,7 +67,7 @@ extern "C" {
 /**
  * Returns the RSID at the specified position in the VR file.
  *
- * @param src       Memory mapped file address.
+ * @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
  * @param item      Binary block number.
  *
  * @return RS ID
@@ -77,7 +77,7 @@ uint32_t get_vr_rsid(const unsigned char *src, uint64_t item);
 /**
  * Returns the VariantKey at the specified position in the RV file.
  *
- * @param src       Memory mapped file address.
+ * @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
  * @param item      Binary block number.
  *
  * @return variant key data
@@ -87,7 +87,7 @@ uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item);
 /**
  * Search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
  *
- * @param src       Memory mapped file address.
+ * @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -100,7 +100,7 @@ uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, u
 /**
  * Search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
  *
- * @param src       Memory mapped file address.
+ * @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
  * @param last      Last element of the range to search (max value = nitems - 1).
@@ -113,7 +113,7 @@ uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, u
 /**
  * Search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
  *
- * @param src       Memory mapped file address.
+ * @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
  * @param first     Pointer to the first element of the range to search (min value = 0).
  * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
  * @param chrom     Chromosome encoded number.

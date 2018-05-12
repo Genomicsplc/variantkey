@@ -320,7 +320,8 @@ int main()
 
     uint64_t nitems; // number of binary blocks in the file
 
-    mmfile_t rv = mmap_binfile("rsvk.10.bin");
+    mmfile_t rv = {0};
+    mmap_binfile("rsvk.10.bin", &rv);
     nitems = (uint64_t)(rv.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
@@ -328,7 +329,8 @@ int main()
         return 1;
     }
 
-    mmfile_t vr = mmap_binfile("vkrs.10.bin");
+    mmfile_t vr = {0};
+    mmap_binfile("vkrs.10.bin", &vr);
     nitems = (uint64_t)(vr.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {

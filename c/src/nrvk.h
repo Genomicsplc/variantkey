@@ -44,13 +44,24 @@ extern "C" {
 #include "binsearch.h"
 #include "variantkey.h"
 
-#define BINBLKLEN 16 //!< Length in bytes of a binary block containing VARIANTKEY + OFFSET ADDRESS
+/**
+ * VariantKey decoded struct
+ */
+typedef struct variantkey_rev_t
+{
+    char chrom[3];  //!< Chromosome.
+    uint32_t pos;   //!< Reference position, with the 1st base having position 0.
+    char ref[256];  //!< Reference allele
+    char alt[256];  //!< Alternate allele
+    size_t sizeref; //!< Length of reference allele
+    size_t sizealt; //!< Length of alternate allele
+} variantkey_rev_t;
 
 /**
  * Retrieve the REF and ALT strings for the specified VariantKey.
  *
- * @param src      Memory mapped input file address.
- * @param last     Number of variants in the file -1.
+ * @param src      Address of the memory mapped input file contaning the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last     Number of variants in the src file -1.
  * @param vk       VariantKey to search.
  * @param ref      REF string buffer to be returned.
  * @param sizeref  Pointer to the size of the ref buffer, excluding the terminating null byte.
@@ -62,6 +73,17 @@ extern "C" {
  * @return REF+ALT length or 0 if the VariantKey is not found.
  */
 size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
+
+/** @brief Reverse a VariantKey code and returns the normalized components as variantkey_rev_t structure.
+ *
+ * @param src      Address of the memory mapped input file contaning the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
+ * @param vk       VariantKey code.
+ * @param rev      Structure containing the return values.
+ *
+ * @return A variantkey_rev_t structure.
+ */
+size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev);
 
 #ifdef __cplusplus
 }

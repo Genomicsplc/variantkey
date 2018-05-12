@@ -18,7 +18,6 @@ static PyObject *py_variantkey_range(PyObject *self, PyObject *args);
 static PyObject *py_variantkey_hex(PyObject *self, PyObject *args);
 static PyObject *py_parse_variantkey_hex(PyObject *self, PyObject *args);
 static PyObject *py_decode_variantkey(PyObject *self, PyObject *args);
-static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args);
 
 // BINSEARCH
 static PyObject *py_mmap_binfile(PyObject *self, PyObject *args);
@@ -40,6 +39,10 @@ static PyObject *py_find_rv_variantkey_by_rsid(PyObject *self, PyObject *args);
 static PyObject *py_find_vr_rsid_by_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args);
 
+// NRVK
+static PyObject *py_find_ref_alt_by_variantkey(PyObject *self, PyObject *args);
+static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args);
+
 PyMODINIT_FUNC initvariantkey(void);
 
 // VARIANTKEY
@@ -52,7 +55,6 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYVARIANTKEYSTRING_DOCSTRING "Returns VariantKey hexadecimal string (16 characters)."
 #define PYPARSEVARIANTKEYSTRING_DOCSTRING "Parses a VariantKey hex string and returns the code."
 #define PYDECODEVARIANTKEY_DOCSTRING "Decode a VariantKey code and returns the components as variantkey_t structure."
-#define PYREVERSEVARIANTKEY_DOCSTRING "Reverse a VariantKey code and returns the components."
 
 // BINSEARCH
 #define PYMMAPBINFILE_DOCSTRING "Memory map the specified file."
@@ -74,6 +76,9 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYFINDVRRSIDBYVARIANTKEY_DOCSTRING "Search for the specified VariantKey and returns the first occurrence of RSID in the VR file."
 #define PYFINDVRCHROMPOSRANGE_DOCSTRING "Search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file."
 
+// NRVK
+#define PYFINDREFALTBYVARIANTKEY_DOCSTRING "Retrieve the REF and ALT strings for the specified VariantKey using a memory-mapped file as lookup table."
+#define PYREVERSEVARIANTKEY_DOCSTRING "Reverse a VariantKey code and returns the normalized components."
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
 #define inline

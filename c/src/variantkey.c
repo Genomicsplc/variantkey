@@ -264,14 +264,12 @@ inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, co
             | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
 }
 
-vkrange_t variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
+inline void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range)
 {
     uint64_t c = ((uint64_t)chrom << 59);
-    return (vkrange_t)
-    {
-        .min = ( c | ((uint64_t)pos_min << 31)),
-         .max = ( c | ((uint64_t)pos_max << 31) | 0x000000007FFFFFFF)
-    };
+    range->min = (c | ((uint64_t)pos_min << 31));
+    range->max = (c | ((uint64_t)pos_max << 31) | 0x000000007FFFFFFF);
+    return;
 }
 
 inline size_t variantkey_hex(uint64_t code, char *str)
@@ -307,14 +305,13 @@ inline uint64_t parse_variantkey_hex(const char *vs)
     return v;
 }
 
-inline variantkey_t decode_variantkey(uint64_t code)
+inline void decode_variantkey(uint64_t code, variantkey_t *vk)
 {
-    variantkey_t v = {0,0,0};
-    // CHROM:   11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-    v.chrom = (uint8_t)((code & 0xF800000000000000) >> 59);
-    // POS:     00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
-    v.pos = (uint32_t)((code & 0x07FFFFFF80000000) >> 31);
-    // REF+ALT: 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
-    v.refalt = (uint32_t)(code & 0x000000007FFFFFFF);
-    return v;
+    // CHROM:   [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
+    vk->chrom = (uint8_t)((code & 0xF800000000000000) >> 59);
+    // POS:     [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
+    vk->pos = (uint32_t)((code & 0x07FFFFFF80000000) >> 31);
+    // REF+ALT: [ 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111 ]
+    vk->refalt = (uint32_t)(code & 0x000000007FFFFFFF);
+    return;
 }

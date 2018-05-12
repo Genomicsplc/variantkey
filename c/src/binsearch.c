@@ -24,21 +24,24 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-mmfile_t mmap_binfile(const char *file)
+void mmap_binfile(const char *file, mmfile_t *mf)
 {
-    mmfile_t mf = {MAP_FAILED, -1, 0};
+    mf->src = MAP_FAILED; // NOLINT
+    mf->fd = -1;
+    mf->size = 0;
+    mf->last = 0;
     struct stat statbuf;
-    if (((mf.fd = open(file, O_RDONLY)) < 0) || (fstat(mf.fd, &statbuf) < 0))
+    if (((mf->fd = open(file, O_RDONLY)) < 0) || (fstat(mf->fd, &statbuf) < 0))
     {
-        return mf;
+        return;
     }
-    mf.size = (uint64_t)statbuf.st_size;
-    mf.src = mmap(0, mf.size, PROT_READ, MAP_PRIVATE, mf.fd, 0);
-    if (mf.src == MAP_FAILED)
+    mf->size = (uint64_t)statbuf.st_size;
+    mf->src = mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
+    if (mf->size > 4)
     {
-        return mf;
+        mf->last = (uint64_t) bytes_to_uint32_t(mf->src, (mf->size - 4), 0, 31) - 1;
     }
-    return mf;
+    return;
 }
 
 int munmap_binfile(mmfile_t mf)
@@ -56,12 +59,12 @@ inline uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
-uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
+inline uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
     return ((((uint8_t)src[i]) << bitstart) >> (7 - bitend + bitstart));
 }
 
-uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
+inline uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i, uint8_t bitstart, uint8_t bitend)
 {
     return (((((uint16_t)src[i] << 8)
               | (uint16_t)src[i+1]) << bitstart) >> (15 - bitend + bitstart));

@@ -56,9 +56,9 @@ extern "C" {
  */
 typedef struct variantkey_t
 {
-    uint8_t chrom;     //!< Chromosome encoded number (only the LSB 5 bit are used)
-    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0 (only the LSB 28 bit are used)
-    uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 31 bits are used)
+    uint8_t chrom;   //!< Chromosome encoded number (only the LSB 5 bit are used)
+    uint32_t pos;    //!< Reference position, with the 1st base having position 0 (only the LSB 28 bit are used)
+    uint32_t refalt; //!< Code for Reference and Alternate allele (only the LSB 31 bits are used)
 } variantkey_t;
 
 /**
@@ -140,10 +140,11 @@ uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const cha
  * @param chrom     Chromosome encoded number.
  * @param pos_min   Start reference position, with the 1st base having position 0.
  * @param pos_max   End reference position, with the 1st base having position 0.
+ * @param range     VariantKey range values.
  *
  * @return      Min and Max variant keys for any given REF+ALT encoding
  */
-vkrange_t variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
+void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range);
 
 /** @brief Returns VariantKey hexadecimal string (16 characters).
  *
@@ -173,10 +174,11 @@ uint64_t parse_variantkey_hex(const char *vs);
 /** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
  *
  * @param code VariantKey code.
+ * @param vk   Decoded variantkey structure.
  *
  * @return A variantkey_t structure.
  */
-variantkey_t decode_variantkey(uint64_t code);
+void decode_variantkey(uint64_t code, variantkey_t *vk);
 
 #ifdef __cplusplus
 }

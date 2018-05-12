@@ -2,8 +2,6 @@ package variantkey
 
 import "testing"
 
-var mf TMMFile
-
 var testData8 = []struct {
 	blkpos      uint64
 	first       uint64

@@ -21,13 +21,16 @@ class RunTests(Command):
 
     def run(self):
         """Run all tests!"""
-        errno = call(['py.test', '--verbose'])
+        errno = call([
+            'py.test',
+            '--verbose',
+        ])
         raise SystemExit(errno)
 
 
 setup(
     name='variantkey',
-    version='1.3.0',
+    version='2.0.0',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=read('../README.md'),
@@ -41,6 +44,7 @@ setup(
         Extension('variantkey', [
              '../c/src/binsearch.c',
             '../c/src/rsidvar.c',
+            '../c/src/nrvk.c',
             '../c/src/variantkey.c',
             'variantkey/pyvariantkey.c',
         ],
@@ -76,7 +80,7 @@ setup(
             'pytest',
             'pytest-benchmark',
             'pytest-cov',
-            'pytest-pep8',
+            'pycodestyle',
         ],
     },
     cmdclass={'test': RunTests},

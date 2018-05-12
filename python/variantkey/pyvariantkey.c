@@ -9,6 +9,7 @@
 #include "../../c/src/variantkey.h"
 #include "../../c/src/binsearch.h"
 #include "../../c/src/rsidvar.h"
+#include "../../c/src/nrvk.h"
 #include "pyvariantkey.h"
 
 #ifndef Py_UNUSED /* This is already defined for Python 3.4 onwards */
@@ -20,6 +21,7 @@
 #endif
 
 #define ALLELE_BUFFSIZE 12
+#define ALLELE_MAXSIZE 256
 
 static PyObject* py_encode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
@@ -86,7 +88,8 @@ static PyObject* py_variantkey_range(PyObject *Py_UNUSED(ignored), PyObject *arg
     uint32_t pos_min, pos_max;
     if (!PyArg_ParseTuple(args, "BII", &chrom, &pos_min, &pos_max))
         return NULL;
-    vkrange_t r = variantkey_range(chrom, pos_min, pos_max);
+    vkrange_t r;
+    variantkey_range(chrom, pos_min, pos_max, &r);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", r.min));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", r.max));
@@ -123,32 +126,12 @@ static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *ar
     uint64_t code;
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
-    variantkey_t h = decode_variantkey(code);
+    variantkey_t h = {0};
+    decode_variantkey(code, &h);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
     PyTuple_SetItem(result, 2, Py_BuildValue("I", h.refalt));
-    return result;
-}
-
-static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t code;
-    if (!PyArg_ParseTuple(args, "K", &code))
-        return NULL;
-    char chrom[3] = "", ref[ALLELE_BUFFSIZE] = "", alt[ALLELE_BUFFSIZE] = "";
-    size_t sizeref = 0, sizealt = 0;
-    variantkey_t h = decode_variantkey(code);
-    decode_chrom(h.chrom, chrom);
-    decode_refalt(h.refalt, ref, &sizeref, alt, &sizealt);
-    result = PyTuple_New(6);
-    PyTuple_SetItem(result, 0, Py_BuildValue("y", chrom));
-    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 2, Py_BuildValue("y", ref));
-    PyTuple_SetItem(result, 3, Py_BuildValue("y", alt));
-    PyTuple_SetItem(result, 4, Py_BuildValue("K", sizeref));
-    PyTuple_SetItem(result, 5, Py_BuildValue("K", sizealt));
     return result;
 }
 
@@ -160,17 +143,19 @@ static PyObject* py_mmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args)
     const char *file;
     if (!PyArg_ParseTuple(args, "s", &file))
         return NULL;
-    mmfile_t h = mmap_binfile(file);
-    result = PyTuple_New(3);
+    mmfile_t h = {0};
+    mmap_binfile(file, &h);
+    result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, PyCapsule_New((void*)h.src, "src", NULL));
     PyTuple_SetItem(result, 1, Py_BuildValue("i", h.fd));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", h.size));
+    PyTuple_SetItem(result, 3, Py_BuildValue("K", h.last));
     return result;
 }
 
 static PyObject* py_munmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
-    mmfile_t mf;
+    mmfile_t mf = {0};
     PyObject *result;
     PyObject* mfsrc = NULL;
     if (!PyArg_ParseTuple(args, "OiK", &mfsrc, &mf.fd, &mf.size))
@@ -409,6 +394,49 @@ static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObjec
     return result;
 }
 
+// --- NRVK ---
+
+static PyObject* py_find_ref_alt_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OKK", &mfsrc, &last, &vk))
+        return NULL;
+    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    size_t sizeref = 0, sizealt = 0;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    size_t len = find_ref_alt_by_variantkey(src, last, vk, ref, &sizeref, alt, &sizealt);
+    result = PyTuple_New(5);
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", ref));
+    PyTuple_SetItem(result, 1, Py_BuildValue("y", alt));
+    PyTuple_SetItem(result, 2, Py_BuildValue("K", sizeref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("K", sizealt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("K", len));
+    return result;
+}
+
+static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OKK", &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    variantkey_rev_t rev = {0};
+    size_t len = reverse_variantkey(src, last, vk, &rev);
+    result = PyTuple_New(7);
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", rev.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", rev.pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("y", rev.ref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("y", rev.alt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("K", rev.sizeref));
+    PyTuple_SetItem(result, 5, Py_BuildValue("K", rev.sizealt));
+    PyTuple_SetItem(result, 6, Py_BuildValue("K", len));
+    return result;
+}
+
 // ---
 
 static PyMethodDef PyVariantKeyMethods[] =
@@ -423,7 +451,6 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"variantkey_hex", py_variantkey_hex, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
     {"parse_variantkey_hex", py_parse_variantkey_hex, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
     {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
-    {"reverse_variantkey", py_reverse_variantkey, METH_VARARGS, PYREVERSEVARIANTKEY_DOCSTRING},
 
 
     // BINSEARCH
@@ -445,6 +472,10 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"find_rv_variantkey_by_rsid", py_find_rv_variantkey_by_rsid, METH_VARARGS, PYFINDRVVARIANTKEYBYRSID_DOCSTRING},
     {"find_vr_rsid_by_variantkey", py_find_vr_rsid_by_variantkey, METH_VARARGS, PYFINDVRRSIDBYVARIANTKEY_DOCSTRING},
     {"find_vr_chrompos_range", py_find_vr_chrompos_range, METH_VARARGS, PYFINDVRCHROMPOSRANGE_DOCSTRING},
+
+    // NRVK
+    {"find_ref_alt_by_variantkey", py_find_ref_alt_by_variantkey, METH_VARARGS, PYFINDREFALTBYVARIANTKEY_DOCSTRING},
+    {"reverse_variantkey", py_reverse_variantkey, METH_VARARGS, PYREVERSEVARIANTKEY_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
 };

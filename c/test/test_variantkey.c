@@ -636,12 +636,12 @@ int gentestmap()
     int i;
     uint64_t vk;
     char vs[17] = "";
-    variantkey_t h;
+    variantkey_t h = {0};
     for (i=0 ; i < k_test_size; i++)
     {
         vk = variantkey(test_data[i].chrom, strlen(test_data[i].chrom), test_data[i].pos, test_data[i].ref, strlen(test_data[i].ref), test_data[i].alt, strlen(test_data[i].alt));
         variantkey_hex(vk, vs);
-        h = decode_variantkey(vk);
+        decode_variantkey(vk, &h);
         fprintf(stderr, "{\"%s\", %"PRIu32", \"%s\", \"%s\", 0x%016"PRIx64", \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"},\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk, vs, h.chrom, h.pos, h.refalt);
         //fprintf(stderr, "[\"%s\", %"PRIu32", \"%s\", \"%s\", {\"hi\": 0x%08"PRIx32", \"lo\": 0x%08"PRIx32"}, \"%s\", 0x%02"PRIx8", 0x%08"PRIx32", 0x%08"PRIx32"],\n", test_data[i].chrom, test_data[i].pos, test_data[i].ref, test_data[i].alt, vk >> 32, vk & 0xFFFFFFFF, vs, h.chrom, h.pos, h.refalt);
     }
@@ -1021,7 +1021,7 @@ int test_variantkey_range()
     int i;
     for (i=0 ; i < 25; i++)
     {
-        r = variantkey_range(test_range_data[i].chrom, test_range_data[i].pos_min, test_range_data[i].pos_max);
+        variantkey_range(test_range_data[i].chrom, test_range_data[i].pos_min, test_range_data[i].pos_max, &r);
         if (r.min != test_range_data[i].vk_min)
         {
             fprintf(stderr, "%s : Unexpected min value: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, test_range_data[i].vk_min, r.min);
@@ -1038,13 +1038,14 @@ int test_variantkey_range()
 
 void benchmark_variantkey_range()
 {
+    vkrange_t r;
     uint64_t tstart, tend;
     int i;
     int size = 100000;
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        variantkey_range(15, 12002028, 12152133);
+        variantkey_range(15, 12002028, 12152133, &r);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
@@ -1123,10 +1124,10 @@ int test_decode_variantkey()
 {
     int errors = 0;
     int i;
-    variantkey_t h;
+    variantkey_t h = {0};
     for (i=0 ; i < k_test_size; i++)
     {
-        h = decode_variantkey(test_data[i].vk);
+        decode_variantkey(test_data[i].vk, &h);
         if (h.chrom != test_data[i].vkchrom)
         {
             fprintf(stderr, "%s (%d): Unexpected chrom code: expected 0x%02"PRIx8", got 0x%02"PRIx8"\n", __func__, i, test_data[i].vkchrom, h.chrom);
@@ -1148,13 +1149,14 @@ int test_decode_variantkey()
 
 void benchmark_decode_variantkey()
 {
+    variantkey_t h = {0};
     uint64_t tstart, tend;
     int i;
     int size = 100000;
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        decode_variantkey(0xa852662880400000);
+        decode_variantkey(0xa852662880400000, &h);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);

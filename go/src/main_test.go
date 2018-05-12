@@ -3,7 +3,7 @@ package variantkey
 import "testing"
 import "os"
 
-var rv, vr TMMFile
+var mf, rv, vr, vknr TMMFile
 
 func TestMain(m *testing.M) {
 	var err error
@@ -12,17 +12,22 @@ func TestMain(m *testing.M) {
 
 	mf, err = MmapBinFile("../../c/test/data/test_data.bin")
 	if err != nil {
-		return
+		os.Exit(1)
 	}
 
 	rv, err = MmapBinFile("../../c/test/data/rsvk.10.bin")
 	if err != nil {
-		return
+		os.Exit(2)
 	}
 
 	vr, err = MmapBinFile("../../c/test/data/vkrs.10.bin")
 	if err != nil {
-		return
+		os.Exit(3)
+	}
+
+	vknr, err = MmapBinFile("../../c/test/data/vknr.10.bin")
+	if err != nil {
+		os.Exit(4)
 	}
 
 	retCode := m.Run()
@@ -40,6 +45,11 @@ func TestMain(m *testing.M) {
 	}
 
 	err = vr.Close()
+	if err != nil {
+		retCode++
+	}
+
+	err = vknr.Close()
 	if err != nil {
 		retCode++
 	}

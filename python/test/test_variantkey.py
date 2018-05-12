@@ -704,17 +704,6 @@ class TestFunctions(TestCase):
             self.assertEqual(h[1], vkpos)
             self.assertEqual(h[2], vkrefalt)
 
-    def test_reverse_variantkey(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
-            h = variantkey.reverse_variantkey(vk)
-            if h[5] > 0:
-                self.assertEqual(variantkey.encode_chrom(h[0]), vkchrom)
-                self.assertEqual(h[1], pos)
-                self.assertEqual(h[2], ref.upper())
-                self.assertEqual(h[3], alt.upper())
-                self.assertEqual(h[4], len(ref))
-                self.assertEqual(h[5], len(alt))
-
 
 class TestBenchmark(object):
 
