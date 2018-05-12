@@ -56,9 +56,9 @@ extern "C" {
  */
 typedef struct variantkey_t
 {
-    uint8_t chrom;     //!< Chromosome encoded number (only the LSB 5 bit are used)
-    uint32_t pos;      //!< Position. The reference position, with the 1st base having position 0 (only the LSB 28 bit are used)
-    uint32_t refalt;   //!< Hash code for Reference and Alternate (only the LSB 31 bits are used)
+    uint8_t chrom;   //!< Chromosome encoded number (only the LSB 5 bit are used)
+    uint32_t pos;    //!< Reference position, with the 1st base having position 0 (only the LSB 28 bit are used)
+    uint32_t refalt; //!< Code for Reference and Alternate allele (only the LSB 31 bits are used)
 } variantkey_t;
 
 /**
