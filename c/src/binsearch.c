@@ -39,7 +39,7 @@ void mmap_binfile(const char *file, mmfile_t *mf)
     mf->src = mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
     if (mf->size > 4)
     {
-        mf->last = (uint64_t) bytes_to_uint32_t(mf->src, (uint64_t)(mf->size - 4), 0, 31) - 1;
+        mf->last = (uint64_t) bytes_to_uint32_t(mf->src, (mf->size - 4), 0, 31) - 1;
     }
     return;
 }

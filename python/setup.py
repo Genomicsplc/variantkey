@@ -44,6 +44,7 @@ setup(
         Extension('variantkey', [
              '../c/src/binsearch.c',
             '../c/src/rsidvar.c',
+            '../c/src/nrvk.c',
             '../c/src/variantkey.c',
             'variantkey/pyvariantkey.c',
         ],

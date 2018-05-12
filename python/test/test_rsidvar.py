@@ -1,4 +1,4 @@
-"""Tests for variantkey64 module."""
+"""Tests for variantkey rsidvar module."""
 
 
 import variantkey as bs
@@ -30,7 +30,7 @@ class TestFunctions(TestCase):
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/rsvk.10.bin")
-        rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
+        rvsrc, rvfd, rvsize, _ = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsvk.10.bin file"
         global vrsrc, vrfd, vrsize
@@ -38,7 +38,7 @@ class TestFunctions(TestCase):
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/vkrs.10.bin")
-        vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
+        vrsrc, vrfd, vrsize, _ = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the vkrs.10.bin file"
 
@@ -111,7 +111,7 @@ class TestBenchmark(object):
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/rsvk.10.bin")
-        rvsrc, rvfd, rvsize = bs.mmap_binfile(inputfile)
+        rvsrc, rvfd, rvsize, _ = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsvk.10.bin file"
         global vrsrc, vrfd, vrsize
@@ -122,7 +122,7 @@ class TestBenchmark(object):
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/vkrs.10.bin")
-        vrsrc, vrfd, vrsize = bs.mmap_binfile(inputfile)
+        vrsrc, vrfd, vrsize, _ = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the vkrs.10.bin file"
 

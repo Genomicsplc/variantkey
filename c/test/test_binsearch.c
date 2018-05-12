@@ -365,7 +365,7 @@ define_benchmark_find_last(uint64_t)
 
 int test_mmap_binfile_error(const char* file)
 {
-    mmfile_t mf;
+    mmfile_t mf = {0};
     mmap_binfile(file, &mf);
     if (mf.src != MAP_FAILED)
     {
@@ -377,7 +377,7 @@ int test_mmap_binfile_error(const char* file)
 
 int test_munmap_binfile_error()
 {
-    mmfile_t mf;
+    mmfile_t mf = {0};
     int e = munmap_binfile(mf);
     if (e == 0)
     {
@@ -399,7 +399,7 @@ int main()
     uint64_t blklen = 20; // length of each binary block
     uint64_t nitems; // number of binary blocks in the file
 
-    mmfile_t mf;
+    mmfile_t mf = {0};
     mmap_binfile(file, &mf);
 
     if (mf.fd < 0)

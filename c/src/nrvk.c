@@ -44,7 +44,7 @@ inline size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last
 
 inline size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev)
 {
-    variantkey_t h;
+    variantkey_t h = {0};
     decode_variantkey(vk, &h);
     decode_chrom(h.chrom, rev->chrom);
     rev->pos = h.pos;

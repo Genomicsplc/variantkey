@@ -122,7 +122,7 @@ int test_reverse_variantkey(mmfile_t vknr)
 {
     int errors = 0;
     int i;
-    variantkey_rev_t rev;
+    variantkey_rev_t rev = {0};
     size_t len;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
@@ -168,7 +168,7 @@ int test_reverse_variantkey(mmfile_t vknr)
 
 void benchmark_reverse_variantkey(mmfile_t vknr)
 {
-    variantkey_rev_t rev;
+    variantkey_rev_t rev = {0};
     uint64_t tstart, tend;
     int i;
     int size = 100000;
@@ -186,7 +186,7 @@ int main()
     int errors = 0;
     int err;
 
-    mmfile_t vknr;
+    mmfile_t vknr = {0};
     mmap_binfile("vknr.10.bin", &vknr);
 
     if ((vknr.last + 1) != TEST_DATA_SIZE)

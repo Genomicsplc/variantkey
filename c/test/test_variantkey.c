@@ -636,7 +636,7 @@ int gentestmap()
     int i;
     uint64_t vk;
     char vs[17] = "";
-    variantkey_t h;
+    variantkey_t h = {0};
     for (i=0 ; i < k_test_size; i++)
     {
         vk = variantkey(test_data[i].chrom, strlen(test_data[i].chrom), test_data[i].pos, test_data[i].ref, strlen(test_data[i].ref), test_data[i].alt, strlen(test_data[i].alt));
@@ -1124,7 +1124,7 @@ int test_decode_variantkey()
 {
     int errors = 0;
     int i;
-    variantkey_t h;
+    variantkey_t h = {0};
     for (i=0 ; i < k_test_size; i++)
     {
         decode_variantkey(test_data[i].vk, &h);
@@ -1149,7 +1149,7 @@ int test_decode_variantkey()
 
 void benchmark_decode_variantkey()
 {
-    variantkey_t h;
+    variantkey_t h = {0};
     uint64_t tstart, tend;
     int i;
     int size = 100000;
