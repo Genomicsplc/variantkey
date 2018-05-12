@@ -50,7 +50,7 @@ uint64_t get_time()
     return (((uint64_t)t.tv_sec * 1000000000) + (uint64_t)t.tv_nsec);
 }
 
-int test_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
+int test_find_ref_alt_by_variantkey(mmfile_t vknr)
 {
     int errors = 0;
     int i;
@@ -58,7 +58,7 @@ int test_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
     size_t sizeref,sizealt, len;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        len = find_ref_alt_by_variantkey(vknr.src, last, test_data[i].vk, ref, &sizeref, alt, &sizealt);
+        len = find_ref_alt_by_variantkey(vknr.src, vknr.last, test_data[i].vk, ref, &sizeref, alt, &sizealt);
         if (len != (test_data[i].len - 2))
         {
             fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, test_data[i].len, len);
@@ -88,12 +88,12 @@ int test_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
     return errors;
 }
 
-int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr, uint64_t last)
+int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr)
 {
     int errors = 0;
     char ref[256], alt[256];
     size_t sizeref,sizealt, len;
-    len = find_ref_alt_by_variantkey(vknr.src, last, 0xffffffff, ref, &sizeref, alt, &sizealt);
+    len = find_ref_alt_by_variantkey(vknr.src, vknr.last, 0xffffffff, ref, &sizeref, alt, &sizealt);
     if (len != 0)
     {
         fprintf(stderr, "%s : Expected len 0, got %lu\n",  __func__, len);
@@ -102,7 +102,7 @@ int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr, uint64_t last)
     return errors;
 }
 
-void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
+void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr)
 {
     char ref[256], alt[256];
     size_t sizeref,sizealt;
@@ -112,13 +112,13 @@ void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        find_ref_alt_by_variantkey(vknr.src, last, 0xA0012B6280708000, ref, &sizeref, alt, &sizealt);
+        find_ref_alt_by_variantkey(vknr.src, vknr.last, 0xb000c35b64690b25, ref, &sizeref, alt, &sizealt);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
-int test_reverse_variantkey(mmfile_t vknr, uint64_t last)
+int test_reverse_variantkey(mmfile_t vknr)
 {
     int errors = 0;
     int i;
@@ -126,7 +126,7 @@ int test_reverse_variantkey(mmfile_t vknr, uint64_t last)
     size_t len;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        len = reverse_variantkey(vknr.src, last, test_data[i].vk, &rev);
+        len = reverse_variantkey(vknr.src, vknr.last, test_data[i].vk, &rev);
         if (len != (test_data[i].len - 2))
         {
             fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, test_data[i].len, len);
@@ -166,7 +166,7 @@ int test_reverse_variantkey(mmfile_t vknr, uint64_t last)
     return errors;
 }
 
-void benchmark_reverse_variantkey(mmfile_t vknr, uint64_t last)
+void benchmark_reverse_variantkey(mmfile_t vknr)
 {
     variantkey_rev_t rev;
     uint64_t tstart, tend;
@@ -175,7 +175,7 @@ void benchmark_reverse_variantkey(mmfile_t vknr, uint64_t last)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        reverse_variantkey(vknr.src, last, 0xA0012B6280708000, &rev);
+        reverse_variantkey(vknr.src, vknr.last, 0xb000c35b64690b25, &rev);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
@@ -189,19 +189,18 @@ int main()
     mmfile_t vknr;
     mmap_binfile("vknr.10.bin", &vknr);
 
-    uint64_t nitems = (uint64_t) bytes_to_uint32_t(vknr.src, (uint64_t)(vknr.size - 4), 0, 31);
-    if (nitems != TEST_DATA_SIZE)
+    if ((vknr.last + 1) != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, vknr.last + 1);
         return 1;
     }
 
-    errors += test_find_ref_alt_by_variantkey(vknr, nitems - 1);
-    errors += test_find_ref_alt_by_variantkey_notfound(vknr, nitems - 1);
-    errors += test_reverse_variantkey(vknr, nitems - 1);
+    errors += test_find_ref_alt_by_variantkey(vknr);
+    errors += test_find_ref_alt_by_variantkey_notfound(vknr);
+    errors += test_reverse_variantkey(vknr);
 
-    benchmark_find_ref_alt_by_variantkey(vknr, nitems - 1);
-    benchmark_reverse_variantkey(vknr, nitems - 1);
+    benchmark_find_ref_alt_by_variantkey(vknr);
+    benchmark_reverse_variantkey(vknr);
 
     err = munmap_binfile(vknr);
     if (err != 0)

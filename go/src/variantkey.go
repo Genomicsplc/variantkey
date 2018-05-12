@@ -9,6 +9,8 @@ package variantkey
 #include "../../c/src/binsearch.c"
 #include "../../c/src/rsidvar.h"
 #include "../../c/src/rsidvar.c"
+#include "../../c/src/nrvk.h"
+#include "../../c/src/nrvk.c"
 */
 import "C"
 import "unsafe"
@@ -19,6 +21,16 @@ type TVariantKey struct {
 	Chrom  uint8  `json:"chrom"`
 	Pos    uint32 `json:"pos"`
 	RefAlt uint32 `json:"refalt"`
+}
+
+// TVariantKeyRev contains a genetic variant components
+type TVariantKeyRev struct {
+	Chrom   string `json:"chrom"`
+	Pos     uint32 `json:"pos"`
+	Ref     string `json:"ref"`
+	Alt     string `json:"alt"`
+	SizeRef uint8  `json:"size_ref"`
+	SizeAlt uint8  `json:"size_alt"`
 }
 
 // TVKRange contains min and max VariantKey values for range searches
@@ -33,6 +45,18 @@ func castCVariantKey(vk C.variantkey_t) TVariantKey {
 		Chrom:  uint8(vk.chrom),
 		Pos:    uint32(vk.pos),
 		RefAlt: uint32(vk.refalt),
+	}
+}
+
+// castCVariantKeyRev convert C variantkey_t to GO TVariantKey.
+func castCVariantKeyRev(vk C.variantkey_rev_t) TVariantKeyRev {
+	return TVariantKeyRev{
+		Chrom:   C.GoString((*C.char)(unsafe.Pointer(&vk.chrom[0]))),
+		Pos:     uint32(vk.pos),
+		Ref:     C.GoStringN((*C.char)(unsafe.Pointer(&vk.ref[0])), C.int(vk.sizeref)),
+		Alt:     C.GoStringN((*C.char)(unsafe.Pointer(&vk.alt[0])), C.int(vk.sizealt)),
+		SizeRef: uint8(vk.sizeref),
+		SizeAlt: uint8(vk.sizealt),
 	}
 }
 
@@ -65,10 +89,10 @@ func EncodeChrom(chrom string) uint8 {
 
 // DecodeChrom decode chrom to string
 func DecodeChrom(c uint8) string {
-	var cstr *C.char = C.CString("\x00\x00\x00")
+	cstr := C.malloc(3)
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	len := C.decode_chrom(C.uint8_t(c), cstr)
-	return C.GoStringN(cstr, C.int(len))
+	len := C.decode_chrom(C.uint8_t(c), (*C.char)(cstr))
+	return C.GoStringN((*C.char)(cstr), C.int(len))
 }
 
 // EncodeRefAlt returns reference+alternate code.
@@ -90,14 +114,14 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 
 // DecodeRefAlt decode Ref+Alt code if reversible
 func DecodeRefAlt(c uint32) (string, string, uint8, uint8, uint8) {
-	var cref *C.char = C.CString("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+	cref := C.malloc(12)
 	defer C.free(unsafe.Pointer(cref)) // #nosec
-	var calt *C.char = C.CString("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+	calt := C.malloc(12)
 	defer C.free(unsafe.Pointer(calt)) // #nosec
 	csizeref := C.size_t(0)
 	csizealt := C.size_t(0)
-	len := C.decode_refalt(C.uint32_t(c), cref, &csizeref, calt, &csizealt)
-	return C.GoStringN(cref, C.int(csizeref)), C.GoStringN(calt, C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint8(len)
+	len := C.decode_refalt(C.uint32_t(c), (*C.char)(cref), &csizeref, (*C.char)(calt), &csizealt)
+	return C.GoStringN((*C.char)(cref), C.int(csizeref)), C.GoStringN((*C.char)(calt), C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint8(len)
 }
 
 // VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
@@ -132,10 +156,10 @@ func Range(chrom uint8, posMin, posMax uint32) TVKRange {
 
 // Hex provides a string representation of the VariantKey 64bit
 func Hex(v uint64) string {
-	var cstr *C.char = C.CString("\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00")
+	cstr := C.malloc(17)
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
-	C.variantkey_hex(C.uint64_t(v), cstr)
-	return C.GoStringN(cstr, C.int(16))
+	C.variantkey_hex(C.uint64_t(v), (*C.char)(cstr))
+	return C.GoStringN((*C.char)(cstr), C.int(16))
 }
 
 // ParseHex parses a variant key string and returns the code.
@@ -174,6 +198,7 @@ type TMMFile struct {
 	Src  unsafe.Pointer
 	Fd   int
 	Size uint64
+	Last uint64
 }
 
 // MmapBinFile maps the specified file in memory.
@@ -189,7 +214,7 @@ func MmapBinFile(file string) (TMMFile, error) {
 	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
 		return TMMFile{}, fmt.Errorf("unable to map the file: %s", file)
 	}
-	return TMMFile{unsafe.Pointer(mf.src), int(mf.fd), uint64(mf.size)}, nil // #nosec
+	return TMMFile{unsafe.Pointer(mf.src), int(mf.fd), uint64(mf.size), uint64(mf.last)}, nil // #nosec
 }
 
 // Close Unmap and close the memory-mapped file.
@@ -330,4 +355,25 @@ func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, p
 	clast := C.uint64_t(last)
 	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax)))
 	return rsid, uint64(cfirst), uint64(clast)
+}
+
+// --- NRVK ---
+
+// FindRefAltByVariantkey retrieve the REF and ALT strings for the specified VariantKey.
+func (mf TMMFile) FindRefAltByVariantkey(vk uint64) (string, string, uint8, uint8, uint32) {
+	cref := C.malloc(256)
+	defer C.free(unsafe.Pointer(cref)) // #nosec
+	calt := C.malloc(256)
+	defer C.free(unsafe.Pointer(calt)) // #nosec
+	csizeref := C.size_t(0)
+	csizealt := C.size_t(0)
+	len := C.find_ref_alt_by_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), (*C.char)(cref), &csizeref, (*C.char)(calt), &csizealt)
+	return C.GoStringN((*C.char)(cref), C.int(csizeref)), C.GoStringN((*C.char)(calt), C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint32(len)
+}
+
+// ReverseVariantkey reverse a VariantKey code and returns the normalized components.
+func (mf TMMFile) ReverseVariantkey(vk uint64) (TVariantKeyRev, uint32) {
+	var rev C.variantkey_rev_t
+	len := C.reverse_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), &rev)
+	return castCVariantKeyRev(rev), uint32(len)
 }
