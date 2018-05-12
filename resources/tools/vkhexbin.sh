@@ -91,7 +91,7 @@ echo -e "${OFFSETHEX}" > vknr.offset.hex
 head -n -1 vknr.pos.hex >> vknr.offset.hex 
 
 # calculate absolute offsets
-awk '{printf "%016x\n", (total += strtonum("0x" $0))}' vknr.offset.hex > vknr.pos.hex
+gawk '{printf "%016x\n", (total += strtonum("0x" $0))}' vknr.offset.hex > vknr.pos.hex
 
 # remove temporary file
 rm -f vknr.offset.hex
