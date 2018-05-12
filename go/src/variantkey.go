@@ -125,7 +125,9 @@ func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 
 // Range Returns minimum and maximum variant keys for range searches.
 func Range(chrom uint8, posMin, posMax uint32) TVKRange {
-	return castCVKRrange(C.variantkey_range(C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax)))
+	var r C.vkrange_t
+	C.variantkey_range(C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax), &r)
+	return castCVKRrange(r)
 }
 
 // Hex provides a string representation of the VariantKey 64bit
@@ -149,7 +151,9 @@ func ParseHex(s string) uint64 {
 
 // DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
 func DecodeVariantKey(v uint64) TVariantKey {
-	return castCVariantKey(C.decode_variantkey(C.uint64_t(v)))
+	var vk C.variantkey_t
+	C.decode_variantkey(C.uint64_t(v), &vk)
+	return castCVariantKey(vk)
 }
 
 // ReverseVariantKey parses a variant key string and returns the components.
@@ -178,9 +182,10 @@ func MmapBinFile(file string) (TMMFile, error) {
 	flen := len(bfile)
 	var p unsafe.Pointer
 	if flen > 0 {
-		p = unsafe.Pointer(&bfile[0]) // #nosec
+		p = unsafe.Pointer(&bfile[0]) /* #nosec */
 	}
-	mf := (C.mmap_binfile((*C.char)(p)))
+	var mf C.mmfile_t
+	C.mmap_binfile((*C.char)(p), &mf)
 	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
 		return TMMFile{}, fmt.Errorf("unable to map the file: %s", file)
 	}

@@ -160,7 +160,8 @@ static PyObject* py_mmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args)
     const char *file;
     if (!PyArg_ParseTuple(args, "s", &file))
         return NULL;
-    mmfile_t h = mmap_binfile(file);
+    mmfile_t h;
+    mmap_binfile(file, &h);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, PyCapsule_New((void*)h.src, "src", NULL));
     PyTuple_SetItem(result, 1, Py_BuildValue("i", h.fd));
