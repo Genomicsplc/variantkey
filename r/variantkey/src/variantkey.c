@@ -94,7 +94,7 @@ SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max)
 {
     char vk_min[17];
     char vk_max[17];
-    vkrange_t r;
+    vkrange_t r = {0};
     variantkey_range(asInteger(chrom), asReal(pos_min), asReal(pos_max), &r);
     variantkey_hex(r.min, vk_min);
     variantkey_hex(r.max, vk_max);
@@ -113,7 +113,7 @@ SEXP R_reverse_variantkey(SEXP hexcode)
     size_t sizeref = 0, sizealt = 0;
     const char *hex = CHAR(STRING_ELT(hexcode, 0));
     uint64_t code = parse_variantkey_hex(hex);
-    variantkey_t v;
+    variantkey_t v = {0};
     decode_variantkey(code, &v);
     decode_chrom(v.chrom, chrom);
     decode_refalt(v.refalt, ref, &sizeref, alt, &sizealt);
