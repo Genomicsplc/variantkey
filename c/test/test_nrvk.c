@@ -19,6 +19,8 @@
 typedef struct test_data_t
 {
     uint64_t vk;
+    const char chrom[3];
+    uint32_t pos;
     uint64_t len;
     size_t sizeref;
     size_t sizealt;
@@ -28,16 +30,16 @@ typedef struct test_data_t
 
 static test_data_t test_data[TEST_DATA_SIZE] =
 {
-    {0x08027A2580338000, 0x00000004, 1, 1, "C", "T"},
-    {0x4800A1FE439E3918, 0x00000005, 2, 1, "CG", "T"},
-    {0x4800A1FE7555EB16, 0x00000006, 2, 2, "CG", "TA"},
-    {0x80010274003A0000, 0x00000007, 2, 3, "CG", "TAG"},
-    {0x8001028D00138000, 0x00000008, 3, 3, "CGT", "TAG"},
-    {0x80010299007A0000, 0x00000009, 4, 3, "CGTT", "TAG"},
-    {0xA0012B62003A0000, 0x0000000A, 4, 4, "CGTT", "TAGC"},
-    {0xA0012B6280708000, 0x0000000B, 4, 5, "CGTT", "TAGCT"},
-    {0xA0012B65E3256692, 0x0000000C, 5, 5, "CGTTA", "TAGCT"},
-    {0xA0012B67D5439803, 0x0000000D, 5, 6, "CGTTA", "TAGCTC"},
+    {0x0800c35093ace339,  "1", 100001, 0x00000004, 0x01, 0x01, "N", "A"},
+    {0x1000c3517f91cdb1,  "2", 100002, 0x0000000e, 0x0b, 0x01, "AAGAAAGAAAG", "A"},
+    {0x1800c351f61f65d3,  "3", 100003, 0x0000000e, 0x01, 0x0b, "A", "AAGAAAGAAAG"},
+    {0x2000c3521f1c15ab,  "4", 100004, 0x0000000e, 0x08, 0x04, "ACGTACGT", "ACGT"},
+    {0x2800c352d8f2d5b5,  "5", 100005, 0x0000000e, 0x04, 0x08, "ACGT", "ACGTACGT"},
+    {0x5000c3553bbf9c19, "10", 100010, 0x00000012, 0x08, 0x08, "ACGTACGT", "CGTACGTA"},
+    {0xb000c35b64690b25, "22", 100022, 0x0000000b, 0x08, 0x01, "ACGTACGT", "N"},
+    {0xb800c35bbcece603,  "X", 100023, 0x0000000e, 0x0a, 0x02, "AAAAAAAAGG", "AG"},
+    {0xc000c35c63741ee7,  "Y", 100024, 0x0000000e, 0x02, 0x0a, "AG", "AAAAAAAAGG"},
+    {0xc800c35c96c18499, "MT", 100025, 0x00000012, 0x04, 0x0c, "ACGT", "AAACCCGGGTTT"},
 };
 
 // returns current time in nanoseconds
@@ -64,12 +66,12 @@ int test_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
         }
         if (sizeref != test_data[i].sizeref)
         {
-            fprintf(stderr, "%s (%d) Expecting ref size %lu, got %lu\n", __func__, i, test_data[i].sizeref, sizeref);
+            fprintf(stderr, "%s (%d) Expecting REF size %lu, got %lu\n", __func__, i, test_data[i].sizeref, sizeref);
             ++errors;
         }
         if (sizealt != test_data[i].sizealt)
         {
-            fprintf(stderr, "%s (%d) Expecting alt size %lu, got %lu\n", __func__, i, test_data[i].sizealt, sizealt);
+            fprintf(stderr, "%s (%d) Expecting ALT size %lu, got %lu\n", __func__, i, test_data[i].sizealt, sizealt);
             ++errors;
         }
         if (strcasecmp(test_data[i].ref, ref) != 0)
@@ -102,9 +104,9 @@ int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr, uint64_t last)
 
 void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
 {
-    uint64_t tstart, tend;
     char ref[256], alt[256];
     size_t sizeref,sizealt;
+    uint64_t tstart, tend;
     int i;
     int size = 100000;
     tstart = get_time();
@@ -116,12 +118,76 @@ void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr, uint64_t last)
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
 }
 
+int test_reverse_variantkey(mmfile_t vknr, uint64_t last)
+{
+    int errors = 0;
+    int i;
+    variantkey_rev_t rev;
+    size_t len;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        len = reverse_variantkey(vknr.src, last, test_data[i].vk, &rev);
+        if (len != (test_data[i].len - 2))
+        {
+            fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, test_data[i].len, len);
+            ++errors;
+        }
+        if (rev.sizeref != test_data[i].sizeref)
+        {
+            fprintf(stderr, "%s (%d) Expecting REF size %lu, got %lu\n", __func__, i, test_data[i].sizeref, rev.sizeref);
+            ++errors;
+        }
+        if (rev.sizealt != test_data[i].sizealt)
+        {
+            fprintf(stderr, "%s (%d) Expecting ALT size %lu, got %lu\n", __func__, i, test_data[i].sizealt, rev.sizealt);
+            ++errors;
+        }
+        if (strcasecmp(test_data[i].ref, rev.ref) != 0)
+        {
+            fprintf(stderr, "%s (%d) Expecting REF %s, got %s\n", __func__, i, test_data[i].ref, rev.ref);
+            ++errors;
+        }
+        if (strcasecmp(test_data[i].alt, rev.alt) != 0)
+        {
+            fprintf(stderr, "%s (%d) Expecting ALT %s, got %s\n", __func__, i, test_data[i].alt, rev.alt);
+            ++errors;
+        }
+        if (strcasecmp(test_data[i].chrom, rev.chrom) != 0)
+        {
+            fprintf(stderr, "%s (%d) Expecting CHROM %s, got %s\n", __func__, i, test_data[i].chrom, rev.chrom);
+            ++errors;
+        }
+        if (rev.pos != test_data[i].pos)
+        {
+            fprintf(stderr, "%s (%d) Expecting POS size %lu, got %lu\n", __func__, i, test_data[i].pos, rev.pos);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+void benchmark_reverse_variantkey(mmfile_t vknr, uint64_t last)
+{
+    variantkey_rev_t rev;
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        reverse_variantkey(vknr.src, last, 0xA0012B6280708000, &rev);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+}
+
 int main()
 {
     int errors = 0;
     int err;
 
-    mmfile_t vknr = mmap_binfile("vknr.10.bin");
+    mmfile_t vknr;
+    mmap_binfile("vknr.10.bin", &vknr);
 
     uint64_t nitems = (uint64_t) bytes_to_uint32_t(vknr.src, (uint64_t)(vknr.size - 4), 0, 31);
     if (nitems != TEST_DATA_SIZE)
@@ -132,8 +198,10 @@ int main()
 
     errors += test_find_ref_alt_by_variantkey(vknr, nitems - 1);
     errors += test_find_ref_alt_by_variantkey_notfound(vknr, nitems - 1);
+    errors += test_reverse_variantkey(vknr, nitems - 1);
 
     benchmark_find_ref_alt_by_variantkey(vknr, nitems - 1);
+    benchmark_reverse_variantkey(vknr, nitems - 1);
 
     err = munmap_binfile(vknr);
     if (err != 0)

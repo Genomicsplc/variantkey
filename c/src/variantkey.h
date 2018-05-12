@@ -140,10 +140,11 @@ uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const cha
  * @param chrom     Chromosome encoded number.
  * @param pos_min   Start reference position, with the 1st base having position 0.
  * @param pos_max   End reference position, with the 1st base having position 0.
+ * @param range     VariantKey range values.
  *
  * @return      Min and Max variant keys for any given REF+ALT encoding
  */
-vkrange_t variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
+void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range);
 
 /** @brief Returns VariantKey hexadecimal string (16 characters).
  *
@@ -173,10 +174,11 @@ uint64_t parse_variantkey_hex(const char *vs);
 /** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
  *
  * @param code VariantKey code.
+ * @param vk   Decoded variantkey structure.
  *
  * @return A variantkey_t structure.
  */
-variantkey_t decode_variantkey(uint64_t code);
+void decode_variantkey(uint64_t code, variantkey_t *vk);
 
 #ifdef __cplusplus
 }

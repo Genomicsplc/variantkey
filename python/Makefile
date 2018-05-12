@@ -27,8 +27,7 @@ CONDA_ENV=../../env-${PROJECT}
 # Display general help about this command
 help:
 	@echo ""
-	@echo "VariantKey Python Makefile."
-	@echo "Requires: node-js and uglify-js."
+	@echo "${PROJECT} Python Makefile."
 	@echo "The following commands are available:"
 	@echo ""
 	@echo "    make test    : Run the unit tests against source code"

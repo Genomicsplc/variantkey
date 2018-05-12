@@ -24,21 +24,19 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-mmfile_t mmap_binfile(const char *file)
+void mmap_binfile(const char *file, mmfile_t *mf)
 {
-    mmfile_t mf = {MAP_FAILED, -1, 0};
+    mf->src = MAP_FAILED; // NOLINT
+    mf->fd = -1;
+    mf->size = 0;
     struct stat statbuf;
-    if (((mf.fd = open(file, O_RDONLY)) < 0) || (fstat(mf.fd, &statbuf) < 0))
+    if (((mf->fd = open(file, O_RDONLY)) < 0) || (fstat(mf->fd, &statbuf) < 0))
     {
-        return mf;
+        return;
     }
-    mf.size = (uint64_t)statbuf.st_size;
-    mf.src = mmap(0, mf.size, PROT_READ, MAP_PRIVATE, mf.fd, 0);
-    if (mf.src == MAP_FAILED)
-    {
-        return mf;
-    }
-    return mf;
+    mf->size = (uint64_t)statbuf.st_size;
+    mf->src = mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
+    return;
 }
 
 int munmap_binfile(mmfile_t mf)

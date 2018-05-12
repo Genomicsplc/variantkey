@@ -79,10 +79,11 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
  * @param src      Address of the memory mapped input file contaning the VariantKey to REF+ALT lookup table (vknr.bin).
  * @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
  * @param vk       VariantKey code.
+ * @param rev      Structure containing the return values.
  *
  * @return A variantkey_rev_t structure.
  */
-variantkey_rev_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk);
+size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev);
 
 #ifdef __cplusplus
 }

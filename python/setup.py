@@ -21,7 +21,10 @@ class RunTests(Command):
 
     def run(self):
         """Run all tests!"""
-        errno = call(['py.test', '--verbose'])
+        errno = call([
+            'py.test',
+            '--verbose',
+        ])
         raise SystemExit(errno)
 
 
@@ -76,7 +79,7 @@ setup(
             'pytest',
             'pytest-benchmark',
             'pytest-cov',
-            'pytest-pep8',
+            'pycodestyle',
         ],
     },
     cmdclass={'test': RunTests},

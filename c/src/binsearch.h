@@ -59,22 +59,20 @@ extern "C" {
  */
 typedef struct mmfile_t
 {
-    /** Pointer to the memory map. */
-    unsigned char *src;
-    /** File descriptor. */
-    int fd;
-    /** File size in bytes. */
-    uint64_t size;
+    unsigned char *src; //!< Pointer to the memory map.
+    int fd;             //!< File descriptor.
+    uint64_t size;      //!< File size in bytes.
 } mmfile_t;
 
 /**
  * Memory map the specified file.
  *
  * @param file  Path to the file to map.
+ * @param mf    Structure containing the memory mapped file.
  *
  * @return Returns the memory-mapped file descriptors.
  */
-mmfile_t mmap_binfile(const char *file);
+void mmap_binfile(const char *file, mmfile_t *mf);
 
 /**
  * Unmap and close the memory-mapped file.
@@ -87,7 +85,7 @@ mmfile_t mmap_binfile(const char *file);
 int munmap_binfile(mmfile_t mf);
 
 /**
- * Returns the absolute file start position of the specified item (binary block).
+ * Returns the absolute file address position of the specified item (binary block).
  *
  * @param blklen    Length of the binary block in bytes.
  * @param blkpos    Indicates the position of the number to search inside a binary block.
@@ -98,7 +96,7 @@ int munmap_binfile(mmfile_t mf);
 uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item);
 
 /**
- * Define generic comparison function for unsigned integers
+ * Convert bytes to the specified type.
  */
 #define define_declare_bytes_to(T) \
 /** Convert bytes in big-endian format to unsigned integer
