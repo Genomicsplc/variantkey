@@ -86,7 +86,8 @@ static PyObject* py_variantkey_range(PyObject *Py_UNUSED(ignored), PyObject *arg
     uint32_t pos_min, pos_max;
     if (!PyArg_ParseTuple(args, "BII", &chrom, &pos_min, &pos_max))
         return NULL;
-    vkrange_t r = variantkey_range(chrom, pos_min, pos_max);
+    vkrange_t r;
+    variantkey_range(chrom, pos_min, pos_max, &r);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", r.min));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", r.max));
@@ -123,7 +124,8 @@ static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *ar
     uint64_t code;
     if (!PyArg_ParseTuple(args, "K", &code))
         return NULL;
-    variantkey_t h = decode_variantkey(code);
+    variantkey_t h;
+    decode_variantkey(code, &h);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
@@ -139,7 +141,8 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
         return NULL;
     char chrom[3] = "", ref[ALLELE_BUFFSIZE] = "", alt[ALLELE_BUFFSIZE] = "";
     size_t sizeref = 0, sizealt = 0;
-    variantkey_t h = decode_variantkey(code);
+    variantkey_t h;
+    decode_variantkey(code, &h);
     decode_chrom(h.chrom, chrom);
     decode_refalt(h.refalt, ref, &sizeref, alt, &sizealt);
     result = PyTuple_New(6);
