@@ -222,9 +222,9 @@ v = vk.parse_variantkey_hex(s)
 print(v)
 # 13259012476408233984
 
-chrom, pos, ref, alt, sizeref, sizealt = vk.reverse_variantkey(v)
-print(chrom, pos, ref, alt, sizeref, sizealt)
-# b'X' 193330 b'GCA' b'G' 3 1
+chrom, pos, ref, alt, sizeref, sizealt, slen = vk.reverse_variantkey(v)
+print(chrom, pos, ref, alt, sizeref, sizealt, slen)
+# b'X' 193330 b'GCA' b'G' 3 1 4
 
 chrom, pos, refalt = vk.decode_variantkey(v)
 print(chrom, pos, refalt)
