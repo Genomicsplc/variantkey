@@ -1,6 +1,6 @@
 # VariantKey
 
-*Genetic Variant Key*
+*64 bit Encoding for Human Genetic Variants*
 
 
 * **category**    Libraries
@@ -10,17 +10,25 @@
 
 ## Description
 
-This project contains tools to generate and process a 64 bit Unsigned Integer Keys for Human Genetic Variants
+A genetic variant is often referred as a single entity but, for a given genome assembly, it is usually represented as a set of four components with variable length: *chromosome*, *position*, *reference* and *alternate* allele. There is no guarantee that these components are represented in a consistent way across different data sources. The numerical dbSNP reference record representation (rs#) only covers a subset of all possible variants and it is not bijective. Processing variant-based data can be really inefficient due to the necessity to perform four different comparison operations for each variant, three of which are string comparisons. Working with strings, in contrast of numbers, poses extra challenges on memory allocation and data-representation.
 
-The VariantKey is sortable for chromosome and position, and it is also fully reversible for variants with up to 11 bases between Reference and Alternate alleles. It can be used to sort, search and match variant-based data easily and very quickly.
+**VariantKey**, a novel reversible numerical encoding schema for human genetic variants, overcome these limitations by allowing to process variants as a single 64 bit numeric entities while preserving the ability to be searched and sorted per chromosome and position.
 
-**IMPORTANT**: This model assumes that the variants have been:
+The individual components of short variants (up to 11 bases between REF and ALT alleles) can be directly read back from the VariantKey, while long variants requires a lookup table for reference and alternate allele strings.
+
+This software library can be used to generate and reverse VariantKeys.
+
+
+### IMPORTANT
+
+This model assumes that the variants have been:
 
 a. **decomposed** to convert multialleic variants to bialleic ones (`REF` and single `ALT`).  
 In VCF files this can be done using the [vt decompose -s](https://genome.sph.umich.edu/wiki/Vt#Decompose) command,
 
 b. **normalized** as in ["Unified representation of genetic variants" - Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).  
 In VCF files this can be done using the [vt normalize](https://genome.sph.umich.edu/wiki/Vt#Normalization) command.
+
 
 ## VariantKey Format
 
@@ -81,8 +89,8 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 * The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.
 * The `CHROM` and `POS` sections of the VariantKey are sortable.
-* The limit of 11 bases for the reversible encoding covers 99.64% (335,932,359 / 337,162,128) of the variants in the normalized dbSNP GRCh37.p13.b150 VCF file. The remaining 1,229,769 variants can be reversed using a lookup table.
-* The normalized dbSNP GRCh37.p13.b150 VCF file contains only 825 variants with nucleotides other than ACGT.
+* The limit of 11 bases for the reversible encoding covers 99.64% (335,932,359 / 337,162,128) of the variants in the normalized dbSNP GRCh37.p13.b150 VCF file. The remaining 0.36% (1,229,769) can be reversed using a lookup table.
+* The normalized dbSNP GRCh37.p13.b150 VCF file contains only 825 variants with nucleotides other than A, C, G and T.
 
 
 ## Input values
@@ -99,15 +107,15 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
-## Binary file format for VariantKey-rsID index
+## Binary file format for lookup tables 
 
-The functions provided here allows fast search for rsID and VariantKey values from binary files
-made of adjacent constant-length binary blocks sorted in ascending order.
+The input binary lookup-table files can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh`.  
+The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.  
+The `vkhexbin.sh` requires [bcftools](https://github.com/samtools/bcftools) compiled with the plugins in `resources/bcftools/plugins` folder.
 
-The input binary files can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh`.  
-The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-
-The `rsvk.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
+* **`rsvk.bin`**  
+Lookup table to retrieve VariantKey from rsID.
+The file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
     00 01 02 03 04 05 06 07 08 09 10 11
@@ -116,7 +124,9 @@ The `rsvk.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the f
     +---------+ +---------------------+
 ```
 
-The `vkrs.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
+* **`vkrs.bin`**  
+Lookup table to retrieve rsID from VariantKey.
+The file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
     00 01 02 03 04 05 06 07 08 09 10 11
@@ -125,20 +135,15 @@ The `vkrs.bin` file contains adjacent 12 bytes (96 bit) binary blocks with the f
     +---------------------+ +---------+
 ```
 
-
-## Binary file format for non-reversible VariantKey
-
-In order to retrieve the original REF and ALT string for the non-reversible VariantKey,
-we can use a custom binary files that maps these cases.
-
-The input binary file can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh`.  
-The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-
-The input binary file has the following format :
+* **`vknr.bin`**  
+Lookup table to retrieve the original REF and ALT string for the non-reversible VariantKey.
+The binary file has the following format :
 
 ```
-    [8 BYTE VARIANTKEY][8 BYTE VALUE ADDRESS]...
-    [1 BYTE REF LENGTH][1 BYTE ALT LENGTH][REF STRING][ALT STRING]...
+    [8 BYTE VARIANTKEY][8 BYTE VALUE ADDRESS]
+    ...
+    [1 BYTE REF LENGTH][1 BYTE ALT LENGTH][REF STRING][ALT STRING]
+    ...
     [4 BYTE NUM VARIANTS]
 ```
 
@@ -170,8 +175,8 @@ make build
 
 ### Command-Line tool
 
-The code inside the c/vk folder is used to generate the `vk` command line tool.
-This tools requires the positional arguments CHROM, POS, ALT, REF and returns the VariantKey in hexadecimal representation.
+The code inside the `c/vk` folder is used to generate the `vk` command line tool.
+This tools requires the positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
 
 
 ## GO Library
