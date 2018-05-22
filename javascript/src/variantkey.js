@@ -36,18 +36,36 @@
 
 function encodeChrom(chrom) {
     chrom = chrom.replace(/^chr/i, '');
+    var clen = chrom.length;
+    if (clen == 0) {
+        return 0;
+    }
     var c = chrom.charAt(0);
-    if ((c >= '0') && (c <= '9')) {
-        return parseInt(chrom, 10);
+    if ((c <= '9') && (c >= '0')) {
+        var i;
+        var v = (c - '0');
+        for (i = 1; i < clen; i++) {
+            c = chrom.charAt(i);
+            if ((c > '9') || (c < '0')) {
+                return 0; // NA
+            }
+            v = ((v * 10) + (c - '0'));
+        }
+        return v;
     }
-    if ((c == 'X') || (c == 'x')) {
-        return 23;
+    if (clen == 1) {
+        if ((c == 'X') || (c == 'x')) {
+            return 23; // X
+        }
+        if ((c == 'Y') || (c == 'y')) {
+            return 24; // Y
+        }
+        if ((c == 'M') || (c == 'm')) {
+            return 25; // MT
+        }
     }
-    if ((c == 'Y') || (c == 'y')) {
-        return 24;
-    }
-    if ((c == 'M') || (c == 'm')) {
-        return 25;
+    if ((clen == 2) && ((c == 'M') || (c == 'm')) && ((chrom.charAt(1) == 'T') || (chrom.charAt(1) == 't'))) {
+        return 25; // MT
     }
     return 0;
 }

@@ -573,16 +573,42 @@ variantsTestData = [
     (b"mt", 16528, b"t", b"c", 0xc800204808e80000, b"c800204808e80000", 0x19, 0x00004090, 0x08e80000),
 ]
 
-chromTestEncodeData = [b"NA", b"chr01", b"02", b"3", b"4", b"5", b"6", b"7", b"8", b"chr9", b"CHR10", b"chr011", b"012", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"]
-chromTestDecodeData = [b"NA", b"1", b"2", b"3", b"4", b"5", b"6", b"7", b"8", b"9", b"10", b"11", b"12", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"]
-
 
 class TestFunctions(TestCase):
 
     def test_encode_chrom(self):
+        chromTestEncodeData = [
+            ["", "NA", "XY", "1X", "1Y", "1M", "1MT", "chr", " 1", "1 "],
+            ["1", "01", "001", "0001", "chr1", "CHR1", "chr01", "CHR01", "chr001", "CHR001"],
+            ["2", "02", "002", "0002", "chr2", "CHR2", "chr02", "CHR02", "chr002", "CHR002"],
+            ["3", "03", "003", "0003", "chr3", "CHR3", "chr03", "CHR03", "chr003", "CHR003"],
+            ["4", "04", "004", "0004", "chr4", "CHR4", "chr04", "CHR04", "chr004", "CHR004"],
+            ["5", "05", "005", "0005", "chr5", "CHR5", "chr05", "CHR05", "chr005", "CHR005"],
+            ["6", "06", "006", "0006", "chr6", "CHR6", "chr06", "CHR06", "chr006", "CHR006"],
+            ["7", "07", "007", "0007", "chr7", "CHR7", "chr07", "CHR07", "chr007", "CHR007"],
+            ["8", "08", "008", "0008", "chr8", "CHR8", "chr08", "CHR08", "chr008", "CHR008"],
+            ["9", "09", "009", "0009", "chr9", "CHR9", "chr09", "CHR09", "chr009", "CHR009"],
+            ["10", "010", "0010", "00010", "chr10", "CHR10", "chr010", "CHR010", "chr0010", "CHR0010"],
+            ["11", "011", "0011", "00011", "chr11", "CHR11", "chr011", "CHR011", "chr0011", "CHR0011"],
+            ["12", "012", "0012", "00012", "chr12", "CHR12", "chr012", "CHR012", "chr0012", "CHR0012"],
+            ["13", "013", "0013", "00013", "chr13", "CHR13", "chr013", "CHR013", "chr0013", "CHR0013"],
+            ["14", "014", "0014", "00014", "chr14", "CHR14", "chr014", "CHR014", "chr0014", "CHR0014"],
+            ["15", "015", "0015", "00015", "chr15", "CHR15", "chr015", "CHR015", "chr0015", "CHR0015"],
+            ["16", "016", "0016", "00016", "chr16", "CHR16", "chr016", "CHR016", "chr0016", "CHR0016"],
+            ["17", "017", "0017", "00017", "chr17", "CHR17", "chr017", "CHR017", "chr0017", "CHR0017"],
+            ["18", "018", "0018", "00018", "chr18", "CHR18", "chr018", "CHR018", "chr0018", "CHR0018"],
+            ["19", "019", "0019", "00019", "chr19", "CHR19", "chr019", "CHR019", "chr0019", "CHR0019"],
+            ["20", "020", "0020", "00020", "chr20", "CHR20", "chr020", "CHR020", "chr0020", "CHR0020"],
+            ["21", "021", "0021", "00021", "chr21", "CHR21", "chr021", "CHR021", "chr0021", "CHR0021"],
+            ["22", "022", "0022", "00022", "chr22", "CHR22", "chr022", "CHR022", "chr0022", "CHR0022"],
+            ["X", "x", "chrX", "chrx", "CHRX", "CHRx", "X", "X", "X", "X"],
+            ["Y", "y", "chrY", "chry", "CHRY", "CHRy", "Y", "Y", "Y", "Y"],
+            ["M", "m", "MT", "mt", "chrM", "chrm", "chrMT", "chrmt", "CHRMt", "CHRmT"],
+        ]
         for i in range(0, 26):
-            c = variantkey.encode_chrom(chromTestEncodeData[i])
-            self.assertEqual(c, i)
+            for j in range(0, 10):
+                c = variantkey.encode_chrom(chromTestEncodeData[i][j])
+                self.assertEqual(c, i)
         chrom = variantkey.encode_chrom(b"WRONG")
         self.assertEqual(chrom, 0)
 
@@ -590,6 +616,7 @@ class TestFunctions(TestCase):
         self.assertEqual(variantkey.encode_chrom(b"chr01"), variantkey.encode_chrom("chr01"))
 
     def test_decode_chrom(self):
+        chromTestDecodeData = [b"NA", b"1", b"2", b"3", b"4", b"5", b"6", b"7", b"8", b"9", b"10", b"11", b"12", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"]
         for i in range(0, 26):
             chrom = variantkey.decode_chrom(i)
             self.assertEqual(chrom, chromTestDecodeData[i])

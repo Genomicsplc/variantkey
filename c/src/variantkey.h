@@ -72,7 +72,7 @@ typedef struct vkrange_t
 
 /** @brief Returns chromosome encoding.
  *
- * @param chrom  Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param chrom  Chromosome. An identifier from the reference genome, no white-space permitted.
  * @param size   Length of the chrom string, excluding the terminating null byte.
  *
  * @return Chrom encoding

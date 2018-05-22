@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help version conda build test format clean
+.PHONY: help version build test format clean
 
 # Project name
 PROJECT=variantkey
@@ -36,7 +36,7 @@ help:
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
 
-all: clean format conda
+all: clean format build
 
 # Set the version from VERSION file
 version:
@@ -45,7 +45,7 @@ version:
 	sed -i "s/Version:.*$$/Version: $(VERSION).$(RELEASE)/" variantkey/DESCRIPTION
 
 # Build the library
-conda: version
+build: version
 	../conda/setup-conda.sh
 	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/r
 
