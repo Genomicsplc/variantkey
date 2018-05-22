@@ -10,9 +10,9 @@
 
 ## Description
 
-A genetic variant is often referred as a single entity but, for a given genome assembly, it is usually represented as a set of four components with variable length: *chromosome*, *position*, *reference* and *alternate* allele. There is no guarantee that these components are represented in a consistent way across different data sources. The numerical dbSNP reference record representation (rs#) only covers a subset of all possible variants and it is not bijective. Processing variant-based data can be really inefficient due to the necessity to perform four different comparison operations for each variant, three of which are string comparisons. Working with strings, in contrast of numbers, poses extra challenges on memory allocation and data-representation.
+A genetic variant is often referred as a single entity but, for a given genome assembly, it is usually represented as a set of four components with variable length: *chromosome*, *position*, *reference* and *alternate* alleles. There is no guarantee that these components are represented in a consistent way across different data sources. The numerical dbSNP reference record representation (rs#) only covers a subset of all possible variants and it is not bijective. Processing variant-based data can be really inefficient due to the necessity to perform four different comparison operations for each variant, three of which are string comparisons. Working with strings, in contrast of numbers, poses extra challenges on memory allocation and data-representation.
 
-**VariantKey**, a novel reversible numerical encoding schema for human genetic variants, overcome these limitations by allowing to process variants as a single 64 bit numeric entities while preserving the ability to be searched and sorted per chromosome and position.
+**VariantKey**, a novel reversible numerical encoding schema for human genetic variants, overcomes these limitations by allowing to process variants as a single 64 bit numeric entities while preserving the ability to be searched and sorted per chromosome and position.
 
 The individual components of short variants (up to 11 bases between REF and ALT alleles) can be directly read back from the VariantKey, while long variants requires a lookup table for reference and alternate allele strings.
 

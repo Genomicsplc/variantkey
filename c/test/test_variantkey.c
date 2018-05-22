@@ -687,20 +687,46 @@ int test_azoupper()
 int test_encode_chrom()
 {
     int errors = 0;
-    uint8_t i, chrom;
-    static const char *chrom_data[26] =
+    uint8_t i, j, chrom;
+    static const char *chrom_data[26][10] =
     {
-        "NA", "1", "2", "3", "4", "5", "6", "7", "8", "chr9", "CHR10",
-        "11", "12", "13", "14", "15", "16", "17", "18", "19", "20",
-        "21", "22", "X", "Y", "MT"
+        {"", "NA", "XY", "1X", "1Y", "1M", "1MT", "chr", " 1", "1 "},
+        {"1", "01", "001", "0001", "chr1", "CHR1", "chr01", "CHR01", "chr001", "CHR001"},
+        {"2", "02", "002", "0002", "chr2", "CHR2", "chr02", "CHR02", "chr002", "CHR002"},
+        {"3", "03", "003", "0003", "chr3", "CHR3", "chr03", "CHR03", "chr003", "CHR003"},
+        {"4", "04", "004", "0004", "chr4", "CHR4", "chr04", "CHR04", "chr004", "CHR004"},
+        {"5", "05", "005", "0005", "chr5", "CHR5", "chr05", "CHR05", "chr005", "CHR005"},
+        {"6", "06", "006", "0006", "chr6", "CHR6", "chr06", "CHR06", "chr006", "CHR006"},
+        {"7", "07", "007", "0007", "chr7", "CHR7", "chr07", "CHR07", "chr007", "CHR007"},
+        {"8", "08", "008", "0008", "chr8", "CHR8", "chr08", "CHR08", "chr008", "CHR008"},
+        {"9", "09", "009", "0009", "chr9", "CHR9", "chr09", "CHR09", "chr009", "CHR009"},
+        {"10", "010", "0010", "00010", "chr10", "CHR10", "chr010", "CHR010", "chr0010", "CHR0010"},
+        {"11", "011", "0011", "00011", "chr11", "CHR11", "chr011", "CHR011", "chr0011", "CHR0011"},
+        {"12", "012", "0012", "00012", "chr12", "CHR12", "chr012", "CHR012", "chr0012", "CHR0012"},
+        {"13", "013", "0013", "00013", "chr13", "CHR13", "chr013", "CHR013", "chr0013", "CHR0013"},
+        {"14", "014", "0014", "00014", "chr14", "CHR14", "chr014", "CHR014", "chr0014", "CHR0014"},
+        {"15", "015", "0015", "00015", "chr15", "CHR15", "chr015", "CHR015", "chr0015", "CHR0015"},
+        {"16", "016", "0016", "00016", "chr16", "CHR16", "chr016", "CHR016", "chr0016", "CHR0016"},
+        {"17", "017", "0017", "00017", "chr17", "CHR17", "chr017", "CHR017", "chr0017", "CHR0017"},
+        {"18", "018", "0018", "00018", "chr18", "CHR18", "chr018", "CHR018", "chr0018", "CHR0018"},
+        {"19", "019", "0019", "00019", "chr19", "CHR19", "chr019", "CHR019", "chr0019", "CHR0019"},
+        {"20", "020", "0020", "00020", "chr20", "CHR20", "chr020", "CHR020", "chr0020", "CHR0020"},
+        {"21", "021", "0021", "00021", "chr21", "CHR21", "chr021", "CHR021", "chr0021", "CHR0021"},
+        {"22", "022", "0022", "00022", "chr22", "CHR22", "chr022", "CHR022", "chr0022", "CHR0022"},
+        {"X", "x", "chrX", "chrx", "CHRX", "CHRx", "X", "X", "X", "X"},
+        {"Y", "y", "chrY", "chry", "CHRY", "CHRy", "Y", "Y", "Y", "Y"},
+        {"M", "m", "MT", "mt", "chrM", "chrm", "chrMT", "chrmt", "CHRMt", "CHRmT"},
     };
-    for (i=0 ; i < 26; i++)
+    for (i = 0 ; i < 26; i++)
     {
-        chrom = encode_chrom(chrom_data[i], strlen(chrom_data[i]));
-        if (chrom != i)
+        for (j = 0 ; j < 10; j++)
         {
-            fprintf(stderr, "%s : '%s' expecting %u, got %u\n", __func__, chrom_data[i], i, chrom);
-            ++errors;
+            chrom = encode_chrom(chrom_data[i][j], strlen(chrom_data[i][j]));
+            if (chrom != i)
+            {
+                fprintf(stderr, "%s : '%s' expecting %u, got %u\n", __func__, chrom_data[i][j], i, chrom);
+                ++errors;
+            }
         }
     }
     return errors;

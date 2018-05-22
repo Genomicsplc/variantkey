@@ -47,27 +47,42 @@ inline uint8_t encode_chrom(const char *chrom, size_t size)
         chrom += 3;
         size -= 3;
     }
-    if ((chrom[0] >= '0') && (chrom[0] <= '9')) // Number
+    if (size == 0)
     {
-        uint8_t v = 0;
+        return 0;
+    }
+    if ((chrom[0] <= '9') && (chrom[0] >= '0')) // Number
+    {
         size_t i;
-        for (i = 0; i < size; i++)
+        uint8_t v = (chrom[0] - '0');
+        for (i = 1; i < size; i++)
         {
+            if ((chrom[i] > '9') || (chrom[i] < '0'))
+            {
+                return 0; // NA
+            }
             v = ((v * 10) + (chrom[i] - '0'));
         }
         return v;
     }
-    if ((chrom[0] == 'X') || (chrom[0] == 'x'))
+    if (size == 1)
     {
-        return 23;
+        if ((chrom[0] == 'X') || (chrom[0] == 'x'))
+        {
+            return 23; // X
+        }
+        if ((chrom[0] == 'Y') || (chrom[0] == 'y'))
+        {
+            return 24; // Y
+        }
+        if ((chrom[0] == 'M') || (chrom[0] == 'm'))
+        {
+            return 25; // MT
+        }
     }
-    if ((chrom[0] == 'Y') || (chrom[0] == 'y'))
+    if ((size == 2) && ((chrom[0] == 'M') || (chrom[0] == 'm')) && ((chrom[1] == 'T') || (chrom[1] == 't')))
     {
-        return 24;
-    }
-    if ((chrom[0] == 'M') || (chrom[0] == 'm')) // MT
-    {
-        return 25;
+        return 25; // MT
     }
     return 0; // NA
 }
