@@ -973,6 +973,79 @@ void benchmark_decode_refalt()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
+int test_encode_variantkey()
+{
+    int errors = 0;
+    int i;
+    uint64_t vk;
+    for (i=0 ; i < k_test_size; i++)
+    {
+        vk = encode_variantkey(test_data[i].vkchrom, test_data[i].vkpos, test_data[i].vkrefalt);
+        if (vk != test_data[i].vk)
+        {
+            fprintf(stderr, "%s (%d): Unexpected variantkey: expected 0x%016"PRIx64", got 0x%016"PRIx64"\n", __func__, i, test_data[i].vk, vk);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+void benchmark_encode_variantkey()
+{
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        encode_variantkey(19, i, 0x08900000);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
+int test_decode_variantkey()
+{
+    int errors = 0;
+    int i;
+    variantkey_t h = {0};
+    for (i=0 ; i < k_test_size; i++)
+    {
+        decode_variantkey(test_data[i].vk, &h);
+        if (h.chrom != test_data[i].vkchrom)
+        {
+            fprintf(stderr, "%s (%d): Unexpected chrom code: expected 0x%02"PRIx8", got 0x%02"PRIx8"\n", __func__, i, test_data[i].vkchrom, h.chrom);
+            ++errors;
+        }
+        if (h.pos != test_data[i].vkpos)
+        {
+            fprintf(stderr, "%s (%d): Unexpected pos code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkpos, h.pos);
+            ++errors;
+        }
+        if (h.refalt != test_data[i].vkrefalt)
+        {
+            fprintf(stderr, "%s (%d): Unexpected ref+alt code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkrefalt, h.refalt);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+void benchmark_decode_variantkey()
+{
+    variantkey_t h = {0};
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        decode_variantkey(0xa852662880400000, &h);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_variantkey()
 {
     int errors = 0;
@@ -1146,48 +1219,6 @@ void benchmark_parse_variantkey_hex()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
-int test_decode_variantkey()
-{
-    int errors = 0;
-    int i;
-    variantkey_t h = {0};
-    for (i=0 ; i < k_test_size; i++)
-    {
-        decode_variantkey(test_data[i].vk, &h);
-        if (h.chrom != test_data[i].vkchrom)
-        {
-            fprintf(stderr, "%s (%d): Unexpected chrom code: expected 0x%02"PRIx8", got 0x%02"PRIx8"\n", __func__, i, test_data[i].vkchrom, h.chrom);
-            ++errors;
-        }
-        if (h.pos != test_data[i].vkpos)
-        {
-            fprintf(stderr, "%s (%d): Unexpected pos code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkpos, h.pos);
-            ++errors;
-        }
-        if (h.refalt != test_data[i].vkrefalt)
-        {
-            fprintf(stderr, "%s (%d): Unexpected ref+alt code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkrefalt, h.refalt);
-            ++errors;
-        }
-    }
-    return errors;
-}
-
-void benchmark_decode_variantkey()
-{
-    variantkey_t h = {0};
-    uint64_t tstart, tend;
-    int i;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        decode_variantkey(0xa852662880400000, &h);
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
-}
-
 int main()
 {
     static int errors = 0;
@@ -1198,22 +1229,24 @@ int main()
     errors += test_encode_chrom();
     errors += test_decode_chrom();
     errors += test_encode_refalt();
+    errors += test_encode_variantkey();
+    errors += test_decode_variantkey();
     errors += test_variantkey();
     errors += test_variantkey_range();
     errors += test_variantkey_hex();
     errors += test_parse_variantkey_hex();
-    errors += test_decode_variantkey();
 
     benchmark_encode_chrom();
     benchmark_decode_chrom();
     benchmark_encode_refalt_rev();
     benchmark_encode_refalt_hash();
     benchmark_decode_refalt();
+    benchmark_encode_variantkey();
+    benchmark_decode_variantkey();
     benchmark_variantkey();
     benchmark_variantkey_range();
     benchmark_variantkey_hex();
     benchmark_parse_variantkey_hex();
-    benchmark_decode_variantkey();
 
     return errors;
 }

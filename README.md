@@ -253,6 +253,7 @@ make r
 ```
 
 In R the VariantKey is represented as hexadecimal string because there is no native support for 64 bit unsigned integers in R.
+Alternatively it is possible to use the encoding of the individual components (i.e. CHROM, POS and REF+ALT).
 
 ### Usage Example
 

@@ -118,6 +118,25 @@ uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t 
  */
 size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
+/** @brief Returns a 64 bit variant key based on the pre-encoded CHROM, POS and REF+ALT.
+ *
+ * @param chrom      Encoded Chromosome (see encode_chrom).
+ * @param pos        Position. The reference position, with the 1st base having position 0.
+ * @param refalt     Encoded Reference + Alternate (see encode_refalt).
+ *
+ * @return      VariantKey 64 bit code.
+ */
+uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt);
+
+/** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
+ *
+ * @param code VariantKey code.
+ * @param vk   Decoded variantkey structure.
+ *
+ * @return A variantkey_t structure.
+ */
+void decode_variantkey(uint64_t code, variantkey_t *vk);
+
 /** @brief Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
  *
  * @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
@@ -170,15 +189,6 @@ size_t variantkey_hex(uint64_t code, char *str);
  * @return A VariantKey code
  */
 uint64_t parse_variantkey_hex(const char *vs);
-
-/** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
- *
- * @param code VariantKey code.
- * @param vk   Decoded variantkey structure.
- *
- * @return A variantkey_t structure.
- */
-void decode_variantkey(uint64_t code, variantkey_t *vk);
 
 #ifdef __cplusplus
 }
