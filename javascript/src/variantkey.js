@@ -239,11 +239,23 @@ function decodeRefAlt(code) {
     return decodeRefAltRev(code);
 }
 
-function variantKey(chrom, pos, ref, alt) {
+function encodeVariantKey(chrom, pos, refalt) {
     return {
-        "hi": ((((encodeChrom(chrom) >>> 0) << 27) | (pos >>> 1)) >>> 0),
-        "lo": ((((pos >>> 0) << 31) | encodeRefAlt(ref, alt)) >>> 0)
+        "hi": ((((chrom >>> 0) << 27) | (pos >>> 1)) >>> 0),
+        "lo": ((((pos >>> 0) << 31) | refalt) >>> 0)
     };
+}
+
+function decodeVariantKey(vk) {
+    return {
+        "chrom": ((vk.hi & 0xF8000000) >>> 27),
+        "pos": (((vk.hi & 0x7FFFFFF) << 1) | (vk.lo >>> 31)) >>> 0,
+        "refalt": (vk.lo & 0x7FFFFFFF) >>> 0
+    }
+}
+
+function variantKey(chrom, pos, ref, alt) {
+    return encodeVariantKey(encodeChrom(chrom), pos, encodeRefAlt(ref, alt));
 }
 
 function variantKeyRange(chrom, pos_min, pos_max) {
@@ -274,14 +286,6 @@ function parseHex(vs) {
     };
 }
 
-function decodeVariantKey(vk) {
-    return {
-        "chrom": ((vk.hi & 0xF8000000) >>> 27),
-        "pos": (((vk.hi & 0x7FFFFFF) << 1) | (vk.lo >>> 31)) >>> 0,
-        "refalt": (vk.lo & 0x7FFFFFFF) >>> 0
-    }
-}
-
 function reverseVariantKey(dvk) {
     var ra = decodeRefAlt(dvk.refalt);
     return {
@@ -296,14 +300,15 @@ if (typeof(module) !== 'undefined') {
     module.exports = {
         encodeChrom: encodeChrom,
         decodeChrom: decodeChrom,
-        reverseVariantKey: reverseVariantKey,
-        decodeVariantKey: decodeVariantKey,
         parseHex: parseHex,
         azToUpper: azToUpper,
         encodeRefAlt: encodeRefAlt,
         decodeRefAlt: decodeRefAlt,
+        encodeVariantKey: encodeVariantKey,
+        decodeVariantKey: decodeVariantKey,
         variantKey: variantKey,
         variantKeyRange: variantKeyRange,
         variantKeyString: variantKeyString,
+        reverseVariantKey: reverseVariantKey,
     }
 }

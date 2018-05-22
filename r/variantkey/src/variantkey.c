@@ -79,6 +79,14 @@ SEXP R_decode_refalt(SEXP code)
     return res;
 }
 
+SEXP R_encode_variantkey(SEXP chrom, SEXP pos, SEXP refalt)
+{
+    char hex[17];
+    uint64_t code = encode_variantkey(asInteger(chrom), asReal(pos), asReal(refalt));
+    variantkey_hex(code, hex);
+    return Rf_mkString(hex);
+}
+
 SEXP R_variantkey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
 {
     const char *chr = CHAR(STRING_ELT(chrom, 0));

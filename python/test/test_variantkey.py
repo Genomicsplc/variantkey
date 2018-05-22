@@ -673,6 +673,18 @@ class TestFunctions(TestCase):
                     self.assertEqual(sizealt, len(input_data[i]))
                 k += 1
 
+    def test_encode_variantkey(self):
+        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+            h = variantkey.encode_variantkey(vkchrom, vkpos, vkrefalt)
+            self.assertEqual(h, vk)
+
+    def test_decode_variantkey(self):
+        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+            h = variantkey.decode_variantkey(vk)
+            self.assertEqual(h[0], vkchrom)
+            self.assertEqual(h[1], vkpos)
+            self.assertEqual(h[2], vkrefalt)
+
     def test_variantkey(self):
         for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
             h = variantkey.variantkey(chrom, pos, ref, alt)
@@ -723,13 +735,6 @@ class TestFunctions(TestCase):
 
     def test_parse_variantkey_hex_input_type(self):
         self.assertEqual(variantkey.parse_variantkey_hex(b"b815481990e60000"), variantkey.parse_variantkey_hex("b815481990e60000"))
-
-    def test_decode_variantkey(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
-            h = variantkey.decode_variantkey(vk)
-            self.assertEqual(h[0], vkchrom)
-            self.assertEqual(h[1], vkpos)
-            self.assertEqual(h[2], vkrefalt)
 
 
 class TestBenchmark(object):

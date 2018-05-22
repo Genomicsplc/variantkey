@@ -65,6 +65,16 @@ DecodeRefAlt <- function(code) {
     return(.Call("R_decode_refalt", as.integer(code)))
 }
 
+#' Returns the hexadecimal representation of a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
+#' @param chrom   Encoded Chromosome (see EncodeChrom)
+#' @param pos     Position. The reference position, with the 1st base having position 0.
+#' @param refalt  Encoded Reference + Alternate (see EncodeRefAlt)
+#' @useDynLib   variantkey R_variantkey
+#' @export
+EncodeVariantKey <- function(chrom, pos, refalt) {
+    return(.Call("R_encode_variantkey", as.integer(chrom), as.integer(pos), as.integer(refalt)))
+}
+
 #' Returns the hexadecimal representation of a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
 #' @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
 #' @param pos   Position. The reference position, with the 1st base having position 0.

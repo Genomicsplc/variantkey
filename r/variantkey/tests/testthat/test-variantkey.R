@@ -36,6 +36,11 @@ test_that("VariantKey", {
     expect_identical(res, v.vk)
 })
 
+test_that("EncodeVariantKey", {
+    res <- mapply(EncodeVariantKey, v.kchrom, v.pos, v.refalt, SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_identical(res, v.vk)
+})
+
 test_that("VariantKeyRange", {
     res <- VariantKeyRange(1, 0, 268435455)
     expect_that(res$MIN, equals("0800000000000000"))

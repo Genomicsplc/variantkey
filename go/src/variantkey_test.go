@@ -779,6 +779,52 @@ func BenchmarkDecodeRefAlt(b *testing.B) {
 	}
 }
 
+func TestEncodeVariantKey(t *testing.T) {
+	for _, v := range variantsTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vk := EncodeVariantKey(v.vkchrom, v.vkpos, v.vkrefalt)
+			if vk != v.vk {
+				t.Errorf("The code value is different, expected %#v got %#v", v.vk, vk)
+			}
+		})
+	}
+}
+
+func BenchmarkEncodeVariantKey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		EncodeVariantKey(19, uint32(i), 0x08900000)
+	}
+}
+
+func TestDecodeVariantKey(t *testing.T) {
+	for _, v := range variantsTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			vk := DecodeVariantKey(v.vk)
+			if vk.Chrom != v.vkchrom {
+				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, vk.Chrom)
+			}
+			if vk.Pos != v.vkpos {
+				t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, vk.Pos)
+			}
+			if vk.RefAlt != v.vkrefalt {
+				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, vk.RefAlt)
+			}
+		})
+	}
+}
+
+func BenchmarkDecodeVariantKey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		DecodeVariantKey(0x880082d600138000)
+	}
+}
+
 func TestVariantKey(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
@@ -895,32 +941,6 @@ func BenchmarkParseHex(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		ParseHex(bs)
-	}
-}
-
-func TestDecodeVariantKey(t *testing.T) {
-	for _, v := range variantsTestData {
-		v := v
-		t.Run("", func(t *testing.T) {
-			t.Parallel()
-			vk := DecodeVariantKey(v.vk)
-			if vk.Chrom != v.vkchrom {
-				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, vk.Chrom)
-			}
-			if vk.Pos != v.vkpos {
-				t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, vk.Pos)
-			}
-			if vk.RefAlt != v.vkrefalt {
-				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, vk.RefAlt)
-			}
-		})
-	}
-}
-
-func BenchmarkDecodeVariantKey(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		DecodeVariantKey(0x880082d600138000)
 	}
 }
 

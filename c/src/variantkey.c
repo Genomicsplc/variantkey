@@ -272,11 +272,25 @@ inline size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt
     return decode_refalt_rev(code, ref, sizeref, alt, sizealt);
 }
 
+inline uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt)
+{
+    return (((uint64_t)chrom << 59) | ((uint64_t)pos << 31) | (uint64_t)refalt);
+}
+
+inline void decode_variantkey(uint64_t code, variantkey_t *vk)
+{
+    // CHROM:   [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
+    vk->chrom = (uint8_t)((code & 0xF800000000000000) >> 59);
+    // POS:     [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
+    vk->pos = (uint32_t)((code & 0x07FFFFFF80000000) >> 31);
+    // REF+ALT: [ 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111 ]
+    vk->refalt = (uint32_t)(code & 0x000000007FFFFFFF);
+    return;
+}
+
 inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
-    return (((uint64_t)encode_chrom(chrom, sizechrom) << 59)
-            | ((uint64_t)pos << 31)
-            | (uint64_t)encode_refalt(ref, sizeref, alt, sizealt));
+    return encode_variantkey(encode_chrom(chrom, sizechrom), pos, encode_refalt(ref, sizeref, alt, sizealt));
 }
 
 inline void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range)
@@ -318,15 +332,4 @@ inline uint64_t parse_variantkey_hex(const char *vs)
         v = ((v << 4) | b);
     }
     return v;
-}
-
-inline void decode_variantkey(uint64_t code, variantkey_t *vk)
-{
-    // CHROM:   [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
-    vk->chrom = (uint8_t)((code & 0xF800000000000000) >> 59);
-    // POS:     [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
-    vk->pos = (uint32_t)((code & 0x07FFFFFF80000000) >> 31);
-    // REF+ALT: [ 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111 ]
-    vk->refalt = (uint32_t)(code & 0x000000007FFFFFFF);
-    return;
 }

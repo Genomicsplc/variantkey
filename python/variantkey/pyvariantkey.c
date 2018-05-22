@@ -70,6 +70,31 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
     return result;
 }
 
+static PyObject* py_encode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    uint8_t chrom;
+    uint32_t pos, refalt;
+    if (!PyArg_ParseTuple(args, "BII", &chrom, &pos, &refalt))
+        return NULL;
+    uint64_t h = encode_variantkey(chrom, pos, refalt);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t code;
+    if (!PyArg_ParseTuple(args, "K", &code))
+        return NULL;
+    variantkey_t h = {0};
+    decode_variantkey(code, &h);
+    result = PyTuple_New(3);
+    PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.refalt));
+    return result;
+}
+
 static PyObject* py_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom, *ref, *alt;
@@ -118,21 +143,6 @@ static PyObject* py_parse_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject 
         h = parse_variantkey_hex(vs);
     }
     return Py_BuildValue("K", h);
-}
-
-static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
-{
-    PyObject *result;
-    uint64_t code;
-    if (!PyArg_ParseTuple(args, "K", &code))
-        return NULL;
-    variantkey_t h = {0};
-    decode_variantkey(code, &h);
-    result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
-    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.pos));
-    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.refalt));
-    return result;
 }
 
 // --- BINSEARCH ---
@@ -446,11 +456,12 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"decode_chrom", py_decode_chrom, METH_VARARGS, PYDECODECHROM_DOCSTRING},
     {"encode_refalt", py_encode_refalt, METH_VARARGS, PYENCODEREFALT_DOCSTRING},
     {"decode_refalt", py_decode_refalt, METH_VARARGS, PYDECODEREFALT_DOCSTRING},
+    {"encode_variantkey", py_encode_variantkey, METH_VARARGS, PYENCODEVARIANTKEY_DOCSTRING},
+    {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
     {"variantkey", py_variantkey, METH_VARARGS, PYVARIANTKEY_DOCSTRING},
     {"variantkey_range", py_variantkey_range, METH_VARARGS, PYVARIANTKEYRANGE_DOCSTRING},
     {"variantkey_hex", py_variantkey_hex, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
     {"parse_variantkey_hex", py_parse_variantkey_hex, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
-    {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
 
 
     // BINSEARCH

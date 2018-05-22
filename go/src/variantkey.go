@@ -124,6 +124,18 @@ func DecodeRefAlt(c uint32) (string, string, uint8, uint8, uint8) {
 	return C.GoStringN((*C.char)(cref), C.int(csizeref)), C.GoStringN((*C.char)(calt), C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint8(len)
 }
 
+// EncodeVariantKey returns a Genetic Variant Key based on pre-encoded CHROM, POS (0-base), REF+ALT.
+func EncodeVariantKey(chrom uint8, pos, refalt uint32) uint64 {
+	return uint64(C.encode_variantkey(C.uint8_t(chrom), C.uint32_t(pos), C.uint32_t(refalt)))
+}
+
+// DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
+func DecodeVariantKey(v uint64) TVariantKey {
+	var vk C.variantkey_t
+	C.decode_variantkey(C.uint64_t(v), &vk)
+	return castCVariantKey(vk)
+}
+
 // VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
 func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 	bchrom := StringToNTBytes(chrom)
@@ -171,13 +183,6 @@ func ParseHex(s string) uint64 {
 		p = unsafe.Pointer(&b[0]) // #nosec
 	}
 	return uint64(C.parse_variantkey_hex((*C.char)(p)))
-}
-
-// DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
-func DecodeVariantKey(v uint64) TVariantKey {
-	var vk C.variantkey_t
-	C.decode_variantkey(C.uint64_t(v), &vk)
-	return castCVariantKey(vk)
 }
 
 // ReverseVariantKey parses a variant key string and returns the components.
