@@ -159,7 +159,7 @@ int test_reverse_variantkey(mmfile_t vknr)
         }
         if (rev.pos != test_data[i].pos)
         {
-            fprintf(stderr, "%s (%d) Expecting POS size %lu, got %lu\n", __func__, i, test_data[i].pos, rev.pos);
+            fprintf(stderr, "%s (%d) Expecting POS size %"PRIu32", got %"PRIu32"\n", __func__, i, test_data[i].pos, rev.pos);
             ++errors;
         }
     }
