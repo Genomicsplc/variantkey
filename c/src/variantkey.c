@@ -320,12 +320,12 @@ static inline int compare_uint64_t(uint64_t a, uint64_t b)
 
 inline int compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
 {
-    return compare_uint64_t((vka & VKMASK_CHROM), (vkb & VKMASK_CHROM));
+    return compare_uint64_t((vka >> 59), (vkb >> 59));
 }
 
 inline int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
 {
-    return compare_uint64_t((vka & VKMASK_CHROMPOS), (vkb & VKMASK_CHROMPOS));
+    return compare_uint64_t((vka >> 31), (vkb >> 31));
 }
 
 inline size_t variantkey_hex(uint64_t code, char *str)

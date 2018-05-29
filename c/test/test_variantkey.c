@@ -1222,7 +1222,7 @@ int test_compare_variantkey_chrom()
         int cmp = compare_variantkey_chrom(test_compare_data[i].vka, test_compare_data[i].vkb);
         if (cmp != test_compare_data[i].cmp)
         {
-            fprintf(stderr, "%s (%d): Unexpected variantkey comparison: expected %d, got %d\n", __func__, i, test_compare_data[i].cmp, cmp);
+            fprintf(stderr, "%s (%d): Unexpected variantkey CHROM comparison: expected %d, got %d\n", __func__, i, test_compare_data[i].cmp, cmp);
             ++errors;
         }
     }
@@ -1252,7 +1252,7 @@ int test_compare_variantkey_chrom_pos()
         int cmp = compare_variantkey_chrom_pos(test_compare_data[i].vka, test_compare_data[i].vkb);
         if (cmp != test_compare_data[i].cmp)
         {
-            fprintf(stderr, "%s (%d): Unexpected variantkey comparison: expected %d, got %d\n", __func__, i, test_compare_data[i].cmp, cmp);
+            fprintf(stderr, "%s (%d): Unexpected variantkey CHROM+POS comparison: expected %d, got %d\n", __func__, i, test_compare_data[i].cmp, cmp);
             ++errors;
         }
     }

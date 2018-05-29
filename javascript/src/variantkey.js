@@ -246,12 +246,24 @@ function encodeVariantKey(chrom, pos, refalt) {
     };
 }
 
+function extractVariantKeyChrom(vk) {
+    return ((vk.hi & 0xF8000000) >>> 27);
+}
+
+function extractVariantKeyPos(vk) {
+    return (((vk.hi & 0x7FFFFFF) << 1) | (vk.lo >>> 31)) >>> 0;
+}
+
+function extractVariantKeyRefAlt(vk) {
+    return (vk.lo & 0x7FFFFFFF) >>> 0;
+}
+
 function decodeVariantKey(vk) {
     return {
-        "chrom": ((vk.hi & 0xF8000000) >>> 27),
-        "pos": (((vk.hi & 0x7FFFFFF) << 1) | (vk.lo >>> 31)) >>> 0,
-        "refalt": (vk.lo & 0x7FFFFFFF) >>> 0
-    }
+        "chrom": extractVariantKeyChrom(vk),
+        "pos": extractVariantKeyPos(vk),
+        "refalt": extractVariantKeyRefAlt(vk)
+    };
 }
 
 function variantKey(chrom, pos, ref, alt) {
@@ -269,6 +281,22 @@ function variantKeyRange(chrom, pos_min, pos_max) {
             "lo": ((((pos_max >>> 0) << 31) | 0x7FFFFFFF) >>> 0)
         }
     };
+}
+
+function compare(a, b) {
+    return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+}
+
+function compareVariantKeyChrom(vka, vkb) {
+    return compare((vka.hi >>> 27), (vkb.hi >>> 27));
+}
+
+function compareVariantKeyChromPos(vka, vkb) {
+    var cmp = compare(vka.hi, vkb.hi);
+    if (cmp == 0) {
+        return compare((vka.lo >>> 31), (vkb.lo >>> 31));
+    }
+    return cmp;
 }
 
 function padL08(s) {
@@ -305,9 +333,14 @@ if (typeof(module) !== 'undefined') {
         encodeRefAlt: encodeRefAlt,
         decodeRefAlt: decodeRefAlt,
         encodeVariantKey: encodeVariantKey,
+        extractVariantKeyChrom: extractVariantKeyChrom,
+        extractVariantKeyPos: extractVariantKeyPos,
+        extractVariantKeyRefAlt: extractVariantKeyRefAlt,
         decodeVariantKey: decodeVariantKey,
         variantKey: variantKey,
         variantKeyRange: variantKeyRange,
+        compareVariantKeyChrom: compareVariantKeyChrom,
+        compareVariantKeyChromPos: compareVariantKeyChromPos,
         variantKeyString: variantKeyString,
         reverseVariantKey: reverseVariantKey,
     }

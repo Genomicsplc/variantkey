@@ -41,9 +41,14 @@ const {
     encodeRefAlt,
     decodeRefAlt,
     encodeVariantKey,
+    extractVariantKeyChrom,
+    extractVariantKeyPos,
+    extractVariantKeyRefAlt,
     decodeVariantKey,
     variantKey,
     variantKeyRange,
+    compareVariantKeyChrom,
+    compareVariantKeyChromPos,
     variantKeyString,
     reverseVariantKey
 } = require(process.argv[2]);
@@ -2505,6 +2510,48 @@ function test_encodeVariantKey() {
     return errors;
 }
 
+function test_extractVariantKeyChrom() {
+    var errors = 0;
+    var i;
+    var h;
+    for (i = 0; i < k_test_size; i++) {
+        h = extractVariantKeyChrom(test_data[i][4]);
+        if (h != test_data[i][6]) {
+            console.error("(", i, "): Unexpected chrom code: expected ", test_data[i][6], ", got ", h.chrom);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+function test_extractVariantKeyPos() {
+    var errors = 0;
+    var i;
+    var h;
+    for (i = 0; i < k_test_size; i++) {
+        h = extractVariantKeyPos(test_data[i][4]);
+        if (h != test_data[i][7]) {
+            console.error("(", i, "): Unexpected pos code: expected ", test_data[i][7], ", got ", h.pos);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+function test_extractVariantKeyRefAlt() {
+    var errors = 0;
+    var i;
+    var h;
+    for (i = 0; i < k_test_size; i++) {
+        h = extractVariantKeyRefAlt(test_data[i][4]);
+        if (h != test_data[i][8]) {
+            console.error("(", i, "): Unexpected ref+alt code: expected ", test_data[i][8], ", got ", h.refalt);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 function test_decodeVariantKey() {
     var errors = 0;
     var i;
@@ -2736,6 +2783,94 @@ function test_variantKeyRange() {
     return errors;
 }
 
+function test_compareVariantKeyChrom() {
+    var errors = 0;
+    var i;
+    var r;
+    var test_cmp_data = [
+        [{
+            "hi": 0x08027a3c,
+            "lo": 0x08e80000
+        }, {
+            "hi": 0x100036cc,
+            "lo": 0x08900000
+        }, -1],
+        [{
+            "hi": 0x0fffffff,
+            "lo": 0x88b80000
+        }, {
+            "hi": 0x08027a21,
+            "lo": 0x88c80000
+        }, 0],
+        [{
+            "hi": 0x100036cc,
+            "lo": 0x08900000
+        }, {
+            "hi": 0x08027a3c,
+            "lo": 0x08e80000
+        }, 1],
+    ];
+    for (i = 0; i < 3; i++) {
+        cmp = compareVariantKeyChrom(test_cmp_data[i][0], test_cmp_data[i][1]);
+        if (cmp != test_cmp_data[i][2]) {
+            console.error("(", i, "): Unexpected variantkey chrom comparison: expected ", test_cmp_data[i][2], ", got ", cmp);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+function test_compareVariantKeyChromPos() {
+    var errors = 0;
+    var i;
+    var r;
+    var test_cmp_data = [
+        [{
+            "hi": 0x08027a3c,
+            "lo": 0x08e80000
+        }, {
+            "hi": 0x100036cc,
+            "lo": 0x08900000
+        }, -1],
+        [{
+            "hi": 0x100036cc,
+            "lo": 0x08900000
+        }, {
+            "hi": 0x08027a3c,
+            "lo": 0x08e80000
+        }, 1],
+        [{
+            "hi": 0x08027a25,
+            "lo": 0x88b00000
+        }, {
+            "hi": 0x0fffffff,
+            "lo": 0x88b80000
+        }, -1],
+        [{
+            "hi": 0x0fffffff,
+            "lo": 0x88b80000
+        }, {
+            "hi": 0x0fffffff,
+            "lo": 0x8ae2503b
+        }, 0],
+        [{
+            "hi": 0x0fffffff,
+            "lo": 0x88b80000
+        }, {
+            "hi": 0x08027a25,
+            "lo": 0x88b00000
+        }, 1],
+    ];
+    for (i = 0; i < 5; i++) {
+        cmp = compareVariantKeyChromPos(test_cmp_data[i][0], test_cmp_data[i][1]);
+        if (cmp != test_cmp_data[i][2]) {
+            console.error("(", i, "): Unexpected variantkey chrom+pos comparison: expected ", test_cmp_data[i][2], ", got ", cmp);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 function test_variantKeyString() {
     var errors = 0;
     var vs = "";
@@ -2812,9 +2947,14 @@ errors += test_encodeChrom();
 errors += test_decodeChrom();
 errors += test_encodeRefAlt();
 errors += test_encodeVariantKey();
+errors += test_extractVariantKeyChrom();
+errors += test_extractVariantKeyPos();
+errors += test_extractVariantKeyRefAlt();
 errors += test_decodeVariantKey();
 errors += test_variantKey();
 errors += test_variantKeyRange();
+errors += test_compareVariantKeyChrom();
+errors += test_compareVariantKeyChromPos();
 errors += test_variantKeyString();
 errors += test_parseHex();
 errors += test_reverseVariantKey();
