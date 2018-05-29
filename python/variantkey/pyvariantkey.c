@@ -80,6 +80,33 @@ static PyObject* py_encode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *ar
     return Py_BuildValue("K", h);
 }
 
+static PyObject* py_extract_variantkey_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    uint64_t code;
+    if (!PyArg_ParseTuple(args, "K", &code))
+        return NULL;
+    uint8_t h = extract_variantkey_chrom(code);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_extract_variantkey_pos(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    uint64_t code;
+    if (!PyArg_ParseTuple(args, "K", &code))
+        return NULL;
+    uint32_t h = extract_variantkey_pos(code);
+    return Py_BuildValue("I", h);
+}
+
+static PyObject* py_extract_variantkey_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    uint64_t code;
+    if (!PyArg_ParseTuple(args, "K", &code))
+        return NULL;
+    uint32_t h = extract_variantkey_refalt(code);
+    return Py_BuildValue("I", h);
+}
+
 static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
@@ -119,6 +146,24 @@ static PyObject* py_variantkey_range(PyObject *Py_UNUSED(ignored), PyObject *arg
     PyTuple_SetItem(result, 0, Py_BuildValue("K", r.min));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", r.max));
     return result;
+}
+
+static PyObject* py_compare_variantkey_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    uint64_t vka, vkb;
+    if (!PyArg_ParseTuple(args, "KK", &vka, &vkb))
+        return NULL;
+    int cmp = compare_variantkey_chrom(vka, vkb);
+    return Py_BuildValue("i", cmp);
+}
+
+static PyObject* py_compare_variantkey_chrom_pos(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    uint64_t vka, vkb;
+    if (!PyArg_ParseTuple(args, "KK", &vka, &vkb))
+        return NULL;
+    int cmp = compare_variantkey_chrom_pos(vka, vkb);
+    return Py_BuildValue("i", cmp);
 }
 
 static PyObject* py_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
@@ -457,12 +502,16 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"encode_refalt", py_encode_refalt, METH_VARARGS, PYENCODEREFALT_DOCSTRING},
     {"decode_refalt", py_decode_refalt, METH_VARARGS, PYDECODEREFALT_DOCSTRING},
     {"encode_variantkey", py_encode_variantkey, METH_VARARGS, PYENCODEVARIANTKEY_DOCSTRING},
+    {"extract_variantkey_chrom", py_extract_variantkey_chrom, METH_VARARGS, PYEXTRACTVARIANTKEYCHROM_DOCSTRING},
+    {"extract_variantkey_pos", py_extract_variantkey_pos, METH_VARARGS, PYEXTRACTVARIANTKEYPOS_DOCSTRING},
+    {"extract_variantkey_refalt", py_extract_variantkey_refalt, METH_VARARGS, PYEXTRACTVARIANTKEYREFALT_DOCSTRING},
     {"decode_variantkey", py_decode_variantkey, METH_VARARGS, PYDECODEVARIANTKEY_DOCSTRING},
     {"variantkey", py_variantkey, METH_VARARGS, PYVARIANTKEY_DOCSTRING},
     {"variantkey_range", py_variantkey_range, METH_VARARGS, PYVARIANTKEYRANGE_DOCSTRING},
-    {"variantkey_hex", py_variantkey_hex, METH_VARARGS, PYVARIANTKEYSTRING_DOCSTRING},
+    {"compare_variantkey_chrom", py_compare_variantkey_chrom, METH_VARARGS, PYCOMPAREVARIANTKEYCHROM_DOCSTRING},
+    {"compare_variantkey_chrom_pos", py_compare_variantkey_chrom_pos, METH_VARARGS, PYCOMPAREVARIANTKEYCHROMPOS_DOCSTRING},
+    {"variantkey_hex", py_variantkey_hex, METH_VARARGS, PYVARIANTKEYHEX_DOCSTRING},
     {"parse_variantkey_hex", py_parse_variantkey_hex, METH_VARARGS, PYPARSEVARIANTKEYSTRING_DOCSTRING},
-
 
     // BINSEARCH
     {"mmap_binfile", py_mmap_binfile, METH_VARARGS, PYMMAPBINFILE_DOCSTRING},

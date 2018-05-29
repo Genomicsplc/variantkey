@@ -799,6 +799,45 @@ func BenchmarkEncodeVariantKey(b *testing.B) {
 	}
 }
 
+func TestExtractVariantKeyChrom(t *testing.T) {
+	for _, v := range variantsTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			chrom := ExtractVariantKeyChrom(v.vk)
+			if chrom != v.vkchrom {
+				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, chrom)
+			}
+		})
+	}
+}
+
+func TestExtractVariantKeyPos(t *testing.T) {
+	for _, v := range variantsTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			pos := ExtractVariantKeyPos(v.vk)
+			if pos != v.vkpos {
+				t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, pos)
+			}
+		})
+	}
+}
+
+func TestExtractVariantKeyRefAlt(t *testing.T) {
+	for _, v := range variantsTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			refalt := ExtractVariantKeyRefAlt(v.vk)
+			if refalt != v.vkrefalt {
+				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, refalt)
+			}
+		})
+	}
+}
+
 func TestDecodeVariantKey(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
@@ -899,6 +938,54 @@ func BenchmarkRange(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		Range(15, 12002028, 12152133)
+	}
+}
+
+func TestCompareVariantKeyChrom(t *testing.T) {
+	type TVKCmpData struct {
+		vka uint64
+		vkb uint64
+		cmp int
+	}
+	var cmpTestData = []TVKCmpData{
+		{0x08027a3c08e80000, 0x100036cc08900000, -1},
+		{0x0fffffff88b80000, 0x08027a2188c80000, 0},
+		{0x100036cc08900000, 0x08027a3c08e80000, 1},
+	}
+	for _, v := range cmpTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			cmp := CompareVariantKeyChrom(v.vka, v.vkb)
+			if cmp != v.cmp {
+				t.Errorf("Unexpected variantkey CHROM comparison, expected %#v got %#v", v.cmp, cmp)
+			}
+		})
+	}
+}
+
+func TestCompareVariantKeyChromPos(t *testing.T) {
+	type TVKCmpData struct {
+		vka uint64
+		vkb uint64
+		cmp int
+	}
+	var cmpTestData = []TVKCmpData{
+		{0x08027a3c08e80000, 0x100036cc08900000, -1},
+		{0x100036cc08900000, 0x08027a3c08e80000, 1},
+		{0x08027a2588b00000, 0x0fffffff88b80000, -1},
+		{0x0fffffff88b80000, 0x0fffffff8ae2503b, 0},
+		{0x0fffffff88b80000, 0x08027a2588b00000, 1},
+	}
+	for _, v := range cmpTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			cmp := CompareVariantKeyChromPos(v.vka, v.vkb)
+			if cmp != v.cmp {
+				t.Errorf("Unexpected variantkey CHROM+POS comparison, expected %#v got %#v", v.cmp, cmp)
+			}
+		})
 	}
 }
 

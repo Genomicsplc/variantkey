@@ -51,6 +51,13 @@ extern "C" {
 
 #include <stddef.h>
 
+#define VKMASK_CHROM    0xF800000000000000  //!< VariantKey binary mask for CHROM     [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
+#define VKMASK_POS      0x07FFFFFF80000000  //!< VariantKey binary mask for POS       [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
+#define VKMASK_CHROMPOS 0xFFFFFFFF80000000  //!< VariantKey binary mask for CHROM+POS [ 11111111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
+#define VKMASK_REFALT   0x000000007FFFFFFF  //!< VariantKey binary mask for REF+ALT   [ 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111 ]
+#define VKSHIFT_CHROM   59 //!< CHROM LSB position from the VariantKey LSB
+#define VKSHIFT_POS     31 //!< POS LSB position from the VariantKey LSB
+
 /**
  * VariantKey struct
  */
@@ -128,6 +135,30 @@ size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_
  */
 uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt);
 
+/** @brief Extract the CHROM code from VariantKey.
+ *
+ * @param vk VariantKey code.
+ *
+ * @return CHROM code.
+ */
+uint8_t extract_variantkey_chrom(uint64_t vk);
+
+/** @brief Extract the POS code from VariantKey.
+ *
+ * @param vk VariantKey code.
+ *
+ * @return POS code.
+ */
+uint32_t extract_variantkey_pos(uint64_t vk);
+
+/** @brief Extract the REF+ALT code from VariantKey.
+ *
+ * @param vk VariantKey code.
+ *
+ * @return REF+ALT code.
+ */
+uint32_t extract_variantkey_refalt(uint64_t vk);
+
 /** @brief Decode a VariantKey code and returns the components as variantkey_t structure.
  *
  * @param code VariantKey code.
@@ -164,6 +195,24 @@ uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const cha
  * @return      Min and Max variant keys for any given REF+ALT encoding
  */
 void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range);
+
+/** @brief Compares two VariantKeys by chromosome only.
+ *
+ * @param vka    The first VariantKey to be compared.
+ * @param vkb    The second VariantKey to be compared.
+ *
+ * @return -1 if the first chromosome is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+ */
+int compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
+
+/** @brief Compares two VariantKeys by chromosome and position.
+ *
+ * @param vka    The first VariantKey to be compared.
+ * @param vkb    The second VariantKey to be compared.
+ *
+ * @return -1 if the first chromosome+position is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+ */
+int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
 
 /** @brief Returns VariantKey hexadecimal string (16 characters).
  *

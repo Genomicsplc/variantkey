@@ -129,6 +129,21 @@ func EncodeVariantKey(chrom uint8, pos, refalt uint32) uint64 {
 	return uint64(C.encode_variantkey(C.uint8_t(chrom), C.uint32_t(pos), C.uint32_t(refalt)))
 }
 
+// ExtractVariantKeyChrom extracts the CHROM code from VariantKey.
+func ExtractVariantKeyChrom(v uint64) uint8 {
+	return uint8(C.extract_variantkey_chrom(C.uint64_t(v)))
+}
+
+// ExtractVariantKeyPos extracts the POS code from VariantKey.
+func ExtractVariantKeyPos(v uint64) uint32 {
+	return uint32(C.extract_variantkey_pos(C.uint64_t(v)))
+}
+
+// ExtractVariantKeyRefAlt extracts the REF+ALT code from VariantKey.
+func ExtractVariantKeyRefAlt(v uint64) uint32 {
+	return uint32(C.extract_variantkey_refalt(C.uint64_t(v)))
+}
+
 // DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
 func DecodeVariantKey(v uint64) TVariantKey {
 	var vk C.variantkey_t
@@ -164,6 +179,16 @@ func Range(chrom uint8, posMin, posMax uint32) TVKRange {
 	var r C.vkrange_t
 	C.variantkey_range(C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax), &r)
 	return castCVKRrange(r)
+}
+
+// CompareVariantKeyChrom compares two VariantKeys by chromosome only.
+func CompareVariantKeyChrom(va, vb uint64) int {
+	return int(C.compare_variantkey_chrom(C.uint64_t(va), C.uint64_t(vb)))
+}
+
+// CompareVariantKeyChromPos compares two VariantKeys by chromosome and position.
+func CompareVariantKeyChromPos(va, vb uint64) int {
+	return int(C.compare_variantkey_chrom_pos(C.uint64_t(va), C.uint64_t(vb)))
 }
 
 // Hex provides a string representation of the VariantKey 64bit

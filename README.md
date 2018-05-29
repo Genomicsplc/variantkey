@@ -19,16 +19,102 @@ The individual components of short variants (up to 11 bases between REF and ALT 
 This software library can be used to generate and reverse VariantKeys.
 
 
-### IMPORTANT
+## Human Genetic Variant Definition
 
-This model assumes that the variants have been:
+In this context, the human genetic variant for a given genome assembly is defined as the set of four components compatible with the VCF format:
 
-a. **decomposed** to convert multialleic variants to bialleic ones (`REF` and single `ALT`).  
-In VCF files this can be done using the [vt decompose -s](https://genome.sph.umich.edu/wiki/Vt#Decompose) command,
+* **CHROM** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
+* **POS** - position: The reference position in the chromosome, with the 1st base having position 0. The largest expected value is 247,199,718 to represent the last base pair in Chromosome 1.
+* **REF** - reference base(s): String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first base in the String.
+* **ALT** - alternate base(s): Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
 
-b. **normalized** as in ["Unified representation of genetic variants" - Tan et al. 2015](https://academic.oup.com/bioinformatics/article/31/13/2202/196142).  
-In VCF files this can be done using the [vt normalize](https://genome.sph.umich.edu/wiki/Vt#Normalization) command.
 
+## Variant Decomposition and Normalization
+
+The variantKey model assumes that the variants have been decomposed and normalized.
+
+### Decomposition
+
+In the common VCF format the alternate field can contain comma-separated strings for multialleic variants, while in this context we only consider bialleic variants to allow for allelic comparisons between different data sets.
+
+For example, the multialleic variant:
+
+```
+    {CHROM=1, POS=3759889, REF=TA, ALT=TAA,TAAA,T}
+```
+
+can be decomposed as three bialleic variants:
+
+```
+    {CHROM=1, POS=3759889, REF=TA, ALT=TAA}
+    {CHROM=1, POS=3759889, REF=TA, ALT=TAAA}
+    {CHROM=1, POS=3759889, REF=TA, ALT=T}
+```
+
+In VCF files the decomposition from multialleic to bialleic variants can be performed using the '[vt](https://genome.sph.umich.edu/wiki/Vt#Decompose)' software tool with the command:
+
+```
+    vt decompose -s source.vcf -o decomposed.vcf
+```
+
+The "-s" option (smart decomposition) splits up INFO and GENOTYPE fields that have number counts of R and A appropriately.
+
+#### Example:
+
+* input
+
+```
+  #CHROM  POS     ID   REF     ALT         QUAL   FILTER  INFO                  FORMAT    S1                                      S2
+  1       3759889 .    TA      TAA,TAAA,T  .      PASS    AF=0.342,0.173,0.037  GT:DP:PL  1/2:81:281,5,9,58,0,115,338,46,116,809  0/0:86:0,30,323,31,365,483,38,291,325,567
+```
+
+* output
+
+```
+  #CHROM  POS     ID   REF     ALT         QUAL   FILTER  INFO                                                 FORMAT   S1               S2
+  1       3759889 .    TA      TAA         .      PASS    AF=0.342;OLD_MULTIALLELIC=1:3759889:TA/TAA/TAAA/T    GT:PL    1/.:281,5,9      0/0:0,30,323
+  1       3759889 .    TA      TAAA        .      .       AF=0.173;OLD_MULTIALLELIC=1:3759889:TA/TAA/TAAA/T    GT:PL    ./1:281,58,115   0/0:0,31,483
+  1       3759889 .    TA      T           .      .       AF=0.037;OLD_MULTIALLELIC=1:3759889:TA/TAA/TAAA/T    GT:PL    ./.:281,338,809  0/0:0,38,567
+```
+
+### Normalization
+
+A normalization step is required to ensure a consistent and unambiguous representation of variants.
+As shown in Fig. 1, there are multiple ways to represent the same variant, but only one can be considered "normalized" as defined by [Tan et al., 2015](https://doi.org/10.1093/bioinformatics/btv112):
+
+* A variant representation is normalized if and only if it is left aligned and parsimonious.
+* A variant representation is left aligned if and only if its base position is smallest among all potential representations having the same allele length and representing the same variant.
+* A variant representation is parsimonious if and only if the entry has the shortest allele length among all VCF entries representing the same variant.
+
+Example of VCF entries representing the same variant:
+
+```
+                               VARIANT    POS: 0
+                                          REF: GGGCACACACAGGG
+                                          ALT: GGGCACACAGGG
+    
+                      NOT-LEFT-ALIGNED    POS:      5
+                                          REF:      CAC
+                                          ALT:      C
+    
+    NOT-LEFT-ALIGNED, NOT-PARSIMONIOUS    POS:   2
+                                          REF:   GCACA
+                                          ALT:   GCA
+    
+                      NOT-PARSIMONIOUS    POS:  1
+                                          REF:  GGCA
+                                          ALT:  GG
+    
+                            NORMALIZED    POS:   2
+                                          REF:   GCA
+                                          ALT:   G
+```
+
+In VCF files the variant normalization can be performed using the '[vt](https://genome.sph.umich.edu/wiki/Vt#Normalization)' software tool with the command:
+
+```
+    vt normalize decomposed.vcf -m -r genome.fa -o normalized.vcf
+```
 
 ## VariantKey Format
 
@@ -52,9 +138,9 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         |
         LSB
     ```
-    Chromosomes are always encoded as numbers.  
-    The default string conversion functions includes the encoding for human chromosomes from `1` to `22` plus `X=23`, `Y=24`, `MT=25`, `NA=0`.  
-    This value is always reversible.
+    The chromosome is encoded as unsigned integer number: 1 to 22, X=23, Y=24, MT=25, NA=0.
+    This section is 5 bit long, so it can store up to 2^5=32 symbols, enough to contain the required 26 chromosome symbols.
+    The largest value is: 25 dec = 19 hex = 11001 bin.
                 
 * **`POS`**     : 28 bit for the reference position (`POS`), with the 1<sup>st</sup> nucleotide having position 0.
 
@@ -65,7 +151,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
          |                              |
         MSB                            LSB
     ```
-    The largest human chromosome contains 249M base pairs that can be easily contained in 28 bit (2^28 = 268,435,456).
+    This section is 28 bit long, so it can store up to 2^28=268,435,456 symbols, enough to contain the maximum position 247,199,718 found on the largest human chromosome.
                   
 
 * **`REF+ALT`** : 31 bit for the encoding of the `REF` and `ALT` strings.
@@ -77,20 +163,43 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
                                          |                                |
                                         MSB                              LSB
     ```
-    The encoding of this field mainly depends on the total length of the `REF`+`ALT` string.  
-    If the total number of nucleotides in `REF`+`ALT` is more then 11, or if the alleles contains characters other than ACGT, then the LSB bit is set to 1 and the remaining 30 bit are filled with the hash of the `REF`+`ALT` string. A lookup table is required to reverse the values.  
-    If the total number of nucleotides in `REF`+`ALT` is 11 or less and only contains ACGT letters, then a reversible encoding is used:
-    * the bit 1-4 bit indicate the number of bases in `REF`;
-    * the bit 5-8 bit indicate the number of bases in `ALT`;
-    * the following 11 groups of 2 bit represent each a base of `REF` followed by `ALT`.
-    * the last bit (LSB) is set to 0;
+    This section allow two different type of encodings:
 
-### NOTE:
+    * Non-reversible encoding
 
+        If the total number of nucleotides between REF and ALT is more then 11, or if any of the alleles contains nucleotide letters other than base A, C, G and T, then the LSB (least significant bit) is set to 1 and the remaining 30 bit are filled with an hash value of the REF and ALT strings.
+        The hash value is calulated using a custom fast non-cryptographic algorithm based on MurmurHash3.
+        A lookup table is required to reverse the REF and ALT values.
+        In the normalized dbSNP VCF file GRCh37.p13.b150 there are only 0.365% (1229769 / 337162128) variants that requires this encoding. Amongst those, the maximum number of variants that share the same chromosome and position is 15. With 30 bit the probability of hash collision is approximately 10^-7 for 15 elements, 10^-6 for 46 and 10^-5 for 146.
+
+    * Reversible encoding
+
+        If the total number of nucleotides between REF and ALT is 11 or less, and they only contain base letters A, C, G and T, then the LSB is set to 0 and the remaining 30 bit are used as follows:
+        * bit 1-4 indicate the number of bases in REF - the capacity of this section is 2^4=16 but maximum expected value is 10 dec = 1010 bin;
+        * bit 5-8 indicate the number of bases in ALT - the capacity of this section is 2^4=16 but maximum expected value is 10 dec = 1010 bin;
+        * the following 11 groups of 2 bit are used to represent REF bases followed by ALT (A = 0 dec = 00 bin, C = 1 dec = 01 bin, G = 2 dec = 10 bin, T = 4 dec = 11 bin).  
+        This encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
+
+    * Examples:
+
+        ```
+        REF     ALT        REF+ALT BIN ENCODING
+        A       G          0001 0001 00 10 00 00 00 00 00 00 00 00 00 0
+        GGG     GA         0011 0010 10 10 10 10 00 00 00 00 00 00 00 0
+        ACGT    CGTACGT    0100 0111 00 01 10 11 01 10 11 00 01 10 11 0
+                           |                                          |
+                         33 (MSB)                                   63 (LSB)
+        ```
+
+### VariantKey Properties
+
+* Sorting the VariantKey is equivalent of sorting by CHROM and POS.
 * The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.
-* The `CHROM` and `POS` sections of the VariantKey are sortable.
-* The limit of 11 bases for the reversible encoding covers 99.64% (335,932,359 / 337,162,128) of the variants in the normalized dbSNP GRCh37.p13.b150 VCF file. The remaining 0.36% (1,229,769) can be reversed using a lookup table.
-* The normalized dbSNP GRCh37.p13.b150 VCF file contains only 825 variants with nucleotides other than A, C, G and T.
+* Sorting the hexadecimal representation of VariantKey in alphabetical order is equivalent of sorting the VariantKey numerically.
+* Comparing two variants by VariantKey only requires comparing two numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
+* VariantKey can be used as a main database key to index data by "variant". This simplify common searching, merging and filtering operations.
+* All types of database joins between two data sets (inner, left, right and full) can be easily performed using the VariantKey as index.
+* When CHROM, REF and ALT are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit or bytes, with the ability to perform a quick binary search algorithm on the first sorted column.
 
 
 ## Input values

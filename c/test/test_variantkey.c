@@ -1004,6 +1004,57 @@ void benchmark_encode_variantkey()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
+int test_extract_variantkey_chrom()
+{
+    int errors = 0;
+    int i;
+    uint8_t chrom;
+    for (i=0 ; i < k_test_size; i++)
+    {
+        chrom = extract_variantkey_chrom(test_data[i].vk);
+        if (chrom != test_data[i].vkchrom)
+        {
+            fprintf(stderr, "%s (%d): Unexpected chrom code: expected 0x%02"PRIx8", got 0x%02"PRIx8"\n", __func__, i, test_data[i].vkchrom, chrom);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+int test_extract_variantkey_pos()
+{
+    int errors = 0;
+    int i;
+    uint32_t pos;
+    for (i=0 ; i < k_test_size; i++)
+    {
+        pos = extract_variantkey_pos(test_data[i].vk);
+        if (pos != test_data[i].vkpos)
+        {
+            fprintf(stderr, "%s (%d): Unexpected pos code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkpos, pos);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+int test_extract_variantkey_refalt()
+{
+    int errors = 0;
+    int i;
+    uint32_t refalt;
+    for (i=0 ; i < k_test_size; i++)
+    {
+        refalt = extract_variantkey_refalt(test_data[i].vk);
+        if (refalt != test_data[i].vkrefalt)
+        {
+            fprintf(stderr, "%s (%d): Unexpected ref+alt code: expected 0x%08"PRIx32", got 0x%08"PRIx32"\n", __func__, i, test_data[i].vkrefalt, refalt);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int test_decode_variantkey()
 {
     int errors = 0;
@@ -1150,6 +1201,64 @@ void benchmark_variantkey_range()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
+int test_compare_variantkey_chrom()
+{
+    typedef struct test_compare_data_t
+    {
+        uint64_t vka;
+        uint64_t vkb;
+        int cmp;
+    } test_compare_data_t;
+    static test_compare_data_t test_compare_data[3] =
+    {
+        {0x08027a3c08e80000, 0x100036cc08900000, -1},
+        {0x0fffffff88b80000, 0x08027a2188c80000, 0},
+        {0x100036cc08900000, 0x08027a3c08e80000, 1},
+    };
+    int errors = 0;
+    int i;
+    for (i=0 ; i < 3; i++)
+    {
+        int cmp = compare_variantkey_chrom(test_compare_data[i].vka, test_compare_data[i].vkb);
+        if (cmp != test_compare_data[i].cmp)
+        {
+            fprintf(stderr, "%s (%d): Unexpected variantkey CHROM comparison: expected %d, got %d\n", __func__, i, test_compare_data[i].cmp, cmp);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+int test_compare_variantkey_chrom_pos()
+{
+    typedef struct test_compare_data_t
+    {
+        uint64_t vka;
+        uint64_t vkb;
+        int cmp;
+    } test_compare_data_t;
+    static test_compare_data_t test_compare_data[5] =
+    {
+        {0x08027a3c08e80000, 0x100036cc08900000, -1},
+        {0x100036cc08900000, 0x08027a3c08e80000, 1},
+        {0x08027a2588b00000, 0x0fffffff88b80000, -1},
+        {0x0fffffff88b80000, 0x0fffffff8ae2503b, 0},
+        {0x0fffffff88b80000, 0x08027a2588b00000, 1},
+    };
+    int errors = 0;
+    int i;
+    for (i=0 ; i < 5; i++)
+    {
+        int cmp = compare_variantkey_chrom_pos(test_compare_data[i].vka, test_compare_data[i].vkb);
+        if (cmp != test_compare_data[i].cmp)
+        {
+            fprintf(stderr, "%s (%d): Unexpected variantkey CHROM+POS comparison: expected %d, got %d\n", __func__, i, test_compare_data[i].cmp, cmp);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int test_variantkey_hex()
 {
     int errors = 0;
@@ -1230,9 +1339,14 @@ int main()
     errors += test_decode_chrom();
     errors += test_encode_refalt();
     errors += test_encode_variantkey();
+    errors += test_extract_variantkey_chrom();
+    errors += test_extract_variantkey_pos();
+    errors += test_extract_variantkey_refalt();
     errors += test_decode_variantkey();
     errors += test_variantkey();
     errors += test_variantkey_range();
+    errors += test_compare_variantkey_chrom();
+    errors += test_compare_variantkey_chrom_pos();
     errors += test_variantkey_hex();
     errors += test_parse_variantkey_hex();
 
