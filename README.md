@@ -80,8 +80,8 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     The encoding of this field mainly depends on the total length of the `REF`+`ALT` string.  
     If the total number of nucleotides in `REF`+`ALT` is more then 11, or if the alleles contains characters other than ACGT, then the LSB bit is set to 1 and the remaining 30 bit are filled with the hash of the `REF`+`ALT` string. A lookup table is required to reverse the values.  
     If the total number of nucleotides in `REF`+`ALT` is 11 or less and only contains ACGT letters, then a reversible encoding is used:
-    * the bit 1-4 bit indicate the number of bases in `REF`;
-    * the bit 5-8 bit indicate the number of bases in `ALT`;
+    * the bit 1-4 indicate the number of bases in `REF`;
+    * the bit 5-8 indicate the number of bases in `ALT`;
     * the following 11 groups of 2 bit represent each a base of `REF` followed by `ALT`.
     * the last bit (LSB) is set to 0;
 
