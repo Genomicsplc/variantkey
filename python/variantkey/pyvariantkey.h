@@ -14,9 +14,14 @@ static PyObject *py_decode_chrom(PyObject *self, PyObject *args);
 static PyObject *py_encode_refalt(PyObject *self, PyObject *args);
 static PyObject *py_decode_refalt(PyObject *self, PyObject *args);
 static PyObject *py_encode_variantkey(PyObject *self, PyObject *args);
+static PyObject *py_extract_variantkey_chrom(PyObject *self, PyObject *args);
+static PyObject *py_extract_variantkey_pos(PyObject *self, PyObject *args);
+static PyObject *py_extract_variantkey_refalt(PyObject *self, PyObject *args);
 static PyObject *py_decode_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_variantkey_range(PyObject *self, PyObject *args);
+static PyObject *py_compare_variantkey_chrom(PyObject *self, PyObject *args);
+static PyObject *py_compare_variantkey_chrom_pos(PyObject *self, PyObject *args);
 static PyObject *py_variantkey_hex(PyObject *self, PyObject *args);
 static PyObject *py_parse_variantkey_hex(PyObject *self, PyObject *args);
 
@@ -52,10 +57,15 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYENCODEREFALT_DOCSTRING "Returns reference+alternate encoding."
 #define PYDECODEREFALT_DOCSTRING "Decode the 32 bit REF+ALT code if reversible (if it has 11 or less bases in total and only contains ACGT letters)."
 #define PYENCODEVARIANTKEY_DOCSTRING "Returns a 64 bit variant key based on pre-encoded CHROM, POS (0-base), REF+ALT."
+#define PYEXTRACTVARIANTKEYCHROM_DOCSTRING "Extract the CHROM code from VariantKey."
+#define PYEXTRACTVARIANTKEYPOS_DOCSTRING "Extract the POS code from VariantKey."
+#define PYEXTRACTVARIANTKEYREFALT_DOCSTRING "Extract the REF+ALT code from VariantKey."
 #define PYDECODEVARIANTKEY_DOCSTRING "Decode a VariantKey code and returns the components as variantkey_t structure."
 #define PYVARIANTKEY_DOCSTRING "Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT."
 #define PYVARIANTKEYRANGE_DOCSTRING "Returns minimum and maximum variant keys for range searches."
-#define PYVARIANTKEYSTRING_DOCSTRING "Returns VariantKey hexadecimal string (16 characters)."
+#define PYCOMPAREVARIANTKEYCHROM_DOCSTRING "Compares two VariantKeys by chromosome only."
+#define PYCOMPAREVARIANTKEYCHROMPOS_DOCSTRING "Compares two VariantKeys by chromosome and position."
+#define PYVARIANTKEYHEX_DOCSTRING "Returns VariantKey hexadecimal string (16 characters)."
 #define PYPARSEVARIANTKEYSTRING_DOCSTRING "Parses a VariantKey hex string and returns the code."
 
 // BINSEARCH

@@ -674,19 +674,34 @@ class TestFunctions(TestCase):
                 k += 1
 
     def test_encode_variantkey(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+        for _, _, _, _, vk, _, vkchrom, vkpos, vkrefalt in variantsTestData:
             h = variantkey.encode_variantkey(vkchrom, vkpos, vkrefalt)
             self.assertEqual(h, vk)
 
+    def test_extract_variantkey_chrom(self):
+        for _, _, _, _, vk, _, vkchrom, _, _ in variantsTestData:
+            h = variantkey.extract_variantkey_chrom(vk)
+            self.assertEqual(h, vkchrom)
+
+    def test_extract_variantkey_pos(self):
+        for _, _, _, _, vk, _, _, vkpos, _ in variantsTestData:
+            h = variantkey.extract_variantkey_pos(vk)
+            self.assertEqual(h, vkpos)
+
+    def test_extract_variantkey_refalt(self):
+        for _, _, _, _, vk, _, _, _, vkrefalt in variantsTestData:
+            h = variantkey.extract_variantkey_refalt(vk)
+            self.assertEqual(h, vkrefalt)
+
     def test_decode_variantkey(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+        for _, _, _, _, vk, _, vkchrom, vkpos, vkrefalt in variantsTestData:
             h = variantkey.decode_variantkey(vk)
             self.assertEqual(h[0], vkchrom)
             self.assertEqual(h[1], vkpos)
             self.assertEqual(h[2], vkrefalt)
 
     def test_variantkey(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+        for chrom, pos, ref, alt, vk, _, _, _, _ in variantsTestData:
             h = variantkey.variantkey(chrom, pos, ref, alt)
             self.assertEqual(h, vk)
 
@@ -723,13 +738,35 @@ class TestFunctions(TestCase):
             self.assertEqual(vkmin, vk_min)
             self.assertEqual(vkmax, vk_max)
 
+    def test_compare_variantkey_chrom(self):
+        vkcmpTestData = [
+            (0x08027a3c08e80000, 0x100036cc08900000, -1),
+            (0x0fffffff88b80000, 0x08027a2188c80000, 0),
+            (0x100036cc08900000, 0x08027a3c08e80000, 1),
+        ]
+        for vka, vkb, exp in vkcmpTestData:
+            res = variantkey.compare_variantkey_chrom(vka, vkb)
+            self.assertEqual(res, exp)
+
+    def test_compare_variantkey_chrom_pos(self):
+        vkcmpTestData = [
+            (0x08027a3c08e80000, 0x100036cc08900000, -1),
+            (0x100036cc08900000, 0x08027a3c08e80000, 1),
+            (0x08027a2588b00000, 0x0fffffff88b80000, -1),
+            (0x0fffffff88b80000, 0x0fffffff8ae2503b, 0),
+            (0x0fffffff88b80000, 0x08027a2588b00000, 1),
+        ]
+        for vka, vkb, exp in vkcmpTestData:
+            res = variantkey.compare_variantkey_chrom_pos(vka, vkb)
+            self.assertEqual(res, exp)
+
     def test_variantkey_hex(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+        for _, _, _, _, vk, vs, _, _, _ in variantsTestData:
             h = variantkey.variantkey_hex(vk)
             self.assertEqual(h, vs)
 
     def test_parse_variantkey_hex(self):
-        for chrom, pos, ref, alt, vk, vs, vkchrom, vkpos, vkrefalt in variantsTestData:
+        for _, _, _, _, vk, vs, _, _, _ in variantsTestData:
             h = variantkey.parse_variantkey_hex(vs)
             self.assertEqual(h, vk)
 
