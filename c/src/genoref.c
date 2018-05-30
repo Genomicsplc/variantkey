@@ -34,7 +34,7 @@ inline void load_genoref_index(const unsigned char *src, uint32_t idx[])
 inline char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos)
 {
     uint32_t offset = (idx[chrom] + pos);
-    if (offset >= (idx[(chrom + 1)] - 1))
+    if (offset > (idx[(chrom + 1)] - 2))
     {
         return 0; // invalid position
     }

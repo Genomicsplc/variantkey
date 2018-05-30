@@ -48,7 +48,7 @@ extern "C" {
  * Load the index from the genome reference.
  *
  * @param src  Address of the memory mapped input file contaning the genome reference data (fasta.bin).
- * @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. It must contain 27 elements.
+ * @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements: uint32_t idx[27];
  *
  * @return void
  */
@@ -62,7 +62,7 @@ void load_genoref_index(const unsigned char *src, uint32_t idx[]);
  * @param chrom   Encoded Chromosome number (see encode_chrom).
  * @param pos     Position. The reference position, with the 1st base having position 0.
  *
- * @return The nucleotide letter or 0 in case of error.
+ * @return The nucleotide letter or 0 in case of invalid position.
  */
 char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos);
 
