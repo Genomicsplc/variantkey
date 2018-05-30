@@ -19,7 +19,7 @@
 # ------------------------------------------------------------------------------
 set -e -u -x -o pipefail
 
-: ${REFERENCE_GENOME_FASTA_FILE:=hs38DH.fa}  # Input genome reference genome FASTA file
+: ${REFERENCE_GENOME_FASTA_FILE:?}  # Input genome reference genome FASTA file
 : ${FASTA_BINARY_FILE:=fasta.bin}            # Name of the output binary FASTA file
 
 # add padding for the index section (26 x 4 bytes)
