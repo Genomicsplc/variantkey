@@ -2,7 +2,7 @@
 #
 # fastabin.sh
 #
-# Create a binary version of the input genome sequence FASTA file for quick lookup.
+# Create a binary version of the input reference genome sequence FASTA file for quick lookup.
 # It only extract the first 25 sequences for chromosomes 1 to 22, X, Y and MT.
 #
 # OUTPUT BINARY FORMAT:
@@ -19,7 +19,7 @@
 set -e -u -x -o pipefail
 
 : ${REFERENCE_GENOME_FASTA_FILE:?}  # Input genome reference genome FASTA file
-: ${FASTA_BINARY_FILE:=fasta.bin}            # Name of the output binary FASTA file
+: ${FASTA_BINARY_FILE:=fasta.bin}   # Name of the output binary FASTA file
 
 # linearize the fasta file : one line per sequence
 gawk '/^>/ {printf("%s",(N>0?"\n":""));N++;next;} {printf("%s",$0);} END {printf("\n");}' ${REFERENCE_GENOME_FASTA_FILE} > fasta_full_linear.tmp
