@@ -10,6 +10,7 @@
 #include "../../c/src/binsearch.h"
 #include "../../c/src/rsidvar.h"
 #include "../../c/src/nrvk.h"
+#include "../../c/src/genoref.h"
 #include "pyvariantkey.h"
 
 #ifndef Py_UNUSED /* This is already defined for Python 3.4 onwards */
@@ -492,6 +493,33 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     return result;
 }
 
+// --- GENOREF ---
+
+static PyObject* py_load_genoref_index(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "O", &mfsrc))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t *idx = (uint32_t *)malloc(27 * sizeof(uint32_t));
+    load_genoref_index(src, idx);
+    return PyCapsule_New((void*)idx, "idx", NULL);
+}
+
+static PyObject* py_get_genoref_seq(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject* mfsrc = NULL;
+    PyObject* mfidx = NULL;
+    uint8_t chrom;
+    uint32_t pos;
+    if (!PyArg_ParseTuple(args, "OOBI", &mfsrc, &mfidx, &chrom, &pos))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
+    char ref = get_genoref_seq(src, idx, chrom, pos);
+    return Py_BuildValue("c", ref);
+}
+
 // ---
 
 static PyMethodDef PyVariantKeyMethods[] =
@@ -536,6 +564,10 @@ static PyMethodDef PyVariantKeyMethods[] =
     // NRVK
     {"find_ref_alt_by_variantkey", py_find_ref_alt_by_variantkey, METH_VARARGS, PYFINDREFALTBYVARIANTKEY_DOCSTRING},
     {"reverse_variantkey", py_reverse_variantkey, METH_VARARGS, PYREVERSEVARIANTKEY_DOCSTRING},
+
+    // GENOREF
+    {"load_genoref_index", py_load_genoref_index, METH_VARARGS, PYLOADGENOREFINDEX},
+    {"get_genoref_seq", py_get_genoref_seq, METH_VARARGS, PYGETGENOREFSEQ},
 
     {NULL, NULL, 0, NULL}
 };

@@ -205,7 +205,7 @@ int main()
     err = munmap_binfile(vknr);
     if (err != 0)
     {
-        fprintf(stderr, "Got %d error while unmapping the rv file\n", err);
+        fprintf(stderr, "Got %d error while unmapping the vknr file\n", err);
         return 1;
     }
 

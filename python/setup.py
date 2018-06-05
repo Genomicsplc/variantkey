@@ -30,7 +30,7 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version='2.3.0',
+    version='2.4.0',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=read('../README.md'),
@@ -45,6 +45,7 @@ setup(
              '../c/src/binsearch.c',
             '../c/src/rsidvar.c',
             '../c/src/nrvk.c',
+            '../c/src/genoref.c',
             '../c/src/variantkey.c',
             'variantkey/pyvariantkey.c',
         ],

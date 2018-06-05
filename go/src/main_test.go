@@ -3,7 +3,16 @@ package variantkey
 import "testing"
 import "os"
 
-var mf, rv, vr, vknr TMMFile
+var mf, rv, vr, vknr, gref TMMFile
+var retCode int
+var grefIdx []uint32
+
+func closeTMMFile(mmf TMMFile) {
+	err := mmf.Close()
+	if err != nil {
+		retCode++
+	}
+}
 
 func TestMain(m *testing.M) {
 	var err error
@@ -14,45 +23,34 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		os.Exit(1)
 	}
+	defer closeTMMFile(mf)
 
 	rv, err = MmapBinFile("../../c/test/data/rsvk.10.bin")
 	if err != nil {
 		os.Exit(2)
 	}
+	defer closeTMMFile(rv)
 
 	vr, err = MmapBinFile("../../c/test/data/vkrs.10.bin")
 	if err != nil {
 		os.Exit(3)
 	}
+	defer closeTMMFile(vr)
 
 	vknr, err = MmapBinFile("../../c/test/data/vknr.10.bin")
 	if err != nil {
 		os.Exit(4)
 	}
+	defer closeTMMFile(vknr)
 
-	retCode := m.Run()
-
-	// close the memory-mapped files
-
-	err = mf.Close()
+	gref, err = MmapBinFile("../../c/test/data/genoref.bin")
 	if err != nil {
-		retCode++
+		os.Exit(5)
 	}
+	defer closeTMMFile(gref)
+	grefIdx = gref.LoadGenorefIndex()
 
-	err = rv.Close()
-	if err != nil {
-		retCode++
-	}
-
-	err = vr.Close()
-	if err != nil {
-		retCode++
-	}
-
-	err = vknr.Close()
-	if err != nil {
-		retCode++
-	}
+	retCode += m.Run()
 
 	os.Exit(retCode)
 }
