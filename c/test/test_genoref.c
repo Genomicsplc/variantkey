@@ -32,20 +32,20 @@ int test_get_genoref_seq(const unsigned char *src, uint32_t idx[])
         ref = get_genoref_seq(src, idx, chrom, 0); // first
         if (ref != 'A')
         {
-            fprintf(stderr, "%s (first): Expected reference 'A', got '%c'\n",  __func__, ref);
+            fprintf(stderr, "%s (first): Expected reference 'A', got '%c'\n", __func__, ref);
             ++errors;
         }
         ref = get_genoref_seq(src, idx, chrom, (26 - chrom)); // last
         exp = ('Z' + 1 - chrom);
         if (ref != exp)
         {
-            fprintf(stderr, "%s (last): Expected reference '%c', got '%c'\n",  __func__, exp, ref);
+            fprintf(stderr, "%s (last): Expected reference '%c', got '%c'\n", __func__, exp, ref);
             ++errors;
         }
         ref = get_genoref_seq(src, idx, chrom, (27 - chrom)); // invalid
         if (ref != 0)
         {
-            fprintf(stderr, "%s (invalid): Expected reference 0, got '%c'\n",  __func__, ref);
+            fprintf(stderr, "%s (invalid): Expected reference 0, got '%c'\n", __func__, ref);
             ++errors;
         }
     }

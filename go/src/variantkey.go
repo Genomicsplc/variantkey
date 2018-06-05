@@ -11,6 +11,8 @@ package variantkey
 #include "../../c/src/rsidvar.c"
 #include "../../c/src/nrvk.h"
 #include "../../c/src/nrvk.c"
+#include "../../c/src/genoref.h"
+#include "../../c/src/genoref.c"
 */
 import "C"
 import "unsafe"
@@ -406,4 +408,18 @@ func (mf TMMFile) ReverseVariantkey(vk uint64) (TVariantKeyRev, uint32) {
 	var rev C.variantkey_rev_t
 	len := C.reverse_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), &rev)
 	return castCVariantKeyRev(rev), uint32(len)
+}
+
+// --- GENOREF ---
+
+// LoadGenorefIndex returns the index from the genome reference.
+func (mf TMMFile) LoadGenorefIndex() []uint32 {
+	idx := make([]uint32, 27)
+	C.load_genoref_index((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&idx[0]))) // #nosec
+	return idx
+}
+
+// GetGenorefSeq returns the nucleotide at the specified chromosome and position.
+func (mf TMMFile) GetGenorefSeq(idx []uint32, chrom uint8, pos uint32) byte {
+	return byte(C.get_genoref_seq((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&idx[0])), C.uint8_t(chrom), C.uint32_t(pos))) // #nosec
 }
