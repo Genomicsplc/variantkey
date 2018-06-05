@@ -45,6 +45,7 @@ setup(
              '../c/src/binsearch.c',
             '../c/src/rsidvar.c',
             '../c/src/nrvk.c',
+            '../c/src/genoref.c',
             '../c/src/variantkey.c',
             'variantkey/pyvariantkey.c',
         ],

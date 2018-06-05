@@ -49,6 +49,10 @@ static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args);
 static PyObject *py_find_ref_alt_by_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args);
 
+// GENOREF
+static PyObject *py_load_genoref_index(PyObject *self, PyObject *args);
+static PyObject *py_get_genoref_seq(PyObject *self, PyObject *args);
+
 PyMODINIT_FUNC initvariantkey(void);
 
 // VARIANTKEY
@@ -91,6 +95,11 @@ PyMODINIT_FUNC initvariantkey(void);
 // NRVK
 #define PYFINDREFALTBYVARIANTKEY_DOCSTRING "Retrieve the REF and ALT strings for the specified VariantKey using a memory-mapped file as lookup table."
 #define PYREVERSEVARIANTKEY_DOCSTRING "Reverse a VariantKey code and returns the normalized components."
+
+// GENOREF
+#define PYLOADGENOREFINDEX "Return the index object from the genome reference memory mapped file."
+#define PYGETGENOREFSEQ "Returns the nucleotide at the specified chromosome and position."
+
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
 #define inline
