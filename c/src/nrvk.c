@@ -27,14 +27,14 @@ inline size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last
 {
     uint64_t first = 0;
     uint64_t max = last;
-    uint64_t found = find_first_uint64_t(src, KEYBLKLEN, 0, 0, 63, &first, &max, vk);
+    uint64_t found = find_first_uint64_t(src, KEYBLKLEN, 0, &first, &max, vk);
     if (found > last)
     {
         return 0; // not found
     }
-    uint64_t offset = bytes_to_uint64_t(src, get_address(KEYBLKLEN, 8, found), 0, 63);
-    *sizeref = (size_t) bytes_to_uint8_t(src, offset++, 0, 7);
-    *sizealt = (size_t) bytes_to_uint8_t(src, offset++, 0, 7);
+    uint64_t offset = bytes_to_uint64_t(src, get_address(KEYBLKLEN, 8, found));
+    *sizeref = (size_t) bytes_to_uint8_t(src, offset++);
+    *sizealt = (size_t) bytes_to_uint8_t(src, offset++);
     memcpy(ref, &src[offset], *sizeref);
     ref[*sizeref] = 0;
     memcpy(alt, &src[(offset + *sizeref)], *sizealt);

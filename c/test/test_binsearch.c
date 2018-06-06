@@ -217,7 +217,7 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
     { \
         first = test_data_##T[i].first; \
         last = test_data_##T[i].last; \
-        found = find_first_##T(mf.src, blklen, test_data_##T[i].blkpos, bitstart, bitend, &first, &last, test_data_##T[i].search); \
+        found = find_first_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
         if (found != test_data_##T[i].foundFirst) \
         { \
             fprintf(stderr, "%s (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundFirst, found); \
@@ -235,7 +235,7 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
         } \
         first = test_data_sub_##T[i].first; \
         last = test_data_sub_##T[i].last; \
-        found = find_first_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
+        found = find_first_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
         if (found != test_data_sub_##T[i].foundFirst) \
         { \
             fprintf(stderr, "%s SUB (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundFirst, found); \
@@ -265,7 +265,7 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
     { \
         first = test_data_##T[i].first; \
         last = test_data_##T[i].last; \
-        found = find_last_##T(mf.src, blklen, test_data_##T[i].blkpos, bitstart, bitend, &first, &last, test_data_##T[i].search); \
+        found = find_last_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
         if (found != test_data_##T[i].foundLast) \
         { \
             fprintf(stderr, "%s (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundLast, found); \
@@ -283,7 +283,7 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
         } \
         first = test_data_sub_##T[i].first; \
         last = test_data_sub_##T[i].last; \
-        found = find_last_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
+        found = find_last_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
         if (found != test_data_sub_##T[i].foundLast) \
         { \
             fprintf(stderr, "%s (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundLast, found); \
@@ -321,7 +321,7 @@ uint64_t get_time()
 }
 
 #define define_benchmark_find_first(T) \
-void benchmark_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t bitend, uint64_t nitems) \
+void benchmark_find_first_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
 { \
     uint64_t tstart, tend; \
     uint64_t first = 0; \
@@ -331,14 +331,14 @@ void benchmark_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, ui
     tstart = get_time(); \
     for (i=0 ; i < size; i++) \
     { \
-        find_first_##T(mf.src, blklen, test_data_##T[4].blkpos, bitstart, bitend, &first, &last, test_data_##T[4].search); \
+        find_first_##T(mf.src, blklen, test_data_##T[4].blkpos, &first, &last, test_data_##T[4].search); \
     } \
     tend = get_time(); \
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
 #define define_benchmark_find_last(T) \
-void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t bitend, uint64_t nitems) \
+void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
 { \
     uint64_t tstart, tend; \
     uint64_t first = 0; \
@@ -348,7 +348,7 @@ void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uin
     tstart = get_time(); \
     for (i=0 ; i < size; i++) \
     { \
-        find_last_##T(mf.src, blklen, test_data_##T[4].blkpos, bitstart, bitend, &first, &last, test_data_##T[4].search); \
+        find_last_##T(mf.src, blklen, test_data_##T[4].blkpos, &first, &last, test_data_##T[4].search); \
     } \
     tend = get_time(); \
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
@@ -362,6 +362,49 @@ define_benchmark_find_first(uint32_t)
 define_benchmark_find_last(uint32_t)
 define_benchmark_find_first(uint64_t)
 define_benchmark_find_last(uint64_t)
+
+#define define_benchmark_find_first_sub(T) \
+void benchmark_find_first_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t bitend, uint64_t nitems) \
+{ \
+    uint64_t tstart, tend; \
+    uint64_t first = 0; \
+    uint64_t last = (nitems - 1); \
+    int i; \
+    int size = 10000; \
+    tstart = get_time(); \
+    for (i=0 ; i < size; i++) \
+    { \
+        find_first_sub_##T(mf.src, blklen, test_data_##T[4].blkpos, bitstart, bitend, &first, &last, test_data_##T[4].search); \
+    } \
+    tend = get_time(); \
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
+}
+
+#define define_benchmark_find_last_sub(T) \
+void benchmark_find_last_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t bitend, uint64_t nitems) \
+{ \
+    uint64_t tstart, tend; \
+    uint64_t first = 0; \
+    uint64_t last = (nitems - 1); \
+    int i; \
+    int size = 10000; \
+    tstart = get_time(); \
+    for (i=0 ; i < size; i++) \
+    { \
+        find_last_sub_##T(mf.src, blklen, test_data_##T[4].blkpos, bitstart, bitend, &first, &last, test_data_##T[4].search); \
+    } \
+    tend = get_time(); \
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
+}
+
+define_benchmark_find_first_sub(uint8_t)
+define_benchmark_find_last_sub(uint8_t)
+define_benchmark_find_first_sub(uint16_t)
+define_benchmark_find_last_sub(uint16_t)
+define_benchmark_find_first_sub(uint32_t)
+define_benchmark_find_last_sub(uint32_t)
+define_benchmark_find_first_sub(uint64_t)
+define_benchmark_find_last_sub(uint64_t)
 
 int test_mmap_binfile_error(const char* file)
 {
@@ -437,17 +480,29 @@ int main()
     errors += test_find_first_uint64_t(mf, blklen, 0, 63);
     errors += test_find_last_uint64_t(mf, blklen, 0, 63);
 
-    benchmark_find_first_uint8_t(mf, blklen, nitems, 0, 7);
-    benchmark_find_last_uint8_t(mf, blklen, nitems, 0, 7);
+    benchmark_find_first_uint8_t(mf, blklen, nitems);
+    benchmark_find_last_uint8_t(mf, blklen, nitems);
 
-    benchmark_find_first_uint16_t(mf, blklen, 0, 15, nitems);
-    benchmark_find_last_uint16_t(mf, blklen, 0, 15, nitems);
+    benchmark_find_first_uint16_t(mf, blklen, nitems);
+    benchmark_find_last_uint16_t(mf, blklen, nitems);
 
-    benchmark_find_first_uint32_t(mf, blklen, 0, 31, nitems);
-    benchmark_find_last_uint32_t(mf, blklen, 0, 31, nitems);
+    benchmark_find_first_uint32_t(mf, blklen, nitems);
+    benchmark_find_last_uint32_t(mf, blklen, nitems);
 
-    benchmark_find_first_uint64_t(mf, blklen, 0, 63, nitems);
-    benchmark_find_last_uint64_t(mf, blklen, 0, 63, nitems);
+    benchmark_find_first_uint64_t(mf, blklen, nitems);
+    benchmark_find_last_uint64_t(mf, blklen, nitems);
+
+    benchmark_find_first_sub_uint8_t(mf, blklen, 0, 7, nitems);
+    benchmark_find_last_sub_uint8_t(mf, blklen, 0, 7, nitems);
+
+    benchmark_find_first_sub_uint16_t(mf, blklen, 0, 15, nitems);
+    benchmark_find_last_sub_uint16_t(mf, blklen, 0, 15, nitems);
+
+    benchmark_find_first_sub_uint32_t(mf, blklen, 0, 31, nitems);
+    benchmark_find_last_sub_uint32_t(mf, blklen, 0, 31, nitems);
+
+    benchmark_find_first_sub_uint64_t(mf, blklen, 0, 63, nitems);
+    benchmark_find_last_sub_uint64_t(mf, blklen, 0, 63, nitems);
 
     int e = munmap_binfile(mf);
     if (e != 0)

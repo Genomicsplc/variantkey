@@ -22,19 +22,19 @@
 
 inline uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)
 {
-    return bytes_to_uint32_t(src, get_address(BINBLKLEN, VRPOS_RSID, item), 0, 31);
+    return bytes_to_uint32_t(src, get_address(BINBLKLEN, VRPOS_RSID, item));
 }
 
 inline uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item)
 {
     uint64_t i = get_address(BINBLKLEN, 0, item);
-    return bytes_to_uint64_t(src, i + RVPOS_VK, 0, 63);
+    return bytes_to_uint64_t(src, i + RVPOS_VK);
 }
 
 inline uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
 {
     uint64_t max = last;
-    uint64_t found = find_first_uint32_t(src, BINBLKLEN, RVPOS_RSID, 0, 31, first, &max, rsid);
+    uint64_t found = find_first_uint32_t(src, BINBLKLEN, RVPOS_RSID, first, &max, rsid);
     if (found > last)
     {
         return 0;
@@ -46,7 +46,7 @@ inline uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *f
 inline uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vk)
 {
     uint64_t max = last;
-    uint64_t found = find_first_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 63, first, &max, vk);
+    uint64_t found = find_first_uint64_t(src, BINBLKLEN, VRPOS_VK, first, &max, vk);
     if (found > last)
     {
         return 0; // not found
@@ -60,7 +60,7 @@ inline uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first
     uint64_t ckey = ((uint64_t)chrom << 59);
     uint64_t min = *first;
     uint64_t max = *last;
-    *first = find_first_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 32, &min, &max, (ckey | ((uint64_t)pos_min << 31)) >> 31);
+    *first = find_first_sub_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 32, &min, &max, (ckey | ((uint64_t)pos_min << 31)) >> 31);
     if (*first > *last)
     {
         *first = min;
@@ -74,7 +74,7 @@ inline uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first
         return 0;
     }
     max = *last;
-    uint64_t end = find_last_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 32, &min, &max, (ckey | ((uint64_t)pos_max << 31)) >> 31);
+    uint64_t end = find_last_sub_uint64_t(src, BINBLKLEN, VRPOS_VK, 0, 32, &min, &max, (ckey | ((uint64_t)pos_max << 31)) >> 31);
     if (end > *last)
     {
         *last = max;

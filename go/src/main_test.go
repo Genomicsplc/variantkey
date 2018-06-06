@@ -5,7 +5,6 @@ import "os"
 
 var mf, rv, vr, vknr, gref TMMFile
 var retCode int
-var grefIdx []uint32
 
 func closeTMMFile(mmf TMMFile) {
 	err := mmf.Close()
@@ -48,7 +47,7 @@ func TestMain(m *testing.M) {
 		os.Exit(5)
 	}
 	defer closeTMMFile(gref)
-	grefIdx = gref.LoadGenorefIndex()
+	gref.LoadGenorefIndex()
 
 	retCode += m.Run()
 
