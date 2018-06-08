@@ -90,7 +90,6 @@ int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uin
  *
  * @param allele  Allele. String containing a sequence of nucleotide letters.
  * @param size    Length of the allele string.
- *
  */
 void flip_allele(char *allele, size_t size);
 

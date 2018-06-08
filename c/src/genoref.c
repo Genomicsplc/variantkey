@@ -91,7 +91,7 @@ inline int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chr
                 || ((uref == 'Y') && ((gref == 'C') || (gref == 'T')))
                 || ((gref == 'Y') && ((uref == 'C') || (uref == 'T'))))
         {
-            ret = 1; // not consistent
+            ret = 1; // valid but not consistent
             continue;
         }
         return -1; // invalid reference
@@ -153,7 +153,7 @@ inline void flip_allele(char *allele, size_t size)
 
 static inline void prepend_char(const unsigned char chr, char *string, size_t *size)
 {
-    memmove(string + 1, string, ((*size) + 1));
+    memmove(string + 1, string, (*size + 1));
     string[0] = chr;
     (*size)++;
     return;
