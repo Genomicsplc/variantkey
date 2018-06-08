@@ -155,7 +155,7 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
 
 static inline int aztoupper(int c)
 {
-    if ((c >= 'a') && (c <= 'z'))
+    if (c >= 'a')
     {
         return (c ^ ('a' - 'A'));
     }

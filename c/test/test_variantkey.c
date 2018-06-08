@@ -656,7 +656,7 @@ uint64_t get_time()
     return (((uint64_t)t.tv_sec * 1000000000) + (uint64_t)t.tv_nsec);
 }
 
-int test_azoupper()
+int test_aztoupper()
 {
     int errors = 0;
     int i, c;
@@ -673,12 +673,6 @@ int test_azoupper()
     if (c != 96)
     {
         fprintf(stderr, "%s : Wrong uppercase value - expecting 96, got %d\n", __func__, c);
-        ++errors;
-    }
-    c = aztoupper(123);
-    if (c != 123)
-    {
-        fprintf(stderr, "%s : Wrong uppercase value - expecting 123, got %d\n", __func__, c);
         ++errors;
     }
     return errors;
@@ -1334,7 +1328,7 @@ int main()
 
     //errors += gentestmap(); return 1;
 
-    errors += test_azoupper();
+    errors += test_aztoupper();
     errors += test_encode_chrom();
     errors += test_decode_chrom();
     errors += test_encode_refalt();
