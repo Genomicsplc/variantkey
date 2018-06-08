@@ -70,6 +70,76 @@ void benchmark_get_genoref_seq(const unsigned char *src, uint32_t idx[])
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*25));
 }
 
+int test_check_reference(const unsigned char *src, uint32_t idx[])
+{
+    int errors = 0;
+    int ret;
+    int i;
+    typedef struct test_ref_t
+    {
+        uint8_t chrom;
+        uint32_t pos;
+        const char *ref;
+        size_t sizeref;
+        int exp;
+    } test_ref_t;
+    static test_ref_t test_ref[42] =
+    {
+        {1, 0, "A", 1, 0},
+        {1, 25, "Z", 1, 0},
+        {25, 0, "A", 1, 0},
+        {25, 1, "B", 1, 0},
+        {2, 0, "ABCDEFGHIJKLmnopqrstuvwxy", 25, 0},
+        {1, 26, "ZABC", 4, -2},
+        {1, 0, "ABCDEFGHIJKLmnopqrstuvwxyJ", 26, -1},
+        {14, 2, "ZZZ", 3, -1},
+        {1, 0, "N", 1, 1},
+        {10, 13, "A", 1, 1},
+        {1, 3, "B", 1, 1},
+        {1, 1, "C", 1, 1},
+        {1, 0, "D", 1, 1},
+        {1, 3, "A", 1, 1},
+        {1, 0, "H", 1, 1},
+        {1, 7, "A", 1, 1},
+        {1, 0, "V", 1, 1},
+        {1, 21, "A", 1, 1},
+        {1, 0, "W", 1, 1},
+        {1, 19, "W", 1, 1},
+        {1, 22, "A", 1, 1},
+        {1, 22, "T", 1, 1},
+        {1, 2, "S", 1, 1},
+        {1, 6, "S", 1, 1},
+        {1, 18, "C", 1, 1},
+        {1, 18, "G", 1, 1},
+        {1, 0, "M", 1, 1},
+        {1, 2, "M", 1, 1},
+        {1, 12, "A", 1, 1},
+        {1, 12, "C", 1, 1},
+        {1, 6, "K", 1, 1},
+        {1, 19, "K", 1, 1},
+        {1, 10, "G", 1, 1},
+        {1, 10, "T", 1, 1},
+        {1, 0, "R", 1, 1},
+        {1, 6, "R", 1, 1},
+        {1, 17, "A", 1, 1},
+        {1, 17, "G", 1, 1},
+        {1, 2, "Y", 1, 1},
+        {1, 19, "Y", 1, 1},
+        {1, 24, "C", 1, 1},
+        {1, 24, "T", 1, 1},
+    };
+    for (i = 0; i < 42; i++)
+    {
+        ret = check_reference(src, idx, test_ref[i].chrom, test_ref[i].pos, test_ref[i].ref, test_ref[i].sizeref);
+        if (ret != test_ref[i].exp)
+        {
+            fprintf(stderr, "%s (%d): Expected %d, got %d\n", __func__, i, test_ref[i].exp, ret);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int main()
 {
     int errors = 0;
@@ -88,6 +158,7 @@ int main()
     }
 
     errors += test_get_genoref_seq(genoref.src, idx);
+    errors += test_check_reference(genoref.src, idx);
 
     benchmark_get_genoref_seq(genoref.src, idx);
 

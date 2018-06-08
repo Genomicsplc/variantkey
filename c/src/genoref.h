@@ -66,6 +66,23 @@ void load_genoref_index(const unsigned char *src, uint32_t idx[]);
  */
 char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos);
 
+/**
+ * Check if the reference allele matches the reference genome data.
+ *
+ * @param src     Address of the memory mapped input file contaning the genome reference data (fasta.bin).
+ * @param idx     Index of sequences offset by chromosome number (1 to 25).
+ * @param chrom   Encoded Chromosome number (see encode_chrom).
+ * @param pos     Position. The reference position, with the 1st base having position 0.
+ * @param ref     Reference allele. String containing a sequence of nucleotide letters.
+ * @param sizeref Length of the ref string, excluding the terminating null byte.
+ *
+ * @return 0 if the allele perfectly matches the reference genome;
+ *         1 if they match with inconsistencies (i.e. when nucleotide letters other than A, C, G and T);
+ *         -1 if they don't match;
+ *         -2 if the reference allele is longer than the reference.
+ */
+int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
+
 #ifdef __cplusplus
 }
 #endif

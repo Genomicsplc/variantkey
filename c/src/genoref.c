@@ -41,3 +41,60 @@ inline char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t ch
     return (char)src[offset];
 }
 
+static inline int aztoupper(int c)
+{
+    if (c >= 'a')
+    {
+        return (c ^ ('a' - 'A'));
+    }
+    return c;
+}
+
+inline int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
+{
+    uint32_t offset = (idx[chrom] + pos);
+    if ((offset + sizeref - 1) > (idx[(chrom + 1)] - 2))
+    {
+        return -2; // invalid position
+    }
+    int i;
+    char uref, gref;
+    int ret = 0; // return value
+    for (i = 0; i < sizeref; i++)
+    {
+        uref = aztoupper(ref[i]);
+        gref = src[(offset + i)];
+        if (uref == gref)
+        {
+            continue;
+        }
+        if ((uref == 'N')
+                || (gref == 'N')
+                || ((uref == 'B') && (gref != 'A'))
+                || ((gref == 'B') && (uref != 'A'))
+                || ((uref == 'D') && (gref != 'C'))
+                || ((gref == 'D') && (uref != 'C'))
+                || ((uref == 'H') && (gref != 'G'))
+                || ((gref == 'H') && (uref != 'G'))
+                || ((uref == 'V') && (gref != 'T'))
+                || ((gref == 'V') && (uref != 'T'))
+                || ((uref == 'W') && ((gref == 'A') || (gref == 'T')))
+                || ((gref == 'W') && ((uref == 'A') || (uref == 'T')))
+                || ((uref == 'S') && ((gref == 'C') || (gref == 'G')))
+                || ((gref == 'S') && ((uref == 'C') || (uref == 'G')))
+                || ((uref == 'M') && ((gref == 'A') || (gref == 'C')))
+                || ((gref == 'M') && ((uref == 'A') || (uref == 'C')))
+                || ((uref == 'K') && ((gref == 'G') || (gref == 'T')))
+                || ((gref == 'K') && ((uref == 'G') || (uref == 'T')))
+                || ((uref == 'R') && ((gref == 'A') || (gref == 'G')))
+                || ((gref == 'R') && ((uref == 'A') || (uref == 'G')))
+                || ((uref == 'Y') && ((gref == 'C') || (gref == 'T')))
+                || ((gref == 'Y') && ((uref == 'C') || (uref == 'T'))))
+        {
+            ret = 1; // not consistent
+            continue;
+        }
+        return -1; // invalid reference
+    }
+    return ret; // sequence OK
+}
