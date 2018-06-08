@@ -159,23 +159,29 @@ static inline void prepend_char(const unsigned char chr, char *string, size_t *s
     return;
 }
 
-inline void normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     uint8_t offset;
     char left;
     char fref[256];
-    if (check_reference(src, idx, chrom, *pos, ref, *sizeref) < 0)
+    int status = check_reference(src, idx, chrom, *pos, ref, *sizeref);
+    if (status == -2)
+    {
+        return -2; // invalid position
+    }
+    if (status < 0)
     {
         strncpy(fref, ref, *sizeref);
         flip_allele(fref, *sizeref);
-        if (check_reference(src, idx, chrom, *pos, fref, *sizeref) < 0)
+        status = check_reference(src, idx, chrom, *pos, fref, *sizeref);
+        if (status < 0)
         {
-            // invalid reference
-            return;
+            return status; // invalid reference
         }
         // flip alleles
         strncpy(ref, fref, *sizeref);
         flip_allele(alt, *sizealt);
+        status = 2;
     }
     while (1)
     {
@@ -217,5 +223,5 @@ inline void normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t 
     }
     ref[*sizeref] = 0;
     alt[*sizealt] = 0;
+    return status;
 }
-

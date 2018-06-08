@@ -76,10 +76,11 @@ char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t chrom, ui
  * @param ref     Reference allele. String containing a sequence of nucleotide letters.
  * @param sizeref Length of the ref string, excluding the terminating null byte.
  *
- * @return 0 if the allele perfectly matches the reference genome;
- *         1 if they match with inconsistencies (i.e. when nucleotide letters other than A, C, G and T);
- *         -1 if they don't match;
- *         -2 if the reference allele is longer than the reference.
+ * @return Positive number in case of success, negative in case of error:
+ *         0 the reference allele match the reference genome;
+ *         1 the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
+ *        -1 the reference allele don't match the reference genome;
+ *        -2 the reference allele is longer than the genome reference sequence.
  */
 int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
 
@@ -107,9 +108,14 @@ void flip_allele(char *allele, size_t size);
  * @param alt        Alternate non-reference allele string.
  * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
- * @return void
+ * @return Positive number in case of success, negative in case of error:
+ *         0 the reference allele match the reference genome;
+ *         1 the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
+ *         2 the alleles have been flipped;
+ *        -1 the reference allele don't match the reference genome;
+ *        -2 the reference allele is longer than the genome reference sequence.
  */
-void normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
+int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
 #ifdef __cplusplus
 }
