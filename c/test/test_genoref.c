@@ -12,7 +12,7 @@
 #include <strings.h>
 #include <time.h>
 #include <sys/mman.h>
-#include "../src/genoref.h"
+#include "../src/genoref.c"
 
 // returns current time in nanoseconds
 uint64_t get_time()
@@ -154,6 +154,26 @@ int test_flip_allele()
     return errors;
 }
 
+int test_prepend_char()
+{
+    int errors = 0;
+    char original[5] =   "BCD";
+    char expected[5] = "ABCD";
+    size_t size = 3;
+    prepend_char('A', original, &size);
+    if (size != 4)
+    {
+        fprintf(stderr, "%s : Expected size 4, got %d\n", __func__, (int)size);
+        ++errors;
+    }
+    if (strcmp(original, expected) != 0)
+    {
+        fprintf(stderr, "%s : Expected %s, got %s\n", __func__, expected, original);
+        ++errors;
+    }
+    return errors;
+}
+
 int main()
 {
     int errors = 0;
@@ -174,6 +194,7 @@ int main()
     errors += test_get_genoref_seq(genoref.src, idx);
     errors += test_check_reference(genoref.src, idx);
     errors += test_flip_allele();
+    errors += test_prepend_char();
 
     benchmark_get_genoref_seq(genoref.src, idx);
 

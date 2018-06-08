@@ -57,7 +57,7 @@ inline int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chr
     {
         return -2; // invalid position
     }
-    int i;
+    size_t i;
     char uref, gref;
     int ret = 0; // return value
     for (i = 0; i < sizeref; i++)
@@ -101,7 +101,7 @@ inline int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chr
 
 inline void flip_allele(char *allele, size_t size)
 {
-    int i;
+    size_t i;
     int chr;
     for (i = 0; i < size; i++)
     {
@@ -148,5 +148,13 @@ inline void flip_allele(char *allele, size_t size)
             allele[i] = chr;
         }
     }
+    return;
+}
+
+static inline void prepend_char(const unsigned char chr, char *string, size_t *size)
+{
+    memmove(string + 1, string, ((*size) + 1));
+    string[0] = chr;
+    (*size)++;
     return;
 }
