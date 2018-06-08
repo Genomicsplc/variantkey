@@ -158,3 +158,64 @@ static inline void prepend_char(const unsigned char chr, char *string, size_t *s
     (*size)++;
     return;
 }
+
+inline void normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+{
+    uint8_t offset;
+    char left;
+    char fref[256];
+    if (check_reference(src, idx, chrom, *pos, ref, *sizeref) < 0)
+    {
+        strncpy(fref, ref, *sizeref);
+        flip_allele(fref, *sizeref);
+        if (check_reference(src, idx, chrom, *pos, fref, *sizeref) < 0)
+        {
+            // invalid reference
+            return;
+        }
+        // flip alleles
+        strncpy(ref, fref, *sizeref);
+        flip_allele(alt, *sizealt);
+    }
+    while (1)
+    {
+        // left extend
+        if (((*sizealt == 0) || (*sizeref == 0)) && (*pos > 0))
+        {
+            (*pos)--;
+            left = (char)src[(size_t)(idx[chrom] + pos)];
+            prepend_char(left, alt, sizealt);
+            prepend_char(left, ref, sizeref);
+        }
+        else
+        {
+            // right trim
+            if ((*sizealt > 1) && (*sizeref > 1) && (aztoupper(alt[(*sizealt - 1)]) == aztoupper(ref[(*sizeref - 1)])))
+            {
+                (*sizealt)--;
+                (*sizeref)--;
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+    // left trim
+    offset = 0;
+    while ((offset < (*sizealt - 1)) && (offset < (*sizeref - 1)) && (aztoupper(alt[offset]) == aztoupper(ref[offset])))
+    {
+        offset++;
+    }
+    if (offset > 0)
+    {
+        *pos += offset;
+        *sizeref -= offset;
+        *sizealt -= offset;
+        ref += offset;
+        alt += offset;
+    }
+    ref[*sizeref] = 0;
+    alt[*sizealt] = 0;
+}
+

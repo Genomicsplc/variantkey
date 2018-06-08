@@ -93,6 +93,24 @@ int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uin
  */
 void flip_allele(char *allele, size_t size);
 
+/**
+ * Normalize a variant.
+ * Flip alleles if required and apply the normalization algorithm described at:
+ * https://genome.sph.umich.edu/wiki/Variant_Normalization
+ *
+ * @param src        Address of the memory mapped input file contaning the genome reference data (fasta.bin).
+ * @param idx        Index of sequences offset by chromosome number (1 to 25).
+ * @param chrom      Chromosome encoded number.
+ * @param pos        Position. The reference position, with the 1st base having position 0.
+ * @param ref        Reference allele. String containing a sequence of nucleotide letters.
+ * @param sizeref    Length of the ref string, excluding the terminating null byte.
+ * @param alt        Alternate non-reference allele string.
+ * @param sizealt    Length of the alt string, excluding the terminating null byte.
+ *
+ * @return void
+ */
+void normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
+
 #ifdef __cplusplus
 }
 #endif
