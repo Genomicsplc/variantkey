@@ -140,6 +140,20 @@ int test_check_reference(const unsigned char *src, uint32_t idx[])
     return errors;
 }
 
+int test_flip_allele()
+{
+    int errors = 0;
+    char allele[] =   "ATCGMKRYBVDHWSNatcgmkrybvdhwsn";
+    char expected[] = "TAGCKMYRVBHDWSNTAGCKMYRVBHDWSN";
+    flip_allele(allele, 30);
+    if (strcmp(allele, expected) != 0)
+    {
+        fprintf(stderr, "%s : Expected %s, got %s\n", __func__, expected, allele);
+        ++errors;
+    }
+    return errors;
+}
+
 int main()
 {
     int errors = 0;
@@ -159,6 +173,7 @@ int main()
 
     errors += test_get_genoref_seq(genoref.src, idx);
     errors += test_check_reference(genoref.src, idx);
+    errors += test_flip_allele();
 
     benchmark_get_genoref_seq(genoref.src, idx);
 

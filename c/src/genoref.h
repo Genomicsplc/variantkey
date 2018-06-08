@@ -83,6 +83,17 @@ char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t chrom, ui
  */
 int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
 
+/**
+ * Flip the allele nucleotides.
+ * The resulting string is always in uppercase.
+ * Support extended nucleotide letters.
+ *
+ * @param allele  Allele. String containing a sequence of nucleotide letters.
+ * @param size    Length of the allele string.
+ *
+ */
+void flip_allele(char *allele, size_t size);
+
 #ifdef __cplusplus
 }
 #endif

@@ -98,3 +98,55 @@ inline int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chr
     }
     return ret; // sequence OK
 }
+
+inline void flip_allele(char *allele, size_t size)
+{
+    int i;
+    int chr;
+    for (i = 0; i < size; i++)
+    {
+        chr = aztoupper(allele[i]);
+        switch(chr)
+        {
+        case 'A':
+            allele[i] = 'T';
+            break;
+        case 'T':
+            allele[i] = 'A';
+            break;
+        case 'C':
+            allele[i] = 'G';
+            break;
+        case 'G':
+            allele[i] = 'C';
+            break;
+        case 'M':
+            allele[i] = 'K';
+            break;
+        case 'K':
+            allele[i] = 'M';
+            break;
+        case 'R':
+            allele[i] = 'Y';
+            break;
+        case 'Y':
+            allele[i] = 'R';
+            break;
+        case 'B':
+            allele[i] = 'V';
+            break;
+        case 'V':
+            allele[i] = 'B';
+            break;
+        case 'D':
+            allele[i] = 'H';
+            break;
+        case 'H':
+            allele[i] = 'D';
+            break;
+        default:
+            allele[i] = chr;
+        }
+    }
+    return;
+}
