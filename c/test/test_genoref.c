@@ -163,7 +163,7 @@ int test_prepend_char()
     prepend_char('A', original, &size);
     if (size != 4)
     {
-        fprintf(stderr, "%s : Expected size 4, got %d\n", __func__, (int)size);
+        fprintf(stderr, "%s : Expected size 4, got %lu\n", __func__, size);
         ++errors;
     }
     if (strcmp(original, expected) != 0)
@@ -173,6 +173,77 @@ int test_prepend_char()
     }
     return errors;
 }
+
+int test_normalize_variant(const unsigned char *src, uint32_t idx[])
+{
+    int errors = 0;
+    int ret;
+    int i;
+    typedef struct test_norm_t
+    {
+        uint8_t chrom;
+        uint32_t pos;
+        char ref[256];
+        size_t sizeref;
+        char alt[256];
+        size_t sizealt;
+        uint32_t exp_pos;
+        const char *exp_ref;
+        size_t exp_sizeref;
+        const char *exp_alt;
+        size_t exp_sizealt;
+        int exp;
+    } test_norm_t;
+    static test_norm_t test_norm[10] =
+    {
+        {1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2},
+        {1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1},
+        {1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 2},
+        {1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},
+        {13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 0},
+        {13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 0},
+        {1, 0, "ABCDEF", 6, "ABKDEF", 6, 2, "C", 1, "K", 1, 0},
+        {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},
+        {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 0},
+        {1, 25, "Z", 1, "C", 1, 25, "Z", 1, "C", 1, 0},
+    };
+    for (i = 0; i < 10; i++)
+    {
+        ret = normalize_variant(src, idx, test_norm[i].chrom, &test_norm[i].pos, test_norm[i].ref, &test_norm[i].sizeref, test_norm[i].alt, &test_norm[i].sizealt);
+        if (ret != test_norm[i].exp)
+        {
+            fprintf(stderr, "%s (%d): Expected return value %d, got %d\n", __func__, i, test_norm[i].exp, ret);
+            ++errors;
+        }
+        if (test_norm[i].pos != test_norm[i].exp_pos)
+        {
+            fprintf(stderr, "%s (%d): Expected POS %"PRIu32", got %"PRIu32"\n", __func__, i, test_norm[i].exp_pos, test_norm[i].pos);
+            ++errors;
+        }
+        if (test_norm[i].sizeref != test_norm[i].exp_sizeref)
+        {
+            fprintf(stderr, "%s (%d): Expected REF size %lu, got %lu\n", __func__, i, test_norm[i].exp_sizeref, test_norm[i].sizeref);
+            ++errors;
+        }
+        if (test_norm[i].sizealt != test_norm[i].exp_sizealt)
+        {
+            fprintf(stderr, "%s (%d): Expected ALT size %lu, got %lu\n", __func__, i, test_norm[i].exp_sizealt, test_norm[i].sizealt);
+            ++errors;
+        }
+        if (strcmp(test_norm[i].ref, test_norm[i].exp_ref) != 0)
+        {
+            fprintf(stderr, "%s : Expected REF %s, got %s\n", __func__, test_norm[i].exp_ref, test_norm[i].ref);
+            ++errors;
+        }
+        if (strcmp(test_norm[i].alt, test_norm[i].exp_alt) != 0)
+        {
+            fprintf(stderr, "%s : Expected ALT %s, got %s\n", __func__, test_norm[i].exp_alt, test_norm[i].alt);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 
 int main()
 {
@@ -195,6 +266,7 @@ int main()
     errors += test_check_reference(genoref.src, idx);
     errors += test_flip_allele();
     errors += test_prepend_char();
+    errors += test_normalize_variant(genoref.src, idx);
 
     benchmark_get_genoref_seq(genoref.src, idx);
 

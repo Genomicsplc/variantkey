@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <stdio.h>
 #include <string.h>
 #include "genoref.h"
 
@@ -161,16 +162,16 @@ static inline void prepend_char(const unsigned char chr, char *string, size_t *s
 
 inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
-    uint8_t offset;
     char left;
     char fref[256];
     int status = check_reference(src, idx, chrom, *pos, ref, *sizeref);
     if (status == -2)
     {
-        return -2; // invalid position
+        return status; // invalid position
     }
     if (status < 0)
     {
+        // flip allele and recheck
         strncpy(fref, ref, *sizeref);
         flip_allele(fref, *sizeref);
         status = check_reference(src, idx, chrom, *pos, fref, *sizeref);
@@ -183,13 +184,17 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
         flip_allele(alt, *sizealt);
         status = 2;
     }
+    if ((*sizealt == 1) && (*sizeref == 1))
+    {
+        return status; // SNP
+    }
     while (1)
     {
         // left extend
         if (((*sizealt == 0) || (*sizeref == 0)) && (*pos > 0))
         {
             (*pos)--;
-            left = (char)src[(size_t)(idx[chrom] + pos)];
+            left = (char)src[(size_t)(idx[chrom] + *pos)];
             prepend_char(left, alt, sizealt);
             prepend_char(left, ref, sizeref);
         }
@@ -208,7 +213,7 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
         }
     }
     // left trim
-    offset = 0;
+    uint8_t offset = 0;
     while ((offset < (*sizealt - 1)) && (offset < (*sizeref - 1)) && (aztoupper(alt[offset]) == aztoupper(ref[offset])))
     {
         offset++;
@@ -218,8 +223,8 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
         *pos += offset;
         *sizeref -= offset;
         *sizealt -= offset;
-        ref += offset;
-        alt += offset;
+        memmove(ref, ref + offset, *sizeref);
+        memmove(alt, alt + offset, *sizealt);
     }
     ref[*sizeref] = 0;
     alt[*sizealt] = 0;
