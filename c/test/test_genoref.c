@@ -205,7 +205,7 @@ int test_normalize_variant(const unsigned char *src, uint32_t idx[])
         {1, 0, "ABCDEF", 6, "ABKDEF", 6, 2, "C", 1, "K", 1, 0},
         {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},
         {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 0},
-        {1, 25, "Z", 1, "C", 1, 25, "Z", 1, "C", 1, 0},
+        {1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},
     };
     for (i = 0; i < 10; i++)
     {
