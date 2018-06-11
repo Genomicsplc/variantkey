@@ -3,16 +3,18 @@ package variantkey
 /*
 #include <stdlib.h>
 #include <inttypes.h>
-#include "../../c/src/variantkey.h"
-#include "../../c/src/variantkey.c"
+#include "../../c/src/astring.h"
+#include "../../c/src/astring.c"
 #include "../../c/src/binsearch.h"
 #include "../../c/src/binsearch.c"
-#include "../../c/src/rsidvar.h"
-#include "../../c/src/rsidvar.c"
-#include "../../c/src/nrvk.h"
-#include "../../c/src/nrvk.c"
 #include "../../c/src/genoref.h"
 #include "../../c/src/genoref.c"
+#include "../../c/src/nrvk.h"
+#include "../../c/src/nrvk.c"
+#include "../../c/src/rsidvar.h"
+#include "../../c/src/rsidvar.c"
+#include "../../c/src/variantkey.h"
+#include "../../c/src/variantkey.c"
 */
 import "C"
 import "unsafe"
@@ -55,8 +57,8 @@ func castCVariantKeyRev(vk C.variantkey_rev_t) TVariantKeyRev {
 	return TVariantKeyRev{
 		Chrom:   C.GoString((*C.char)(unsafe.Pointer(&vk.chrom[0]))),
 		Pos:     uint32(vk.pos),
-		Ref:     C.GoStringN((*C.char)(unsafe.Pointer(&vk.ref[0])), C.int(vk.sizeref)),
-		Alt:     C.GoStringN((*C.char)(unsafe.Pointer(&vk.alt[0])), C.int(vk.sizealt)),
+		Ref:     C.GoString((*C.char)(unsafe.Pointer(&vk.ref[0]))),
+		Alt:     C.GoString((*C.char)(unsafe.Pointer(&vk.alt[0]))),
 		SizeRef: uint8(vk.sizeref),
 		SizeAlt: uint8(vk.sizealt),
 	}
@@ -78,14 +80,18 @@ func StringToNTBytes(s string) []byte {
 	return b
 }
 
+// StringToNTBytesN convert a string to byte array allocating "size" bytes.
+func StringToNTBytesN(s string, size uint32) []byte {
+	b := make([]byte, size)
+	copy(b[:], s)
+	return b
+}
+
 // EncodeChrom returns chromosome encoding.
 func EncodeChrom(chrom string) uint8 {
 	bchrom := StringToNTBytes(chrom)
 	sizechrom := len(chrom)
-	var pchrom unsafe.Pointer
-	if sizechrom > 0 {
-		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
-	}
+	pchrom := unsafe.Pointer(&bchrom[0]) // #nosec
 	return uint8(C.encode_chrom((*C.char)(pchrom), C.size_t(sizechrom)))
 }
 
@@ -103,14 +109,8 @@ func EncodeRefAlt(ref string, alt string) uint32 {
 	balt := StringToNTBytes(alt)
 	sizeref := len(ref)
 	sizealt := len(alt)
-	var pref unsafe.Pointer
-	var palt unsafe.Pointer
-	if sizeref > 0 {
-		pref = unsafe.Pointer(&bref[0]) // #nosec
-	}
-	if sizealt > 0 {
-		palt = unsafe.Pointer(&balt[0]) // #nosec
-	}
+	pref := unsafe.Pointer(&bref[0]) // #nosec
+	palt := unsafe.Pointer(&balt[0]) // #nosec
 	return uint32(C.encode_refalt((*C.char)(pref), C.size_t(sizeref), (*C.char)(palt), C.size_t(sizealt)))
 }
 
@@ -158,22 +158,12 @@ func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)
 	balt := StringToNTBytes(alt)
-	sizechrom := len(chrom)
 	sizeref := len(ref)
 	sizealt := len(alt)
-	var pchrom unsafe.Pointer
-	var pref unsafe.Pointer
-	var palt unsafe.Pointer
-	if sizechrom > 0 {
-		pchrom = unsafe.Pointer(&bchrom[0]) // #nosec
-	}
-	if sizeref > 0 {
-		pref = unsafe.Pointer(&bref[0]) // #nosec
-	}
-	if sizealt > 0 {
-		palt = unsafe.Pointer(&balt[0]) // #nosec
-	}
-	return uint64(C.variantkey((*C.char)(pchrom), C.size_t(len(chrom)), C.uint32_t(pos), (*C.char)(pref), C.size_t(len(ref)), (*C.char)(palt), C.size_t(len(alt))))
+	pchrom := unsafe.Pointer(&bchrom[0]) // #nosec
+	pref := unsafe.Pointer(&bref[0])     // #nosec
+	palt := unsafe.Pointer(&balt[0])     // #nosec
+	return uint64(C.variantkey((*C.char)(pchrom), C.size_t(len(chrom)), C.uint32_t(pos), (*C.char)(pref), C.size_t(sizeref), (*C.char)(palt), C.size_t(sizealt)))
 }
 
 // Range Returns minimum and maximum variant keys for range searches.
@@ -204,11 +194,7 @@ func Hex(v uint64) string {
 // ParseHex parses a variant key string and returns the code.
 func ParseHex(s string) uint64 {
 	b := StringToNTBytes(s)
-	size := len(s)
-	var p unsafe.Pointer
-	if size > 0 {
-		p = unsafe.Pointer(&b[0]) // #nosec
-	}
+	p := unsafe.Pointer(&b[0]) // #nosec
 	return uint64(C.parse_variantkey_hex((*C.char)(p)))
 }
 
@@ -237,11 +223,7 @@ type TMMFile struct {
 // MmapBinFile maps the specified file in memory.
 func MmapBinFile(file string) (TMMFile, error) {
 	bfile := StringToNTBytes(file)
-	flen := len(bfile)
-	var p unsafe.Pointer
-	if flen > 0 {
-		p = unsafe.Pointer(&bfile[0]) // #nosec
-	}
+	p := unsafe.Pointer(&bfile[0]) // #nosec
 	var mf C.mmfile_t
 	C.mmap_binfile((*C.char)(p), &mf)
 	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
@@ -501,6 +483,15 @@ func (mf TMMFile) ReverseVariantkey(vk uint64) (TVariantKeyRev, uint32) {
 
 // --- GENOREF ---
 
+// FlipAllele flips allele nucleotides.
+func FlipAllele(allele string) string {
+	ballele := StringToNTBytes(allele)
+	size := len(allele)
+	pallele := unsafe.Pointer(&ballele[0]) // #nosec
+	C.flip_allele((*C.char)(pallele), C.size_t(size))
+	return C.GoString((*C.char)(pallele))
+}
+
 // LoadGenorefIndex returns the index from the genome reference.
 func (mf *TMMFile) LoadGenorefIndex() {
 	mf.Index = make([]uint32, 27)
@@ -510,4 +501,32 @@ func (mf *TMMFile) LoadGenorefIndex() {
 // GetGenorefSeq returns the nucleotide at the specified chromosome and position.
 func (mf TMMFile) GetGenorefSeq(chrom uint8, pos uint32) byte {
 	return byte(C.get_genoref_seq((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0])), C.uint8_t(chrom), C.uint32_t(pos))) // #nosec
+}
+
+// CheckReference checks if the reference allele matches the reference genome data.
+func (mf TMMFile) CheckReference(chrom uint8, pos uint32, ref string) int {
+	bref := StringToNTBytes(ref)
+	sizeref := len(ref)
+	pref := unsafe.Pointer(&bref[0])                                                                                                                                      // #nosec
+	return int(C.check_reference((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0])), C.uint8_t(chrom), C.uint32_t(pos), (*C.char)(pref), C.size_t(sizeref))) // #nosec
+}
+
+// NormalizeVariant flips alleles if required and apply the normalization algorithm described at: https://genome.sph.umich.edu/wiki/Variant_Normalization
+func (mf TMMFile) NormalizeVariant(chrom uint8, pos uint32, ref string, alt string) (code int, npos uint32, nref, nalt string, nsizeref, nsizealt uint8) {
+	bref := StringToNTBytesN(ref, 256)
+	balt := StringToNTBytesN(alt, 256)
+	sizeref := len(ref)
+	sizealt := len(alt)
+	pref := unsafe.Pointer(&bref[0]) // #nosec
+	palt := unsafe.Pointer(&balt[0]) // #nosec
+	cpos := C.uint32_t(pos)
+	csizeref := C.size_t(sizeref)
+	csizealt := C.size_t(sizealt)
+	code = int(C.normalize_variant((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0])), C.uint8_t(chrom), &cpos, (*C.char)(pref), &csizeref, (*C.char)(palt), &csizealt)) // #nosec
+	npos = uint32(cpos)
+	nref = C.GoString((*C.char)(pref))
+	nalt = C.GoString((*C.char)(palt))
+	nsizeref = uint8(csizeref)
+	nsizealt = uint8(csizealt)
+	return
 }

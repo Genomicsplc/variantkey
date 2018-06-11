@@ -244,13 +244,13 @@ static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref
         bitpos -= 2;
         ref[i] = decode_base(code, bitpos);
     }
-    ref[i] = '\0';
+    ref[i] = 0;
     for(i = 0; i < *sizealt; i++)
     {
         bitpos -= 2;
         alt[i] = decode_base(code, bitpos);
     }
-    alt[i] = '\0';
+    alt[i] = 0;
     return (*sizeref + *sizealt);
 }
 

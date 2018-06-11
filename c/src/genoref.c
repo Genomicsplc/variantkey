@@ -141,6 +141,7 @@ inline void flip_allele(char *allele, size_t size)
             allele[i] = chr;
         }
     }
+    allele[size] = 0;
 }
 
 inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
