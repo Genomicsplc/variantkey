@@ -119,7 +119,7 @@ func TestNormalizeVariant(t *testing.T) {
 		chrom    uint8
 		pos      uint32
 		ref      string
-		ssizeref uint8
+		sizeref  uint8
 		alt      string
 		sizealt  uint8
 		epos     uint32

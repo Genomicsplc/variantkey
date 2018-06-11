@@ -698,14 +698,16 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
         return NULL;
     const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
     uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
-    int ret = normalize_variant(src, idx, chrom, &pos, ref, &sizeref, alt, &sizealt);
+    size_t stref = (size_t)sizeref;
+    size_t stalt = (size_t)sizealt;
+    int ret = normalize_variant(src, idx, chrom, &pos, ref, &stref, alt, &stalt);
     result = PyTuple_New(6);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", ret));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", pos));
     PyTuple_SetItem(result, 2, Py_BuildValue("y", ref));
     PyTuple_SetItem(result, 3, Py_BuildValue("y", alt));
-    PyTuple_SetItem(result, 4, Py_BuildValue("K", sizeref));
-    PyTuple_SetItem(result, 5, Py_BuildValue("K", sizealt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("K", stref));
+    PyTuple_SetItem(result, 5, Py_BuildValue("K", stalt));
     return result;
 }
 
