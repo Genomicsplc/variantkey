@@ -182,7 +182,7 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
         // flip alleles
         strncpy(ref, fref, *sizeref);
         flip_allele(alt, *sizealt);
-        status = 2;
+        status |= 2;
     }
     if ((*sizealt == 1) && (*sizeref == 1))
     {
@@ -197,6 +197,7 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
             left = (char)src[(size_t)(idx[chrom] + *pos)];
             prepend_char(left, alt, sizealt);
             prepend_char(left, ref, sizeref);
+            status |= 4;
         }
         else
         {
@@ -205,6 +206,7 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
             {
                 (*sizealt)--;
                 (*sizeref)--;
+                status |= 8;
             }
             else
             {
@@ -225,6 +227,7 @@ inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t c
         *sizealt -= offset;
         memmove(ref, ref + offset, *sizeref);
         memmove(alt, alt + offset, *sizealt);
+        status |= 16;
     }
     ref[*sizeref] = 0;
     alt[*sizealt] = 0;

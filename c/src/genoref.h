@@ -109,11 +109,13 @@ void flip_allele(char *allele, size_t size);
  * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
  * @return Positive number in case of success, negative in case of error:
- *         0 the reference allele match the reference genome;
- *         1 the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
- *         2 the alleles have been flipped;
- *        -1 the reference allele don't match the reference genome;
  *        -2 the reference allele is longer than the genome reference sequence.
+ *        -1 the reference allele don't match the reference genome;
+ *        ret &  1 == 1 : the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
+ *        ret &  2 == 1 : the alleles have been flipped;
+ *        ret &  4 == 1 : left extended;
+ *        ret &  8 == 1 : right trimmed;
+ *        ret & 16 == 1 : left trimmed;
  */
 int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
