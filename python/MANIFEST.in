@@ -5,6 +5,7 @@ exclude .travis.yml
 include setup.cfg
 include ../README.md
 include ../LICENSE
+include ../c/src/astring.h
 include ../c/src/binsearch.h
 include ../c/src/rsidvar.h
 include ../c/src/nrvk.h
