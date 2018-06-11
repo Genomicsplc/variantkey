@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #include "rsidvar.h"
 
 inline uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)

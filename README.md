@@ -59,6 +59,7 @@ In VCF files the decomposition from multialleic to bialleic variants can be perf
 
 The "-s" option (smart decomposition) splits up INFO and GENOTYPE fields that have number counts of R and A appropriately.
 
+
 #### Example:
 
 * input
@@ -115,6 +116,11 @@ In VCF files the variant normalization can be performed using the '[vt](https://
 ```
     vt normalize decomposed.vcf -m -r genome.fa -o normalized.vcf
 ```
+
+
+This library contains a function to normalize a bialleic variants against the reference genome.
+The normalize function also support allele flipping.
+
 
 ## VariantKey Format
 

@@ -5,12 +5,15 @@
 // @license    MIT (see LICENSE)
 // @link       https://github.com/genomicsplc/variantkey
 
+#define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
+
 #include <Python.h>
-#include "../../c/src/variantkey.h"
+#include "../../c/src/astring.h"
 #include "../../c/src/binsearch.h"
-#include "../../c/src/rsidvar.h"
-#include "../../c/src/nrvk.h"
 #include "../../c/src/genoref.h"
+#include "../../c/src/nrvk.h"
+#include "../../c/src/rsidvar.h"
+#include "../../c/src/variantkey.h"
 #include "pyvariantkey.h"
 
 #ifndef Py_UNUSED /* This is already defined for Python 3.4 onwards */
@@ -27,7 +30,7 @@
 static PyObject* py_encode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom;
-    int sizechrom;
+    Py_ssize_t sizechrom;
     if (!PyArg_ParseTuple(args, "s#", &chrom, &sizechrom))
         return NULL;
     uint8_t h = encode_chrom(chrom, (size_t)sizechrom);
@@ -47,7 +50,7 @@ static PyObject* py_decode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 static PyObject* py_encode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *ref, *alt;
-    int sizeref, sizealt;
+    Py_ssize_t sizeref, sizealt;
     if (!PyArg_ParseTuple(args, "s#s#", &ref, &sizeref, &alt, &sizealt))
         return NULL;
     uint32_t h = encode_refalt(ref, (size_t)sizeref, alt, (size_t)sizealt);
@@ -126,7 +129,7 @@ static PyObject* py_decode_variantkey(PyObject *Py_UNUSED(ignored), PyObject *ar
 static PyObject* py_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *chrom, *ref, *alt;
-    int sizechrom, sizeref, sizealt;
+    Py_ssize_t sizechrom, sizeref, sizealt;
     uint32_t pos;
     if (!PyArg_ParseTuple(args, "s#Is#s#", &chrom, &sizechrom, &pos, &ref, &sizeref, &alt, &sizealt))
         return NULL;
@@ -180,7 +183,7 @@ static PyObject* py_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
 static PyObject* py_parse_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     const char *vs;
-    int sizevs;
+    Py_ssize_t sizevs;
     if (!PyArg_ParseTuple(args, "s#", &vs, &sizevs))
         return NULL;
     uint64_t h = 0;
@@ -656,6 +659,58 @@ static PyObject* py_get_genoref_seq(PyObject *Py_UNUSED(ignored), PyObject *args
     return Py_BuildValue("c", ref);
 }
 
+static PyObject *py_check_reference(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject* mfsrc = NULL;
+    PyObject* mfidx = NULL;
+    uint8_t chrom;
+    uint32_t pos;
+    const char *ref;
+    Py_ssize_t sizeref;
+    if (!PyArg_ParseTuple(args, "OOBIs#", &mfsrc, &mfidx, &chrom, &pos, &ref, &sizeref))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
+    int ret = check_reference(src, idx, chrom, pos, ref, (size_t)sizeref);
+    return Py_BuildValue("i", ret);
+}
+
+static PyObject *py_flip_allele(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    char *allele;
+    Py_ssize_t size;
+    if (!PyArg_ParseTuple(args, "s#", &allele, &size))
+        return NULL;
+    flip_allele(allele, (size_t)size);
+    return Py_BuildValue("y", allele);
+}
+
+static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    PyObject* mfsrc = NULL;
+    PyObject* mfidx = NULL;
+    uint8_t chrom;
+    uint32_t pos;
+    char *ref, *alt;
+    Py_ssize_t sizeref, sizealt;
+    if (!PyArg_ParseTuple(args, "OOBIs#s#", &mfsrc, &mfidx, &chrom, &pos, &ref, &sizeref, &alt, &sizealt))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
+    size_t stref = (size_t)sizeref;
+    size_t stalt = (size_t)sizealt;
+    int ret = normalize_variant(src, idx, chrom, &pos, ref, &stref, alt, &stalt);
+    result = PyTuple_New(6);
+    PyTuple_SetItem(result, 0, Py_BuildValue("i", ret));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", pos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("y", ref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("y", alt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("K", stref));
+    PyTuple_SetItem(result, 5, Py_BuildValue("K", stalt));
+    return result;
+}
+
 // ---
 
 static PyMethodDef PyVariantKeyMethods[] =
@@ -712,6 +767,9 @@ static PyMethodDef PyVariantKeyMethods[] =
     // GENOREF
     {"load_genoref_index", py_load_genoref_index, METH_VARARGS, PYLOADGENOREFINDEX},
     {"get_genoref_seq", py_get_genoref_seq, METH_VARARGS, PYGETGENOREFSEQ},
+    {"check_reference", py_check_reference, METH_VARARGS, PYCHECKREFERENCE},
+    {"flip_allele", py_flip_allele, METH_VARARGS, PYFLIPALLELE},
+    {"normalize_variant", py_normalize_variant, METH_VARARGS, PYNORMALIZEVARIANT},
 
     {NULL, NULL, 0, NULL}
 };

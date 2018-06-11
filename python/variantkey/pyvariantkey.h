@@ -60,6 +60,9 @@ static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args);
 // GENOREF
 static PyObject *py_load_genoref_index(PyObject *self, PyObject *args);
 static PyObject *py_get_genoref_seq(PyObject *self, PyObject *args);
+static PyObject *py_check_reference(PyObject *self, PyObject *args);
+static PyObject *py_flip_allele(PyObject *self, PyObject *args);
+static PyObject *py_normalize_variant(PyObject *self, PyObject *args);
 
 PyMODINIT_FUNC initvariantkey(void);
 
@@ -115,6 +118,9 @@ PyMODINIT_FUNC initvariantkey(void);
 // GENOREF
 #define PYLOADGENOREFINDEX "Return the index object from the genome reference memory mapped file."
 #define PYGETGENOREFSEQ "Returns the nucleotide at the specified chromosome and position."
+#define PYCHECKREFERENCE "Check if the reference allele matches the reference genome data."
+#define PYFLIPALLELE "Flip the allele nucleotides."
+#define PYNORMALIZEVARIANT "Normalize a variant."
 
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
