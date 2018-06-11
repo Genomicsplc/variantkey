@@ -154,26 +154,6 @@ int test_flip_allele()
     return errors;
 }
 
-int test_prepend_char()
-{
-    int errors = 0;
-    char original[5] =   "BCD";
-    char expected[5] = "ABCD";
-    size_t size = 3;
-    prepend_char('A', original, &size);
-    if (size != 4)
-    {
-        fprintf(stderr, "%s : Expected size 4, got %lu\n", __func__, size);
-        ++errors;
-    }
-    if (strcmp(original, expected) != 0)
-    {
-        fprintf(stderr, "%s : Expected %s, got %s\n", __func__, expected, original);
-        ++errors;
-    }
-    return errors;
-}
-
 int test_normalize_variant(const unsigned char *src, uint32_t idx[])
 {
     int errors = 0;
@@ -202,7 +182,7 @@ int test_normalize_variant(const unsigned char *src, uint32_t idx[])
         {1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},
         {13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 16},
         {13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 24},
-        {1, 0, "ABCDEF", 6, "ABKDEF", 6, 2, "C", 1, "K", 1, 24},
+        {1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 24},
         {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},
         {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 4},
         {1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},
@@ -265,7 +245,6 @@ int main()
     errors += test_get_genoref_seq(genoref.src, idx);
     errors += test_check_reference(genoref.src, idx);
     errors += test_flip_allele();
-    errors += test_prepend_char();
     errors += test_normalize_variant(genoref.src, idx);
 
     benchmark_get_genoref_seq(genoref.src, idx);

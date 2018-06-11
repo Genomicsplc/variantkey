@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+
 #include <stdio.h>
 #include <string.h>
 #include "genoref.h"
@@ -28,11 +29,11 @@ inline void load_genoref_index(const unsigned char *src, uint32_t idx[])
     int i;
     for (i = 1; i <= 26; i++)
     {
-        idx[i] = bytes_to_uint32_t(src, ((i - 1) * 4));
+        idx[i] = bytes_to_uint32_t(src, ((uint64_t)(i - 1) * 4));
     }
 }
 
-inline char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos)
+inline char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos)
 {
     uint32_t offset = (idx[chrom] + pos);
     if (offset > (idx[(chrom + 1)] - 2))
@@ -42,16 +43,7 @@ inline char get_genoref_seq(const unsigned char *src, uint32_t idx[], uint8_t ch
     return (char)src[offset];
 }
 
-static inline int aztoupper(int c)
-{
-    if (c >= 'a')
-    {
-        return (c ^ ('a' - 'A'));
-    }
-    return c;
-}
-
-inline int check_reference(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
+inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
     uint32_t offset = (idx[chrom] + pos);
     if ((offset + sizeref - 1) > (idx[(chrom + 1)] - 2))
@@ -149,22 +141,14 @@ inline void flip_allele(char *allele, size_t size)
             allele[i] = chr;
         }
     }
-    return;
 }
 
-static inline void prepend_char(const unsigned char chr, char *string, size_t *size)
-{
-    memmove(string + 1, string, (*size + 1));
-    string[0] = chr;
-    (*size)++;
-    return;
-}
-
-inline int normalize_variant(const unsigned char *src, uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     char left;
     char fref[256];
-    int status = check_reference(src, idx, chrom, *pos, ref, *sizeref);
+    int status;
+    status = check_reference(src, idx, chrom, *pos, ref, *sizeref);
     if (status == -2)
     {
         return status; // invalid position

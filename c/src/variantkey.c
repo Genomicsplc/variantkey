@@ -153,15 +153,6 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
     return h;
 }
 
-static inline int aztoupper(int c)
-{
-    if (c >= 'a')
-    {
-        return (c ^ ('a' - 'A'));
-    }
-    return c;
-}
-
 static inline uint32_t pack_chars(const char *str, size_t size)
 {
     int c;
@@ -297,7 +288,6 @@ inline void decode_variantkey(uint64_t code, variantkey_t *vk)
     vk->chrom = extract_variantkey_chrom(code);
     vk->pos = extract_variantkey_pos(code);
     vk->refalt = extract_variantkey_refalt(code);
-    return;
 }
 
 inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
@@ -310,7 +300,6 @@ inline void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, 
     uint64_t c = ((uint64_t)chrom << VKSHIFT_CHROM);
     range->min = (c | ((uint64_t)pos_min << VKSHIFT_POS));
     range->max = (c | ((uint64_t)pos_max << VKSHIFT_POS) | VKMASK_REFALT);
-    return;
 }
 
 static inline int compare_uint64_t(uint64_t a, uint64_t b)

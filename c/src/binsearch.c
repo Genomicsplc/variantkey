@@ -40,7 +40,6 @@ void mmap_binfile(const char *file, mmfile_t *mf)
     {
         mf->last = (uint64_t)bytes_to_uint32_t(mf->src, (mf->size - 4)) - 1;
     }
-    return;
 }
 
 int munmap_binfile(mmfile_t mf)
