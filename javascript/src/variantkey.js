@@ -126,7 +126,7 @@ function encodeRefAltRev(ref, sizeref, alt, sizealt) {
 }
 
 function azToUpper(c) {
-    if ((c >= 97) && (c <= 122)) { // 'a' = 97; 'z' = 122;
+    if (c >= 97) { // 'a' = 97
         return (c ^ 32); // ('a' - 'A') = 32
     }
     return c;

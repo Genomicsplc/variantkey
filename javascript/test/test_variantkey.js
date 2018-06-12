@@ -2337,11 +2337,6 @@ function test_azToUpper() {
         console.error("Wrong uppercase value - expecting 96, got ", c);
         ++errors;
     }
-    c = azToUpper(123);
-    if (c != 123) {
-        console.error("Wrong uppercase value - expecting 123, got ", c);
-        ++errors;
-    }
     return errors;
 }
 
