@@ -14,7 +14,7 @@ A genetic variant is often referred as a single entity but, for a given genome a
 
 **VariantKey**, a novel reversible numerical encoding schema for human genetic variants, overcomes these limitations by allowing to process variants as a single 64 bit numeric entities while preserving the ability to be searched and sorted per chromosome and position.
 
-The individual components of short variants (up to 11 bases between REF and ALT alleles) can be directly read back from the VariantKey, while long variants requires a lookup table for reference and alternate allele strings.
+The individual components of short variants (up to 11 bases between REF and ALT alleles) can be directly read back from the VariantKey, while long variants requires a lookup table to retrieve the reference and alternate allele strings.
 
 This software library can be used to generate and reverse VariantKeys.
 
@@ -24,18 +24,18 @@ This software library can be used to generate and reverse VariantKeys.
 In this context, the human genetic variant for a given genome assembly is defined as the set of four components compatible with the VCF format:
 
 * **CHROM** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
-* **POS** - position: The reference position in the chromosome, with the 1st base having position 0. The largest expected value is 247,199,718 to represent the last base pair in Chromosome 1.
-* **REF** - reference base(s): String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first base in the String.
-* **ALT** - alternate base(s): Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
+* **POS** - position: The reference position in the chromosome, with the 1st nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
+* **REF** - reference allele: String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first nucleotide in the String.
+* **ALT** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
 
 
 ## Variant Decomposition and Normalization
 
-The variantKey model assumes that the variants have been decomposed and normalized.
+The *VariantKey* model assumes that the variants have been decomposed and normalized.
 
 ### Decomposition
 
-In the common VCF format the alternate field can contain comma-separated strings for multialleic variants, while in this context we only consider bialleic variants to allow for allelic comparisons between different data sets.
+In the common *Variant Call Format* (VCF) the alternate field can contain comma-separated strings for multialleic variants, while in this context we only consider bialleic variants to allow for allelic comparisons between different data sets.
 
 For example, the multialleic variant:
 
@@ -57,7 +57,7 @@ In VCF files the decomposition from multialleic to bialleic variants can be perf
     vt decompose -s source.vcf -o decomposed.vcf
 ```
 
-The "-s" option (smart decomposition) splits up INFO and GENOTYPE fields that have number counts of R and A appropriately.
+The `-s` option (smart decomposition) splits up `INFO` and `GENOTYPE` fields that have number counts of `R` and `A` appropriately.
 
 
 #### Example:
@@ -111,15 +111,22 @@ Example of VCF entries representing the same variant:
                                           ALT:   G
 ```
 
-In VCF files the variant normalization can be performed using the '[vt](https://genome.sph.umich.edu/wiki/Vt#Normalization)' software tool with the command:
+In VCF files the variant normalization can be performed using the [vt](https://genome.sph.umich.edu/wiki/Vt#Normalization) software tool with the command:
 
 ```
     vt normalize decomposed.vcf -m -r genome.fa -o normalized.vcf
 ```
 
+#### Normalization Function
 
-This library contains a function to normalize a bialleic variants against the reference genome.
-The normalize function also support allele flipping.
+Individual bialleic variants can be normalized using the `normalize_variant` function provided by this library.  
+The `normalize_variant` function has the ability to check the consistency of the variant against the genome reference and flip the alleles if required.
+
+The genome reference binary file can be obtained from a FASTA file using the `resources/tools/fastabin.sh` script.
+This script only extract the first 25 sequences for chromosomes 1 to 22, X, Y and MT.  
+The first line of the binary fasta file contains the index composed by 26 blocks of 32 bit numbers, one for each of the 25 chromosomes plus one to indicate the end of the file.
+Each index number represents the file byte offset of the corresponding chromosome sequence.
+The index is followed by 25 lines, one for each chromosome sequence.
 
 
 ## VariantKey Format
@@ -173,23 +180,23 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
     * Non-reversible encoding
 
-        If the total number of nucleotides between REF and ALT is more then 11, or if any of the alleles contains nucleotide letters other than base A, C, G and T, then the LSB (least significant bit) is set to 1 and the remaining 30 bit are filled with an hash value of the REF and ALT strings.
-        The hash value is calulated using a custom fast non-cryptographic algorithm based on MurmurHash3.
-        A lookup table is required to reverse the REF and ALT values.
-        In the normalized dbSNP VCF file GRCh37.p13.b150 there are only 0.365% (1229769 / 337162128) variants that requires this encoding. Amongst those, the maximum number of variants that share the same chromosome and position is 15. With 30 bit the probability of hash collision is approximately 10^-7 for 15 elements, 10^-6 for 46 and 10^-5 for 146.
+        If the total number of nucleotides between REF and ALT is more then 11, or if any of the alleles contains nucleotide letters other than base A, C, G and T, then the LSB (least significant bit) is set to 1 and the remaining 30 bit are filled with an hash value of the REF and ALT strings.  
+        The hash value is calulated using a custom fast non-cryptographic algorithm based on MurmurHash3.  
+        A lookup table is required to reverse the REF and ALT values.  
+        In the normalized dbSNP VCF file GRCh37.p13.b150 there are only 0.365% (1229769 / 337162128) variants that requires this encoding. Amongst those, the maximum number of variants that share the same chromosome and position is 15. With 30 bit the probability of hash collision is approximately 10<sup>-7</sup> for 15 elements, 10<sup>-6</sup> for 46 and 10<sup>-5</sup> for 146.
 
     * Reversible encoding
 
         If the total number of nucleotides between REF and ALT is 11 or less, and they only contain base letters A, C, G and T, then the LSB is set to 0 and the remaining 30 bit are used as follows:
-        * bit 1-4 indicate the number of bases in REF - the capacity of this section is 2^4=16 but maximum expected value is 10 dec = 1010 bin;
-        * bit 5-8 indicate the number of bases in ALT - the capacity of this section is 2^4=16 but maximum expected value is 10 dec = 1010 bin;
+        * bit 1-4 indicate the number of bases in REF - the capacity of this section is 2^4=16; the maximum expected value is 10 dec = 1010 bin;
+        * bit 5-8 indicate the number of bases in ALT - the capacity of this section is 2^4=16; the maximum expected value is 10 dec = 1010 bin;
         * the following 11 groups of 2 bit are used to represent REF bases followed by ALT (A = 0 dec = 00 bin, C = 1 dec = 01 bin, G = 2 dec = 10 bin, T = 4 dec = 11 bin).  
         This encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
-
-    * Examples:
-
+        
+        Examples:
+        
         ```
-        REF     ALT        REF+ALT BIN ENCODING
+        REF     ALT        REF+ALT BINARY ENCODING
         A       G          0001 0001 00 10 00 00 00 00 00 00 00 00 00 0
         GGG     GA         0011 0010 10 10 10 10 00 00 00 00 00 00 00 0
         ACGT    CGTACGT    0100 0111 00 01 10 11 01 10 11 00 01 10 11 0
@@ -268,39 +275,36 @@ The binary file has the following format :
 This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.  
 All the artifacts and reports produced using this Makefile are stored in the *target* folder.  
 
-To see all available options:
+* To see all available options:
 ```
 make help
 ```
-
-To execute all the default test builds and generate reports in the current environment:
+* To execute all the default test builds and generate reports in the current environment:
 ```
 make test
 ```
-
-To format the code (please use this command before submitting any pull request):
+* To format the code (please use this command before submitting any pull request):
 ```
 make format
 ```
-
-To build a shared library:
+* To build a shared library:
 ```
 make build
 ```
 
 ### Command-Line tool
 
-The code inside the `c/vk` folder is used to generate the `vk` command line tool.
-This tools requires the positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
+The code inside the `c/vk` folder is used to generate the `vk` command line tool.  
+This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
 
 
 ## GO Library
 
-A go wrapper is located in the ```go``` directory.
+A go wrapper is located in the `go` directory.
 
 ### Test
 
-Use the following commands t test the go wrapper and generate reports.
+Use the following commands to test the go wrapper and generate reports.
 
 ```
 make go
@@ -313,7 +317,7 @@ The python module is located in the `python` directory.
 
 ### Build
 
-A shared library can be built using the following command:
+A Conda package can be built using the following command:
 
 ```
 make python
@@ -359,7 +363,7 @@ print(ref, alt, reflen, altlen)
 # b'GCA' b'G' 3 1
 ```
 
-## R Module
+## R Module (limited support)
 
 Use the following command to build the R wrapper.
 
@@ -441,9 +445,9 @@ print(dra)
 ```
 
 
-## Javascript library
+## Javascript library (limited support)
 
-Use the following command to test the Javascript implementation.
+Use the following command to test and minify the Javascript implementation.
 
 ```
 make javascript
