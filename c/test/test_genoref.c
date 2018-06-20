@@ -144,7 +144,7 @@ int test_flip_allele()
 {
     int errors = 0;
     char allele[] =   "ATCGMKRYBVDHWSNatcgmkrybvdhwsn";
-    char expected[] = "TAGCKMYRVBHDWSNTAGCKMYRVBHDWSN";
+    const char expected[] = "TAGCKMYRVBHDWSNTAGCKMYRVBHDWSN";
     flip_allele(allele, 30);
     if (strcmp(allele, expected) != 0)
     {
@@ -152,6 +152,21 @@ int test_flip_allele()
         ++errors;
     }
     return errors;
+}
+
+void benchmark_flip_allele()
+{
+    char allele[] =   "ATCGMKRYBVDHWSNatcgmkrybvdhwsn";
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        flip_allele(allele, 30);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*25));
 }
 
 int test_normalize_variant(const unsigned char *src, uint32_t idx[])
@@ -248,6 +263,7 @@ int main()
     errors += test_normalize_variant(genoref.src, idx);
 
     benchmark_get_genoref_seq(genoref.src, idx);
+    benchmark_flip_allele();
 
     err = munmap_binfile(genoref);
     if (err != 0)

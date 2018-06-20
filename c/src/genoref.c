@@ -43,30 +43,6 @@ inline char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint
     return (char)src[offset];
 }
 
-/*
-    Abbreviation codes for degenerate bases
-    (http://www.sbcs.qmul.ac.uk/iubmb/misc/naseq.html)
-
-    SYMBOL | DESCRIPTION                   | BASES REPRESENTED
-    -------+-------------------------------+------------------
-       A   | adenine                       | A
-       C   | cytosine                      |  C
-       G   | guanine                       |   G
-       T   | thymine                       |    T
-       W   | weak                          | A  T
-       S   | strong                        |  CG
-       M   | amino                         | AC
-       K   | keto                          |   GT
-       R   | purine                        | A G
-       Y   | pyrimidine                    |  C T
-       B   | not A (B comes after A)       |  CGT
-       D   | not C (D comes after C)       | A GT
-       H   | not G (H comes after G)       | AC T
-       V   | not T (V comes after T and U) | ACG
-       N   | any base (not a gap)          | ACGT
-    -------+-------------------------------+------------------
-*/
-
 inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
     uint32_t offset = (idx[chrom] + pos);
@@ -85,6 +61,29 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
         {
             continue;
         }
+        /*
+            Abbreviation codes for degenerate bases
+            (http://www.sbcs.qmul.ac.uk/iubmb/misc/naseq.html)
+
+            SYMBOL | DESCRIPTION                   | BASES REPRESENTED
+            -------+-------------------------------+------------------
+               A   | adenine                       | A
+               C   | cytosine                      |  C
+               G   | guanine                       |   G
+               T   | thymine                       |    T
+               W   | weak                          | A  T
+               S   | strong                        |  CG
+               M   | amino                         | AC
+               K   | keto                          |   GT
+               R   | purine                        | A G
+               Y   | pyrimidine                    |  C T
+               B   | not A (B comes after A)       |  CGT
+               D   | not C (D comes after C)       | A GT
+               H   | not G (H comes after G)       | AC T
+               V   | not T (V comes after T and U) | ACG
+               N   | any base (not a gap)          | ACGT
+            -------+-------------------------------+------------------
+        */
         if ((uref == 'N')
                 || (gref == 'N')
                 || ((uref == 'B') && (gref != 'A'))
@@ -118,52 +117,36 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
 
 inline void flip_allele(char *allele, size_t size)
 {
+    /*
+      Allele flipping:
+
+      A > T
+      T > A
+      C > G
+      G > C
+      M > K
+      K > M
+      R > Y
+      Y > R
+      B > V
+      V > B
+      D > H
+      H > D
+    */
+    static const char map[] = "00000000000000000000000000000000"
+                              "00000000000000000123456789000000"
+                              /*ABCDEFGHIJKLMNOPQRSTUVWXYZ*/
+                              "0TVGHEFCDIJMLKNOPQYSAUBWXRZ00000"
+                              /*abcdefghijklmnopqrstuvwxyz*/
+                              "0TVGHEFCDIJMLKNOPQYSAUBWXRZ00000"
+                              "00000000000000000000000000000000"
+                              "00000000000000000000000000000000"
+                              "00000000000000000000000000000000"
+                              "00000000000000000000000000000000";
     size_t i;
-    int chr;
     for (i = 0; i < size; i++)
     {
-        chr = aztoupper(allele[i]);
-        switch(chr)
-        {
-        case 'A':
-            allele[i] = 'T';
-            break;
-        case 'T':
-            allele[i] = 'A';
-            break;
-        case 'C':
-            allele[i] = 'G';
-            break;
-        case 'G':
-            allele[i] = 'C';
-            break;
-        case 'M':
-            allele[i] = 'K';
-            break;
-        case 'K':
-            allele[i] = 'M';
-            break;
-        case 'R':
-            allele[i] = 'Y';
-            break;
-        case 'Y':
-            allele[i] = 'R';
-            break;
-        case 'B':
-            allele[i] = 'V';
-            break;
-        case 'V':
-            allele[i] = 'B';
-            break;
-        case 'D':
-            allele[i] = 'H';
-            break;
-        case 'H':
-            allele[i] = 'D';
-            break;
-        default:
-            allele[i] = chr;
-        }
+        allele[i] = map[((unsigned char)allele[i])];
     }
     allele[size] = 0;
 }

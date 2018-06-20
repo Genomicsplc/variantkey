@@ -38,11 +38,25 @@
 
 inline uint8_t encode_chrom(const char *chrom, size_t size)
 {
+    // X > 23 ; Y > 24 ; M > 25
+    static const uint8_t onecharmap[] =
+    {
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        /*                                    X                                Y  M                  */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,23,24, 0, 0, 0, 0, 0, 0,
+        /*                                    x                                y  m                  */
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,23,24, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    };
     // remove "chr" prefix
     if ((size > 3)
-            && ((chrom[0] == 'C') || (chrom[0] == 'c'))
-            && ((chrom[1] == 'H') || (chrom[1] == 'h'))
-            && ((chrom[2] == 'R') || (chrom[2] == 'r')))
+            && ((chrom[0] == 'c') || (chrom[0] == 'C'))
+            && ((chrom[1] == 'h') || (chrom[1] == 'H'))
+            && ((chrom[2] == 'r') || (chrom[2] == 'R')))
     {
         chrom += 3;
         size -= 3;
@@ -65,24 +79,9 @@ inline uint8_t encode_chrom(const char *chrom, size_t size)
         }
         return v;
     }
-    if (size == 1)
+    if ((size == 1) || ((size == 2) && ((chrom[1] == 'T') || (chrom[1] == 't'))))
     {
-        if ((chrom[0] == 'X') || (chrom[0] == 'x'))
-        {
-            return 23; // X
-        }
-        if ((chrom[0] == 'Y') || (chrom[0] == 'y'))
-        {
-            return 24; // Y
-        }
-        if ((chrom[0] == 'M') || (chrom[0] == 'm'))
-        {
-            return 25; // MT
-        }
-    }
-    if ((size == 2) && ((chrom[0] == 'M') || (chrom[0] == 'm')) && ((chrom[1] == 'T') || (chrom[1] == 't')))
-    {
-        return 25; // MT
+        return onecharmap[((unsigned char)chrom[0])];
     }
     return 0; // NA
 }
@@ -97,29 +96,32 @@ inline size_t decode_chrom(uint8_t code, char *chrom)
     {
         return sprintf(chrom, "%"PRIu8, code);
     }
-    const char *map[] = {"X", "Y", "MT"};
+    static const char *map[] = {"X", "Y", "MT"};
     return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
-static inline uint32_t encode_base(char c)
+static inline uint32_t encode_base(const unsigned char c)
 {
-    if ((c == 'A') || (c == 'a'))
-    {
-        return 0;
-    }
-    if ((c == 'C') || (c == 'c'))
-    {
-        return 1;
-    }
-    if ((c == 'G') || (c == 'g'))
-    {
-        return 2;
-    }
-    if ((c == 'T') || (c == 't'))
-    {
-        return 3;
-    }
-    return 4;
+    /*
+      Encode base:
+
+      A > 0
+      C > 1
+      G > 2
+      T > 3
+    */
+    static const uint32_t map[] = {4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+                                   4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+                                   /*A   C       G                         T*/
+                                   4,0,4,1,4,4,4,2,4,4,4,4,4,4,4,4,4,4,4,4,3,4,4,4,4,4,4,4,4,4,4,4,
+                                   /*a   c       g                         t*/
+                                   4,0,4,1,4,4,4,2,4,4,4,4,4,4,4,4,4,4,4,4,3,4,4,4,4,4,4,4,4,4,4,4,
+                                   4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+                                   4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+                                   4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+                                   4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
+                                  };
+    return map[c];
 }
 
 static inline int encode_allele(uint32_t *h, uint8_t *bitpos, const char *str, size_t size)
@@ -229,7 +231,7 @@ inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, 
 
 static inline char decode_base(uint32_t code, int bitpos)
 {
-    static char base[4] = {'A', 'C', 'G', 'T'};
+    static const char base[4] = {'A', 'C', 'G', 'T'};
     return base[((code >> bitpos) & 0x3)]; // 0x3 is the 2 bit mask [00000011]
 }
 
