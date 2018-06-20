@@ -60,7 +60,8 @@ extern "C" {
 #define VKSHIFT_POS     31 //!< POS LSB position from the VariantKey LSB
 
 /**
- * VariantKey struct
+ * VariantKey struct.
+ * Contains the numeically encoded VariantKey components (CHROM, POS, REF+ALT).
  */
 typedef struct variantkey_t
 {
@@ -70,7 +71,7 @@ typedef struct variantkey_t
 } variantkey_t;
 
 /**
- * Struct containing min and max VariantKey values for range searches
+ * Struct containing the minimum and maximum VariantKey values for range searches.
  */
 typedef struct vkrange_t
 {
@@ -78,26 +79,27 @@ typedef struct vkrange_t
     uint64_t max; //!< Maximum VariantKey value for any given REF+ALT encoding
 } vkrange_t;
 
-/** @brief Returns chromosome encoding.
+/** @brief Returns chromosome numerical encoding.
  *
  * @param chrom  Chromosome. An identifier from the reference genome, no white-space permitted.
  * @param size   Length of the chrom string, excluding the terminating null byte.
  *
- * @return Chrom encoding
+ * @return CHROM code
  */
 uint8_t encode_chrom(const char *chrom, size_t size);
 
-/** @brief Decode the CHROM code.
+/** @brief Decode the chromosome numerical code.
  *
  * @param code   CHROM code.
  * @param chrom  CHROM string buffer to be returned. Its size should be enough to contain the results (max 4 bytes).
  *
- * @return If successful, the total number of characters written is returned excluding the null-character appended
- *         at the end of the string, otherwise a negative number is returned in case of failure.
+ * @return If successful, the total number of characters written is returned,
+ *         excluding the null-character appended at the end of the string,
+ *         otherwise a negative number is returned in case of failure.
  */
 size_t decode_chrom(uint8_t code, char *chrom);
 
-/** @brief Returns reference+alternate encoding.
+/** @brief Returns reference+alternate numerical encoding.
  *
  * @param ref      Reference allele. String containing a sequence of nucleotide letters.
  *                 The value in the pos field refers to the position of the first nucleotide in the String.
@@ -107,7 +109,7 @@ size_t decode_chrom(uint8_t code, char *chrom);
  *                 Characters must be A-Z, a-z or *
  * @param sizealt  Length of the alt string, excluding the terminating null byte.
  *
- * @return Ref+Alt code
+ * @return REF+ALT code
  */
 uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt);
 
@@ -126,7 +128,7 @@ uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t 
  */
 size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
-/** @brief Returns a 64 bit variant key based on the pre-encoded CHROM, POS and REF+ALT.
+/** @brief Returns a 64 bit variant key based on the pre-encoded CHROM, POS (0-based) and REF+ALT.
  *
  * @param chrom      Encoded Chromosome (see encode_chrom).
  * @param pos        Position. The reference position, with the 1st base having position 0.
@@ -169,7 +171,7 @@ uint32_t extract_variantkey_refalt(uint64_t vk);
  */
 void decode_variantkey(uint64_t code, variantkey_t *vk);
 
-/** @brief Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+/** @brief Returns a 64 bit variant key based on CHROM, POS (0-based), REF, ALT.
  *
  * @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
  * @param sizechrom  Length of the chrom string, excluding the terminating null byte.
@@ -186,14 +188,14 @@ void decode_variantkey(uint64_t code, variantkey_t *vk);
  */
 uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt);
 
-/** @brief Returns minimum and maximum variant keys for range searches
+/** @brief Returns minimum and maximum VariantKeys for range searches.
  *
  * @param chrom     Chromosome encoded number.
  * @param pos_min   Start reference position, with the 1st base having position 0.
  * @param pos_max   End reference position, with the 1st base having position 0.
  * @param range     VariantKey range values.
  *
- * @return      Min and Max variant keys for any given REF+ALT encoding
+ * @return      Min and Max variant keys for any given REF+ALT encoding.
  */
 void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range);
 
@@ -211,7 +213,7 @@ int compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
  * @param vka    The first VariantKey to be compared.
  * @param vkb    The second VariantKey to be compared.
  *
- * @return -1 if the first chromosome+position is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+ * @return -1 if the first CHROM+POS is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
 int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
 
@@ -232,11 +234,11 @@ int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
  */
 size_t variantkey_hex(uint64_t code, char *str);
 
-/** @brief Parses a VariantKey hex string and returns the code.
+/** @brief Parses a VariantKey hexadecimal string and returns the code.
  *
  * @param vs    VariantKey hexadecimal string (it must contain 16 hexadecimal characters).
  *
- * @return A VariantKey code
+ * @return A VariantKey code.
  */
 uint64_t parse_variantkey_hex(const char *vs);
 

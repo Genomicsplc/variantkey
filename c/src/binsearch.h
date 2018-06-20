@@ -30,9 +30,9 @@
  * represent a uint32 in big-endian. The integers are sorted in
  * ascending order.
  *
- * 2f 81 f5 77 1a cc 7b 43
- * 2f 81 f5 78 76 5f 63 b8
- * 2f 81 f5 79 ca a9 a6 52
+ *   - 2f 81 f5 77 1a cc 7b 43
+ *   - 2f 81 f5 78 76 5f 63 b8
+ *   - 2f 81 f5 79 ca a9 a6 52
  *
  * This binary representation can be used to encode sortable key-value data,
  * even with nested keys.
@@ -40,8 +40,8 @@
  * The xxd command-line application can be used to convert a binary file to
  * hexdump and reverse. For example:
  *
- * xxd -p binaryfile.bin > hexfile.txt
- * xxd -r -p hexfile.txt > binaryfile.bin
+ *   - xxd -p binaryfile.bin > hexfile.txt
+ *   - xxd -r -p hexfile.txt > binaryfile.bin
  *
  */
 

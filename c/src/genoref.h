@@ -46,7 +46,7 @@ extern "C" {
 #include "binsearch.h"
 
 /**
- * Load the index from the genome reference.
+ * Load the genome reference index.
  *
  * @param src  Address of the memory mapped input file contaning the genome reference data (fasta.bin).
  * @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements: uint32_t idx[27];
@@ -56,7 +56,7 @@ extern "C" {
 void load_genoref_index(const unsigned char *src, uint32_t idx[]);
 
 /**
- * Returns the nucleotide at the specified chromosome and position.
+ * Returns the genome reference nucleotide at the specified chromosome and position.
  *
  * @param src     Address of the memory mapped input file contaning the genome reference data (fasta.bin).
  * @param idx     Index of sequences offset by chromosome number (1 to 25).
@@ -78,10 +78,10 @@ char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chr
  * @param sizeref Length of the ref string, excluding the terminating null byte.
  *
  * @return Positive number in case of success, negative in case of error:
- *         0 the reference allele match the reference genome;
- *         1 the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
- *        -1 the reference allele don't match the reference genome;
- *        -2 the reference allele is longer than the genome reference sequence.
+ *       *  0 the reference allele match the reference genome;
+ *       *  1 the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
+ *       * -1 the reference allele don't match the reference genome;
+ *       * -2 the reference allele is longer than the genome reference sequence.
  */
 int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
 
@@ -110,13 +110,13 @@ void flip_allele(char *allele, size_t size);
  * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
  * @return Positive number in case of success, negative in case of error:
- *        -2 the reference allele is longer than the genome reference sequence.
- *        -1 the reference allele don't match the reference genome;
- *        ret &  1 == 1 : the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
- *        ret &  2 == 1 : the alleles have been flipped;
- *        ret &  4 == 1 : left extended;
- *        ret &  8 == 1 : right trimmed;
- *        ret & 16 == 1 : left trimmed;
+ *       * -2 the reference allele is longer than the genome reference sequence.
+ *       * -1 the reference allele don't match the reference genome;
+ *       * (ret &  1) == 1 : the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
+ *       * (ret &  2) == 1 : the alleles have been flipped;
+ *       * (ret &  4) == 1 : left extended;
+ *       * (ret &  8) == 1 : right trimmed;
+ *       * (ret & 16) == 1 : left trimmed;
  */
 int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
