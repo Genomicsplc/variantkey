@@ -19,14 +19,53 @@ The individual components of short variants (up to 11 bases between REF and ALT 
 This software library can be used to generate and reverse VariantKeys.
 
 
+## Quick Start
+
+This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.
+
+To see all available options, from the project root type:
+
+```
+make help
+```
+
+To build all the VriantKey versions inside a Docker container (requires Docker):
+
+```
+make dbuild
+```
+
+An arbitrary make target can be executed inside a [Docker](https://www.docker.com/) container by specifying the `MAKETARGET` parameter:
+
+```
+MAKETARGET='build' make dbuild
+```
+The list of make targets can be obtained by typing ```make```
+
+
+The base Docker building environment is defined in the following Dockerfile:
+
+```
+resources/Docker/Dockerfile.dev
+```
+
+To build and test only a specific language version, `cd` into the language directory and use the `make` command.
+For example:
+
+```
+cd c
+make test
+```
+
+
 ## Human Genetic Variant Definition
 
 In this context, the human genetic variant for a given genome assembly is defined as the set of four components compatible with the VCF format:
 
-* **CHROM** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
-* **POS** - position: The reference position in the chromosome, with the 1st nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
-* **REF** - reference allele: String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first nucleotide in the String.
-* **ALT** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
+* **`CHROM`** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
+* **`POS`** - position: The reference position in the chromosome, with the 1st nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
+* **`REF`** - reference allele: String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first nucleotide in the String.
+* **`ALT`** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
 
 
 ## Variant Decomposition and Normalization
@@ -178,14 +217,14 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     ```
     This section allow two different type of encodings:
 
-    * Non-reversible encoding
+    * **Non-reversible encoding**
 
         If the total number of nucleotides between REF and ALT is more then 11, or if any of the alleles contains nucleotide letters other than base A, C, G and T, then the LSB (least significant bit) is set to 1 and the remaining 30 bit are filled with an hash value of the REF and ALT strings.  
         The hash value is calulated using a custom fast non-cryptographic algorithm based on MurmurHash3.  
         A lookup table is required to reverse the REF and ALT values.  
         In the normalized dbSNP VCF file GRCh37.p13.b150 there are only 0.365% (1229769 / 337162128) variants that requires this encoding. Amongst those, the maximum number of variants that share the same chromosome and position is 15. With 30 bit the probability of hash collision is approximately 10<sup>-7</sup> for 15 elements, 10<sup>-6</sup> for 46 and 10<sup>-5</sup> for 146.
 
-    * Reversible encoding
+    * **Reversible encoding**
 
         If the total number of nucleotides between REF and ALT is 11 or less, and they only contain base letters A, C, G and T, then the LSB is set to 0 and the remaining 30 bit are used as follows:
         * bit 1-4 indicate the number of bases in REF - the capacity of this section is 2^4=16; the maximum expected value is 10 dec = 1010 bin;

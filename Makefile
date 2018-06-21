@@ -7,6 +7,15 @@
 # List special make targets that are not associated with files
 .PHONY: help c go javascript python r format clean
 
+# CVS path (path to the parent dir containing the project)
+CVSPATH=github.com/genomicsplc
+
+# Project vendor
+VENDOR=genomicsplc
+
+# Project name
+PROJECT=variantkey
+
 # --- MAKE TARGETS ---
 
 # Display general help about this command
@@ -21,6 +30,7 @@ help:
 	@echo "    make python     : Build and test the Python version"
 	@echo "    make r          : Build and test the R version"
 	@echo "    make clean      : Remove any build artifact"
+	@echo "    make dbuild     : Build everything inside a Docker container"
 	@echo ""
 
 all: clean c go javascript python r
@@ -53,3 +63,11 @@ clean:
 	cd javascript && make clean
 	cd python && make clean
 	cd r && make clean
+
+# Build everything inside a Docker container
+dbuild:
+	@mkdir -p target
+	@rm -rf target/*
+	@echo 0 > target/make.exit
+	CVSPATH=$(CVSPATH) VENDOR=$(VENDOR) PROJECT=$(PROJECT) MAKETARGET='$(MAKETARGET)' ./dockerbuild.sh
+	@exit `cat target/make.exit`
