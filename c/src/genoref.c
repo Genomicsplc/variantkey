@@ -154,7 +154,7 @@ inline void flip_allele(char *allele, size_t size)
 inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     char left;
-    char fref[256];
+    char fref[ALLELE_MAXSIZE];
     int status;
     status = check_reference(src, idx, chrom, *pos, ref, *sizeref);
     if (status == -2)

@@ -45,6 +45,8 @@ extern "C" {
 #include "astring.h"
 #include "binsearch.h"
 
+#define ALLELE_MAXSIZE 256 //!< Maximum allele length
+
 /**
  * Load the genome reference index.
  *

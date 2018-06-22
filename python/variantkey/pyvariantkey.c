@@ -25,7 +25,6 @@
 #endif
 
 #define ALLELE_BUFFSIZE 12
-#define ALLELE_MAXSIZE 256
 
 static PyObject* py_encode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
