@@ -1,6 +1,6 @@
 package:
   name: r-variantkey
-  version: 2.6.7
+  version: 2.6.8
 
 source:
   path: ../..

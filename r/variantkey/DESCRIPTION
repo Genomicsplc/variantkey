@@ -1,6 +1,6 @@
 Package: variantkey
 Title: Genetic VariantKey
-Version: 2.6.7.1
+Version: 2.6.8.1
 Authors@R: person("Nicola", "Asuni", email = "info@genomicsplc.com", role = c("aut", "cre"))
 Description: Tools to generate and process a 64 bit Unsigned Integer Keys for Human Genetic Variants.
     The VariantKey is sortable for chromosome and position,

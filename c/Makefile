@@ -56,12 +56,7 @@ all: clean version format test tidy build doc
 
 # Test C code compatibility with C++
 testcpp:
-	gcc -c -x c++ -o /dev/null src/astring.c
-	gcc -c -x c++ -o /dev/null src/binsearch.c
-	gcc -c -x c++ -o /dev/null src/genoref.c
-	gcc -c -x c++ -o /dev/null src/nrvk.c
-	gcc -c -x c++ -o /dev/null src/rsidvar.c
-	gcc -c -x c++ -o /dev/null src/variantkey.c
+	find ./src -type f -name '*.c' -exec gcc -c -x c++ -o /dev/null {} \;
 
 # Build and run the unit tests
 test: testcpp

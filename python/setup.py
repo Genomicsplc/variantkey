@@ -30,7 +30,7 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version='2.6.7',
+    version='2.6.8',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=read('../README.md'),
