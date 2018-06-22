@@ -26,7 +26,7 @@
 
 void mmap_binfile(const char *file, mmfile_t *mf)
 {
-    mf->src = MAP_FAILED; // NOLINT
+    mf->src = (unsigned char*)MAP_FAILED; // NOLINT
     mf->fd = -1;
     mf->size = 0;
     struct stat statbuf;
@@ -35,7 +35,7 @@ void mmap_binfile(const char *file, mmfile_t *mf)
         return;
     }
     mf->size = (uint64_t)statbuf.st_size;
-    mf->src = mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
+    mf->src = (unsigned char*)mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
     if (mf->size > 4)
     {
         mf->last = (uint64_t)bytes_to_uint32_t(mf->src, (mf->size - 4)) - 1;
