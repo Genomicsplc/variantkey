@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help test tidy build package_vk version doc format clean
+.PHONY: help testcpp test tidy build package_vk version doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -54,8 +54,17 @@ help:
 
 all: clean version format test tidy build doc
 
+# Test C code compatibility with C++
+testcpp:
+	gcc -c -x c++ -o /dev/null src/astring.c
+	gcc -c -x c++ -o /dev/null src/binsearch.c
+	gcc -c -x c++ -o /dev/null src/genoref.c
+	gcc -c -x c++ -o /dev/null src/nrvk.c
+	gcc -c -x c++ -o /dev/null src/rsidvar.c
+	gcc -c -x c++ -o /dev/null src/variantkey.c
+
 # Build and run the unit tests
-test:
+test: testcpp
 	@mkdir -p target/test/test
 	@echo -e "\n\n*** BUILD TEST - see config.mk ***\n"
 	rm -rf target/test/*
