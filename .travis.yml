@@ -1,0 +1,38 @@
+os: linux
+dist: trusty
+sudo: required
+addons:
+  apt:
+    packages:
+    - lcov
+    - astyle
+    - devscripts
+    - python
+    - python-pip
+    - python-autopep8
+    - doxygen
+install:
+  - gem install coveralls-lcov
+
+matrix:
+  include:
+    - language: c
+      script:
+        - cd c && make all
+      after_success:
+        - coveralls-lcov /home/travis/build/tecnickcom/variantkey/c/target/test/coverage/variantkey.info
+    - language: go
+      script:
+        - cd go && make all
+    - language: python
+      script:
+        - cd python && make all
+    - language: r
+      script:
+        - cd r && make all
+    - language: javascript
+      install:
+        - npm install --global uglify-js js-beautify
+      script:
+        - cd javascript && make all
+      
