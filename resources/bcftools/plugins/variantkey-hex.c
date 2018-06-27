@@ -124,8 +124,8 @@ bcf1_t *process(bcf1_t *rec)
     char *ptr = rec->d.id;
     ptr += 2; // remove 'rs'
     uint32_t rs = (uint32_t)strtoul(ptr, NULL, 10);
-    fprintf(fp_vkrs, "%016"PRIx64"\t%08"PRIx32"\n", vk, rs); // map VariantKey to rsID
-    fprintf(fp_rsvk, "%08"PRIx32"\t%016"PRIx64"\n", rs, vk); // map rsID to VariantKey
+    fprintf(fp_vkrs, "%016" PRIx64 "\t%08" PRIx32 "\n", vk, rs); // map VariantKey to rsID
+    fprintf(fp_rsvk, "%08" PRIx32 "\t%016" PRIx64 "\n", rs, vk); // map rsID to VariantKey
     if (vk & 1)
     {
         // map VariantKey to REF and ALT
@@ -133,7 +133,7 @@ bcf1_t *process(bcf1_t *rec)
         char hex_alt[2*len_alt+1];
         str2hex(rec->d.allele[0], hex_ref);
         str2hex(rec->d.allele[1], hex_alt);
-        fprintf(fp_vknr, "%016"PRIx64"\t%016"PRIx64"\t%02"PRIx8"\t%02"PRIx8"\t%s\t%s\n", vk, (uint64_t)(len_ref + len_alt + 2), len_ref, len_alt, hex_ref, hex_alt);
+        fprintf(fp_vknr, "%016" PRIx64 "\t%016" PRIx64 "\t%02" PRIx8 "\t%02" PRIx8 "\t%s\t%s\n", vk, (uint64_t)(len_ref + len_alt + 2), len_ref, len_alt, hex_ref, hex_alt);
         nrv++;
     }
     numvar++;
@@ -144,6 +144,6 @@ void destroy(void)
 {
     fclose(fp_vkrs);
     fclose(fp_rsvk);
-    printf("VariantKeys: %"PRIu64"\n", numvar);
-    printf("Non-reversible VariantKeys: %"PRIu64"\n", nrv);
+    printf("VariantKeys: %" PRIu64 "\n", numvar);
+    printf("Non-reversible VariantKeys: %" PRIu64 "\n", nrv);
 }

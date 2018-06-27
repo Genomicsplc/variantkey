@@ -159,7 +159,7 @@ int test_reverse_variantkey(mmfile_t vknr)
         }
         if (rev.pos != test_data[i].pos)
         {
-            fprintf(stderr, "%s (%d) Expecting POS size %"PRIu32", got %"PRIu32"\n", __func__, i, test_data[i].pos, rev.pos);
+            fprintf(stderr, "%s (%d) Expecting POS size %" PRIu32 ", got %" PRIu32 "\n", __func__, i, test_data[i].pos, rev.pos);
             ++errors;
         }
     }
@@ -191,7 +191,7 @@ int main()
 
     if ((vknr.last + 1) != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, vknr.last + 1);
+        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, vknr.last + 1);
         return 1;
     }
 

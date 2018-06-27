@@ -57,7 +57,7 @@ int test_get_vr_rsid(mmfile_t vr)
         rsid = get_vr_rsid(vr.src, i);
         if (rsid != test_data[i].rsid)
         {
-            fprintf(stderr, "%s (%d) Expected %"PRIx32", got %"PRIx32"\n", __func__, i, test_data[i].rsid, rsid);
+            fprintf(stderr, "%s (%d) Expected %" PRIx32 ", got %" PRIx32 "\n", __func__, i, test_data[i].rsid, rsid);
             ++errors;
         }
     }
@@ -74,7 +74,7 @@ int test_get_rv_variantkey(mmfile_t rv)
         vk = get_rv_variantkey(rv.src, i);
         if (vk != test_data[i].vk)
         {
-            fprintf(stderr, "%s (%d) Expected %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vk, vk);
+            fprintf(stderr, "%s (%d) Expected %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data[i].vk, vk);
             ++errors;
         }
     }
@@ -93,12 +93,12 @@ int test_find_rv_variantkey_by_rsid(mmfile_t rv)
         vk = find_rv_variantkey_by_rsid(rv.src, &first, 9, test_data[i].rsid);
         if (first != (uint64_t)i)
         {
-            fprintf(stderr, "%s (%d) Expected first %d, got %"PRIu64"\n", __func__, i, i, first);
+            fprintf(stderr, "%s (%d) Expected first %d, got %" PRIu64 "\n", __func__, i, i, first);
             ++errors;
         }
         if (vk != test_data[i].vk)
         {
-            fprintf(stderr, "%s (%d) Expected variantkey %"PRIx64", got %"PRIx64"\n", __func__, i, test_data[i].vk, vk);
+            fprintf(stderr, "%s (%d) Expected variantkey %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data[i].vk, vk);
             ++errors;
         }
     }
@@ -113,12 +113,12 @@ int test_find_rv_variantkey_by_rsid_notfound(mmfile_t rv)
     vk = find_rv_variantkey_by_rsid(rv.src, &first, 9, 0xfffffff0);
     if (first != 10)
     {
-        fprintf(stderr, "%s : Expected first 10, got %"PRIu64"\n", __func__, first);
+        fprintf(stderr, "%s : Expected first 10, got %" PRIu64 "\n", __func__, first);
         ++errors;
     }
     if (vk != 0)
     {
-        fprintf(stderr, "%s : Expected variantkey 0, got %"PRIu64"\n", __func__, vk);
+        fprintf(stderr, "%s : Expected variantkey 0, got %" PRIu64 "\n", __func__, vk);
         ++errors;
     }
     return errors;
@@ -136,12 +136,12 @@ int test_find_vr_rsid_by_variantkey(mmfile_t vr)
         rsid = find_vr_rsid_by_variantkey(vr.src, &first, 9, test_data[i].vk);
         if (rsid != test_data[i].rsid)
         {
-            fprintf(stderr, "%s (%d) Expected rsid %"PRIx32", got %"PRIx32"\n",  __func__, i, test_data[i].rsid, rsid);
+            fprintf(stderr, "%s (%d) Expected rsid %" PRIx32 ", got %" PRIx32 "\n",  __func__, i, test_data[i].rsid, rsid);
             ++errors;
         }
         if (first != (uint64_t)i)
         {
-            fprintf(stderr, "%s (%d) Expected first %d, got %"PRIu64"\n",  __func__, i, i, first);
+            fprintf(stderr, "%s (%d) Expected first %d, got %" PRIu64 "\n",  __func__, i, i, first);
             ++errors;
         }
     }
@@ -157,12 +157,12 @@ int test_find_vr_rsid_by_variantkey_notfound(mmfile_t vr)
     rsid = find_vr_rsid_by_variantkey(vr.src, &first, 9, 0xfffffffffffffff0);
     if (rsid != 0)
     {
-        fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
+        fprintf(stderr, "%s : Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
         ++errors;
     }
     if (first != 10)
     {
-        fprintf(stderr, "%s :  Expected first 10, got %"PRIu64"\n",  __func__, first);
+        fprintf(stderr, "%s :  Expected first 10, got %" PRIu64 "\n",  __func__, first);
         ++errors;
     }
     return errors;
@@ -177,17 +177,17 @@ int test_find_vr_chrompos_range(mmfile_t vr)
     rsid = find_vr_chrompos_range(vr.src, &first, &last, test_data[6].chrom, test_data[7].pos, test_data[8].pos);
     if (rsid != test_data[7].rsid)
     {
-        fprintf(stderr, "%s : Expected rsid %"PRIx32", got %"PRIx32"\n", __func__, test_data[7].rsid, rsid);
+        fprintf(stderr, "%s : Expected rsid %" PRIx32 ", got %" PRIx32 "\n", __func__, test_data[7].rsid, rsid);
         ++errors;
     }
     if (first != 7)
     {
-        fprintf(stderr, "%s : Expected first 7, got %"PRIu64"\n", __func__, first);
+        fprintf(stderr, "%s : Expected first 7, got %" PRIu64 "\n", __func__, first);
         ++errors;
     }
     if (last != 8)
     {
-        fprintf(stderr, "%s : Expected last 8, got %"PRIu64"\n", __func__, last);
+        fprintf(stderr, "%s : Expected last 8, got %" PRIu64 "\n", __func__, last);
         ++errors;
     }
     return errors;
@@ -202,17 +202,17 @@ int test_find_vr_chrompos_range_notfound(mmfile_t vr)
     rsid = find_vr_chrompos_range(vr.src, &first, &last, 0xff, 0xffffff00, 0xfffffff0);
     if (rsid != 0)
     {
-        fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
+        fprintf(stderr, "%s : Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
         ++errors;
     }
     if (first != 9)
     {
-        fprintf(stderr, "%s : Expected first 9, got %"PRIu64"\n",  __func__, first);
+        fprintf(stderr, "%s : Expected first 9, got %" PRIu64 "\n",  __func__, first);
         ++errors;
     }
     if (last != 8)
     {
-        fprintf(stderr, "%s : Expected last 8, got %"PRIu64"\n",  __func__, last);
+        fprintf(stderr, "%s : Expected last 8, got %" PRIu64 "\n",  __func__, last);
         ++errors;
     }
     first = 0;
@@ -220,17 +220,17 @@ int test_find_vr_chrompos_range_notfound(mmfile_t vr)
     rsid = find_vr_chrompos_range(vr.src, &first, &last, 0, 0, 0);
     if (rsid != 1)
     {
-        fprintf(stderr, "%s : Expected rsid 0, got %"PRIx32"\n",  __func__, rsid);
+        fprintf(stderr, "%s : Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
         ++errors;
     }
     if (first != 0)
     {
-        fprintf(stderr, "%s : Expected first 0, got %"PRIu64"\n",  __func__, first);
+        fprintf(stderr, "%s : Expected first 0, got %" PRIu64 "\n",  __func__, first);
         ++errors;
     }
     if (last != 0)
     {
-        fprintf(stderr, "%s : Expected last 0, got %"PRIu64"\n",  __func__, last);
+        fprintf(stderr, "%s : Expected last 0, got %" PRIu64 "\n",  __func__, last);
         ++errors;
     }
     return errors;
@@ -325,7 +325,7 @@ int main()
     nitems = (uint64_t)(rv.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 
@@ -334,7 +334,7 @@ int main()
     nitems = (uint64_t)(vr.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %"PRIu64"\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 

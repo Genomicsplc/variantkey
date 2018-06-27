@@ -212,7 +212,7 @@ int test_normalize_variant(const unsigned char *src, uint32_t idx[])
         }
         if (test_norm[i].pos != test_norm[i].exp_pos)
         {
-            fprintf(stderr, "%s (%d): Expected POS %"PRIu32", got %"PRIu32"\n", __func__, i, test_norm[i].exp_pos, test_norm[i].pos);
+            fprintf(stderr, "%s (%d): Expected POS %" PRIu32 ", got %" PRIu32 "\n", __func__, i, test_norm[i].exp_pos, test_norm[i].pos);
             ++errors;
         }
         if (test_norm[i].sizeref != test_norm[i].exp_sizeref)
@@ -253,7 +253,7 @@ int main()
 
     if ((uint64_t)idx[26] != genoref.size)
     {
-        fprintf(stderr, "Expecting size %"PRIu64", got instead: %"PRIu32"\n", genoref.size, idx[26]);
+        fprintf(stderr, "Expecting size %" PRIu64 ", got instead: %" PRIu32 "\n", genoref.size, idx[26]);
         return 1;
     }
 

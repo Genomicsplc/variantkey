@@ -220,17 +220,17 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
         found = find_first_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
         if (found != test_data_##T[i].foundFirst) \
         { \
-            fprintf(stderr, "%s (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundFirst, found); \
+            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundFirst, found); \
             ++errors; \
         } \
         if (first != test_data_##T[i].foundFFirst) \
         { \
-            fprintf(stderr, "%s (%d) Expected first %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundFFirst, first); \
+            fprintf(stderr, "%s (%d) Expected first %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundFFirst, first); \
             ++errors; \
         } \
         if (last != test_data_##T[i].foundFLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected last %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundFLast, last); \
+            fprintf(stderr, "%s (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundFLast, last); \
             ++errors; \
         } \
         first = test_data_sub_##T[i].first; \
@@ -238,17 +238,17 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
         found = find_first_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
         if (found != test_data_sub_##T[i].foundFirst) \
         { \
-            fprintf(stderr, "%s SUB (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundFirst, found); \
+            fprintf(stderr, "%s SUB (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundFirst, found); \
             ++errors; \
         } \
         if (first != test_data_sub_##T[i].foundFFirst) \
         { \
-            fprintf(stderr, "%s SUB (%d) Expected first %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundFFirst, first); \
+            fprintf(stderr, "%s SUB (%d) Expected first %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundFFirst, first); \
             ++errors; \
         } \
         if (last != test_data_sub_##T[i].foundFLast) \
         { \
-            fprintf(stderr, "%s SUB (%d) Expected last %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundFLast, last); \
+            fprintf(stderr, "%s SUB (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundFLast, last); \
             ++errors; \
         } \
     } \
@@ -268,17 +268,17 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
         found = find_last_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
         if (found != test_data_##T[i].foundLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundLast, found); \
+            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundLast, found); \
             ++errors; \
         } \
         if (first != test_data_##T[i].foundLFirst) \
         { \
-            fprintf(stderr, "%s (%d) Expected first %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundLFirst, first); \
+            fprintf(stderr, "%s (%d) Expected first %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundLFirst, first); \
             ++errors; \
         } \
         if (last != test_data_##T[i].foundLLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected last %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_##T[i].foundLLast, last); \
+            fprintf(stderr, "%s (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundLLast, last); \
             ++errors; \
         } \
         first = test_data_sub_##T[i].first; \
@@ -286,17 +286,17 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
         found = find_last_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
         if (found != test_data_sub_##T[i].foundLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected found %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundLast, found); \
+            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundLast, found); \
             ++errors; \
         } \
         if (first != test_data_sub_##T[i].foundLFirst) \
         { \
-            fprintf(stderr, "%s (%d) Expected first %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundLFirst, first); \
+            fprintf(stderr, "%s (%d) Expected first %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundLFirst, first); \
             ++errors; \
         } \
         if (last != test_data_sub_##T[i].foundLLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected last %"PRIx64", got %"PRIx64"\n", __func__, i, test_data_sub_##T[i].foundLLast, last); \
+            fprintf(stderr, "%s (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundLLast, last); \
             ++errors; \
         } \
     } \
@@ -464,7 +464,7 @@ int main()
     nitems = (uint64_t)(mf.size / blklen);
     if (nitems != 100)
     {
-        fprintf(stderr, "Expecting 100 items, got instead: %"PRIu64"\n", nitems);
+        fprintf(stderr, "Expecting 100 items, got instead: %" PRIu64 "\n", nitems);
         return 1;
     }
 
