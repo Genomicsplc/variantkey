@@ -27,7 +27,7 @@ matrix:
       script:
         - cd c && make all
       after_success:
-        - coveralls-lcov /home/travis/build/genomicsplc/variantkey/c/target/test/coverage/variantkey.info
+        - coveralls-lcov /home/travis/build/Genomicsplc/variantkey/c/target/test/coverage/variantkey.info
     - language: go
       script:
         - cd go && make deps qa
