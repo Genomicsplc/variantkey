@@ -1,0 +1,47 @@
+os: linux
+dist: trusty
+sudo: required
+addons:
+  apt:
+    packages:
+    - lcov
+    - astyle
+    - devscripts
+    - python
+    - python-pip
+    - python-autopep8
+    - doxygen
+    - fakeroot
+    - debhelper
+    - pkg-config
+    - alien
+    - rpm
+    - dh-make
+    - dh-golang
+install:
+  - gem install coveralls-lcov
+
+matrix:
+  include:
+    - language: c
+      script:
+        - cd c && make all
+      after_success:
+        - coveralls-lcov /home/travis/build/Genomicsplc/variantkey/c/target/test/coverage/variantkey.info
+    - language: go
+      script:
+        - cd go && make deps qa
+    - language: python
+      script:
+        - cd python && make build
+    - language: r
+      script:
+        - cd r && make build
+    - language: node_js
+      node_js:
+        - "7"
+      install:
+        - npm install --global uglify-js js-beautify
+      script:
+        - cd javascript && make test build
+      
