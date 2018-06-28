@@ -38,6 +38,8 @@ matrix:
       script:
         - cd r && make build
     - language: node_js
+      node_js:
+        - "7"
       install:
         - npm install --global uglify-js js-beautify
       script:
