@@ -2,13 +2,13 @@
 
 *64 bit Encoding for Human Genetic Variants*
 
-[![Master Build Status](https://secure.travis-ci.org/genomicsplc/variantkey.png?branch=master)](https://travis-ci.org/genomicsplc/variantkey?branch=master)
-[![Master Coverage Status](https://coveralls.io/repos/genomicsplc/variantkey/badge.svg?branch=master&service=github)](https://coveralls.io/github/genomicsplc/variantkey?branch=master)
+[![Master Build Status](https://secure.travis-ci.org/Genomicsplc/variantkey.png?branch=master)](https://travis-ci.org/Genomicsplc/variantkey?branch=master)
+[![Master Coverage Status](https://coveralls.io/repos/Genomicsplc/variantkey/badge.svg?branch=master&service=github)](https://coveralls.io/github/Genomicsplc/variantkey?branch=master)
 
 * **category**    Libraries
 * **license**     MIT (see LICENSE)
 * **copyright**   2017-2018 GENOMICS plc
-* **link**        https://github.com/genomicsplc/variantkey
+* **link**        https://github.com/Genomicsplc/variantkey
 
 
 ## Description
