@@ -2,12 +2,18 @@
 set -e -u -x -o pipefail
 
 : ${MINICONDA_URL:=https://repo.continuum.io/miniconda}
-: ${MINICONDA_FILE:=Miniconda3-4.4.10-Linux-x86_64.sh}
 : ${MINICONDA_PIN_VERSION:=-}
 : ${PYTHON_VERSION:=-}
 : ${ENV_NAME:=env-variantkey}
 
-if [ -x "$(command -v greadlink)" ]; then READLINK=greadlink; else READLINK=readlink; fi
+if [[ "$OSTYPE" == "linux"* ]]; then
+    READLINK=readlink
+    MINICONDA_FILE="Miniconda3-latest-Linux-x86_64.sh"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    READLINK=greadlink # to install greadlink: brew install coreutils
+    MINICONDA_FILE="Miniconda3-latest-MacOSX-x86_64.sh"
+fi
+
 PROJECT_CONDA="$(${READLINK} -f "$(dirname "${BASH_SOURCE[0]}")")"
 PROJECT_HOME="$(dirname ${PROJECT_CONDA})"
 PROJECT_ROOT="$(dirname ${PROJECT_HOME})"
