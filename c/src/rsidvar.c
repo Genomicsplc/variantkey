@@ -28,8 +28,7 @@ inline uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)
 
 inline uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item)
 {
-    uint64_t i = get_address(BINBLKLEN, 0, item);
-    return bytes_to_uint64_t(src, i + RVPOS_VK);
+    return bytes_to_uint64_t(src, get_address(BINBLKLEN, RVPOS_VK, item));
 }
 
 inline uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
