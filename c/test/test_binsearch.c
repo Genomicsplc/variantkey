@@ -212,15 +212,15 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
 { \
     int errors = 0; \
     int i; \
-    uint64_t found, first, last; \
+    uint64_t ffound, lfound, first, last, numitems, counter, pos; \
     for (i=0 ; i < TEST_DATA_SIZE; i++) \
     { \
         first = test_data_##T[i].first; \
         last = test_data_##T[i].last; \
-        found = find_first_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
-        if (found != test_data_##T[i].foundFirst) \
+        ffound = find_first_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
+        if (ffound != test_data_##T[i].foundFirst) \
         { \
-            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundFirst, found); \
+            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundFirst, ffound); \
             ++errors; \
         } \
         if (first != test_data_##T[i].foundFFirst) \
@@ -233,12 +233,27 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
             fprintf(stderr, "%s (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundFLast, last); \
             ++errors; \
         } \
+        numitems = (test_data_##T[i].foundLast - test_data_##T[i].foundFirst); \
+        if (ffound <= test_data_##T[i].last) \
+        { \
+            pos = ffound; \
+            counter = 0; \
+            while (has_next_##T(mf.src, blklen, test_data_##T[i].blkpos, &pos, test_data_##T[i].last, test_data_##T[i].search)) \
+            { \
+              counter++; \
+            } \
+            if (counter != numitems) \
+            { \
+                fprintf(stderr, "%s HAS_NEXT (%d) Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, i, numitems, counter); \
+                ++errors; \
+            } \
+        } \
         first = test_data_sub_##T[i].first; \
         last = test_data_sub_##T[i].last; \
-        found = find_first_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
-        if (found != test_data_sub_##T[i].foundFirst) \
+        lfound = find_first_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
+        if (lfound != test_data_sub_##T[i].foundFirst) \
         { \
-            fprintf(stderr, "%s SUB (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundFirst, found); \
+            fprintf(stderr, "%s SUB (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundFirst, lfound); \
             ++errors; \
         } \
         if (first != test_data_sub_##T[i].foundFFirst) \
@@ -251,24 +266,44 @@ int test_find_first_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t 
             fprintf(stderr, "%s SUB (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundFLast, last); \
             ++errors; \
         } \
+        numitems = (test_data_sub_##T[i].foundLast - test_data_sub_##T[i].foundFirst); \
+        if (lfound <= test_data_sub_##T[i].last) \
+        { \
+            pos = lfound; \
+            counter = 0; \
+            while (has_next_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &pos, test_data_sub_##T[i].last, test_data_sub_##T[i].search)) \
+            { \
+              counter++; \
+            } \
+            if (counter != numitems) \
+            { \
+                fprintf(stderr, "%s HAS_NEXT_SUB (%d) Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, i, numitems, counter); \
+                ++errors; \
+            } \
+        } \
     } \
     return errors; \
 }
+
+define_test_find_first(uint8_t)
+define_test_find_first(uint16_t)
+define_test_find_first(uint32_t)
+define_test_find_first(uint64_t)
 
 #define define_test_find_last(T) \
 int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t bitend) \
 { \
     int errors = 0; \
     int i; \
-    uint64_t found, first, last; \
+    uint64_t ffound, lfound, first, last, numitems, counter, pos; \
     for (i=0 ; i < TEST_DATA_SIZE; i++) \
     { \
         first = test_data_##T[i].first; \
         last = test_data_##T[i].last; \
-        found = find_last_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
-        if (found != test_data_##T[i].foundLast) \
+        ffound = find_last_##T(mf.src, blklen, test_data_##T[i].blkpos, &first, &last, test_data_##T[i].search); \
+        if (ffound != test_data_##T[i].foundLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundLast, found); \
+            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundLast, ffound); \
             ++errors; \
         } \
         if (first != test_data_##T[i].foundLFirst) \
@@ -281,12 +316,27 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
             fprintf(stderr, "%s (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_##T[i].foundLLast, last); \
             ++errors; \
         } \
+        numitems = (test_data_##T[i].foundLast - test_data_##T[i].foundFirst); \
+        if (ffound <= test_data_##T[i].last) \
+        { \
+            pos = ffound; \
+            counter = 0; \
+            while (has_prev_##T(mf.src, blklen, test_data_##T[i].blkpos, test_data_sub_##T[i].first, &pos, test_data_##T[i].search)) \
+            { \
+              counter++; \
+            } \
+            if (counter != numitems) \
+            { \
+                fprintf(stderr, "%s HAS_PREV (%d) Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, i, numitems, counter); \
+                ++errors; \
+            } \
+        } \
         first = test_data_sub_##T[i].first; \
         last = test_data_sub_##T[i].last; \
-        found = find_last_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
-        if (found != test_data_sub_##T[i].foundLast) \
+        lfound = find_last_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, &first, &last, test_data_sub_##T[i].search); \
+        if (lfound != test_data_sub_##T[i].foundLast) \
         { \
-            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundLast, found); \
+            fprintf(stderr, "%s (%d) Expected found %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundLast, lfound); \
             ++errors; \
         } \
         if (first != test_data_sub_##T[i].foundLFirst) \
@@ -299,17 +349,28 @@ int test_find_last_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t b
             fprintf(stderr, "%s (%d) Expected last %" PRIx64 ", got %" PRIx64 "\n", __func__, i, test_data_sub_##T[i].foundLLast, last); \
             ++errors; \
         } \
+        numitems = (test_data_sub_##T[i].foundLast - test_data_sub_##T[i].foundFirst); \
+        if (lfound <= test_data_sub_##T[i].last) \
+        { \
+            pos = lfound; \
+            counter = 0; \
+            while (has_prev_sub_##T(mf.src, blklen, test_data_sub_##T[i].blkpos, bitstart + 2, bitend - 3, test_data_sub_##T[i].first, &pos, test_data_sub_##T[i].search)) \
+            { \
+              counter++; \
+            } \
+            if (counter != numitems) \
+            { \
+                fprintf(stderr, "%s HAS_PREV_SUB (%d) Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, i, numitems, counter); \
+                ++errors; \
+            } \
+        } \
     } \
     return errors; \
 }
 
-define_test_find_first(uint8_t)
 define_test_find_last(uint8_t)
-define_test_find_first(uint16_t)
 define_test_find_last(uint16_t)
-define_test_find_first(uint32_t)
 define_test_find_last(uint32_t)
-define_test_find_first(uint64_t)
 define_test_find_last(uint64_t)
 
 // returns current time in nanoseconds
@@ -337,6 +398,11 @@ void benchmark_find_first_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
+define_benchmark_find_first(uint8_t)
+define_benchmark_find_first(uint16_t)
+define_benchmark_find_first(uint32_t)
+define_benchmark_find_first(uint64_t)
+
 #define define_benchmark_find_last(T) \
 void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
 { \
@@ -354,13 +420,9 @@ void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
-define_benchmark_find_first(uint8_t)
 define_benchmark_find_last(uint8_t)
-define_benchmark_find_first(uint16_t)
 define_benchmark_find_last(uint16_t)
-define_benchmark_find_first(uint32_t)
 define_benchmark_find_last(uint32_t)
-define_benchmark_find_first(uint64_t)
 define_benchmark_find_last(uint64_t)
 
 #define define_benchmark_find_first_sub(T) \
@@ -380,6 +442,11 @@ void benchmark_find_first_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
+define_benchmark_find_first_sub(uint8_t)
+define_benchmark_find_first_sub(uint16_t)
+define_benchmark_find_first_sub(uint32_t)
+define_benchmark_find_first_sub(uint64_t)
+
 #define define_benchmark_find_last_sub(T) \
 void benchmark_find_last_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart, uint8_t bitend, uint64_t nitems) \
 { \
@@ -397,13 +464,9 @@ void benchmark_find_last_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart,
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
 }
 
-define_benchmark_find_first_sub(uint8_t)
 define_benchmark_find_last_sub(uint8_t)
-define_benchmark_find_first_sub(uint16_t)
 define_benchmark_find_last_sub(uint16_t)
-define_benchmark_find_first_sub(uint32_t)
 define_benchmark_find_last_sub(uint32_t)
-define_benchmark_find_first_sub(uint64_t)
 define_benchmark_find_last_sub(uint64_t)
 
 int test_mmap_binfile_error(const char* file)
