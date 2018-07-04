@@ -74,6 +74,15 @@ class TestFunctions(TestCase):
         self.assertEqual(vk, 0)
         self.assertEqual(first, 10)
 
+    def test_get_next_rv_variantkey_by_rsid(self):
+        for item, rsid, vkey, chrom, pos, refalt in testData:
+            vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, 2, 9, 0x00000061)
+            self.assertEqual(vk, 0x80010274003A0000)
+            self.assertEqual(pos, 3)
+            vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, pos, 9, 0x00000061)
+            self.assertEqual(vk, 0)
+            self.assertEqual(pos, 4)
+
     def test_find_vr_rsid_by_variantkey(self):
         for item, rsid, vkey, chrom, pos, refalt in testData:
             rx, first = bs.find_vr_rsid_by_variantkey(vrsrc, 0, 9, vkey)

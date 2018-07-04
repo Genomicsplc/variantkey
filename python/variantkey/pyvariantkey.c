@@ -837,6 +837,22 @@ static PyObject* py_find_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyO
     return result;
 }
 
+static PyObject* py_get_next_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args)
+{
+    PyObject *result;
+    uint64_t pos, last;
+    uint32_t rsid;
+    PyObject* mfsrc = NULL;
+    if (!PyArg_ParseTuple(args, "OKKI", &mfsrc, &pos, &last, &rsid))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint64_t h = get_next_rv_variantkey_by_rsid(src, &pos, last, rsid);
+    result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", pos));
+    return result;
+}
+
 static PyObject* py_find_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args)
 {
     PyObject *result;
@@ -1054,6 +1070,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"get_vr_rsid", py_get_vr_rsid, METH_VARARGS, PYGETVRRSID_DOCSTRING},
     {"get_rv_variantkey", py_get_rv_variantkey, METH_VARARGS, PYGETRVVARIANTKEY_DOCSTRING},
     {"find_rv_variantkey_by_rsid", py_find_rv_variantkey_by_rsid, METH_VARARGS, PYFINDRVVARIANTKEYBYRSID_DOCSTRING},
+    {"get_next_rv_variantkey_by_rsid", py_get_next_rv_variantkey_by_rsid, METH_VARARGS, PYGETNEXTRVVARIANTKEYBYRSID_DOCSTRING},
     {"find_vr_rsid_by_variantkey", py_find_vr_rsid_by_variantkey, METH_VARARGS, PYFINDVRRSIDBYVARIANTKEY_DOCSTRING},
     {"find_vr_chrompos_range", py_find_vr_chrompos_range, METH_VARARGS, PYFINDVRCHROMPOSRANGE_DOCSTRING},
 
