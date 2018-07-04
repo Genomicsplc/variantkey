@@ -9,16 +9,16 @@ var testData = []struct {
 	pos    uint32
 	refalt uint32
 }{
-	{0X00000001, 0X08027A2580338000, 0X01, 0X0004F44B, 0X00338000},
-	{0X00000007, 0X4800A1FE439E3918, 0X09, 0X000143FC, 0X439E3918},
-	{0X0000000B, 0X4800A1FE7555EB16, 0X09, 0X000143FC, 0X7555EB16},
-	{0X00000061, 0X80010274003A0000, 0X10, 0X000204E8, 0X003A0000},
-	{0X00000065, 0X8001028D00138000, 0X10, 0X0002051A, 0X00138000},
-	{0X000003E5, 0X80010299007A0000, 0X10, 0X00020532, 0X007A0000},
-	{0X000003F1, 0XA0012B62003A0000, 0X14, 0X000256C4, 0X003A0000},
-	{0X000026F5, 0XA0012B6280708000, 0X14, 0X000256C5, 0X00708000},
-	{0X000186A3, 0XA0012B65E3256692, 0X14, 0X000256CB, 0X63256692},
-	{0X00019919, 0XA0012B67D5439803, 0X14, 0X000256CF, 0X55439803},
+	{0x00000001, 0x08027A2580338000, 0x01, 0x0004F44B, 0x00338000},
+	{0x00000007, 0x4800A1FE439E3918, 0x09, 0x000143FC, 0x439E3918},
+	{0x0000000B, 0x4800A1FE7555EB16, 0x09, 0x000143FC, 0x7555EB16},
+	{0x00000061, 0x80010274003A0000, 0x10, 0x000204E8, 0x003A0000},
+	{0x00000065, 0x8001028D00138000, 0x10, 0x0002051A, 0x00138000},
+	{0x000003E5, 0x80010299007A0000, 0x10, 0x00020532, 0x007A0000},
+	{0x000003F1, 0xA0012B62003A0000, 0x14, 0x000256C4, 0x003A0000},
+	{0x000026F5, 0xA0012B6280708000, 0x14, 0x000256C5, 0x00708000},
+	{0x000186A3, 0xA0012B65E3256692, 0x14, 0x000256CB, 0x63256692},
+	{0x00019919, 0xA0012B67D5439803, 0x14, 0x000256CF, 0x55439803},
 }
 
 func TestGetVRRsid(t *testing.T) {
@@ -100,19 +100,42 @@ func BenchmarkFindRVVariantkeyByRsid(b *testing.B) {
 func TestGetNextRVVariantkeyByRsid(t *testing.T) {
 	var vk uint64
 	pos := uint64(2)
-	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0X00000061)
+	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0x00000061)
 	if pos != 3 {
 		t.Errorf("(1) Expected pos 3, got %d", pos)
 	}
-	if vk != 0X80010274003A0000 {
-		t.Errorf("(1) Expected VariantKey 0X80010274003A0000, got %x", vk)
+	if vk != 0x80010274003A0000 {
+		t.Errorf("(1) Expected VariantKey 0x80010274003A0000, got %x", vk)
 	}
-	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0X00000061)
+	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0x00000061)
 	if pos != 4 {
 		t.Errorf("(2) Expected pos 4, got %d", pos)
 	}
 	if vk != 0 {
 		t.Errorf("(2) Expected VariantKey 0, got %x", vk)
+	}
+}
+
+func TestFindAllRVVariantkeyByRsid(t *testing.T) {
+	vks := rvm.FindAllRVVariantkeyByRsid(0, 9, 0x00000003)
+	if len(vks) != 3 {
+		t.Errorf("Expected len 3, got %d", len(vks))
+	}
+	if vks[0] != 0x80010274003A0000 {
+		t.Errorf("Expected VariantKey 0x80010274003A0000, got %x", vks[0])
+	}
+	if vks[1] != 0x8001028D00138000 {
+		t.Errorf("Expected VariantKey 0x8001028D00138000, got %x", vks[1])
+	}
+	if vks[2] != 0x80010299007A0000 {
+		t.Errorf("Expected VariantKey 0x80010299007A0000, got %x", vks[2])
+	}
+}
+
+func TestFindAllRVVariantkeyByRsidNotFound(t *testing.T) {
+	vks := rvm.FindAllRVVariantkeyByRsid(0, 9, 0x12345678)
+	if len(vks) != 0 {
+		t.Errorf("Expected len 0, got %d", len(vks))
 	}
 }
 
@@ -146,7 +169,7 @@ func TestFindVRRsidByVariantkeyNotFound(t *testing.T) {
 func BenchmarkFindVRRsidByVariantkey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRRsidByVariantkey(0, 9, 0X160017CCA313D0E0)
+		vr.FindVRRsidByVariantkey(0, 9, 0x160017CCA313D0E0)
 	}
 }
 

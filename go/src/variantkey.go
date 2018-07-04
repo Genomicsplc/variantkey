@@ -645,6 +645,21 @@ func (mf TMMFile) GetNextRVVariantkeyByRsid(pos, last uint64, rsid uint32) (uint
 	return vk, uint64(cpos)
 }
 
+// FindAllRVVariantkeyByRsid get all VariantKeys for the specified rsID in the RV file.
+// Returns a list of VariantKeys
+func (mf TMMFile) FindAllRVVariantkeyByRsid(first, last uint64, rsid uint32) (vks []uint64) {
+	csrc := (*C.uchar)(mf.Src)
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	crsid := C.uint32_t(rsid)
+	vk := uint64(C.find_rv_variantkey_by_rsid(csrc, &cfirst, clast, crsid))
+	for vk > 0 {
+		vks = append(vks, vk)
+		vk = uint64(C.get_next_rv_variantkey_by_rsid(csrc, &cfirst, clast, crsid))
+	}
+	return
+}
+
 // FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
 func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vk uint64) (uint32, uint64) {
 	cfirst := C.uint64_t(first)

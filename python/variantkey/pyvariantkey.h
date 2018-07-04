@@ -67,6 +67,7 @@ static PyObject *py_get_vr_rsid(PyObject *self, PyObject *args);
 static PyObject *py_get_rv_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_find_rv_variantkey_by_rsid(PyObject *self, PyObject *args);
 static PyObject *py_get_next_rv_variantkey_by_rsid(PyObject *self, PyObject *args);
+static PyObject *py_find_all_rv_variantkey_by_rsid(PyObject *self, PyObject *args);
 static PyObject *py_find_vr_rsid_by_variantkey(PyObject *self, PyObject *args);
 static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args);
 
@@ -142,6 +143,7 @@ PyMODINIT_FUNC initvariantkey(void);
 #define PYGETRVVARIANTKEY_DOCSTRING "Returns the VariantKey at the specified position in the RV file."
 #define PYFINDRVVARIANTKEYBYRSID_DOCSTRING "Search for the specified rsID and returns the first occurrence of VariantKey in the RV file."
 #define PYGETNEXTRVVARIANTKEYBYRSID_DOCSTRING "Get the next VariantKey for the specified rsID in the RV file. This function should be used after find_rv_variantkey_by_rsid. Itcan be called in a loop to get all VariantKeys that are associated with the same rsID (if any)."
+#define PYFINDALLRVVARIANTKEYBYRSID_DOCSTRING "Search for the specified rsID and returns all associated VariantKeys."
 #define PYFINDVRRSIDBYVARIANTKEY_DOCSTRING "Search for the specified VariantKey and returns the first occurrence of rsID in the VR file."
 #define PYFINDVRCHROMPOSRANGE_DOCSTRING "Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file."
 

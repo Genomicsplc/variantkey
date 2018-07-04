@@ -354,7 +354,7 @@ int main()
     nitems = (uint64_t)(rv.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting rsvk %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 
@@ -363,7 +363,7 @@ int main()
     nitems = (uint64_t)(vr.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting vrsk %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 

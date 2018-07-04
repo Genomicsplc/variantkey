@@ -3,7 +3,7 @@ package variantkey
 import "testing"
 import "os"
 
-var mf, rv, vr, vknr, gref TMMFile
+var mf, rv, rvm, vr, vknr, gref TMMFile
 var retCode int
 
 func closeTMMFile(mmf TMMFile) {
@@ -29,6 +29,12 @@ func TestMain(m *testing.M) {
 		os.Exit(2)
 	}
 	defer closeTMMFile(rv)
+
+	rvm, err = MmapBinFile("../../c/test/data/rsvk.m.10.bin")
+	if err != nil {
+		os.Exit(2)
+	}
+	defer closeTMMFile(rvm)
 
 	vr, err = MmapBinFile("../../c/test/data/vkrs.10.bin")
 	if err != nil {

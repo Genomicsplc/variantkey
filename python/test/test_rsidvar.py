@@ -33,6 +33,14 @@ class TestFunctions(TestCase):
         rvsrc, rvfd, rvsize, _ = bs.mmap_binfile(inputfile)
         if rvfd < 0 or rvsize != 120:
             assert False, "Unable to open the rsvk.10.bin file"
+        global rvmsrc, rvmfd, rvmsize
+        inputfile = os.path.realpath(
+            os.path.dirname(
+                os.path.realpath(__file__)) +
+            "/../../c/test/data/rsvk.m.10.bin")
+        rvmsrc, rvmfd, rvmsize, _ = bs.mmap_binfile(inputfile)
+        if rvmfd < 0 or rvmsize != 120:
+            assert False, "Unable to open the rsvk.m.10.bin file"
         global vrsrc, vrfd, vrsize
         inputfile = os.path.realpath(
             os.path.dirname(
@@ -75,13 +83,23 @@ class TestFunctions(TestCase):
         self.assertEqual(first, 10)
 
     def test_get_next_rv_variantkey_by_rsid(self):
-        for item, rsid, vkey, chrom, pos, refalt in testData:
-            vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, 2, 9, 0x00000061)
-            self.assertEqual(vk, 0x80010274003A0000)
-            self.assertEqual(pos, 3)
-            vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, pos, 9, 0x00000061)
-            self.assertEqual(vk, 0)
-            self.assertEqual(pos, 4)
+        vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, 2, 9, 0x00000061)
+        self.assertEqual(vk, 0x80010274003A0000)
+        self.assertEqual(pos, 3)
+        vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, pos, 9, 0x00000061)
+        self.assertEqual(vk, 0)
+        self.assertEqual(pos, 4)
+
+    def test_find_all_rv_variantkey_by_rsid(self):
+        vks = bs.find_all_rv_variantkey_by_rsid(rvmsrc, 0, 9, 0x00000003)
+        self.assertEqual(len(vks), 3)
+        self.assertEqual(vks[0], 0x80010274003A0000)
+        self.assertEqual(vks[1], 0x8001028D00138000)
+        self.assertEqual(vks[2], 0x80010299007A0000)
+
+    def test_find_all_rv_variantkey_by_rsid_notfound(self):
+        vks = bs.find_all_rv_variantkey_by_rsid(rvmsrc, 0, 9, 0xfffffff0)
+        self.assertEqual(len(vks), 0)
 
     def test_find_vr_rsid_by_variantkey(self):
         for item, rsid, vkey, chrom, pos, refalt in testData:
