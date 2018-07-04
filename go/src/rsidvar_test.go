@@ -97,6 +97,25 @@ func BenchmarkFindRVVariantkeyByRsid(b *testing.B) {
 	}
 }
 
+func TestGetNextRVVariantkeyByRsid(t *testing.T) {
+	var vk uint64
+	pos := uint64(2)
+	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0X00000061)
+	if pos != 3 {
+		t.Errorf("(1) Expected pos 3, got %d", pos)
+	}
+	if vk != 0X80010274003A0000 {
+		t.Errorf("(1) Expected VariantKey 0X80010274003A0000, got %x", vk)
+	}
+	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0X00000061)
+	if pos != 4 {
+		t.Errorf("(2) Expected pos 4, got %d", pos)
+	}
+	if vk != 0 {
+		t.Errorf("(2) Expected VariantKey 0, got %x", vk)
+	}
+}
+
 func TestFindVRRsidByVariantkey(t *testing.T) {
 	for i, tt := range testData {
 		i := i
