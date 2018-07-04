@@ -253,3 +253,71 @@ define_find_last_sub(uint8_t)
 define_find_last_sub(uint16_t)
 define_find_last_sub(uint32_t)
 define_find_last_sub(uint64_t)
+
+#define define_has_next(T) \
+inline bool has_next_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
+{ \
+    if (*pos >= last) \
+    { \
+        return 0; \
+    } \
+    (*pos)++; \
+    T x = bytes_to_##T(src, get_address(blklen, blkpos, *pos)); \
+    return (x == search); \
+}
+
+define_has_next(uint8_t)
+define_has_next(uint16_t)
+define_has_next(uint32_t)
+define_has_next(uint64_t)
+
+#define define_has_next_sub(T) \
+inline bool has_next_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+{ \
+    if (*pos >= last) \
+    { \
+        return 0; \
+    } \
+    (*pos)++; \
+    uint8_t rshift = ((sizeof(T) * 8) - 1 - bitend + bitstart); \
+    T x = ((bytes_to_##T(src, get_address(blklen, blkpos, *pos)) << bitstart) >> rshift); \
+    return (x == search); \
+}
+
+define_has_next_sub(uint8_t)
+define_has_next_sub(uint16_t)
+define_has_next_sub(uint32_t)
+define_has_next_sub(uint64_t)
+
+#define define_has_prev(T) \
+inline bool has_prev_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
+{ \
+    if (*pos <= first) { \
+        return 0; \
+    } \
+    (*pos)--; \
+    T x = bytes_to_##T(src, get_address(blklen, blkpos, *pos)); \
+    return (x == search); \
+}
+
+define_has_prev(uint8_t)
+define_has_prev(uint16_t)
+define_has_prev(uint32_t)
+define_has_prev(uint64_t)
+
+#define define_has_prev_sub(T) \
+inline bool has_prev_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+{ \
+    if (*pos <= first) { \
+        return 0; \
+    } \
+    uint8_t rshift = ((sizeof(T) * 8) - 1 - bitend + bitstart); \
+    (*pos)--; \
+    T x = ((bytes_to_##T(src, get_address(blklen, blkpos, *pos)) << bitstart) >> rshift); \
+    return (x == search); \
+}
+
+define_has_prev_sub(uint8_t)
+define_has_prev_sub(uint16_t)
+define_has_prev_sub(uint32_t)
+define_has_prev_sub(uint64_t)

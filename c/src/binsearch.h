@@ -53,6 +53,7 @@ extern "C" {
 #endif
 
 #include <inttypes.h>
+#include <stdbool.h>
 
 /**
  * Struct containing the memory mapped file info.
@@ -117,7 +118,7 @@ define_declare_bytes_to(uint64_t)
  * Generic function to search for the first occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
 #define define_declare_find_first(T) \
 /** Search for the first occurrence of an unsigned integer on a memory mapped
@@ -142,7 +143,7 @@ define_declare_find_first(uint64_t)
  * Generic function to search for the last occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
 #define define_declare_find_last(T) \
 /** Search for the last occurrence of an unsigned integer on a memory mapped
@@ -163,12 +164,11 @@ define_declare_find_last(uint16_t)
 define_declare_find_last(uint32_t)
 define_declare_find_last(uint64_t)
 
-
 /**
  * Generic function to search for the first occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
 #define define_declare_find_first_sub(T) \
 /** Search for the first occurrence of an unsigned integer on a memory mapped
@@ -195,7 +195,7 @@ define_declare_find_first_sub(uint64_t)
  * Generic function to search for the last occurrence of an unsigned integer
  * on a memory mapped binary file containing adjacent blocks of sorted binary data.
  *
- * @param T Unsigned integer tupe, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
 #define define_declare_find_last_sub(T) \
 /** Search for the last occurrence of an unsigned integer on a memory mapped
@@ -217,6 +217,114 @@ define_declare_find_last_sub(uint8_t)
 define_declare_find_last_sub(uint16_t)
 define_declare_find_last_sub(uint32_t)
 define_declare_find_last_sub(uint64_t)
+
+/**
+ * Generic function to check if the next item still matches the search value.
+ *
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ */
+#define define_declare_has_next(T) \
+/** Check if the next occurrence of an unsigned integer on a memory mapped
+binary file containing adjacent blocks of sorted binary data still matches the search value.
+The values in the file must encoded in big-endian format and sorted in ascending order.
+This function can be used after find_first_##T to get the next elements that still satisfy the search.
+The item returned by find_first_##T should be set as the "pos" parameter in this function.
+@param src       Memory mapped file address.
+@param blklen    Length of the binary block in bytes.
+@param blkpos    Indicates the position of the number to search inside a binary block.
+@param pos       Pointer to the current item position. This will be updated to point to the next position.
+@param last      Last element of the range to search (max value = nitems - 1).
+@param search    Unsigned number to search (type T).
+@return 1 if the next item is valid, 0 otherwise.
+ */ \
+bool has_next_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search);
+
+define_declare_has_next(uint8_t)
+define_declare_has_next(uint16_t)
+define_declare_has_next(uint32_t)
+define_declare_has_next(uint64_t)
+
+/**
+ * Generic function to check if the next item still matches the search value.
+ *
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ */
+#define define_declare_has_next_sub(T) \
+/** Check if the next occurrence of an unsigned integer on a memory mapped
+binary file containing adjacent blocks of sorted binary data still matches the search value.
+The values in the file must encoded in big-endian format and sorted in ascending order.
+This function can be used after find_first_sub_##T to get the next elements that still satisfy the search.
+The item returned by find_first_sub_##T should be set as the "pos" parameter in this function.
+@param src       Memory mapped file address.
+@param blklen    Length of the binary block in bytes.
+@param blkpos    Indicates the position of the number to search inside a binary block.
+@param bitstart  First bit position to consider (usually 0).
+@param bitend    Last bit position to consider (usually the last bit, e.g. 7 for uint8_t, 15 for uint16_t, etc).
+@param pos       Pointer to the current item position. This will be updated to point to the next position.
+@param last      Last element of the range to search (max value = nitems - 1).
+@param search    Unsigned number to search (type T).
+@return 1 if the next item is valid, 0 otherwise.
+ */ \
+bool has_next_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search);
+
+define_declare_has_next_sub(uint8_t)
+define_declare_has_next_sub(uint16_t)
+define_declare_has_next_sub(uint32_t)
+define_declare_has_next_sub(uint64_t)
+
+/**
+ * Generic function to check if the previous item still matches the search value.
+ *
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ */
+#define define_declare_has_prev(T) \
+/** Check if the previous occurrence of an unsigned integer on a memory mapped
+binary file containing adjacent blocks of sorted binary data still matches the search value.
+The values in the file must encoded in big-endian format and sorted in ascending order.
+This function can be used after find_last_##T to get the previous elements that still satisfy the search.
+The item returned by find_last_##T should be set as the "pos" parameter in this function.
+@param src       Memory mapped file address.
+@param blklen    Length of the binary block in bytes.
+@param blkpos    Indicates the position of the number to search inside a binary block.
+@param first     First element of the range to search (min value = 0).
+@param pos       Pointer to the current item position. This will be updated to point to the previous position.
+@param search    Unsigned number to search (type T).
+@return 1 if the next item is valid, 0 otherwise.
+ */ \
+bool has_prev_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search);
+
+define_declare_has_prev(uint8_t)
+define_declare_has_prev(uint16_t)
+define_declare_has_prev(uint32_t)
+define_declare_has_prev(uint64_t)
+
+/**
+ * Generic function to check if the previous item still matches the search value.
+ *
+ * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
+ */
+#define define_declare_has_prev_sub(T) \
+/** Check if the previous occurrence of an unsigned integer on a memory mapped
+binary file containing adjacent blocks of sorted binary data still matches the search value.
+The values in the file must encoded in big-endian format and sorted in ascending order.
+This function can be used after find_last_sub_##T to get the previous elements that still satisfy the search.
+The item returned by find_last_sub_##T should be set as the "pos" parameter in this function.
+@param src       Memory mapped file address.
+@param blklen    Length of the binary block in bytes.
+@param blkpos    Indicates the position of the number to search inside a binary block.
+@param bitstart  First bit position to consider (usually 0).
+@param bitend    Last bit position to consider (usually the last bit, e.g. 7 for uint8_t, 15 for uint16_t, etc).
+@param first     First element of the range to search (min value = 0).
+@param pos       Pointer to the current item position. This will be updated to point to the previous position.
+@param search    Unsigned number to search (type T).
+@return 1 if the next item is valid, 0 otherwise.
+ */ \
+bool has_prev_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search);
+
+define_declare_has_prev_sub(uint8_t)
+define_declare_has_prev_sub(uint16_t)
+define_declare_has_prev_sub(uint32_t)
+define_declare_has_prev_sub(uint64_t)
 
 #ifdef __cplusplus
 }

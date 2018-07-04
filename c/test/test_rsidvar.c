@@ -124,6 +124,35 @@ int test_find_rv_variantkey_by_rsid_notfound(mmfile_t rv)
     return errors;
 }
 
+int test_get_next_rv_variantkey_by_rsid(mmfile_t rv)
+{
+    int errors = 0;
+    uint64_t pos = 2;
+    uint64_t vk = get_next_rv_variantkey_by_rsid(rv.src, &pos, 9, 0X00000061);
+    if (pos != 3)
+    {
+        fprintf(stderr, "%s (1 Expected) pos 3, got %" PRIu64 "\n", __func__, pos);
+        ++errors;
+    }
+    if (vk != 0X80010274003A0000)
+    {
+        fprintf(stderr, "%s (1) Expected variantkey 0x80010274003A0000, got %" PRIx64 "\n", __func__, vk);
+        ++errors;
+    }
+    vk = get_next_rv_variantkey_by_rsid(rv.src, &pos, 9, 0X00000061);
+    if (pos != 4)
+    {
+        fprintf(stderr, "%s (2) Expected pos 4, got %" PRIu64 "\n", __func__, pos);
+        ++errors;
+    }
+    if (vk != 0)
+    {
+        fprintf(stderr, "%s (2) Expected variantkey 0, got %" PRIx64 "\n", __func__, vk);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_find_vr_rsid_by_variantkey(mmfile_t vr)
 {
     int errors = 0;
@@ -325,7 +354,7 @@ int main()
     nitems = (uint64_t)(rv.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting rsvk %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 
@@ -334,7 +363,7 @@ int main()
     nitems = (uint64_t)(vr.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
+        fprintf(stderr, "Expecting vrsk %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nitems);
         return 1;
     }
 
@@ -342,6 +371,7 @@ int main()
     errors += test_get_rv_variantkey(rv);
     errors += test_find_rv_variantkey_by_rsid(rv);
     errors += test_find_rv_variantkey_by_rsid_notfound(rv);
+    errors += test_get_next_rv_variantkey_by_rsid(rv);
     errors += test_find_vr_rsid_by_variantkey(vr);
     errors += test_find_vr_rsid_by_variantkey_notfound(vr);
     errors += test_find_vr_chrompos_range(vr);

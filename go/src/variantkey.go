@@ -254,7 +254,7 @@ func GetAddress(blklen, blkpos, item uint64) uint64 {
 // binary file containing adjacent blocks of sorted binary data.
 // The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint8(blklen, blkpos uint64, first, last uint64, search uint8) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint8(blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_first_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
@@ -265,7 +265,7 @@ func (mf TMMFile) FindFirstUint8(blklen, blkpos uint64, first, last uint64, sear
 // binary file containing adjacent blocks of sorted binary data.
 // The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint8(blklen, blkpos uint64, first, last uint64, search uint8) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint8(blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_last_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
@@ -276,7 +276,7 @@ func (mf TMMFile) FindLastUint8(blklen, blkpos uint64, first, last uint64, searc
 // binary file containing adjacent blocks of sorted binary data.
 // The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint16(blklen, blkpos uint64, first, last uint64, search uint16) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint16(blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_first_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
@@ -287,7 +287,7 @@ func (mf TMMFile) FindFirstUint16(blklen, blkpos uint64, first, last uint64, sea
 // binary file containing adjacent blocks of sorted binary data.
 // The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint16(blklen, blkpos uint64, first, last uint64, search uint16) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint16(blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_last_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
@@ -298,7 +298,7 @@ func (mf TMMFile) FindLastUint16(blklen, blkpos uint64, first, last uint64, sear
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint32(blklen, blkpos uint64, first, last uint64, search uint32) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_first_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
@@ -309,7 +309,7 @@ func (mf TMMFile) FindFirstUint32(blklen, blkpos uint64, first, last uint64, sea
 // binary file containing adjacent blocks of sorted binary data.
 // The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint32(blklen, blkpos uint64, first, last uint64, search uint32) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint32(blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_last_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
@@ -320,7 +320,7 @@ func (mf TMMFile) FindLastUint32(blklen, blkpos uint64, first, last uint64, sear
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstUint64(blklen, blkpos uint64, first, last uint64, search uint64) (uint64, uint64, uint64) {
+func (mf TMMFile) FindFirstUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_first_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
@@ -331,7 +331,7 @@ func (mf TMMFile) FindFirstUint64(blklen, blkpos uint64, first, last uint64, sea
 // binary file containing adjacent blocks of sorted binary data.
 // The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
 // Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastUint64(blklen, blkpos uint64, first, last uint64, search uint64) (uint64, uint64, uint64) {
+func (mf TMMFile) FindLastUint64(blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	ret := uint64(C.find_last_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
@@ -426,6 +426,198 @@ func (mf TMMFile) FindLastSubUint64(blklen, blkpos uint64, bitstart, bitend uint
 	return ret, uint64(cfirst), uint64(clast)
 }
 
+// HasNextUint8 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint8 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint8 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextUint8(blklen, blkpos, pos, last uint64, search uint8) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint8_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextUint16 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint16 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint16 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextUint16(blklen, blkpos, pos, last uint64, search uint16) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint16_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextUint32 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint32 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint32 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextUint32(blklen, blkpos, pos, last uint64, search uint32) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint32_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextUint64 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint64 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint64 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextUint64(blklen, blkpos, pos, last uint64, search uint64) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint64_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextSubUint8 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint8 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint8 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextSubUint8(blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint8) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_sub_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint8_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextSubUint16 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint16 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint16 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextSubUint16(blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint16) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_sub_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint16_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextSubUint32 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint32 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint32 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextSubUint32(blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint32) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_sub_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint32_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasNextSubUint64 checks if the next occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindFirstUint64 to get the next elements that still satisfy the search.
+// The item returned by FindFirstUint64 should be set as the "pos" parameter in this function.
+// Return true if the next item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasNextSubUint64(blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint64) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_next_sub_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint64_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevUint8 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint8 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint8 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevUint8(blklen, blkpos, first, pos uint64, search uint8) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint8_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevUint16 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint16 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint16 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevUint16(blklen, blkpos, first, pos uint64, search uint16) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint16_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevUint32 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint32 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint32 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevUint32(blklen, blkpos, first, pos uint64, search uint32) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint32_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevUint64 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint64 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint64 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevUint64(blklen, blkpos, first, pos uint64, search uint64) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint64_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevSubUint8 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint8 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint8 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevSubUint8(blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint8) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_sub_uint8_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint8_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevSubUint16 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint16 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint16 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevSubUint16(blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint16) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_sub_uint16_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint16_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevSubUint32 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint32 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint32 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevSubUint32(blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint32) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_sub_uint32_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint32_t(search)))
+	return ret, uint64(cpos)
+}
+
+// HasPrevSubUint64 checks if the previous occurrence of an unsigned integer on a memory mapped
+// binary file containing adjacent blocks of sorted binary data still matches the search value.
+// The values in the file must encoded in big-endian format and sorted in ascending order.
+// This function can be used after FindLastUint64 to get the previous elements that still satisfy the search.
+// The item returned by FindLastUint64 should be set as the "pos" parameter in this function.
+// Return true if the previous item is valid, false otherwise, plus the position.
+func (mf TMMFile) HasPrevSubUint64(blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint64) (bool, uint64) {
+	cpos := C.uint64_t(pos)
+	ret := bool(C.has_prev_sub_uint64_t((*C.uchar)(mf.Src), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint64_t(search)))
+	return ret, uint64(cpos)
+}
+
 // --- RSIDVAR ---
 
 // GetVRRsid returns the RSID at the specified position in the VR file.
@@ -443,6 +635,29 @@ func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint6
 	cfirst := C.uint64_t(first)
 	vk := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
 	return vk, uint64(cfirst)
+}
+
+// GetNextRVVariantkeyByRsid get the next VariantKey for the specified rsID in the RV file.
+// Returns the VariantKey or 0, and the position
+func (mf TMMFile) GetNextRVVariantkeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64) {
+	cpos := C.uint64_t(pos)
+	vk := uint64(C.get_next_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cpos, C.uint64_t(last), C.uint32_t(rsid)))
+	return vk, uint64(cpos)
+}
+
+// FindAllRVVariantkeyByRsid get all VariantKeys for the specified rsID in the RV file.
+// Returns a list of VariantKeys
+func (mf TMMFile) FindAllRVVariantkeyByRsid(first, last uint64, rsid uint32) (vks []uint64) {
+	csrc := (*C.uchar)(mf.Src)
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	crsid := C.uint32_t(rsid)
+	vk := uint64(C.find_rv_variantkey_by_rsid(csrc, &cfirst, clast, crsid))
+	for vk > 0 {
+		vks = append(vks, vk)
+		vk = uint64(C.get_next_rv_variantkey_by_rsid(csrc, &cfirst, clast, crsid))
+	}
+	return
 }
 
 // FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
