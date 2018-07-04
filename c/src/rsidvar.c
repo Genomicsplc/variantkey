@@ -43,6 +43,15 @@ inline uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *f
     return get_rv_variantkey(src, found);
 }
 
+inline uint64_t get_next_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *pos, uint64_t last, uint32_t rsid)
+{
+    if (has_next_uint32_t(src, BINBLKLEN, RVPOS_RSID, pos, last, rsid))
+    {
+        return get_rv_variantkey(src, *pos);
+    }
+    return 0;
+}
+
 inline uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vk)
 {
     uint64_t max = last;
