@@ -88,6 +88,7 @@ set(CPACK_DEB_COMPONENT_INSTALL TRUE)
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(vk)
+add_subdirectory(test/rsidvar_bench)
 
 # Build Documentation
 find_package(Doxygen QUIET)
