@@ -395,7 +395,7 @@ void benchmark_find_first_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
         find_first_##T(mf.src, blklen, test_data_##T[4].blkpos, &first, &last, test_data_##T[4].search); \
     } \
     tend = get_time(); \
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size); \
 }
 
 define_benchmark_find_first(uint8_t)
@@ -417,7 +417,7 @@ void benchmark_find_last_##T(mmfile_t mf, uint64_t blklen, uint64_t nitems) \
         find_last_##T(mf.src, blklen, test_data_##T[4].blkpos, &first, &last, test_data_##T[4].search); \
     } \
     tend = get_time(); \
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size); \
 }
 
 define_benchmark_find_last(uint8_t)
@@ -439,7 +439,7 @@ void benchmark_find_first_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart
         find_first_sub_##T(mf.src, blklen, test_data_##T[4].blkpos, bitstart, bitend, &first, &last, test_data_##T[4].search); \
     } \
     tend = get_time(); \
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size); \
 }
 
 define_benchmark_find_first_sub(uint8_t)
@@ -461,7 +461,7 @@ void benchmark_find_last_sub_##T(mmfile_t mf, uint64_t blklen, uint8_t bitstart,
         find_last_sub_##T(mf.src, blklen, test_data_##T[4].blkpos, bitstart, bitend, &first, &last, test_data_##T[4].search); \
     } \
     tend = get_time(); \
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4)); \
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size); \
 }
 
 define_benchmark_find_last_sub(uint8_t)

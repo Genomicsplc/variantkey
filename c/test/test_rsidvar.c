@@ -276,7 +276,7 @@ void benchmark_get_vr_rsid(mmfile_t vr)
         get_vr_rsid(vr.src, 3);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 void benchmark_get_rv_variantkey(mmfile_t rv)
@@ -290,7 +290,7 @@ void benchmark_get_rv_variantkey(mmfile_t rv)
         get_rv_variantkey(rv.src, 3);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 void benchmark_find_rv_variantkey_by_rsid(mmfile_t rv)
@@ -306,7 +306,7 @@ void benchmark_find_rv_variantkey_by_rsid(mmfile_t rv)
         find_rv_variantkey_by_rsid(rv.src, &first, 9, 0x2F81F575);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 void benchmark_find_vr_rsid_by_variantkey(mmfile_t vr)
@@ -322,7 +322,7 @@ void benchmark_find_vr_rsid_by_variantkey(mmfile_t vr)
         find_vr_rsid_by_variantkey(vr.src, &first, 9, 0X160017CCA313D0E0);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 void benchmark_find_vr_chrompos_range(mmfile_t vr)
@@ -339,7 +339,7 @@ void benchmark_find_vr_chrompos_range(mmfile_t vr)
         find_vr_chrompos_range(vr.src, &first, &last, 0x19, 0x001AF8FD, 0x001C8F2A);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int main()
