@@ -115,7 +115,7 @@ void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr)
         find_ref_alt_by_variantkey(vknr.src, vknr.last, 0xb000c35b64690b25, ref, &sizeref, alt, &sizealt);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int test_reverse_variantkey(mmfile_t vknr)
@@ -178,7 +178,7 @@ void benchmark_reverse_variantkey(mmfile_t vknr)
         reverse_variantkey(vknr.src, vknr.last, 0xb000c35b64690b25, &rev);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*4));
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int main()
