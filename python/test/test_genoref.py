@@ -100,7 +100,7 @@ class TestFunctions(TestCase):
                 (1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0),            # OK
                 (13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32),      # left trim
                 (13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48),      # left trim + right trim
-                (1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48), # left trim + right trim
+                (1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48),  # left trim + right trim
                 (1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0),              # OK
                 (1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8),            # left extend
                 (1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0),        # OK
