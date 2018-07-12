@@ -48,7 +48,7 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
     uint32_t offset = (idx[chrom] + pos);
     if ((offset + sizeref - 1) > (idx[(chrom + 1)] - 2))
     {
-        return -2; // invalid position
+        return NORM_WRONGPOS;
     }
     size_t i;
     char uref, gref;
@@ -107,10 +107,10 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
                 || ((uref == 'Y') && ((gref == 'C') || (gref == 'T')))
                 || ((gref == 'Y') && ((uref == 'C') || (uref == 'T'))))
         {
-            ret = 1; // valid but not consistent
+            ret = NORM_VALID; // valid but not consistent
             continue;
         }
-        return -1; // invalid reference
+        return NORM_INVALID; // invalid reference
     }
     return ret; // sequence OK
 }
@@ -182,22 +182,22 @@ inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uin
     }
     if (status < 0)
     {
-        strncpy(fref, ref, *sizeref);
-        flip_allele(fref, *sizeref);
-        status = check_reference(src, idx, chrom, *pos, fref, *sizeref);
+        status = check_reference(src, idx, chrom, *pos, alt, *sizealt);
         if (status >= 0)
         {
-            strncpy(ref, fref, *sizealt);
-            flip_allele(alt, *sizealt);
-            status |= 2; // FLIP
+            swap_alleles(ref, sizeref, alt, sizealt);
+            status |= NORM_SWAP;
         }
         else
         {
-            status = check_reference(src, idx, chrom, *pos, alt, *sizealt);
+            strncpy(fref, ref, *sizeref);
+            flip_allele(fref, *sizeref);
+            status = check_reference(src, idx, chrom, *pos, fref, *sizeref);
             if (status >= 0)
             {
-                swap_alleles(ref, sizeref, alt, sizealt);
-                status |= 4; // SWAP
+                strncpy(ref, fref, *sizealt);
+                flip_allele(alt, *sizealt);
+                status |= NORM_FLIP;
             }
             else
             {
@@ -209,7 +209,7 @@ inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uin
                     strncpy(ref, falt, *sizealt);
                     strncpy(alt, fref, *sizeref);
                     swap_sizes(sizeref, sizealt);
-                    status |= 2 + 4; // FLIP + SWAP
+                    status |= NORM_SWAP + NORM_FLIP;
                 }
                 else
                 {
@@ -231,7 +231,7 @@ inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uin
             left = (char)src[(size_t)(idx[chrom] + *pos)];
             prepend_char(left, alt, sizealt);
             prepend_char(left, ref, sizeref);
-            status |= 8;
+            status |= NORM_LEXT;
         }
         else
         {
@@ -240,7 +240,7 @@ inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uin
             {
                 (*sizealt)--;
                 (*sizeref)--;
-                status |= 16;
+                status |= NORM_RTRIM;
             }
             else
             {
@@ -261,7 +261,7 @@ inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uin
         *sizealt -= offset;
         memmove(ref, ref + offset, *sizeref);
         memmove(alt, alt + offset, *sizealt);
-        status |= 32;
+        status |= NORM_LTRIM;
     }
     ref[*sizeref] = 0;
     alt[*sizealt] = 0;

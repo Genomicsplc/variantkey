@@ -130,18 +130,18 @@ func TestNormalizeVariant(t *testing.T) {
 		ecode    int
 	}
 	var ndata = []TNormData{
-		{1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2},         // invalid position
-		{1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1},           // invalid reference
-		{1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 2},            // flip
-		{1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},            // OK
-		{13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32},      // left trim
-		{13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48},      // left trim + right trim
-		{1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48}, // left trim + right trim
-		{1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},              // OK
-		{1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8},            // left extend
-		{1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},        // OK
-		{1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 4},            // swap
-		{1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6},            // swap + flip
+        {1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2},         // invalid position
+        {1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1},           // invalid reference
+        {1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 4},            // flip
+        {1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},            // OK
+        {13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32},      // left trim
+        {13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48},      // left trim + right trim
+        {1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48}, // left trim + right trim
+        {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},              // OK
+        {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8},            // left extend
+        {1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},        // OK
+        {1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 2},            // swap
+        {1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6},            // swap + flip
 	}
 	for _, v := range ndata {
 		v := v

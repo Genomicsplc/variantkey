@@ -47,6 +47,17 @@ extern "C" {
 
 #define ALLELE_MAXSIZE 256 //!< Maximum allele length
 
+// Return codes for normalize_variant()
+#define NORM_WRONGPOS     -2 //!< Normalization: invalid position
+#define NORM_INVALID      -1 //!< Normalization: invalid reference
+#define NORM_OK            0 //!< Normalization: the reference allele perfectly match the genome reference
+#define NORM_VALID         1 //!< Normalization: the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
+#define NORM_SWAP   (1 << 1) //!< Normalization: the alleles have been swapped;
+#define NORM_FLIP   (1 << 2) //!< Normalization: the alleles nucleotides have been flipped;
+#define NORM_LEXT   (1 << 3) //!< Normalization: left extended;
+#define NORM_RTRIM  (1 << 4) //!< Normalization: right trimmed;
+#define NORM_LTRIM  (1 << 5) //!< Normalization: left trimmed;
+
 /**
  * Load the genome reference index.
  *
@@ -111,15 +122,8 @@ void flip_allele(char *allele, size_t size);
  * @param alt        Alternate non-reference allele string.
  * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
- * @return Positive number in case of success, negative in case of error:
- *       * -2 the reference allele is longer than the genome reference sequence.
- *       * -1 the reference allele don't match the reference genome;
- *       * (ret &  1) == 1 : the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
- *       * (ret &  2) == 1 : the alleles nucleotides have been flipped;
- *       * (ret &  4) == 1 : the alleles have been swapped;
- *       * (ret &  8) == 1 : left extended;
- *       * (ret & 16) == 1 : right trimmed;
- *       * (ret & 32) == 1 : left trimmed;
+ * @return Positive bitmask number in case of success, negative number in case of error.
+ *         The botmask values are described by the NORM_* constants.
  */
 int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
