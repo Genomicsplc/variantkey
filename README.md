@@ -162,7 +162,7 @@ In VCF files the variant normalization can be performed using the [vt](https://g
 #### Normalization Function
 
 Individual bialleic variants can be normalized using the `normalize_variant` function provided by this library.  
-The `normalize_variant` function has the ability to check the consistency of the variant against the genome reference and flip the alleles if required.
+The `normalize_variant` function has the ability to check the consistency of the variant against the genome reference and swap and/or flip the alleles if required.
 
 The genome reference binary file can be obtained from a FASTA file using the `resources/tools/fastabin.sh` script.
 This script only extract the first 25 sequences for chromosomes 1 to 22, X, Y and MT.  

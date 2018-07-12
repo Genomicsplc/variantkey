@@ -22,6 +22,36 @@ uint64_t get_time()
     return (((uint64_t)t.tv_sec * 1000000000) + (uint64_t)t.tv_nsec);
 }
 
+int test_swap_sizes()
+{
+    int errors = 0;
+    size_t first = 123;
+    size_t second = 456;
+    swap_sizes(&first, &second);
+    if ((first != 456) || (second != 123))
+    {
+        fprintf(stderr, "%s : Error while swapping sizes\n", __func__);
+        ++errors;
+    }
+    return errors;
+}
+
+int test_swap_alleles()
+{
+    int errors = 0;
+    char first[ALLELE_MAXSIZE] = "ABC";
+    char second[ALLELE_MAXSIZE] = "DEFGHI";
+    size_t sizefirst = 3;
+    size_t sizesecond = 6;
+    swap_alleles(first, &sizefirst, second, &sizesecond);
+    if ((strcmp(first, "DEFGHI") != 0) || (strcmp(second, "ABC") != 0) || (sizefirst != 6) || (sizesecond != 3))
+    {
+        fprintf(stderr, "%s : Error while swapping alleles: %s %s\n", __func__, first, second);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_get_genoref_seq(const unsigned char *src, uint32_t idx[])
 {
     int errors = 0;
@@ -189,20 +219,22 @@ int test_normalize_variant(const unsigned char *src, uint32_t idx[])
         size_t exp_sizealt;
         int exp;
     } test_norm_t;
-    static test_norm_t test_norm[10] =
+    static test_norm_t test_norm[12] =
     {
-        {1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2},
-        {1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1},
-        {1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 2},
-        {1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},
-        {13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 16},
-        {13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 24},
-        {1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 24},
-        {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},
-        {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 4},
-        {1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},
+        {1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2},         // invalid position
+        {1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1},           // invalid reference
+        {1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 4},            // flip
+        {1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},            // OK
+        {13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32},      // left trim
+        {13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48},      // left trim + right trim
+        {1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48}, // left trim + right trim
+        {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},              // OK
+        {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8},            // left extend
+        {1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},        // OK
+        {1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 2},            // swap
+        {1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6},            // swap + flip
     };
-    for (i = 0; i < 10; i++)
+    for (i = 0; i < 12; i++)
     {
         ret = normalize_variant(src, idx, test_norm[i].chrom, &test_norm[i].pos, test_norm[i].ref, &test_norm[i].sizeref, test_norm[i].alt, &test_norm[i].sizealt);
         if (ret != test_norm[i].exp)
@@ -227,12 +259,12 @@ int test_normalize_variant(const unsigned char *src, uint32_t idx[])
         }
         if (strcmp(test_norm[i].ref, test_norm[i].exp_ref) != 0)
         {
-            fprintf(stderr, "%s : Expected REF %s, got %s\n", __func__, test_norm[i].exp_ref, test_norm[i].ref);
+            fprintf(stderr, "%s (%d): Expected REF %s, got %s\n", __func__, i, test_norm[i].exp_ref, test_norm[i].ref);
             ++errors;
         }
         if (strcmp(test_norm[i].alt, test_norm[i].exp_alt) != 0)
         {
-            fprintf(stderr, "%s : Expected ALT %s, got %s\n", __func__, test_norm[i].exp_alt, test_norm[i].alt);
+            fprintf(stderr, "%s (%d): Expected ALT %s, got %s\n", __func__, i, test_norm[i].exp_alt, test_norm[i].alt);
             ++errors;
         }
     }
@@ -256,7 +288,8 @@ int main()
         fprintf(stderr, "Expecting size %" PRIu64 ", got instead: %" PRIu32 "\n", genoref.size, idx[26]);
         return 1;
     }
-
+    errors += test_swap_sizes();
+    errors += test_swap_alleles();
     errors += test_get_genoref_seq(genoref.src, idx);
     errors += test_check_reference(genoref.src, idx);
     errors += test_flip_allele();

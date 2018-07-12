@@ -45,7 +45,18 @@ extern "C" {
 #include "astring.h"
 #include "binsearch.h"
 
-#define ALLELE_MAXSIZE 256 //!< Maximum allele length
+#define ALLELE_MAXSIZE 256 //!< Maximum allele length.
+
+// Return codes for normalize_variant()
+#define NORM_WRONGPOS     -2 //!< Normalization: Invalid position.
+#define NORM_INVALID      -1 //!< Normalization: Invalid reference.
+#define NORM_OK            0 //!< Normalization: The reference allele perfectly match the genome reference.
+#define NORM_VALID         1 //!< Normalization: The reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T).
+#define NORM_SWAP   (1 << 1) //!< Normalization: The alleles have been swapped.
+#define NORM_FLIP   (1 << 2) //!< Normalization: The alleles nucleotides have been flipped (each nucleotide have been replaced with its complement).
+#define NORM_LEXT   (1 << 3) //!< Normalization: Alleles have been left extended.
+#define NORM_RTRIM  (1 << 4) //!< Normalization: Alleles have been right trimmed.
+#define NORM_LTRIM  (1 << 5) //!< Normalization: Alleles have been left trimmed.
 
 /**
  * Load the genome reference index.
@@ -111,14 +122,14 @@ void flip_allele(char *allele, size_t size);
  * @param alt        Alternate non-reference allele string.
  * @param sizealt    Length of the alt string, excluding the terminating null byte.
  *
- * @return Positive number in case of success, negative in case of error:
- *       * -2 the reference allele is longer than the genome reference sequence.
- *       * -1 the reference allele don't match the reference genome;
- *       * (ret &  1) == 1 : the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
- *       * (ret &  2) == 1 : the alleles have been flipped;
- *       * (ret &  4) == 1 : left extended;
- *       * (ret &  8) == 1 : right trimmed;
- *       * (ret & 16) == 1 : left trimmed;
+ * @return Positive bitmask number in case of success, negative number in case of error.
+ *         When positive, each bit has a different meaning when set, has defined by the NORM_* defines:
+ *         - bit 0 (NORM_VALID) : The reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T).
+ *         - bit 1 (NORM_SWAP)  : The alleles have been swapped.
+ *         - bit 2 (NORM_FLIP)  : The alleles nucleotides have been flipped (each nucleotide have been replaced with its complement).
+ *         - bit 3 (NORM_LEXT)  : Alleles have been left extended.
+ *         - bit 4 (NORM_RTRIM) : Alleles have been right trimmed.
+ *         - bit 5 (NORM_LTRIM) : Alleles have been left trimmed.
  */
 int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
