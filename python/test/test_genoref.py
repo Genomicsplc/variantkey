@@ -104,6 +104,8 @@ class TestFunctions(TestCase):
                 (1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0),
                 (1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 4),
                 (1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0),
+                (1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 4),
+                (1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6),
             ]
             for chrom, pos, ref, sizeref, alt, sizealt, epos, eref, esizeref, ealt, esizealt, ecode in tdata:
                 ncode, npos, nref, nalt, nsizeref, nsizealt = bs.normalize_variant(mfsrc, idx, chrom, pos, ref, alt)
