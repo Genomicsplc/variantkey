@@ -6,8 +6,9 @@
 [![Master Coverage Status](https://coveralls.io/repos/Genomicsplc/variantkey/badge.svg?branch=master&service=github)](https://coveralls.io/github/Genomicsplc/variantkey?branch=master)
 
 * **category**    Libraries
+* **author**      Nicola Asuni
+* **copyright**   2017-2018 [GENOMICS plc](https://www.genomicsplc.com/)
 * **license**     MIT (see LICENSE)
-* **copyright**   2017-2018 GENOMICS plc
 * **link**        https://github.com/Genomicsplc/variantkey
 
 
