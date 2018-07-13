@@ -123,7 +123,7 @@ The `-s` option (smart decomposition) splits up `INFO` and `GENOTYPE` fields tha
 ### Normalization
 
 A normalization step is required to ensure a consistent and unambiguous representation of variants.
-As shown in Fig. 1, there are multiple ways to represent the same variant, but only one can be considered "normalized" as defined by [Tan et al., 2015](https://doi.org/10.1093/bioinformatics/btv112):
+As shown in the following example, there are multiple ways to represent the same variant, but only one can be considered "normalized" as defined by [Tan et al., 2015](https://doi.org/10.1093/bioinformatics/btv112):
 
 * A variant representation is normalized if and only if it is left aligned and parsimonious.
 * A variant representation is left aligned if and only if its base position is smallest among all potential representations having the same allele length and representing the same variant.
@@ -162,10 +162,10 @@ In VCF files the variant normalization can be performed using the [vt](https://g
 #### Normalization Function
 
 Individual bialleic variants can be normalized using the `normalize_variant` function provided by this library.  
-The `normalize_variant` function has the ability to check the consistency of the variant against the genome reference and swap and/or flip the alleles if required.
+The `normalize_variant` function checks the consistency of the variant against the genome reference, and swap and/or flip the alleles if required.
 
 The genome reference binary file can be obtained from a FASTA file using the `resources/tools/fastabin.sh` script.
-This script only extract the first 25 sequences for chromosomes 1 to 22, X, Y and MT.  
+This script extracts the first 25 sequences for chromosomes `1` to `22`, `X`, `Y` and `MT`.  
 The first line of the binary fasta file contains the index composed by 26 blocks of 32 bit numbers, one for each of the 25 chromosomes plus one to indicate the end of the file.
 Each index number represents the file byte offset of the corresponding chromosome sequence.
 The index is followed by 25 lines, one for each chromosome sequence.
@@ -194,10 +194,10 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         LSB
     ```
     The chromosome is encoded as unsigned integer number: 1 to 22, X=23, Y=24, MT=25, NA=0.
-    This section is 5 bit long, so it can store up to 2^5=32 symbols, enough to contain the required 26 chromosome symbols.
+    This section is 5 bit long, so it can store up to 2<sup>5</sup>=32 symbols, enough to contain the required 26 chromosome symbols.
     The largest value is: 25 dec = 19 hex = 11001 bin.
                 
-* **`POS`**     : 28 bit for the reference position (`POS`), with the 1<sup>st</sup> nucleotide having position 0.
+* **`POS`**     : 28 bit for the reference position (`POS`), with the first nucleotide having position 0.
 
     ```
     0    5                             32
@@ -206,7 +206,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
          |                              |
         MSB                            LSB
     ```
-    This section is 28 bit long, so it can store up to 2^28=268,435,456 symbols, enough to contain the maximum position 247,199,718 found on the largest human chromosome.
+    This section is 28 bit long, so it can store up to 2<sup>28</sup>=268,435,456 symbols, enough to contain the maximum position 247,199,718 found on the largest human chromosome.
                   
 
 * **`REF+ALT`** : 31 bit for the encoding of the `REF` and `ALT` strings.
@@ -222,19 +222,22 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
     * **Non-reversible encoding**
 
-        If the total number of nucleotides between REF and ALT is more then 11, or if any of the alleles contains nucleotide letters other than base A, C, G and T, then the LSB (least significant bit) is set to 1 and the remaining 30 bit are filled with an hash value of the REF and ALT strings.  
-        The hash value is calulated using a custom fast non-cryptographic algorithm based on MurmurHash3.  
-        A lookup table is required to reverse the REF and ALT values.  
+        If the total number of nucleotides between `REF` and `ALT` is more then 11, or if any of the alleles contains nucleotide letters other than base `A`, `C`, `G` and `T`, then the LSB (least significant bit) is set to 1 and the remaining 30 bit are filled with an hash value of the `REF` and `ALT` strings.  
+        The hash value is calulated using a custom fast non-cryptographic algorithm based on [MurmurHash3](https://github.com/aappleby/smhasher/wiki/MurmurHash3).  
+        A lookup table is required to reverse the `REF` and `ALT` values.  
         In the normalized dbSNP VCF file GRCh37.p13.b150 there are only 0.365% (1229769 / 337162128) variants that requires this encoding. Amongst those, the maximum number of variants that share the same chromosome and position is 15. With 30 bit the probability of hash collision is approximately 10<sup>-7</sup> for 15 elements, 10<sup>-6</sup> for 46 and 10<sup>-5</sup> for 146.
 
     * **Reversible encoding**
 
-        If the total number of nucleotides between REF and ALT is 11 or less, and they only contain base letters A, C, G and T, then the LSB is set to 0 and the remaining 30 bit are used as follows:
-        * bit 1-4 indicate the number of bases in REF - the capacity of this section is 2^4=16; the maximum expected value is 10 dec = 1010 bin;
-        * bit 5-8 indicate the number of bases in ALT - the capacity of this section is 2^4=16; the maximum expected value is 10 dec = 1010 bin;
-        * the following 11 groups of 2 bit are used to represent REF bases followed by ALT (A = 0 dec = 00 bin, C = 1 dec = 01 bin, G = 2 dec = 10 bin, T = 4 dec = 11 bin).  
-        This encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
-        
+        If the total number of nucleotides between `REF` and `ALT` is 11 or less, and they only contain base letters `A`, `C`, `G` and `T`, then the LSB is set to 0 and the remaining 30 bit are used as follows:
+        * bit 1-4 indicates the number of bases in `REF` - the capacity of this section is 2<sup>4</sup>=16; the maximum expected value is 10 dec = 1010 bin;
+        * bit 5-8 indicates the number of bases in `ALT` - the capacity of this section is 2<sup>4</sup>=16; the maximum expected value is 10 dec = 1010 bin;
+        * the following 11 groups of 2 bit are used to represent `REF` bases followed by `ALT`, with the following encoding:
+            * `A` = 0 dec = 00 bin;
+            * `C` = 1 dec = 01 bin;
+            * `G` = 2 dec = 10 bin;
+            * `T` = 4 dec = 11 bin.
+
         Examples:
         
         ```
@@ -246,39 +249,41 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
                          33 (MSB)                                   63 (LSB)
         ```
 
+        The reversible encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
+
+
 ### VariantKey Properties
 
 * Sorting the VariantKey is equivalent of sorting by CHROM and POS.
-* The 64 bit VariantKey can be exported as a single 16 character hexadecimal string.
+* The 64 bit VariantKey can be exported as a 16 character hexadecimal string.
 * Sorting the hexadecimal representation of VariantKey in alphabetical order is equivalent of sorting the VariantKey numerically.
 * Comparing two variants by VariantKey only requires comparing two numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
 * VariantKey can be used as a main database key to index data by "variant". This simplify common searching, merging and filtering operations.
 * All types of database joins between two data sets (inner, left, right and full) can be easily performed using the VariantKey as index.
-* When CHROM, REF and ALT are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit or bytes, with the ability to perform a quick binary search algorithm on the first sorted column.
+* When `CHROM`, `REF` and `ALT` are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit, with the ability to perform a quick binary search algorithm on the first sorted column.
 
 
 ## Input values
 
 * **`CHROM`** - *chromosome*     : Identifier from the reference genome, no white-space permitted.
-
-* **`POS`**   - *position*       : The reference position, with the 1<sup>st</sup> nucleotide having position 0.
-
+* **`POS`**   - *position*       : The reference position, with the first nucleotide having position 0.
 * **`REF`**   - *reference allele* :
-    String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).   
+    String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
     The value in the `POS` field refers to the position of the first nucleotide in the string.
-
 * **`ALT`**   - *alternate non-reference allele* : 
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
-## Binary file format for lookup tables 
+## Binary file formats for lookup tables 
 
-The input binary lookup-table files can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh`.  
+A direct application of the VariantKey representation is the ability to create lookup tables as simple binary files.
+
+The following binary lookup-table files are natively supported by the variantkey library and can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh` shell script.  
 The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.  
 The `vkhexbin.sh` requires [bcftools](https://github.com/samtools/bcftools) compiled with the plugins in `resources/bcftools/plugins` folder.
 
 * **`rsvk.bin`**  
-Lookup table to retrieve VariantKey from rsID.
+Lookup table to retrieve VariantKey from rsID.  
 The file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
@@ -289,7 +294,7 @@ The file contains adjacent 12 bytes (96 bit) binary blocks with the following st
 ```
 
 * **`vkrs.bin`**  
-Lookup table to retrieve rsID from VariantKey.
+Lookup table to retrieve rsID from VariantKey.  
 The file contains adjacent 12 bytes (96 bit) binary blocks with the following structure:
 
 ```
@@ -300,7 +305,7 @@ The file contains adjacent 12 bytes (96 bit) binary blocks with the following st
 ```
 
 * **`vknr.bin`**  
-Lookup table to retrieve the original REF and ALT string for the non-reversible VariantKey.
+Lookup table to retrieve the original `REF` and `ALT` string for the non-reversible VariantKey.  
 The binary file has the following format :
 
 ```
@@ -314,27 +319,15 @@ The binary file has the following format :
 
 ## C Library
 
+The reference implementation of this library is written in C programming language in a way that is also compatible with C++.
+
 This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.  
 All the artifacts and reports produced using this Makefile are stored in the *target* folder.  
 
-* To see all available options:
-```
-make help
-```
-* To execute all the default test builds and generate reports in the current environment:
-```
-make test
-```
-* To format the code (please use this command before submitting any pull request):
-```
-make format
-```
-* To build a shared library:
-```
-make build
-```
+* To see all available options: `make help`
+* To build everything: `make all`
 
-### Command-Line tool
+### Example command-Line tool
 
 The code inside the `c/vk` folder is used to generate the `vk` command line tool.  
 This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
@@ -342,30 +335,16 @@ This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF
 
 ## GO Library
 
-A go wrapper is located in the `go` directory.
-
-### Test
-
-Use the following commands to test the go wrapper and generate reports.
-
-```
-make go
-```
+A go wrapper is located in the `go` directory.  
+Use the "`make go`" command to test the GO wrapper and generate reports.
 
 
 ## Python Module
 
 The python module is located in the `python` directory.
+Use the "`make python`" command to test the Python wrapper and generate reports.
 
-### Build
-
-A Conda package can be built using the following command:
-
-```
-make python
-```
-
-### Usage Example
+### Python Usage Example
 
 ```
 #!/usr/bin/env python3
@@ -407,16 +386,13 @@ print(ref, alt, reflen, altlen)
 
 ## R Module (limited support)
 
-Use the following command to build the R wrapper.
+The R module is located in the `r` directory.
+Use the "`make r`" command to test the R wrapper and generate reports.
 
-```
-make r
-```
+In R the VariantKey is represented as hexadecimal string because there is no native support for unsigned 64 bit integers in R.
+Alternatively it is possible to use the encoding of the individual components (i.e. `CHROM`, `POS` and `REF+ALT`, or the signed 64 bit extension).
 
-In R the VariantKey is represented as hexadecimal string because there is no native support for 64 bit unsigned integers in R.
-Alternatively it is possible to use the encoding of the individual components (i.e. CHROM, POS and REF+ALT).
-
-### Usage Example
+### R Usage Example
 
 ```
 #!/usr/bin/env Rscript
@@ -489,8 +465,4 @@ print(dra)
 
 ## Javascript library (limited support)
 
-Use the following command to test and minify the Javascript implementation.
-
-```
-make javascript
-```
+Use the "`make javascript`" command to test and minify the Javascript implementation.
