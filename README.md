@@ -163,7 +163,57 @@ In VCF files the variant normalization can be performed using the [vt](https://g
 #### Normalization Function
 
 Individual bialleic variants can be normalized using the `normalize_variant` function provided by this library.  
-The `normalize_variant` function checks the consistency of the variant against the genome reference, and swap and/or flip the alleles if required.
+
+The `normalize_variant` function first checks if the reference allele matches the genome reference.
+The match is considered valid and consistent if there is a perfect letter-by-letter match, and valid but not consistent if one or more letter matches an equivalent one. The equivalent letters are defined as follows [Cornish-Bowden, 1984](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC341218/):
+
+```
+    SYMBOL | DESCRIPTION                   | BASES   | COMPLEMENT
+    -------+-------------------------------+---------+-----------
+       A   | Adenine                       | A       |  T
+       C   | Cytosine                      |   C     |  G
+       G   | Guanine                       |     G   |  C
+       T   | Thymine                       |       T |  A
+       W   | Weak                          | A     T |  W
+       S   | Strong                        |   C G   |  S
+       M   | aMino                         | A C     |  K
+       K   | Keto                          |     G T |  M
+       R   | puRine                        | A   G   |  Y
+       Y   | pYrimidine                    |   C   T |  R
+       B   | not A (B comes after A)       |   C G T |  V
+       D   | not C (D comes after C)       | A   G T |  H
+       H   | not G (H comes after G)       | A C   T |  D
+       V   | not T (V comes after T and U) | A C G   |  B
+       N   | aNy base (not a gap)          | A C G T |  N
+    -------+-------------------------------+---------+----------
+```
+
+If the reference allele is not valid, the `normalize_variant` tries to find a reference match with one of the following variant transformations:
+
+* **swap** the reference and alternate alleles - *sometimes it is not clear which one is the reference and which one is the alternate allele*.
+* **flip** the alleles letters (use the **complement** letters) - *sometimes the alleles refers to the other DNA strand*.
+* **swap** and **flip**.
+
+Note that the *swap* and *flip* processes can lead to false positive cases, especially when considering Single Nucleotide Polymorphisms (SNPs). The return code of the `normalize_variant` function can be used to discriminate or discard variants that are not consistent.
+
+If the variant doesn't match the genome reference, then the original variant is returned with an error code.
+
+If both alleles have length 1, the normalization is complete and the variant is returned.
+Otherwise, a custom implementation of the [vt normalization](https://genome.sph.umich.edu/wiki/Vt#Normalization) algorithm is applied:
+
+```
+while break, do
+    if any of the alelles is empty and the position is greater than zero, then
+        extend both alleles one letter to the left using the nucleotide in the corresponding genome reference position;
+    else
+        if both alleles end with the same letter and they have length 2 or more, then
+            truncate the rightmost letter of each allele;
+        else
+            break (exit the while loop);
+
+while both alleles start with the same letter and have length 2 or more, do
+    truncate leftmost letter of each allele;
+```
 
 The genome reference binary file can be obtained from a FASTA file using the `resources/tools/fastabin.sh` script.
 This script extracts the first 25 sequences for chromosomes `1` to `22`, `X`, `Y` and `MT`.  

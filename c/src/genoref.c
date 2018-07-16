@@ -63,26 +63,29 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
         }
         /*
             Abbreviation codes for degenerate bases
-            (http://www.sbcs.qmul.ac.uk/iubmb/misc/naseq.html)
+            
+            Cornish-Bowden A.
+            Nomenclature for incompletely specified bases in nucleic acid sequences: recommendations 1984.
+            Nucleic Acids Research. 1985;13(9):3021-3030.
 
-            SYMBOL | DESCRIPTION                   | BASES REPRESENTED
-            -------+-------------------------------+------------------
-               A   | adenine                       | A
-               C   | cytosine                      |  C
-               G   | guanine                       |   G
-               T   | thymine                       |    T
-               W   | weak                          | A  T
-               S   | strong                        |  CG
-               M   | amino                         | AC
-               K   | keto                          |   GT
-               R   | purine                        | A G
-               Y   | pyrimidine                    |  C T
-               B   | not A (B comes after A)       |  CGT
-               D   | not C (D comes after C)       | A GT
-               H   | not G (H comes after G)       | AC T
-               V   | not T (V comes after T and U) | ACG
-               N   | any base (not a gap)          | ACGT
-            -------+-------------------------------+------------------
+            SYMBOL | DESCRIPTION                   | BASES   | COMPLEMENT
+            -------+-------------------------------+---------+-----------
+               A   | Adenine                       | A       |  T
+               C   | Cytosine                      |   C     |  G
+               G   | Guanine                       |     G   |  C
+               T   | Thymine                       |       T |  A
+               W   | Weak                          | A     T |  W
+               S   | Strong                        |   C G   |  S
+               M   | aMino                         | A C     |  K
+               K   | Keto                          |     G T |  M
+               R   | puRine                        | A   G   |  Y
+               Y   | pYrimidine                    |   C   T |  R
+               B   | not A (B comes after A)       |   C G T |  V
+               D   | not C (D comes after C)       | A   G T |  H
+               H   | not G (H comes after G)       | A C   T |  D
+               V   | not T (V comes after T and U) | A C G   |  B
+               N   | aNy base (not a gap)          | A C G T |  N
+            -------+-------------------------------+---------+----------
         */
         if ((uref == 'N')
                 || (gref == 'N')
@@ -118,7 +121,7 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
 inline void flip_allele(char *allele, size_t size)
 {
     /*
-      Allele flipping:
+      Byte map for allele flipping (complement):
 
       A > T
       T > A
@@ -267,4 +270,3 @@ inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uin
     alt[*sizealt] = 0;
     return status;
 }
-
