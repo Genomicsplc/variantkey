@@ -63,7 +63,7 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
         }
         /*
             Abbreviation codes for degenerate bases
-            
+
             Cornish-Bowden A.
             Nomenclature for incompletely specified bases in nucleic acid sequences: recommendations 1984.
             Nucleic Acids Research. 1985;13(9):3021-3030.

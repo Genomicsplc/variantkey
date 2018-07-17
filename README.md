@@ -12,17 +12,38 @@
 * **link**        https://github.com/Genomicsplc/variantkey
 
 
+## TOC
+
+* [Description](#description)
+* [Quick Start](#quickstart)
+* [Human Genetic Variant Definition](#hgvdefinition)
+* [Variant Decomposition and Normalization](#decompandnorm)
+    * [Decomposition](#decomposition)
+    * [Normalization](#normalization)
+        * [Normalization Function](#normfunc)
+* **[VariantKey Format](#vkformat)**
+    * [VariantKey Properties](#vkproperties)
+* [VariantKey Input values](#vkinput)
+* [Binary file formats for lookup tables](#binaryfiles)
+* [C Library](#clib)
+* [GO Library](#golib)
+* [Python Module](#pythonlib)
+* [R Module](#rlib)
+* [Javascript library](#jslib)
+
+
+<a name="description"></a>
 ## Description
 
-A genetic variant is often referred as a single entity but, for a given genome assembly, it is usually represented as a set of four components with variable length: *chromosome*, *position*, *reference* and *alternate* alleles. There is no guarantee that these components are represented in a consistent way across different data sources. The numerical dbSNP reference record representation (rs#) only covers a subset of all possible variants and it is not bijective. Processing variant-based data can be really inefficient due to the necessity to perform four different comparison operations for each variant, three of which are string comparisons. Working with strings, in contrast of numbers, poses extra challenges on memory allocation and data-representation.
+A genetic variant is often referred as a single entity but, for a given genome assembly, it is usually represented as a set of four components with variable length: *chromosome*, *position*, *reference* and *alternate* alleles. There is no guarantee that these components are represented in a consistent way across different data sources. The numerical *dbSNP* reference record representation (*rs#*) only covers a subset of all possible variants and it is not bijective. Processing variant-based data can be really inefficient due to the necessity to perform four different comparison operations for each variant, three of which are string comparisons. Working with strings, in contrast of numbers, poses extra challenges on memory allocation and data-representation.
 
 **VariantKey**, a novel reversible numerical encoding schema for human genetic variants, overcomes these limitations by allowing to process variants as a single 64 bit numeric entities while preserving the ability to be searched and sorted per chromosome and position.
 
-The individual components of short variants (up to 11 bases between REF and ALT alleles) can be directly read back from the VariantKey, while long variants requires a lookup table to retrieve the reference and alternate allele strings.
+The individual components of short variants (up to 11 bases between `REF` and `ALT` alleles) can be directly read back from the VariantKey, while long variants requires a lookup table to retrieve the reference and alternate allele strings.
 
 This software library can be used to generate and reverse VariantKeys.
 
-
+<a name="quickstart"></a>
 ## Quick Start
 
 This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.
@@ -33,7 +54,7 @@ To see all available options, from the project root type:
 make help
 ```
 
-To build all the VriantKey versions inside a Docker container (requires Docker):
+To build all the VariantKey versions inside a Docker container (requires Docker):
 
 ```
 make dbuild
@@ -61,7 +82,7 @@ cd c
 make test
 ```
 
-
+<a name="hgvdefinition"></a>
 ## Human Genetic Variant Definition
 
 In this context, the human genetic variant for a given genome assembly is defined as the set of four components compatible with the VCF format:
@@ -72,10 +93,12 @@ In this context, the human genetic variant for a given genome assembly is define
 * **`ALT`** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
 
 
+<a name="decompandnorm"></a>
 ## Variant Decomposition and Normalization
 
 The *VariantKey* model assumes that the variants have been decomposed and normalized.
 
+<a name="decomposition"></a>
 ### Decomposition
 
 In the common *Variant Call Format* (VCF) the alternate field can contain comma-separated strings for multialleic variants, while in this context we only consider bialleic variants to allow for allelic comparisons between different data sets.
@@ -121,14 +144,15 @@ The `-s` option (smart decomposition) splits up `INFO` and `GENOTYPE` fields tha
   1       3759889 .    TA      T           .      .       AF=0.037;OLD_MULTIALLELIC=1:3759889:TA/TAA/TAAA/T    GT:PL    ./.:281,338,809  0/0:0,38,567
 ```
 
+<a name="normalization"></a>
 ### Normalization
 
 A normalization step is required to ensure a consistent and unambiguous representation of variants.
 As shown in the following example, there are multiple ways to represent the same variant, but only one can be considered "normalized" as defined by [Tan et al., 2015](https://doi.org/10.1093/bioinformatics/btv112):
 
-* A variant representation is normalized if and only if it is left aligned and parsimonious.
-* A variant representation is left aligned if and only if its base position is smallest among all potential representations having the same allele length and representing the same variant.
-* A variant representation is parsimonious if and only if the entry has the shortest allele length among all VCF entries representing the same variant.
+* *A variant representation is normalized if and only if it is left aligned and parsimonious.*
+* *A variant representation is left aligned if and only if its base position is smallest among all potential representations having the same allele length and representing the same variant.*
+* *A variant representation is parsimonious if and only if the entry has the shortest allele length among all VCF entries representing the same variant.*
 
 Example of VCF entries representing the same variant:
 
@@ -160,12 +184,13 @@ In VCF files the variant normalization can be performed using the [vt](https://g
     vt normalize decomposed.vcf -m -r genome.fa -o normalized.vcf
 ```
 
+<a name="normfunc"></a>
 #### Normalization Function
 
 Individual bialleic variants can be normalized using the `normalize_variant` function provided by this library.  
 
 The `normalize_variant` function first checks if the reference allele matches the genome reference.
-The match is considered valid and consistent if there is a perfect letter-by-letter match, and valid but not consistent if one or more letter matches an equivalent one. The equivalent letters are defined as follows [Cornish-Bowden, 1984](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC341218/):
+The match is considered valid and consistent if there is a perfect letter-by-letter match, and valid but not consistent if one or more letter matches an equivalent one. The equivalent letters are defined as follows [[Cornish-Bowden, 1984](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC341218/)]:
 
 ```
     SYMBOL | DESCRIPTION                   | BASES   | COMPLEMENT
@@ -188,13 +213,13 @@ The match is considered valid and consistent if there is a perfect letter-by-let
     -------+-------------------------------+---------+----------
 ```
 
-If the reference allele is not valid, the `normalize_variant` tries to find a reference match with one of the following variant transformations:
+If the reference allele is not valid, the `normalize_variant` function tries to find a reference match with one of the following variant transformations:
 
 * **swap** the reference and alternate alleles - *sometimes it is not clear which one is the reference and which one is the alternate allele*.
 * **flip** the alleles letters (use the **complement** letters) - *sometimes the alleles refers to the other DNA strand*.
 * **swap** and **flip**.
 
-Note that the *swap* and *flip* processes can lead to false positive cases, especially when considering Single Nucleotide Polymorphisms (SNPs). The return code of the `normalize_variant` function can be used to discriminate or discard variants that are not consistent.
+Note that the *swap* and *flip* processes can lead to false positive cases, especially when considering *Single Nucleotide Polymorphisms* (SNPs). The return code of the `normalize_variant` function can be used to discriminate or discard variants that are not consistent.
 
 If the variant doesn't match the genome reference, then the original variant is returned with an error code.
 
@@ -222,9 +247,15 @@ Each index number represents the file byte offset of the corresponding chromosom
 The index is followed by 25 lines, one for each chromosome sequence.
 
 
+<a name="vkformat"></a>
 ## VariantKey Format
 
+The VariantKey format encodes a *Human Genetic Variant* (`CHROM`, `POS`, `REF` and `ALT`) as 64 bit unsigned integer number (8 bytes or 16 hexadecimal symbols).
+If the variant has not more than 11 bases between `REF` and `ALT`, the correspondent VariantKey can be directly reversed to get back the individual `CHROM`, `POS`, `REF` and `ALT` components.
+If the variant has more than 11 bases, or non-base nucleotide letters are contained in `REF` or `ALT`, the VariantKey can be fully reversed with the support of a binary lookup table.
+
 The VariantKey is composed of 3 sections arranged in 64 bit:
+
 
 ```
     1      8      16      24      32      40      48      56      64
@@ -244,10 +275,11 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         |
         LSB
     ```
-    The chromosome is encoded as unsigned integer number: 1 to 22, X=23, Y=24, MT=25, NA=0.
-    This section is 5 bit long, so it can store up to 2<sup>5</sup>=32 symbols, enough to contain the required 26 chromosome symbols.
-    The largest value is: 25 dec = 19 hex = 11001 bin.
-                
+    The chromosome is encoded as unsigned integer number: 1 to 22, X=23, Y=24, MT=25, NA=0.  
+    This section is 5 bit long, so it can store up to 2<sup>5</sup>=32 symbols, enough to contain the required 26 canonical chromosome symbols.  
+    The largest value is: 25 dec = 19 hex = 11001 bin.  
+    Values from 26 to 31 are currently reserved. They will be used to indicate 6 alternative modes to interpret the remaining 59 bit. For instance, one of these values can be used to indicate the encoding of variants that occurs in non-canonical contigs.
+
 * **`POS`**     : 28 bit for the reference position (`POS`), with the first nucleotide having position 0.
 
     ```
@@ -258,7 +290,6 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         MSB                            LSB
     ```
     This section is 28 bit long, so it can store up to 2<sup>28</sup>=268,435,456 symbols, enough to contain the maximum position 247,199,718 found on the largest human chromosome.
-                  
 
 * **`REF+ALT`** : 31 bit for the encoding of the `REF` and `ALT` strings.
 
@@ -303,9 +334,10 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         The reversible encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
 
 
+<a name="vkproperties"></a>
 ### VariantKey Properties
 
-* Sorting the VariantKey is equivalent of sorting by CHROM and POS.
+* Sorting the VariantKey is equivalent of sorting by `CHROM` and `POS`.
 * The 64 bit VariantKey can be exported as a 16 character hexadecimal string.
 * Sorting the hexadecimal representation of VariantKey in alphabetical order is equivalent of sorting the VariantKey numerically.
 * Comparing two variants by VariantKey only requires comparing two numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
@@ -314,7 +346,8 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 * When `CHROM`, `REF` and `ALT` are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit, with the ability to perform a quick binary search algorithm on the first sorted column.
 
 
-## Input values
+<a name="vkinput"></a>
+## VariantKey Input values
 
 * **`CHROM`** - *chromosome*     : Identifier from the reference genome, no white-space permitted.
 * **`POS`**   - *position*       : The reference position, with the first nucleotide having position 0.
@@ -325,6 +358,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
 
+<a name="binaryfiles"></a>
 ## Binary file formats for lookup tables 
 
 A direct application of the VariantKey representation is the ability to create lookup tables as simple binary files.
@@ -368,6 +402,7 @@ The binary file has the following format :
 ```
 
 
+<a name="clib"></a>
 ## C Library
 
 The reference implementation of this library is written in C programming language in a way that is also compatible with C++.
@@ -384,12 +419,14 @@ The code inside the `c/vk` folder is used to generate the `vk` command line tool
 This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
 
 
+<a name="golib"></a>
 ## GO Library
 
 A go wrapper is located in the `go` directory.  
 Use the "`make go`" command to test the GO wrapper and generate reports.
 
 
+<a name="pythonlib"></a>
 ## Python Module
 
 The python module is located in the `python` directory.
@@ -435,6 +472,7 @@ print(ref, alt, reflen, altlen)
 # b'GCA' b'G' 3 1
 ```
 
+<a name="rlib"></a>
 ## R Module (limited support)
 
 The R module is located in the `r` directory.
@@ -513,7 +551,7 @@ print(dra)
 #[1] 1
 ```
 
-
+<a name="jslib"></a>
 ## Javascript library (limited support)
 
 Use the "`make javascript`" command to test and minify the Javascript implementation.
