@@ -41,7 +41,11 @@ A genetic variant is often referred as a single entity but, for a given genome a
 
 The individual components of short variants (up to 11 bases between `REF` and `ALT` alleles) can be directly read back from the VariantKey, while long variants requires a lookup table to retrieve the reference and alternate allele strings.
 
+The [VariantKey Format](#vkformat) doesn't represent universal codes, it only encodes `CHROM`, `POS`, `REF` and `ALT`, so each code is unique for a given reference genome. The direct comparisons of two VariantKeys makes sense only if they both refer to the same genome reference.
+
 This software library can be used to generate and reverse VariantKeys.
+
+
 
 <a name="quickstart"></a>
 ## Quick Start
@@ -250,9 +254,10 @@ The index is followed by 25 lines, one for each chromosome sequence.
 <a name="vkformat"></a>
 ## VariantKey Format
 
-The VariantKey format encodes a *Human Genetic Variant* (`CHROM`, `POS`, `REF` and `ALT`) as 64 bit unsigned integer number (8 bytes or 16 hexadecimal symbols).
+For a given reference genome the VariantKey format encodes a *Human Genetic Variant* (`CHROM`, `POS`, `REF` and `ALT`) as 64 bit unsigned integer number (8 bytes or 16 hexadecimal symbols).
 If the variant has not more than 11 bases between `REF` and `ALT`, the correspondent VariantKey can be directly reversed to get back the individual `CHROM`, `POS`, `REF` and `ALT` components.
 If the variant has more than 11 bases, or non-base nucleotide letters are contained in `REF` or `ALT`, the VariantKey can be fully reversed with the support of a binary lookup table.
+
 
 The VariantKey is composed of 3 sections arranged in 64 bit:
 
@@ -340,6 +345,8 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 * Sorting the VariantKey is equivalent of sorting by `CHROM` and `POS`.
 * The 64 bit VariantKey can be exported as a 16 character hexadecimal string.
 * Sorting the hexadecimal representation of VariantKey in alphabetical order is equivalent of sorting the VariantKey numerically.
+* Each VariantKey code is unique for a given reference genome.
+* The direct comparisons of two VariantKeys makes sense only if they both refer to the same genome reference.
 * Comparing two variants by VariantKey only requires comparing two numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
 * VariantKey can be used as a main database key to index data by "variant". This simplify common searching, merging and filtering operations.
 * All types of database joins between two data sets (inner, left, right and full) can be easily performed using the VariantKey as index.
