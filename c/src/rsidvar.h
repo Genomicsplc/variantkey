@@ -131,8 +131,8 @@ uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, u
  * @param first     Pointer to the first element of the range to search (min value = 0).
  * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
  * @param chrom     Chromosome encoded number.
- * @param pos_min   Start reference position, with the 1st base having position 0.
- * @param pos_max   End reference position, with the 1st base having position 0.
+ * @param pos_min   Start reference position, with the first base having position 0.
+ * @param pos_max   End reference position, with the first base having position 0.
  *
  * @return rsID
  */

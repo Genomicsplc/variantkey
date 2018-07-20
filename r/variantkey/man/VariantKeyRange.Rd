@@ -9,9 +9,9 @@ VariantKeyRange(chrom, pos_min, pos_max)
 \arguments{
 \item{chrom}{Chromosome numerical code.}
 
-\item{pos_min}{Start reference position, with the 1st base having position 0.}
+\item{pos_min}{Start reference position, with the first base having position 0.}
 
-\item{pos_max}{End reference position, with the 1st base having position 0.}
+\item{pos_max}{End reference position, with the first base having position 0.}
 }
 \description{
 Returns minimum and maximum variant keys for range searches.

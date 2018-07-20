@@ -9,7 +9,7 @@ VariantKey(chrom, pos, ref, alt)
 \arguments{
 \item{chrom}{Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.}
 
-\item{pos}{Position. The reference position, with the 1st base having position 0.}
+\item{pos}{Position. The reference position, with the first base having position 0.}
 
 \item{ref}{Reference allele. String containing a sequence of nucleotide letters.}
 

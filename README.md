@@ -92,7 +92,7 @@ make test
 In this context, the human genetic variant for a given genome assembly is defined as the set of four components compatible with the VCF format:
 
 * **`CHROM`** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
-* **`POS`** - position: The reference position in the chromosome, with the 1st nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
+* **`POS`** - position: The reference position in the chromosome, with the first nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
 * **`REF`** - reference allele: String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first nucleotide in the String.
 * **`ALT`** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
 
@@ -439,45 +439,8 @@ Use the "`make go`" command to test the GO wrapper and generate reports.
 The python module is located in the `python` directory.
 Use the "`make python`" command to test the Python wrapper and generate reports.
 
-### Python Usage Example
+See [Python Usage Examples](python/test/example.py)
 
-```
-#!/usr/bin/env python3
-
-import variantkey as vk
-
-vkey = vk.variantkey(b"X", 193330, b"GCA", b"G")
-print(vkey)
-# 13259012476408233984
-
-vkrange = vk.variantkey_range(15, 12002028, 12152133)
-print(vkrange)
-# (8672685443424190464, 8673007793604657151)
-
-s = vk.variantkey_hex(vkey)
-print(s)
-# b'b801799918c90000'
-
-v = vk.parse_variantkey_hex(s)
-print(v)
-# 13259012476408233984
-
-chrom, pos, ref, alt, sizeref, sizealt, slen = vk.reverse_variantkey(v)
-print(chrom, pos, ref, alt, sizeref, sizealt, slen)
-# b'X' 193330 b'GCA' b'G' 3 1 4
-
-chrom, pos, refalt = vk.decode_variantkey(v)
-print(chrom, pos, refalt)
-# 23 193330 415825920
-
-c = vk.decode_chrom(chrom)
-print(c)
-# b'X'
-
-ref, alt, reflen, altlen = vk.decode_refalt(refalt)
-print(ref, alt, reflen, altlen)
-# b'GCA' b'G' 3 1
-```
 
 <a name="rlib"></a>
 ## R Module (limited support)
@@ -488,75 +451,7 @@ Use the "`make r`" command to test the R wrapper and generate reports.
 In R the VariantKey is represented as hexadecimal string because there is no native support for unsigned 64 bit integers in R.
 Alternatively it is possible to use the encoding of the individual components (i.e. `CHROM`, `POS` and `REF+ALT`, or the signed 64 bit extension).
 
-### R Usage Example
-
-```
-#!/usr/bin/env Rscript
-
-args <- commandArgs(trailingOnly = F)  
-script.path <- normalizePath(dirname(sub("^--file=", "", args[grep("^--file=", args)])))
-wrapper.variantkey <- paste(script.path, "/variantkey.R", sep="")
-
-source(wrapper.variantkey)
-
-vkey <- VariantKey("X", 193330, "GCA", "G")
-print(vkey)
-# [1] "b801799918c90000"
-
-var <- ReverseVariantKey(vkey)
-print(var)
-# $CHROM
-# [1] "X"
-# 
-# $POS
-# [1] 193330
-# 
-# $REF
-# [1] "GCA"
-# 
-# $ALT
-# [1] "G"
-# 
-# $SIZE_REF
-# [1] 3
-# 
-# $SIZE_ALT
-# [1] 1
-
-vkrange <- VariantKeyRange(15, 12002028, 12152133)
-print(vkrange)
-# $MIN
-# [1] "785b917600000000"
-# 
-# $MAX
-# [1] "785cb6a2ffffffff"
-
-cc <- EncodeChrom("MT")
-print(cc)
-# [1] 25
-
-dc <- DecodeChrom(25)
-print(dc)
-# [1] "MT"
-
-era <- EncodeRefAlt("A", "T")
-print(era)
-# [1] 144179200
-
-dra <- DecodeRefAlt(144179200)
-print(dra)
-#$REF
-#[1] "A"
-#
-#$ALT
-#[1] "T"
-#
-#$REF_LEN
-#[1] 1
-#
-#$ALT_LEN
-#[1] 1
-```
+See [R Usage Examples](r/example/example.R)
 
 <a name="jslib"></a>
 ## Javascript library (limited support)

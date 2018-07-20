@@ -67,7 +67,7 @@ DecodeRefAlt <- function(code) {
 
 #' Returns the hexadecimal representation of a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
 #' @param chrom   Encoded Chromosome (see EncodeChrom)
-#' @param pos     Position. The reference position, with the 1st base having position 0.
+#' @param pos     Position. The reference position, with the first base having position 0.
 #' @param refalt  Encoded Reference + Alternate (see EncodeRefAlt)
 #' @useDynLib   variantkey R_variantkey
 #' @export
@@ -77,7 +77,7 @@ EncodeVariantKey <- function(chrom, pos, refalt) {
 
 #' Returns the hexadecimal representation of a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
 #' @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
-#' @param pos   Position. The reference position, with the 1st base having position 0.
+#' @param pos   Position. The reference position, with the first base having position 0.
 #' @param ref   Reference allele. String containing a sequence of nucleotide letters.
 #' @param alt   Alternate non-reference allele string.
 #' @useDynLib   variantkey R_variantkey
@@ -88,8 +88,8 @@ VariantKey <- function(chrom, pos, ref, alt) {
 
 #' Returns minimum and maximum variant keys for range searches.
 #' @param chrom   Chromosome numerical code.
-#' @param pos_min Start reference position, with the 1st base having position 0.
-#' @param pos_max End reference position, with the 1st base having position 0.
+#' @param pos_min Start reference position, with the first base having position 0.
+#' @param pos_max End reference position, with the first base having position 0.
 #' @useDynLib variantkey R_variantkey_range
 #' @export
 VariantKeyRange <- function(chrom, pos_min, pos_max) {

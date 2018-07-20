@@ -61,8 +61,8 @@ extern "C" {
 /**
  * Load the genome reference index.
  *
- * @param src  Address of the memory mapped input file contaning the genome reference data (fasta.bin).
- * @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements: uint32_t idx[27];
+ * @param src  Address of the memory mapped input file containing the genome reference data (fasta.bin).
+ * @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements: uint32_t idx[27].
  *
  * @return void
  */
@@ -71,10 +71,10 @@ void load_genoref_index(const unsigned char *src, uint32_t idx[]);
 /**
  * Returns the genome reference nucleotide at the specified chromosome and position.
  *
- * @param src     Address of the memory mapped input file contaning the genome reference data (fasta.bin).
+ * @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).
  * @param idx     Index of sequences offset by chromosome number (1 to 25).
  * @param chrom   Encoded Chromosome number (see encode_chrom).
- * @param pos     Position. The reference position, with the 1st base having position 0.
+ * @param pos     Position. The reference position, with the first base having position 0.
  *
  * @return The nucleotide letter or 0 in case of invalid position.
  */
@@ -83,10 +83,10 @@ char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chr
 /**
  * Check if the reference allele matches the reference genome data.
  *
- * @param src     Address of the memory mapped input file contaning the genome reference data (fasta.bin).
+ * @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).
  * @param idx     Index of sequences offset by chromosome number (1 to 25).
  * @param chrom   Encoded Chromosome number (see encode_chrom).
- * @param pos     Position. The reference position, with the 1st base having position 0.
+ * @param pos     Position. The reference position, with the first base having position 0.
  * @param ref     Reference allele. String containing a sequence of nucleotide letters.
  * @param sizeref Length of the ref string, excluding the terminating null byte.
  *
@@ -113,10 +113,10 @@ void flip_allele(char *allele, size_t size);
  * Flip alleles if required and apply the normalization algorithm described at:
  * https://genome.sph.umich.edu/wiki/Variant_Normalization
  *
- * @param src        Address of the memory mapped input file contaning the genome reference data (fasta.bin).
+ * @param src        Address of the memory mapped input file containing the genome reference data (fasta.bin).
  * @param idx        Index of sequences offset by chromosome number (1 to 25).
  * @param chrom      Chromosome encoded number.
- * @param pos        Position. The reference position, with the 1st base having position 0.
+ * @param pos        Position. The reference position, with the first base having position 0.
  * @param ref        Reference allele. String containing a sequence of nucleotide letters.
  * @param sizeref    Length of the ref string, excluding the terminating null byte.
  * @param alt        Alternate non-reference allele string.
