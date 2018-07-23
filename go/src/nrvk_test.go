@@ -95,3 +95,10 @@ func BenchmarkReverseVariantkey(b *testing.B) {
 		vknr.ReverseVariantkey(0xb000c35b64690b25)
 	}
 }
+
+func TestVknrBinToTSV(t *testing.T) {
+	len := vknr.VknrBinToTSV("vknr.test")
+	if len != 305 {
+		t.Errorf("Expected file length 305, got %d", len)
+	}
+}

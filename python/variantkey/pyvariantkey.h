@@ -74,6 +74,7 @@ static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args, PyObj
 // NRVK
 static PyObject *py_find_ref_alt_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_vknr_bin_to_tsv(PyObject *self, PyObject *args, PyObject *keywds);
 
 // GENOREF
 static PyObject *py_load_genoref_index(PyObject *self, PyObject *args, PyObject *keywds);
@@ -85,6 +86,7 @@ static PyObject *py_normalize_variant(PyObject *self, PyObject *args, PyObject *
 PyMODINIT_FUNC initvariantkey(void);
 
 // VARIANTKEY
+
 #define PYENCODECHROM_DOCSTRING "Returns chromosome numerical encoding.\n"\
 "\n"\
 "Parameters\n"\
@@ -1387,6 +1389,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - Position of the first item.\n"\
 "    - Position of the last item."
 
+// ----------
 
 // NRVK
 
@@ -1432,7 +1435,27 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - ALT length.\n"\
 "    - REF+ALT length."
 
+#define PYVKNRBINTOTSV_DOCSTRING "Convert a vrnr.bin file to a simple TSV.\n"\
+"For the reverse operation see the resources/tools/vknr.sh script.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mfsrc : obj\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"last : int\n"\
+"    Number of variants in the src file -1. Set this to 0 to skip the lookup table.\n"\
+"tsvfile : int\n"\
+"    Output file name.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    Number of bytes written or 0 in case of error."
+
+// ----------
+
 // GENOREF
+
 #define PYLOADGENOREFINDEX "Return the index object from the genome reference memory mapped file.\n"\
 "\n"\
 "Parameters\n"\

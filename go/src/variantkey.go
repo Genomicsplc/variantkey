@@ -696,6 +696,13 @@ func (mf TMMFile) ReverseVariantkey(vk uint64) (TVariantKeyRev, uint32) {
 	return castCVariantKeyRev(rev), uint32(len)
 }
 
+// VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/vknr.sh script.
+func (mf TMMFile) VknrBinToTSV(tsvfile string) uint64 {
+	file := StringToNTBytes(tsvfile)
+	pfile := unsafe.Pointer(&file[0]) // #nosec
+	return uint64(C.vknr_bin_to_tsv((*C.uchar)(mf.Src), C.uint64_t(mf.Last), (*C.char)(pfile)))
+}
+
 // --- GENOREF ---
 
 // FlipAllele flips allele nucleotides.

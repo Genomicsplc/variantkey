@@ -45,7 +45,9 @@ extern "C" {
 #include "astring.h"
 #include "binsearch.h"
 
+#ifndef ALLELE_MAXSIZE
 #define ALLELE_MAXSIZE 256 //!< Maximum allele length.
+#endif
 
 // Return codes for normalize_variant()
 #define NORM_WRONGPOS     -2 //!< Normalization: Invalid position.

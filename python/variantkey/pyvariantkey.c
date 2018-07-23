@@ -1006,6 +1006,19 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     return result;
 }
 
+static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last;
+    PyObject* mfsrc = NULL;
+    const char *tsvfile;
+    static char *kwlist[] = {"mfsrc", "last", "tsvfile", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKs", kwlist, &mfsrc, &last, &tsvfile))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    size_t len = vknr_bin_to_tsv(src, last, tsvfile);
+    return Py_BuildValue("K", len);
+}
+
 // --- GENOREF ---
 
 static PyObject* py_load_genoref_index(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
@@ -1160,6 +1173,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     // NRVK
     {"find_ref_alt_by_variantkey", (PyCFunction)py_find_ref_alt_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYFINDREFALTBYVARIANTKEY_DOCSTRING},
     {"reverse_variantkey", (PyCFunction)py_reverse_variantkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEVARIANTKEY_DOCSTRING},
+    {"vknr_bin_to_tsv", (PyCFunction)py_vknr_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF
     {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX},

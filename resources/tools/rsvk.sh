@@ -16,6 +16,12 @@
 # OUTPUT binary format:
 #    [4 BYTE RSID][8 BYTE VARIANTKEY]...
 
+# File examples:
+#     c/test/data/rsvk.10.hex
+#     c/test/data/rsvk.10.bin
+#     c/test/data/vkrs.10.hex
+#     c/test/data/vkrs.10.bin
+
 # sort by RSID
 LC_ALL=C sort --parallel=${PARALLEL:=4} --output=rsvk.hex rsvk.unsorted.hex
 
