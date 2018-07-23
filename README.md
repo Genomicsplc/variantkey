@@ -407,7 +407,17 @@ The binary file has the following format :
     ...
     [4 BYTE NUM VARIANTS]
 ```
+This binary file can be easily converted by the `resources/tools/vknr.sh' script from a TSV file with the following format:
 
+```
+    [16 BYTE VARIANTKEY HEX]\t[REF STRING]\t[ALT STRING]\n...
+```
+for example:
+
+```
+    b800c35bbcece603	AAAAAAAAGG	AG
+    1800c351f61f65d3	A	AAGAAAGAAAG
+```
 
 <a name="clib"></a>
 ## C Library

@@ -61,6 +61,10 @@ class TestFunctions(TestCase):
             self.assertEqual(osizealt, sizealt)
             self.assertEqual(oralen, (ralen - 2))
 
+    def test_vknr_bin_to_tsv(self):
+        fsize = bs.vknr_bin_to_tsv(mfsrc, mflast, "vknr.test")
+        self.assertEqual(fsize, 305)
+
 
 class TestBenchmark(object):
 
