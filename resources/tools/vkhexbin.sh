@@ -37,7 +37,7 @@ source "${SCRIPT_DIR}/vkrs.sh"
 source "${SCRIPT_DIR}/rsvk.sh"
 
 # --- NON-REVERSIBLE VARIANTKEY BINARY FILE
-source "${SCRIPT_DIR}/nrvk.sh"
+source "${SCRIPT_DIR}/vknr.sh"
 
 # --- ADD VARIANTKEY TO THE VCF FILE
 
