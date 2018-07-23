@@ -18,6 +18,7 @@ requirements:
     - r-devtools
     - r-roxygen2
     - r-testthat
+    - libgfortran-ng
   build:
     - {{ compiler('c') }}
     - r-inline
