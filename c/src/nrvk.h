@@ -44,6 +44,10 @@ extern "C" {
 #include "binsearch.h"
 #include "variantkey.h"
 
+#ifndef ALLELE_MAXSIZE
+#define ALLELE_MAXSIZE 256 //!< Maximum allele length.
+#endif
+
 /**
  * VariantKey decoded struct
  */
@@ -51,8 +55,8 @@ typedef struct variantkey_rev_t
 {
     char chrom[3];  //!< Chromosome.
     uint32_t pos;   //!< Reference position, with the first base having position 0.
-    char ref[256];  //!< Reference allele
-    char alt[256];  //!< Alternate allele
+    char ref[ALLELE_MAXSIZE];  //!< Reference allele
+    char alt[ALLELE_MAXSIZE];  //!< Alternate allele
     size_t sizeref; //!< Length of reference allele
     size_t sizealt; //!< Length of alternate allele
 } variantkey_rev_t;
