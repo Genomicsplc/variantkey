@@ -181,6 +181,30 @@ void benchmark_reverse_variantkey(mmfile_t vknr)
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
+int test_vknr_bin_to_tsv(mmfile_t vknr)
+{
+    int errors = 0;
+    size_t len = vknr_bin_to_tsv(vknr.src, vknr.last, "vknr.test");
+    if (len != 305)
+    {
+        fprintf(stderr, "%s Expecting file with 305 bytes, got %" PRIu32 "\n", __func__, len);
+        ++errors;
+    }
+    return errors;
+}
+
+int test_vknr_bin_to_tsv_error(mmfile_t vknr)
+{
+    int errors = 0;
+    size_t len = vknr_bin_to_tsv(vknr.src, vknr.last, "/WRONG/../../vknr.test");
+    if (len != 0)
+    {
+        fprintf(stderr, "%s Expecting 0 bytes, got %" PRIu32 "\n", __func__, len);
+        ++errors;
+    }
+    return errors;
+}
+
 int main()
 {
     int errors = 0;
@@ -198,6 +222,8 @@ int main()
     errors += test_find_ref_alt_by_variantkey(vknr);
     errors += test_find_ref_alt_by_variantkey_notfound(vknr);
     errors += test_reverse_variantkey(vknr);
+    errors += test_vknr_bin_to_tsv(vknr);
+    errors += test_vknr_bin_to_tsv_error(vknr);
 
     benchmark_find_ref_alt_by_variantkey(vknr);
     benchmark_reverse_variantkey(vknr);

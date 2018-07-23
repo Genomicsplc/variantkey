@@ -78,7 +78,8 @@ typedef struct variantkey_rev_t
  */
 size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
-/** @brief Reverse a VariantKey code and returns the normalized components as variantkey_rev_t structure.
+/**
+ * Reverse a VariantKey code and returns the normalized components as variantkey_rev_t structure.
  *
  * @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
  * @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
@@ -88,6 +89,18 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
  * @return A variantkey_rev_t structure.
  */
 size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev);
+
+/**
+ * Convert a vrnr.bin file to a simple TSV.
+ * For the reverse operation see the resources/tools/vknr.sh script.
+ *
+ * @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
+ * @param tsvfile  Output tsv file name. NOTE: existing files will be replaced.
+ *
+ * @return Number of written bytes or 0 in case of error.
+ */
+size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile);
 
 #ifdef __cplusplus
 }

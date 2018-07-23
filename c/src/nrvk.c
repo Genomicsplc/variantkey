@@ -18,6 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <stdio.h>
 #include <string.h>
 #include "nrvk.h"
 
@@ -53,5 +54,36 @@ inline size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64
     {
         len = find_ref_alt_by_variantkey(src, last, vk, rev->ref, &rev->sizeref, rev->alt, &rev->sizealt);
     }
+    return len;
+}
+
+inline size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
+{
+    FILE * fp;
+    uint64_t vk, pos, offset;
+    size_t sizeref, sizealt, len = 0;
+    char ref[ALLELE_MAXSIZE];
+    char alt[ALLELE_MAXSIZE];
+    uint64_t i;
+    fp = fopen(tsvfile, "w");
+    if (fp == NULL)
+    {
+        return 0;
+    }
+    for (i = 0; i <= last; i++)
+    {
+        pos = get_address(KEYBLKLEN, 0, i);
+        vk = bytes_to_uint64_t(src, pos);
+        offset = bytes_to_uint64_t(src, pos + 8);
+        sizeref = (size_t) bytes_to_uint8_t(src, offset++);
+        sizealt = (size_t) bytes_to_uint8_t(src, offset++);
+        memcpy(ref, &src[offset], sizeref);
+        ref[sizeref] = 0;
+        memcpy(alt, &src[(offset + sizeref)], sizealt);
+        alt[sizealt] = 0;
+        fprintf(fp, "%016" PRIx64 "\t%s\t%s\n", vk, ref, alt);
+        len += (16 + 1 + sizeref + 1 + sizealt + 1);
+    }
+    fclose(fp);
     return len;
 }
