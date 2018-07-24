@@ -52,22 +52,22 @@ int munmap_binfile(mmfile_t mf)
     return close(mf.fd);
 }
 
-inline uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
+uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
 {
     return ((blklen * item) + blkpos);
 }
 
-inline uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i)
+uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i)
 {
     return ((uint8_t)src[i]);
 }
 
-inline uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i)
+uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i)
 {
     return (((uint16_t)src[i] << 8) | (uint16_t)src[i+1]);
 }
 
-inline uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
+uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
 {
     return (((uint32_t)src[i] << 24)
             | ((uint32_t)src[i+1] << 16)
@@ -75,7 +75,7 @@ inline uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
             | (uint32_t)src[i+3]);
 }
 
-inline uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i)
+uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i)
 {
     return (((uint64_t)src[i] << 56)
             | ((uint64_t)src[i+1] << 48)
@@ -88,7 +88,7 @@ inline uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i)
 }
 
 #define define_find_first(T) \
-inline uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
     uint64_t i, middle, found = (*last + 1); \
     T x; \
@@ -130,7 +130,7 @@ define_find_first(uint32_t)
 define_find_first(uint64_t)
 
 #define define_find_last(T) \
-inline uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_last_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
     uint64_t i, middle, found = (*last + 1); \
     T x; \
@@ -171,7 +171,7 @@ define_find_last(uint64_t)
 
 
 #define define_find_first_sub(T) \
-inline uint64_t find_first_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_first_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
     uint64_t i, middle, found = (*last + 1); \
     uint8_t rshift = ((sizeof(T) * 8) - 1 - bitend + bitstart); \
@@ -214,7 +214,7 @@ define_find_first_sub(uint32_t)
 define_find_first_sub(uint64_t)
 
 #define define_find_last_sub(T) \
-inline uint64_t find_last_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_last_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
     uint64_t i, middle, found = (*last + 1); \
     uint8_t rshift = ((sizeof(T) * 8) - 1 - bitend + bitstart); \
@@ -255,7 +255,7 @@ define_find_last_sub(uint32_t)
 define_find_last_sub(uint64_t)
 
 #define define_has_next(T) \
-inline bool has_next_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
+bool has_next_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
 { \
     if (*pos >= last) \
     { \
@@ -272,7 +272,7 @@ define_has_next(uint32_t)
 define_has_next(uint64_t)
 
 #define define_has_next_sub(T) \
-inline bool has_next_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+bool has_next_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
 { \
     if (*pos >= last) \
     { \
@@ -290,7 +290,7 @@ define_has_next_sub(uint32_t)
 define_has_next_sub(uint64_t)
 
 #define define_has_prev(T) \
-inline bool has_prev_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
+bool has_prev_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
 { \
     if (*pos <= first) { \
         return 0; \
@@ -306,7 +306,7 @@ define_has_prev(uint32_t)
 define_has_prev(uint64_t)
 
 #define define_has_prev_sub(T) \
-inline bool has_prev_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+bool has_prev_sub_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
 { \
     if (*pos <= first) { \
         return 0; \

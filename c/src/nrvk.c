@@ -24,7 +24,7 @@
 
 #define KEYBLKLEN 16 //!< Length in bytes of a binary block containing VARIANTKEY + OFFSET ADDRESS
 
-inline size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     uint64_t first = 0;
     uint64_t max = last;
@@ -43,7 +43,7 @@ inline size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last
     return (*sizeref + *sizealt);
 }
 
-inline size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev)
+size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev)
 {
     variantkey_t h = {0,0,0};
     decode_variantkey(vk, &h);
@@ -57,7 +57,7 @@ inline size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64
     return len;
 }
 
-inline size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
+size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
 {
     FILE * fp;
     uint64_t vk, pos, offset;

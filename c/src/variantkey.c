@@ -36,7 +36,7 @@
 #include <stdio.h>
 #include "variantkey.h"
 
-inline uint8_t encode_chrom(const char *chrom, size_t size)
+uint8_t encode_chrom(const char *chrom, size_t size)
 {
     // X > 23 ; Y > 24 ; M > 25
     static const uint8_t onecharmap[] =
@@ -86,7 +86,7 @@ inline uint8_t encode_chrom(const char *chrom, size_t size)
     return 0; // NA
 }
 
-inline size_t decode_chrom(uint8_t code, char *chrom)
+size_t decode_chrom(uint8_t code, char *chrom)
 {
     if ((code < 1) || (code > 25))
     {
@@ -218,7 +218,7 @@ static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const
     return ((h >> 1) | 0x1); // 0x1 is the set bit to indicate HASH mode [00000000 00000000 00000000 00000001]
 }
 
-inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     if ((sizeref + sizealt) <= 11)
     {
@@ -258,7 +258,7 @@ static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref
     return (*sizeref + *sizealt);
 }
 
-inline size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     if (code & 0x1) // check last bit
     {
@@ -267,39 +267,39 @@ inline size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt
     return decode_refalt_rev(code, ref, sizeref, alt, sizealt);
 }
 
-inline uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt)
+uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt)
 {
     return (((uint64_t)chrom << VKSHIFT_CHROM) | ((uint64_t)pos << VKSHIFT_POS) | (uint64_t)refalt);
 }
 
-inline uint8_t extract_variantkey_chrom(uint64_t vk)
+uint8_t extract_variantkey_chrom(uint64_t vk)
 {
     return (uint8_t)((vk & VKMASK_CHROM) >> VKSHIFT_CHROM);
 }
 
-inline uint32_t extract_variantkey_pos(uint64_t vk)
+uint32_t extract_variantkey_pos(uint64_t vk)
 {
     return (uint32_t)((vk & VKMASK_POS) >> VKSHIFT_POS);
 }
 
-inline uint32_t extract_variantkey_refalt(uint64_t vk)
+uint32_t extract_variantkey_refalt(uint64_t vk)
 {
     return (uint32_t)(vk & VKMASK_REFALT);
 }
 
-inline void decode_variantkey(uint64_t code, variantkey_t *vk)
+void decode_variantkey(uint64_t code, variantkey_t *vk)
 {
     vk->chrom = extract_variantkey_chrom(code);
     vk->pos = extract_variantkey_pos(code);
     vk->refalt = extract_variantkey_refalt(code);
 }
 
-inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     return encode_variantkey(encode_chrom(chrom, sizechrom), pos, encode_refalt(ref, sizeref, alt, sizealt));
 }
 
-inline void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range)
+void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range)
 {
     uint64_t c = ((uint64_t)chrom << VKSHIFT_CHROM);
     range->min = (c | ((uint64_t)pos_min << VKSHIFT_POS));
@@ -311,22 +311,22 @@ static inline int compare_uint64_t(uint64_t a, uint64_t b)
     return (a < b) ? -1 : (a > b);
 }
 
-inline int compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
+int compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
 {
     return compare_uint64_t((vka >> VKSHIFT_CHROM), (vkb >> VKSHIFT_CHROM));
 }
 
-inline int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
+int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
 {
     return compare_uint64_t((vka >> VKSHIFT_POS), (vkb >> VKSHIFT_POS));
 }
 
-inline size_t variantkey_hex(uint64_t vk, char *str)
+size_t variantkey_hex(uint64_t vk, char *str)
 {
     return sprintf(str, "%016" PRIx64, vk);
 }
 
-inline uint64_t parse_variantkey_hex(const char *vs)
+uint64_t parse_variantkey_hex(const char *vs)
 {
     uint64_t v = 0;
     uint8_t b;

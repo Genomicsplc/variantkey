@@ -23,7 +23,7 @@
 #include <string.h>
 #include "genoref.h"
 
-inline void load_genoref_index(const unsigned char *src, uint32_t idx[])
+void load_genoref_index(const unsigned char *src, uint32_t idx[])
 {
     idx[0] = 0;
     int i;
@@ -33,7 +33,7 @@ inline void load_genoref_index(const unsigned char *src, uint32_t idx[])
     }
 }
 
-inline char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos)
+char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos)
 {
     uint32_t offset = (idx[chrom] + pos);
     if (offset > (idx[(chrom + 1)] - 2))
@@ -43,7 +43,7 @@ inline char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint
     return (char)src[offset];
 }
 
-inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
+int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
     uint32_t offset = (idx[chrom] + pos);
     if ((offset + sizeref + 1) > (idx[(chrom + 1)]))
@@ -118,7 +118,7 @@ inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8
     return ret; // sequence OK
 }
 
-inline void flip_allele(char *allele, size_t size)
+void flip_allele(char *allele, size_t size)
 {
     /*
       Byte map for allele flipping (complement):

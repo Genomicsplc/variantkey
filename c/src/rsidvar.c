@@ -21,17 +21,17 @@
 
 #include "rsidvar.h"
 
-inline uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)
+uint32_t get_vr_rsid(const unsigned char *src, uint64_t item)
 {
     return bytes_to_uint32_t(src, get_address(BINBLKLEN, VRPOS_RSID, item));
 }
 
-inline uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item)
+uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item)
 {
     return bytes_to_uint64_t(src, get_address(BINBLKLEN, RVPOS_VK, item));
 }
 
-inline uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
+uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid)
 {
     uint64_t max = last;
     uint64_t found = find_first_uint32_t(src, BINBLKLEN, RVPOS_RSID, first, &max, rsid);
@@ -43,7 +43,7 @@ inline uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *f
     return get_rv_variantkey(src, found);
 }
 
-inline uint64_t get_next_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *pos, uint64_t last, uint32_t rsid)
+uint64_t get_next_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *pos, uint64_t last, uint32_t rsid)
 {
     if (has_next_uint32_t(src, BINBLKLEN, RVPOS_RSID, pos, last, rsid))
     {
@@ -52,7 +52,7 @@ inline uint64_t get_next_rv_variantkey_by_rsid(const unsigned char *src, uint64_
     return 0;
 }
 
-inline uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vk)
+uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vk)
 {
     uint64_t max = last;
     uint64_t found = find_first_uint64_t(src, BINBLKLEN, VRPOS_VK, first, &max, vk);
@@ -64,7 +64,7 @@ inline uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *f
     return get_vr_rsid(src, found);
 }
 
-inline uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
+uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
 {
     uint64_t ckey = ((uint64_t)chrom << 59);
     uint64_t min = *first;

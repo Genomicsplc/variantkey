@@ -21,7 +21,7 @@
 #include <string.h>
 #include "astring.h"
 
-inline int aztoupper(int c)
+int aztoupper(int c)
 {
     if (c >= 'a')
     {
@@ -30,7 +30,7 @@ inline int aztoupper(int c)
     return c;
 }
 
-inline void prepend_char(const unsigned char pre, char *string, size_t *size)
+void prepend_char(const unsigned char pre, char *string, size_t *size)
 {
     memmove(string + 1, string, (*size + 1));
     string[0] = pre;
