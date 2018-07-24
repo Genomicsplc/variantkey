@@ -46,7 +46,7 @@ inline char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint
 inline int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
     uint32_t offset = (idx[chrom] + pos);
-    if ((offset + sizeref - 1) > (idx[(chrom + 1)] - 2))
+    if ((offset + sizeref + 1) > (idx[(chrom + 1)]))
     {
         return NORM_WRONGPOS;
     }
@@ -172,7 +172,7 @@ static inline void swap_alleles(char *first, size_t *sizefirst, char *second, si
     second[*sizesecond] = 0;
 }
 
-inline int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     char left;
     char fref[ALLELE_MAXSIZE];
