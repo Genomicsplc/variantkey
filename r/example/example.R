@@ -2,60 +2,78 @@
 
 library(variantkey)
 
-vkey <- VariantKey("X", 193330, "GCA", "G")
-print(vkey)
-# [1] "b801799918c90000"
+# BASIC VARIANTKEY FUNCTIONS
+# --------------------------
 
-#var <- ReverseVariantKey(vkey)
-#print(var)
-# $CHROM
+x <- EncodeChrom("X")
+print(x)
+# [1] 23
+
+x <- DecodeChrom(23)
+print(x)
 # [1] "X"
-#
-# $POS
-# [1] 193330
-#
+
+x <- EncodeRefAlt("AC", "GT")
+print(x)
+# [1] 286097408
+
+x <- DecodeRefAlt(286097408)
+print(x)
 # $REF
-# [1] "GCA"
-#
+# [1] "AC"
+# 
 # $ALT
-# [1] "G"
-#
-# $SIZE_REF
-# [1] 3
-#
-# $SIZE_ALT
-# [1] 1
+# [1] "GT"
+# 
+# $REF_LEN
+# [1] 2
+# 
+# $ALT_LEN
+# [1] 2
 
-vkrange <- VariantKeyRange(15, 12002028, 12152133)
-print(vkrange)
+x <- EncodeVariantKey(23, 12345, 286097408)
+print(x)
+# [1] "b800181c910d8000"
+
+x <- ExtractVariantkeyChrom("b800181c910d8000")
+print(x)
+# [1] 23
+
+x <- ExtractVariantkeyPos("b800181c910d8000")
+print(x)
+# [1] 12345
+
+x <- ExtractVariantkeyRefAlt("b800181c910d8000")
+print(x)
+# 286097408
+
+x <- DecodeVariantkey("b800181c910d8000")
+print(x)
+# $CHROM
+# [1] 23
+# 
+# $POS
+# [1] 12345
+# 
+# $REFALT
+# [1] 286097408
+
+x <- VariantKey("X", 12345, "AC", "GT")
+print(x)
+# [1] "b800181c910d8000"
+
+x <- VariantKeyRange(23, 1234, 5678)
+print(x)
 # $MIN
-# [1] "785b917600000000"
-#
+# [1] "b800026900000000"
+# 
 # $MAX
-# [1] "785cb6a2ffffffff"
+# [1] "b8000b177fffffff"
 
-cc <- EncodeChrom("MT")
-print(cc)
-# [1] 25
+x <- CompareVariantkeyChrom("B800026900000000", "B8000B177FFFFFFF")
+print(x)
+# [1] 0
 
-dc <- DecodeChrom(25)
-print(dc)
-# [1] "MT"
-
-era <- EncodeRefAlt("A", "T")
-print(era)
-# [1] 144179200
-
-dra <- DecodeRefAlt(144179200)
-print(dra)
-#$REF
-#[1] "A"
-#
-#$ALT
-#[1] "T"
-#
-#$REF_LEN
-#[1] 1
-#
-#$ALT_LEN
-#[1] 1
+x <- CompareVariantkeyChromPos("B800026900000000", "B8000B177FFFFFFF")
+print(x)
+# [1] -1
