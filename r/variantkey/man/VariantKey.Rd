@@ -2,7 +2,7 @@
 % Please edit documentation in R/variantkey.R
 \name{VariantKey}
 \alias{VariantKey}
-\title{Returns the hexadecimal representation of a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.}
+\title{Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.}
 \usage{
 VariantKey(chrom, pos, ref, alt)
 }
@@ -16,5 +16,5 @@ VariantKey(chrom, pos, ref, alt)
 \item{alt}{Alternate non-reference allele string.}
 }
 \description{
-Returns the hexadecimal representation of a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
 }

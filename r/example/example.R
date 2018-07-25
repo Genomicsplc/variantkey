@@ -6,8 +6,8 @@ vkey <- VariantKey("X", 193330, "GCA", "G")
 print(vkey)
 # [1] "b801799918c90000"
 
-var <- ReverseVariantKey(vkey)
-print(var)
+#var <- ReverseVariantKey(vkey)
+#print(var)
 # $CHROM
 # [1] "X"
 #

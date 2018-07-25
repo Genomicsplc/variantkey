@@ -65,17 +65,50 @@ DecodeRefAlt <- function(code) {
     return(.Call("R_decode_refalt", as.integer(code)))
 }
 
-#' Returns the hexadecimal representation of a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
+#' Returns a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
 #' @param chrom   Encoded Chromosome (see EncodeChrom)
 #' @param pos     Position. The reference position, with the first base having position 0.
 #' @param refalt  Encoded Reference + Alternate (see EncodeRefAlt)
-#' @useDynLib   variantkey R_variantkey
+#' @useDynLib   variantkey R_encode_variantkey
 #' @export
 EncodeVariantKey <- function(chrom, pos, refalt) {
     return(.Call("R_encode_variantkey", as.integer(chrom), as.integer(pos), as.integer(refalt)))
 }
 
-#' Returns the hexadecimal representation of a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+#' Extract the CHROM code from VariantKey.
+#' @param vk VariantKey code.
+#' @useDynLib   variantkey R_extract_variantkey_chrom
+#' @export
+ExtractVariantkeyChrom <- function(vk) {
+    return(.Call("R_extract_variantkey_chrom", as.double(vk)))
+}
+
+#' Extract the POS code from VariantKey.
+#' @param vk VariantKey code.
+#' @useDynLib   variantkey R_extract_variantkey_pos
+#' @export
+ExtractVariantkeyPos <- function(vk) {
+    return(.Call("R_extract_variantkey_pos", as.double(vk)))
+}
+
+#' Extract the REF+ALT code from VariantKey.
+#' @param vk VariantKey code.
+#' @useDynLib   variantkey R_extract_variantkey_refalt
+#' @export
+ExtractVariantkeyRefAlt <- function(vk) {
+    return(.Call("R_extract_variantkey_refalt", as.double(vk)))
+}
+
+#' Decode a VariantKey code and returns the components.
+#' @param code VariantKey code.
+#' @param vk   Decoded variantkey structure.
+#' @useDynLib   variantkey R_decode_variantkey
+#' @export
+DecodeVariantkey <- function(vk) {
+    return(.Call("R_decode_variantkey", as.double(vk)))
+}
+
+#' Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
 #' @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
 #' @param pos   Position. The reference position, with the first base having position 0.
 #' @param ref   Reference allele. String containing a sequence of nucleotide letters.
@@ -96,10 +129,42 @@ VariantKeyRange <- function(chrom, pos_min, pos_max) {
     return(.Call("R_variantkey_range", as.integer(chrom), as.integer(pos_min), as.integer(pos_max)))
 }
 
-#' Decode a VariantKey code and returns the components.
-#' @param hexcode VariantKey hexadecimal string (16 hexadecimal characters).
-#' @useDynLib variantkey R_reverse_variantkey
+#' Compares two VariantKeys by chromosome only.
+#' Returns -1 if the first chromosome is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+#' @param vka    The first VariantKey to be compared.
+#' @param vkb    The second VariantKey to be compared.
+#' @useDynLib   variantkey R_compare_variantkey_chrom
 #' @export
-ReverseVariantKey <- function(hexcode) {
-    return(.Call("R_reverse_variantkey", hexcode))
+CompareVariantkeyChrom <- function(vka, vkb) {
+    return(.Call("R_compare_variantkey_chrom", as.double(vka), as.double(vkb)))
+}
+
+#' Compares two VariantKeys by chromosome and position.
+#' Return -1 if the first CHROM+POS is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+#' @param vka    The first VariantKey to be compared.
+#' @param vkb    The second VariantKey to be compared.
+#' @useDynLib   variantkey R_compare_variantkey_chrom_pos
+#' @export
+CompareVariantkeyChromPos <- function(vka, vkb) {
+    return(.Call("R_compare_variantkey_chrom_pos", as.double(vka), as.double(vkb)))
+}
+
+#' Returns VariantKey hexadecimal string (16 characters).
+#' Upon successful return, these function returns the number of characters processed (excluding the null byte used to end output to strings).
+#' If the buffer size is not sufficient, then the return value is the number of characters required for
+#' buffer string, including the terminating null byte.
+#' @param vk    VariantKey code.
+#' @param str   String buffer to be returned (it must be sized 17 bytes at least).  
+#' @useDynLib   variantkey R_variantkey_hex
+#' @export
+VariantkeyHex <- function(vk) {
+    return(.Call("R_variantkey_hex", as.double(vk)))
+}
+
+#' Parses a VariantKey hexadecimal string and returns the code.
+#' @param vs    VariantKey hexadecimal string (it must contain 16 hexadecimal characters).
+#' @useDynLib   variantkey R_parse_variantkey_hex
+#' @export
+ParseVariantkeyHex <- function(vs) {
+    return(.Call("R_parse_variantkey_hex", vs))
 }
