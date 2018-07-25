@@ -45,7 +45,7 @@ EncodeChrom <- function(chrom) {
 #' @useDynLib variantkey R_decode_chrom
 #' @export
 DecodeChrom <- function(code) {
-    return(.Call("R_decode_chrom", as.integer(code)))
+    return(.Call("R_decode_chrom", code))
 }
 
 #' Returns reference+alternate encoding.
@@ -62,20 +62,53 @@ EncodeRefAlt <- function(ref, alt) {
 #' @useDynLib variantkey R_decode_refalt
 #' @export
 DecodeRefAlt <- function(code) {
-    return(.Call("R_decode_refalt", as.integer(code)))
+    return(.Call("R_decode_refalt", code))
 }
 
-#' Returns the hexadecimal representation of a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
+#' Returns a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
 #' @param chrom   Encoded Chromosome (see EncodeChrom)
 #' @param pos     Position. The reference position, with the first base having position 0.
 #' @param refalt  Encoded Reference + Alternate (see EncodeRefAlt)
-#' @useDynLib   variantkey R_variantkey
+#' @useDynLib   variantkey R_encode_variantkey
 #' @export
 EncodeVariantKey <- function(chrom, pos, refalt) {
-    return(.Call("R_encode_variantkey", as.integer(chrom), as.integer(pos), as.integer(refalt)))
+    return(.Call("R_encode_variantkey", chrom, pos, refalt))
 }
 
-#' Returns the hexadecimal representation of a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+#' Extract the CHROM code from VariantKey.
+#' @param vk VariantKey code.
+#' @useDynLib   variantkey R_extract_variantkey_chrom
+#' @export
+ExtractVariantkeyChrom <- function(vk) {
+    return(.Call("R_extract_variantkey_chrom", vk))
+}
+
+#' Extract the POS code from VariantKey.
+#' @param vk VariantKey code.
+#' @useDynLib   variantkey R_extract_variantkey_pos
+#' @export
+ExtractVariantkeyPos <- function(vk) {
+    return(.Call("R_extract_variantkey_pos", vk))
+}
+
+#' Extract the REF+ALT code from VariantKey.
+#' @param vk VariantKey code.
+#' @useDynLib   variantkey R_extract_variantkey_refalt
+#' @export
+ExtractVariantkeyRefAlt <- function(vk) {
+    return(.Call("R_extract_variantkey_refalt", vk))
+}
+
+#' Decode a VariantKey code and returns the components.
+#' @param code VariantKey code.
+#' @param vk   Decoded variantkey structure.
+#' @useDynLib   variantkey R_decode_variantkey
+#' @export
+DecodeVariantkey <- function(vk) {
+    return(.Call("R_decode_variantkey", vk))
+}
+
+#' Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
 #' @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
 #' @param pos   Position. The reference position, with the first base having position 0.
 #' @param ref   Reference allele. String containing a sequence of nucleotide letters.
@@ -83,7 +116,7 @@ EncodeVariantKey <- function(chrom, pos, refalt) {
 #' @useDynLib   variantkey R_variantkey
 #' @export
 VariantKey <- function(chrom, pos, ref, alt) {
-    return(.Call("R_variantkey", chrom, as.integer(pos), ref, alt))
+    return(.Call("R_variantkey", chrom, pos, ref, alt))
 }
 
 #' Returns minimum and maximum variant keys for range searches.
@@ -93,13 +126,25 @@ VariantKey <- function(chrom, pos, ref, alt) {
 #' @useDynLib variantkey R_variantkey_range
 #' @export
 VariantKeyRange <- function(chrom, pos_min, pos_max) {
-    return(.Call("R_variantkey_range", as.integer(chrom), as.integer(pos_min), as.integer(pos_max)))
+    return(.Call("R_variantkey_range", chrom, pos_min, pos_max))
 }
 
-#' Decode a VariantKey code and returns the components.
-#' @param hexcode VariantKey hexadecimal string (16 hexadecimal characters).
-#' @useDynLib variantkey R_reverse_variantkey
+#' Compares two VariantKeys by chromosome only.
+#' Returns -1 if the first chromosome is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+#' @param vka    The first VariantKey to be compared.
+#' @param vkb    The second VariantKey to be compared.
+#' @useDynLib   variantkey R_compare_variantkey_chrom
 #' @export
-ReverseVariantKey <- function(hexcode) {
-    return(.Call("R_reverse_variantkey", hexcode))
+CompareVariantkeyChrom <- function(vka, vkb) {
+    return(.Call("R_compare_variantkey_chrom", vka, vkb))
+}
+
+#' Compares two VariantKeys by chromosome and position.
+#' Return -1 if the first CHROM+POS is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
+#' @param vka    The first VariantKey to be compared.
+#' @param vkb    The second VariantKey to be compared.
+#' @useDynLib   variantkey R_compare_variantkey_chrom_pos
+#' @export
+CompareVariantkeyChromPos <- function(vka, vkb) {
+    return(.Call("R_compare_variantkey_chrom_pos", vka, vkb))
 }

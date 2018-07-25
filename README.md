@@ -459,7 +459,7 @@ The R module is located in the `r` directory.
 Use the "`make r`" command to test the R wrapper and generate reports.
 
 In R the VariantKey is represented as hexadecimal string because there is no native support for unsigned 64 bit integers in R.
-Alternatively it is possible to use the encoding of the individual components (i.e. `CHROM`, `POS` and `REF+ALT`, or the signed 64 bit extension).
+Alternatively it is possible to use the encoding of the individual components (i.e. `CHROM`, `POS` and `REF+ALT`).
 
 See [R Usage Examples](r/example/example.R)
 
