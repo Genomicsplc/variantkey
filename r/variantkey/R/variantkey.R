@@ -148,23 +148,3 @@ CompareVariantkeyChrom <- function(vka, vkb) {
 CompareVariantkeyChromPos <- function(vka, vkb) {
     return(.Call("R_compare_variantkey_chrom_pos", vka, vkb))
 }
-
-#' Returns VariantKey hexadecimal string (16 characters).
-#' Upon successful return, these function returns the number of characters processed (excluding the null byte used to end output to strings).
-#' If the buffer size is not sufficient, then the return value is the number of characters required for
-#' buffer string, including the terminating null byte.
-#' @param vk    VariantKey code.
-#' @param str   String buffer to be returned (it must be sized 17 bytes at least).  
-#' @useDynLib   variantkey R_variantkey_hex
-#' @export
-VariantkeyHex <- function(vk) {
-    return(.Call("R_variantkey_hex", vk))
-}
-
-#' Parses a VariantKey hexadecimal string and returns the code.
-#' @param vs    VariantKey hexadecimal string (it must contain 16 hexadecimal characters).
-#' @useDynLib   variantkey R_parse_variantkey_hex
-#' @export
-ParseVariantkeyHex <- function(vs) {
-    return(.Call("R_parse_variantkey_hex", vs))
-}
