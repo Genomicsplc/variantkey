@@ -69,7 +69,7 @@ SEXP R_decode_refalt(SEXP code)
 {
     char ref[12] = "", alt[12] = "";
     size_t sizeref = 0, sizealt = 0;
-    decode_refalt(INTEGER(code)[0], ref, &sizeref, alt, &sizealt);
+    decode_refalt(asInteger(code), ref, &sizeref, alt, &sizealt);
     const char *names[] = {"REF", "ALT", "REF_LEN", "ALT_LEN", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
     SET_VECTOR_ELT(res, 0, Rf_mkString(ref));
