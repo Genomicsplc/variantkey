@@ -219,7 +219,7 @@ int test_vknr_bin_to_tsv(mmfile_t vknr)
     size_t len = vknr_bin_to_tsv(vknr.src, vknr.last, "vknr.test");
     if (len != 305)
     {
-        fprintf(stderr, "%s Expecting file with 305 bytes, got %" PRIu32 "\n", __func__, len);
+        fprintf(stderr, "%s Expecting file with 305 bytes, got %lu\n", __func__, len);
         ++errors;
     }
     return errors;
@@ -231,7 +231,7 @@ int test_vknr_bin_to_tsv_error(mmfile_t vknr)
     size_t len = vknr_bin_to_tsv(vknr.src, vknr.last, "/WRONG/../../vknr.test");
     if (len != 0)
     {
-        fprintf(stderr, "%s Expecting 0 bytes, got %" PRIu32 "\n", __func__, len);
+        fprintf(stderr, "%s Expecting 0 bytes, got %lu\n", __func__, len);
         ++errors;
     }
     return errors;

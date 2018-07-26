@@ -435,12 +435,16 @@ All the artifacts and reports produced using this Makefile are stored in the *ta
 The code inside the `c/vk` folder is used to generate the `vk` command line tool.  
 This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
 
+See [C Usage Examples](c/test/test_example.c).
+
 
 <a name="golib"></a>
 ## GO Library
 
 A go wrapper is located in the `go` directory.  
 Use the "`make go`" command to test the GO wrapper and generate reports.
+
+See [GO Usage Examples](go/example/main.go).
 
 
 <a name="pythonlib"></a>

@@ -106,6 +106,7 @@ test:
 # Format the source code
 format:
 	@find ./src -type f -name "*.go" -exec gofmt -s -w {} \;
+	@find ./example -type f -name "*.go" -exec gofmt -s -w {} \;
 
 # Check if the source code has been formatted
 fmtcheck:
