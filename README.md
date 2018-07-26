@@ -435,7 +435,7 @@ All the artifacts and reports produced using this Makefile are stored in the *ta
 The code inside the `c/vk` folder is used to generate the `vk` command line tool.  
 This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
 
-See [C Usage Examples](c/test/example.c).
+See [C Usage Examples](c/test/test_example.c).
 
 
 <a name="golib"></a>
