@@ -1,5 +1,11 @@
 """Tests for variantkey rsidvar module."""
 
+# test_rsidvar.py
+# @category   Libraries
+# @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+# @copyright  2017-2018 GENOMICS plc
+# @license    MIT (see LICENSE)
+# @link       https://github.com/genomicsplc/variantkey
 
 import variantkey as bs
 import os

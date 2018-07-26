@@ -1,5 +1,11 @@
-"""Tests for variantkey nrvk module."""
+"""Tests for variantkey genoref module."""
 
+# test_genoref.py
+# @category   Libraries
+# @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+# @copyright  2017-2018 GENOMICS plc
+# @license    MIT (see LICENSE)
+# @link       https://github.com/genomicsplc/variantkey
 
 import variantkey as bs
 import os

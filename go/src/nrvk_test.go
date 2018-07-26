@@ -1,5 +1,12 @@
 package variantkey
 
+// nrvk_test.go
+// @category   Libraries
+// @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+// @copyright  2017-2018 GENOMICS plc
+// @license    MIT (see LICENSE)
+// @link       https://github.com/genomicsplc/variantkey
+
 import "testing"
 
 var testNonRevVKData = []struct {

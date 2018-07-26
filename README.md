@@ -449,7 +449,7 @@ Use the "`make go`" command to test the GO wrapper and generate reports.
 The python module is located in the `python` directory.
 Use the "`make python`" command to test the Python wrapper and generate reports.
 
-See [Python Usage Examples](python/test/example.py)
+See [Python Usage Examples](python/test/example.py).
 
 
 <a name="rlib"></a>
@@ -461,7 +461,7 @@ Use the "`make r`" command to test the R wrapper and generate reports.
 In R the VariantKey is represented as hexadecimal string because there is no native support for unsigned 64 bit integers in R.
 Alternatively it is possible to use the encoding of the individual components (i.e. `CHROM`, `POS` and `REF+ALT`).
 
-See [R Usage Examples](r/example/example.R)
+See [R Usage Examples](r/example/example.R).
 
 <a name="jslib"></a>
 ## Javascript library (limited support)

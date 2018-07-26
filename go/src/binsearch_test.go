@@ -1,5 +1,12 @@
 package variantkey
 
+// binsearch_test.go
+// @category   Libraries
+// @author     Nicola Asuni <info@tecnick.com>
+// @copyright  2017-2018 Nicola Asuni - Tecnick.com
+// @license    MIT (see LICENSE)
+// @link       https://github.com/tecnickcom/binsearch
+
 import "testing"
 
 var testData8 = []struct {

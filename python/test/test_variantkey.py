@@ -1,5 +1,11 @@
 """Tests for variantkey module."""
 
+# test_variantkey.py
+# @category   Libraries
+# @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+# @copyright  2017-2018 GENOMICS plc
+# @license    MIT (see LICENSE)
+# @link       https://github.com/genomicsplc/variantkey
 
 import variantkey
 from unittest import TestCase

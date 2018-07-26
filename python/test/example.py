@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Usage example for VariantKey Python wrapper
+# https://github.com/genomicsplc/variantkey
+
 import variantkey as vk
 
 
