@@ -437,11 +437,14 @@ This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF
 
 See [C Usage Examples](c/test/example.c).
 
+
 <a name="golib"></a>
 ## GO Library
 
 A go wrapper is located in the `go` directory.  
 Use the "`make go`" command to test the GO wrapper and generate reports.
+
+See [GO Usage Examples](go/example/main.go).
 
 
 <a name="pythonlib"></a>
