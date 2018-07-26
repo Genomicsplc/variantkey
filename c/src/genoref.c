@@ -1,3 +1,15 @@
+// VariantKey
+//
+// genoref.c
+//
+// @category   Libraries
+// @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+// @copyright  2017-2018 GENOMICS plc
+// @license    MIT (see LICENSE)
+// @link       https://github.com/genomicsplc/variantkey
+//
+// LICENSE
+//
 // Copyright (c) 2017-2018 GENOMICS plc
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -17,7 +29,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
 
 #include <stdio.h>
 #include <string.h>

@@ -29,8 +29,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-#
-# VariantKey by Nicola Asuni
 
 #' Returns chromosome encoding.
 #' @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.

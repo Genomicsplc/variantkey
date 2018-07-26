@@ -1,3 +1,15 @@
+// BinSearch
+//
+// binsearch.c
+//
+// @category   Libraries
+// @author     Nicola Asuni <info@tecnick.com>
+// @copyright  2017-2018 Nicola Asuni - Tecnick.com
+// @license    MIT (see LICENSE)
+// @link       https://github.com/tecnickcom/binsearch
+//
+// LICENSE
+//
 // Copyright (c) 2017-2018 Nicola Asuni - Tecnick.com
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy

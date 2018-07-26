@@ -2,7 +2,7 @@
 //
 // variantkey.h
 //
-// @category   Tools
+// @category   Libraries
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 // @copyright  2017-2018 GENOMICS plc
 // @license    MIT (see LICENSE)
@@ -29,8 +29,6 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
-// VariantKey by Nicola Asuni
 
 /**
  * @file variantkey.h
