@@ -1,6 +1,6 @@
 package:
   name: variantkey
-  version: 2.11.2
+  version: 2.11.3
 
 source:
   path: ../..
