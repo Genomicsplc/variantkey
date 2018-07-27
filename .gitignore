@@ -27,3 +27,4 @@ dist
 **/env-*
 **/*.log
 **/*.test
+**/vknr.test

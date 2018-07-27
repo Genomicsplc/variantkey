@@ -14,6 +14,6 @@ test_that("MmapBinfile", {
 })
 
 test_that("MunmapBinfile", {
-    err <- MunmapBinfile(mm$SRC,mm$FD, mm$SIZE)
+    err <- MunmapBinfile(mm$SRC, mm$FD, mm$SIZE)
     expect_that(err, equals(0))
 })
