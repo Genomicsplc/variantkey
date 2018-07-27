@@ -79,6 +79,31 @@ test_that("FlipAllele", {
     expect_that(res, equals("TAGCKMYRVBHDWSNTAGCKMYRVBHDWSN"))
 })
 
+test_that("NormalizeVariant", {
+    x <- rbind(
+        list(1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2),         # invalid position
+        list(1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1),           # invalid reference
+        list(1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 4),            # flip
+        list(1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0),            # OK
+        list(13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32),      # left trim
+        list(13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48),      # left trim + right trim
+        list(1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48), # left trim + right trim
+        list(1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0),              # OK
+        list(1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8),            # left extend
+        list(1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0),        # OK
+        list(1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 2),            # swap
+        list(1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6)             # swap + flip
+    )
+    colnames(x) <- list("chrom", "pos", "ref", "sizeref", "alt", "sizealt", "epos", "eref", "esizeref", "ealt", "esizealt", "ecode")
+    res <- mapply(NormalizeVariant, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(unlist(res[1,]), equals(unlist(x[,"ecode"])))
+    expect_that(unlist(res[2,]), equals(unlist(x[,"epos"])))
+    expect_that(unlist(res[3,]), equals(unlist(x[,"eref"])))
+    expect_that(unlist(res[4,]), equals(unlist(x[,"ealt"])))
+    expect_that(unlist(res[5,]), equals(unlist(x[,"esizeref"])))
+    expect_that(unlist(res[6,]), equals(unlist(x[,"esizealt"])))
+})
+
 test_that("MunmapBinfile", {
     err <- MunmapBinfile(genoref$SRC, genoref$FD, genoref$SIZE)
     expect_that(err, equals(0))

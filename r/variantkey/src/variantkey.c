@@ -370,10 +370,16 @@ SEXP R_flip_allele(SEXP allele)
 
 SEXP R_normalize_variant(SEXP src, SEXP idx, SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
 {
-    char *pref = Rf_acopy_string(CHAR(STRING_ELT(ref, 0)));
-    char *palt= Rf_acopy_string(CHAR(STRING_ELT(alt, 0)));
-    size_t sizeref = strlen(pref);
-    size_t sizealt = strlen(palt);
+    const char *cpref = CHAR(STRING_ELT(ref, 0));
+    const char *cpalt = CHAR(STRING_ELT(alt, 0));
+    size_t sizeref = strlen(cpref);
+    size_t sizealt = strlen(cpalt);
+    char pref[ALLELE_MAXSIZE] = "";
+    char palt[ALLELE_MAXSIZE] = "";
+    strncpy(pref, cpref, sizeref);
+    strncpy(palt, cpalt, sizealt);
+    pref[sizeref] = 0;
+    palt[sizealt] = 0;
     uint32_t ppos = asInteger(pos);
     int ret = normalize_variant(R_ExternalPtrAddr(src), R_ExternalPtrAddr(idx), asInteger(chrom), &ppos, pref, &sizeref, palt, &sizealt);
     const char *names[] = {"RET", "POS", "REF", "ALT", "REF_LEN", "ALT_LEN", ""};
