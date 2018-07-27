@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help version build test format clean
+.PHONY: help version build test format clean devdoc
 
 # Project name
 PROJECT=variantkey
@@ -34,6 +34,7 @@ help:
 	@echo "    make test    : Test the library"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
+	@echo "    make devdoc  : Execute devtools::document()"
 	@echo ""
 
 all: clean format build
@@ -59,3 +60,7 @@ format:
 # Remove any build artifact
 clean:
 	rm -rf variantkey.Rcheck
+
+devdoc:
+	cd variantkey &&\
+	R -e "devtools::document()"

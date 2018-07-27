@@ -125,7 +125,7 @@ class TestFunctions(TestCase):
         self.assertEqual(xlast, 8)
 
     def test_find_vr_chrompos_range_notfound(self):
-        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, 0xfffffff0, 0xffffff00, 0xfffffff0)
+        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, 0xff, 0xffffff00, 0xfffffff0)
         self.assertEqual(xrsid, 0)
         self.assertEqual(xfirst, 10)
         self.assertEqual(xlast, 9)
