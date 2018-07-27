@@ -13,7 +13,7 @@ VknrBinToTsv(src, last, tsvfile)
 
 \item{last}{Number of variants in the src file -1. Set this to 0 to skip the lookup table.}
 
-\item{tsvfile}{Output tsv file name. NOTE: existing files will be replaced.}
+\item{tsvfile}{Output tsv file name. Note that existing files will be replaced.}
 }
 \description{
 Convert a vrnr.bin file to a simple TSV.

@@ -260,6 +260,26 @@ SEXP R_get_next_rv_variantkey_by_rsid(SEXP src, SEXP pos, SEXP last, SEXP rsid)
     return res;
 }
 
+SEXP R_find_all_rv_variantkey_by_rsid(SEXP src, SEXP first, SEXP last, SEXP rsid)
+{
+    static const int vecsize = 10; // limit the maximum nuber of results
+    SEXP res = PROTECT(allocVector(VECSXP, vecsize));
+    uint32_t i = 0;
+    char hex[17];
+    uint64_t pfirst = asInteger(first);
+    uint64_t vk = find_rv_variantkey_by_rsid(R_ExternalPtrAddr(src), &pfirst, asInteger(last), asInteger(rsid));
+    while ((vk > 0) && (i < vecsize))
+    {
+        variantkey_hex(vk, hex);
+        SET_VECTOR_ELT(res, i, Rf_mkString(hex));
+        i++;
+        vk = get_next_rv_variantkey_by_rsid(R_ExternalPtrAddr(src), &pfirst, asInteger(last), asInteger(rsid));
+    }
+    SETLENGTH(res, i);
+    UNPROTECT(1);
+    return res;
+}
+
 SEXP R_find_vr_rsid_by_variantkey(SEXP src, SEXP first, SEXP last, SEXP vk)
 {
     uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));

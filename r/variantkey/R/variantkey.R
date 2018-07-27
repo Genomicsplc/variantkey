@@ -210,6 +210,18 @@ GetNextRvVariantkeyByRsid <- function(src, pos, last, rsid) {
     return(.Call("R_get_next_rv_variantkey_by_rsid", src, pos, last, rsid))
 }
 
+#' Search for the specified rsID and returns all the associated VariantKeys in the RV file.
+#' NOTE that the output is limited to maximum 10 results.
+#' @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
+#' @param first     First element of the range to search (min value = 0).
+#' @param last      Last element of the range to search (max value = nitems - 1).
+#' @param rsid      rsID to search.
+#' @useDynLib   variantkey R_find_all_rv_variantkey_by_rsid
+#' @export
+FindAllRvVariantkeyByRsid <- function(src, first, last, rsid) {
+    return(.Call("R_find_all_rv_variantkey_by_rsid", src, first, last, rsid))
+}
+
 #' Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found
 #' @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
 #' @param first     First element of the range to search (min value = 0).
@@ -262,7 +274,7 @@ ReverseVariantkey <- function(src, last, vk) {
 #' For the reverse operation see the resources/tools/vknr.sh script.
 #' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
 #' @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
-#' @param tsvfile  Output tsv file name. NOTE: existing files will be replaced.
+#' @param tsvfile  Output tsv file name. Note that existing files will be replaced.
 #' @useDynLib   variantkey R_vknr_bin_to_tsv
 #' @export
 VknrBinToTsv <- function(src, last, tsvfile) {

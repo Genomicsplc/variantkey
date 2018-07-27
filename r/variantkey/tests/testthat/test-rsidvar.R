@@ -88,19 +88,18 @@ test_that("FindVrChromposRangeNotFound", {
     expect_that(res$LAST, equals(9))
 })
 
+test_that("FindAllRvVariantkeyByRsid", {
+    res <- FindAllRvVariantkeyByRsid(rsvkm$SRC, 0, 9, 0x00000003)
+    expect_that(length(res), equals(3))
+    expect_that(unlist(res[1]), equals("80010274003a0000"))
+    expect_that(unlist(res[2]), equals("8001028d00138000"))
+    expect_that(unlist(res[3]), equals("80010299007a0000"))
+})
 
-#    def test_find_all_rv_variantkey_by_rsid(self):
-#        vks = bs.find_all_rv_variantkey_by_rsid(rvmsrc, 0, 9, 0x00000003)
-#        self.assertEqual(len(vks), 3)
-#        self.assertEqual(vks[0], 0x80010274003A0000)
-#        self.assertEqual(vks[1], 0x8001028D00138000)
-#        self.assertEqual(vks[2], 0x80010299007A0000)
-
-
-#    def test_find_all_rv_variantkey_by_rsid_notfound(self):
-#        vks = bs.find_all_rv_variantkey_by_rsid(rvmsrc, 0, 9, 0xfffffff0)
-#        self.assertEqual(len(vks), 0)
-
+test_that("FindAllRvVariantkeyByRsidNotFound", {
+    res <- FindAllRvVariantkeyByRsid(rsvkm$SRC, 0, 9, 0xfffffff0)
+    expect_that(length(res), equals(0))
+})
 
 test_that("MunmapBinfile", {
     err <- MunmapBinfile(rsvk$SRC, rsvk$FD, rsvk$SIZE)
