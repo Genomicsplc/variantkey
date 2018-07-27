@@ -4,7 +4,7 @@
 \alias{ReverseVariantkey}
 \title{Reverse a VariantKey code and returns the normalized components.}
 \usage{
-ReverseVariantkey()
+ReverseVariantkey(src, last, vk)
 }
 \arguments{
 \item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}

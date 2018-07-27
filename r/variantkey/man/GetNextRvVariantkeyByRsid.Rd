@@ -5,7 +5,7 @@
 \title{Get the next VariantKey for the specified rsID in the RV file, or 0 if not found
 This function can be called in a loop to get all VariantKeys that are associated with the same rsID (if any).}
 \usage{
-GetNextRvVariantkeyByRsid()
+GetNextRvVariantkeyByRsid(src, pos, last, rsid)
 }
 \arguments{
 \item{src}{Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).}

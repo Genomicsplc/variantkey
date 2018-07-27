@@ -9,7 +9,7 @@ Return Positive number in case of success, negative in case of error:
   * -1 the reference allele don't match the reference genome;
   * -2 the reference allele is longer than the genome reference sequence.}
 \usage{
-CheckReference()
+CheckReference(src, idx, chrom, pos, ref)
 }
 \arguments{
 \item{src}{Address of the memory mapped input file containing the genome reference data (fasta.bin).}

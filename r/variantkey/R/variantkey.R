@@ -174,7 +174,7 @@ MunmapBinfile <- function(src, fd, size) {
 #' @param item      Binary block number.
 #' @useDynLib   variantkey R_get_vr_rsid
 #' @export
-GetVrRsid <- function() {
+GetVrRsid <- function(src, item) {
     return(.Call("R_get_vr_rsid", src, item))
 }
 
@@ -183,7 +183,7 @@ GetVrRsid <- function() {
 #' @param item      Binary block number.
 #' @useDynLib   variantkey R_get_rv_variantkey
 #' @export
-GetRvVariantkey <- function() {
+GetRvVariantkey <- function(src, item) {
     return(.Call("R_get_rv_variantkey", src, item))
 }
 
@@ -194,7 +194,7 @@ GetRvVariantkey <- function() {
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_rv_variantkey_by_rsid
 #' @export
-FindRvVariantkeyByRsid <- function() {
+FindRvVariantkeyByRsid <- function(src, first, last, rsid) {
     return(.Call("R_find_rv_variantkey_by_rsid", src, first, last, rsid))
 }
 
@@ -206,7 +206,7 @@ FindRvVariantkeyByRsid <- function() {
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_get_next_rv_variantkey_by_rsid
 #' @export
-GetNextRvVariantkeyByRsid <- function() {
+GetNextRvVariantkeyByRsid <- function(src, pos, last, rsid) {
     return(.Call("R_get_next_rv_variantkey_by_rsid", src, pos, last, rsid))
 }
 
@@ -217,7 +217,7 @@ GetNextRvVariantkeyByRsid <- function() {
 #' @param vk        VariantKey.
 #' @useDynLib   variantkey R_find_vr_rsid_by_variantkey
 #' @export
-FindVrRsidByVariantkey <- function() {
+FindVrRsidByVariantkey <- function(src, first, last, vk) {
     return(.Call("R_find_vr_rsid_by_variantkey", src, first, last, vk))
 }
 
@@ -230,7 +230,7 @@ FindVrRsidByVariantkey <- function() {
 #' @param pos_max   End reference position, with the first base having position 0.
 #' @useDynLib   variantkey R_find_vr_chrompos_range
 #' @export
-FindVrChromposRange <- function() {
+FindVrChromposRange <- function(src, first, last, chrom, pos_min, pos_max) {
     return(.Call("R_find_vr_chrompos_range", src, first, last, chrom, pos_min, pos_max))
 }
 
@@ -243,7 +243,7 @@ FindVrChromposRange <- function() {
 #' @param vk       VariantKey to search.
 #' @useDynLib   variantkey R_find_ref_alt_by_variantkey
 #' @export
-FindRefAltByVariantkey <- function() {
+FindRefAltByVariantkey <- function(src, last, vk) {
     return(.Call("R_find_ref_alt_by_variantkey", src, last, vk))
 }
 
@@ -253,7 +253,7 @@ FindRefAltByVariantkey <- function() {
 #' @param vk       VariantKey code.
 #' @useDynLib   variantkey R_reverse_variantkey
 #' @export
-ReverseVariantkey <- function() {
+ReverseVariantkey <- function(src, last, vk) {
     return(.Call("R_reverse_variantkey", src, last, vk))
 }
 
@@ -265,7 +265,7 @@ ReverseVariantkey <- function() {
 #' @param tsvfile  Output tsv file name. NOTE: existing files will be replaced.
 #' @useDynLib   variantkey R_vknr_bin_to_tsv
 #' @export
-VknrBinToTsv <- function() {
+VknrBinToTsv <- function(src, last, tsvfile) {
     return(.Call("R_vknr_bin_to_tsv", src, last, tsvfile))
 }
 
@@ -276,7 +276,7 @@ VknrBinToTsv <- function() {
 #' @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements.
 #' @useDynLib   variantkey R_load_genoref_index
 #' @export
-LoadGenorefIndex <- function() {
+LoadGenorefIndex <- function(src) {
     return(.Call("R_load_genoref_index", src))
 }
 
@@ -287,7 +287,7 @@ LoadGenorefIndex <- function() {
 #' @param pos     Position. The reference position, with the first base having position 0.
 #' @useDynLib   variantkey R_get_genoref_seq
 #' @export
-GetGenorefSeq <- function() {
+GetGenorefSeq <- function(src, idx, chrom, pos) {
     return(.Call("R_get_genoref_seq", src, idx, chrom, pos))
 }
 
@@ -304,7 +304,7 @@ GetGenorefSeq <- function() {
 #' @param ref     Reference allele. String containing a sequence of nucleotide letters.
 #' @useDynLib   variantkey R_check_reference
 #' @export
-CheckReference <- function() {
+CheckReference <- function(src, idx, chrom, pos, ref) {
     return(.Call("R_check_reference", src, idx, chrom, pos, ref))
 }
 
@@ -315,7 +315,7 @@ CheckReference <- function() {
 #' @param size    Length of the allele string.
 #' @useDynLib   variantkey R_flip_allele
 #' @export
-FlipAllele <- function() {
+FlipAllele <- function(allele) {
     return(.Call("R_flip_allele", allele))
 }
 
@@ -344,7 +344,7 @@ FlipAllele <- function() {
 #' @param alt        Alternate non-reference allele string.
 #' @useDynLib   variantkey R_normalize_variant
 #' @export
-NormalizeVariant <- function() {
+NormalizeVariant <- function(src, idx, chrom, pos, ref, alt) {
     return(.Call("R_normalize_variant", src, idx, chrom, pos, ref, alt))
 }
 

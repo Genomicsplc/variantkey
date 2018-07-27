@@ -6,7 +6,7 @@
 Return Number of written bytes or 0 in case of error.
 For the reverse operation see the resources/tools/vknr.sh script.}
 \usage{
-VknrBinToTsv()
+VknrBinToTsv(src, last, tsvfile)
 }
 \arguments{
 \item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}

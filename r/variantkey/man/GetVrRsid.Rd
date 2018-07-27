@@ -4,7 +4,7 @@
 \alias{GetVrRsid}
 \title{Returns the RSID at the specified position in the VR file.}
 \usage{
-GetVrRsid()
+GetVrRsid(src, item)
 }
 \arguments{
 \item{src}{Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).}

@@ -4,7 +4,7 @@
 \alias{GetRvVariantkey}
 \title{Returns the VariantKey at the specified position in the RV file.}
 \usage{
-GetRvVariantkey()
+GetRvVariantkey(src, item)
 }
 \arguments{
 \item{src}{Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).}

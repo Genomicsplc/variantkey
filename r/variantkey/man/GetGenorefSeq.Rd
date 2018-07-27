@@ -4,7 +4,7 @@
 \alias{GetGenorefSeq}
 \title{Returns the genome reference nucleotide at the specified chromosome and position, or 0 in case of invalid position.}
 \usage{
-GetGenorefSeq()
+GetGenorefSeq(src, idx, chrom, pos)
 }
 \arguments{
 \item{src}{Address of the memory mapped input file containing the genome reference data (fasta.bin).}

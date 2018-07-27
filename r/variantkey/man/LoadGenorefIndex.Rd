@@ -4,7 +4,7 @@
 \alias{LoadGenorefIndex}
 \title{Load the genome reference index.}
 \usage{
-LoadGenorefIndex()
+LoadGenorefIndex(src)
 }
 \arguments{
 \item{src}{Address of the memory mapped input file containing the genome reference data (fasta.bin).}

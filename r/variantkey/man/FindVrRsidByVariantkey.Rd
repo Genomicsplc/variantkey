@@ -4,7 +4,7 @@
 \alias{FindVrRsidByVariantkey}
 \title{Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found}
 \usage{
-FindVrRsidByVariantkey()
+FindVrRsidByVariantkey(src, first, last, vk)
 }
 \arguments{
 \item{src}{Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).}

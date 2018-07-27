@@ -4,7 +4,7 @@
 \alias{FindVrChromposRange}
 \title{Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.}
 \usage{
-FindVrChromposRange()
+FindVrChromposRange(src, first, last, chrom, pos_min, pos_max)
 }
 \arguments{
 \item{src}{Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).}

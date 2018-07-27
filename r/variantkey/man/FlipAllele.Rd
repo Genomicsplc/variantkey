@@ -6,7 +6,7 @@
 The resulting string is always in uppercase.
 Support extended nucleotide letters.}
 \usage{
-FlipAllele()
+FlipAllele(allele)
 }
 \arguments{
 \item{allele}{Allele. String containing a sequence of nucleotide letters.}

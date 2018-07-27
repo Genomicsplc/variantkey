@@ -20,7 +20,7 @@ When positive, each bit has a different meaning when set, has defined by the NOR
   * bit 5:
       Alleles have been left trimmed.}
 \usage{
-NormalizeVariant()
+NormalizeVariant(src, idx, chrom, pos, ref, alt)
 }
 \arguments{
 \item{src}{Address of the memory mapped input file containing the genome reference data (fasta.bin).}
