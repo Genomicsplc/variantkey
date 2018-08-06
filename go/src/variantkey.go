@@ -728,6 +728,11 @@ func (mf TMMFile) ReverseVariantkey(vk uint64) (TVariantKeyRev, uint32) {
 	return castCVariantKeyRev(rev), uint32(len)
 }
 
+// GetRefLengthByVariantkey retrieve the REF length for the specified VariantKey.
+func (mf TMMFile) GetRefLengthByVariantkey(vk uint64) uint8 {
+	return uint8(C.get_ref_length_by_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+}
+
 // VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/vknr.sh script.
 func (mf TMMFile) VknrBinToTSV(tsvfile string) uint64 {
 	file := StringToNTBytes(tsvfile)

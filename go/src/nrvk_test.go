@@ -39,16 +39,16 @@ func TestFindRefAltByVariantkey(t *testing.T) {
 			t.Parallel()
 			ref, alt, sizeref, sizealt, len := vknr.FindRefAltByVariantkey(tt.vk)
 			if ref != tt.ref {
-				t.Errorf("%d. Expected ref %s, got %s", i, tt.ref, ref)
+				t.Errorf("%d. Expected REF %s, got %s", i, tt.ref, ref)
 			}
 			if alt != tt.alt {
-				t.Errorf("%d. Expected alt %s, got %s", i, tt.alt, alt)
+				t.Errorf("%d. Expected ALT %s, got %s", i, tt.alt, alt)
 			}
 			if sizeref != tt.sizeref {
-				t.Errorf("%d. Expected ref size %d, got %d", i, tt.sizeref, sizeref)
+				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, sizeref)
 			}
 			if sizealt != tt.sizealt {
-				t.Errorf("%d. Expected alt size %d, got %d", i, tt.sizealt, sizealt)
+				t.Errorf("%d. Expected ALT size %d, got %d", i, tt.sizealt, sizealt)
 			}
 			if len != (tt.len - 2) {
 				t.Errorf("%d. Expected len %d, got %d", i, (tt.len - 2), len)
@@ -72,22 +72,22 @@ func TestReverseVariantkey(t *testing.T) {
 			t.Parallel()
 			rev, len := vknr.ReverseVariantkey(tt.vk)
 			if rev.Chrom != tt.chrom {
-				t.Errorf("%d. Expected chrom %s, got %s", i, tt.chrom, rev.Chrom)
+				t.Errorf("%d. Expected CHROM %s, got %s", i, tt.chrom, rev.Chrom)
 			}
 			if rev.Pos != tt.pos {
-				t.Errorf("%d. Expected pos size %d, got %d", i, tt.pos, rev.Pos)
+				t.Errorf("%d. Expected POS size %d, got %d", i, tt.pos, rev.Pos)
 			}
 			if rev.Ref != tt.ref {
-				t.Errorf("%d. Expected ref %s, got %s", i, tt.ref, rev.Ref)
+				t.Errorf("%d. Expected REF %s, got %s", i, tt.ref, rev.Ref)
 			}
 			if rev.Alt != tt.alt {
-				t.Errorf("%d. Expected alt %s, got %s", i, tt.alt, rev.Alt)
+				t.Errorf("%d. Expected ALT %s, got %s", i, tt.alt, rev.Alt)
 			}
 			if rev.SizeRef != tt.sizeref {
-				t.Errorf("%d. Expected ref size %d, got %d", i, tt.sizeref, rev.SizeRef)
+				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, rev.SizeRef)
 			}
 			if rev.SizeAlt != tt.sizealt {
-				t.Errorf("%d. Expected alt size %d, got %d", i, tt.sizealt, rev.SizeAlt)
+				t.Errorf("%d. Expected ALT size %d, got %d", i, tt.sizealt, rev.SizeAlt)
 			}
 			if len != (tt.len - 2) {
 				t.Errorf("%d. Expected len %d, got %d", i, (tt.len - 2), len)
@@ -100,6 +100,34 @@ func BenchmarkReverseVariantkey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		vknr.ReverseVariantkey(0xb000c35b64690b25)
+	}
+}
+
+func TestGetRefLengthByVariantkey(t *testing.T) {
+	for i, tt := range testNonRevVKData {
+		i := i
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			sizeref := vknr.GetRefLengthByVariantkey(tt.vk)
+			if sizeref != tt.sizeref {
+				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, sizeref)
+			}
+		})
+	}
+}
+
+func TestGetRefLengthByVariantkeyReversible(t *testing.T) {
+	sizeref := vknr.GetRefLengthByVariantkey(0x1800925199160000)
+	if sizeref != 3 {
+		t.Errorf("Expected REF size 3, got %d", sizeref)
+	}
+}
+
+func TestGetRefLengthByVariantkeyNotFound(t *testing.T) {
+	sizeref := vknr.GetRefLengthByVariantkey(0xffffffffffffffff)
+	if sizeref != 0 {
+		t.Errorf("Expected REF size 0, got %d", sizeref)
 	}
 }
 
