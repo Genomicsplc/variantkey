@@ -94,7 +94,7 @@ size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvf
     char ref[ALLELE_MAXSIZE];
     char alt[ALLELE_MAXSIZE];
     uint64_t i;
-    fp = fopen(tsvfile, "w");
+    fp = fopen(tsvfile, "we");
     if (fp == NULL)
     {
         return 0;

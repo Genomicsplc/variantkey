@@ -201,7 +201,7 @@ void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange
  *
  * @return -1 if the first chromosome is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
-int compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
+int8_t compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
 
 /** @brief Compares two VariantKeys by chromosome and position.
  *
@@ -210,7 +210,7 @@ int compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
  *
  * @return -1 if the first CHROM+POS is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
-int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
+int8_t compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
 
 /** @brief Returns VariantKey hexadecimal string (16 characters).
  *

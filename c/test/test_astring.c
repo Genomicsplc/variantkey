@@ -112,7 +112,6 @@ int test_hex_uint64_t()
 int test_parse_hex_uint64_t()
 {
     int errors = 0;
-    int i;
     uint64_t k;
     k = parse_hex_uint64_t("1234567890AbCdEf");
     if (k != 0x1234567890abcdef)

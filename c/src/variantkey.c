@@ -303,17 +303,17 @@ void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange
     range->max = (c | ((uint64_t)pos_max << VKSHIFT_POS) | VKMASK_REFALT);
 }
 
-static inline int compare_uint64_t(uint64_t a, uint64_t b)
+static inline int8_t compare_uint64_t(uint64_t a, uint64_t b)
 {
     return (a < b) ? -1 : (a > b);
 }
 
-int compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
+int8_t compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
 {
     return compare_uint64_t((vka >> VKSHIFT_CHROM), (vkb >> VKSHIFT_CHROM));
 }
 
-int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
+int8_t compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
 {
     return compare_uint64_t((vka >> VKSHIFT_POS), (vkb >> VKSHIFT_POS));
 }
