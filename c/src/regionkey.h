@@ -57,7 +57,6 @@ extern "C" {
 #define RKSHIFT_ENDPOS     3 //!< END POS LSB position from the VariantKey LSB
 #define RKSHIFT_STRAND     1 //!< STRAND LSB position from the VariantKey LSB
 
-
 /**
  * RegionKey struct.
  * Contains the numerically encoded RegionKey components (CHROM, STARTPOS, ENDPOS, STRAND).
@@ -87,7 +86,7 @@ typedef struct regionkey_rev_t
  *
  * @return      Strand code.
  */
-uint8_t encode_strand(int8_t strand);
+uint8_t encode_region_strand(int8_t strand);
 
 /** @brief Decode the strand direction code (0 > 0, 1 > +1, 2 > -1).
  *
@@ -95,7 +94,7 @@ uint8_t encode_strand(int8_t strand);
  *
  * @return      Strand direction.
  */
-int8_t decode_strand(uint8_t code);
+int8_t decode_region_strand(uint8_t code);
 
 /** @brief Returns a 64 bit regionkey
  *
@@ -186,6 +185,19 @@ size_t regionkey_hex(uint64_t rk, char *str);
  * @return A RegionKey code.
  */
 uint64_t parse_regionkey_hex(const char *rs);
+
+/** @brief Check if two regions are overlapping.
+ *
+ * @param a_chrom     Region A chromosome code.
+ * @param a_startpos  Region A start position.
+ * @param a_endpos    Region A end position (startpos + region length).
+ * @param b_chrom     Region B chromosome code.
+ * @param b_startpos  Region B start position.
+ * @param b_endpos    Region B end position (startpos + region length).
+ *
+ * @return 1 if the regions overlap, 0 otherwise.
+ */
+uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos);
 
 #ifdef __cplusplus
 }

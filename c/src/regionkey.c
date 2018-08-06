@@ -33,13 +33,13 @@
 #include <stdio.h>
 #include "regionkey.h"
 
-uint8_t encode_strand(int8_t strand)
+uint8_t encode_region_strand(int8_t strand)
 {
     static const uint8_t map[] = {2, 0, 1, 0};
     return map[((uint8_t)(strand + 1) & 3)];
 }
 
-int8_t decode_strand(uint8_t code)
+int8_t decode_region_strand(uint8_t code)
 {
     static const int8_t map[] = {0, 1, -1, 0};
     return map[(code & 3)];
@@ -85,12 +85,12 @@ void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev)
     decode_chrom(h.chrom, rev->chrom);
     rev->startpos = h.startpos;
     rev->endpos = h.endpos;
-    rev->strand = decode_strand(h.strand);
+    rev->strand = decode_region_strand(h.strand);
 }
 
 uint64_t regionkey(const char *chrom, size_t sizechrom, uint32_t startpos, uint32_t endpos, int8_t strand)
 {
-    return encode_regionkey(encode_chrom(chrom, sizechrom), startpos, endpos, encode_strand(strand));
+    return encode_regionkey(encode_chrom(chrom, sizechrom), startpos, endpos, encode_region_strand(strand));
 }
 
 size_t regionkey_hex(uint64_t rk, char *str)
@@ -101,4 +101,9 @@ size_t regionkey_hex(uint64_t rk, char *str)
 uint64_t parse_regionkey_hex(const char *rs)
 {
     return parse_hex_uint64_t(rs);
+}
+
+uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos)
+{
+    return (uint8_t)((a_chrom == b_chrom) && (a_startpos < b_endpos) && (a_endpos > b_startpos));
 }
