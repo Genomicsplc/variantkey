@@ -70,7 +70,7 @@ size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, 
     return len;
 }
 
-size_t get_ref_length_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk)
+size_t get_ref_len_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk)
 {
     if ((vk & 0x1) == 0) // check last bit for reversible encoding
     {

@@ -47,6 +47,21 @@ test_that("ReverseVariantkey", {
     expect_that(unlist(res[7,]), equals(unlist(x[,"ralen"]) - 2))
 })
 
+test_that("GetRefLenByVariantkey", {
+    res <- mapply(GetRefLenByVariantkey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(unlist(res), equals(unlist(x[,"sizeref"])))
+})
+
+test_that("GetRefLenByVariantkeyReversible", {
+    res <- GetRefLenByVariantkey(vknr$SRC, vknr$LAST, "1800925199160000")
+    expect_that(res, equals(3))
+})
+
+test_that("GetRefLenByVariantkeyNotFound", {
+    res <- GetRefLenByVariantkey(vknr$SRC, vknr$LAST, "ffffffffffffffff")
+    expect_that(res, equals(0))
+})
+
 test_that("VknrBinToTsv", {
     size <- VknrBinToTsv(vknr$SRC, vknr$LAST, "vknr.test")
     expect_that(size, equals(305))

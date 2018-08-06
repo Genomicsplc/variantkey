@@ -67,6 +67,19 @@ class TestFunctions(TestCase):
             self.assertEqual(osizealt, sizealt)
             self.assertEqual(oralen, (ralen - 2))
 
+    def test_get_ref_len_by_variantkey(self):
+        for vkey, chrom, pos, ralen, sizeref, sizealt, ref, alt in testData:
+            osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, vkey)
+            self.assertEqual(osizeref, sizeref)
+
+    def test_get_ref_len_by_variantkey_reversible(self):
+        osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, 0x1800925199160000)
+        self.assertEqual(osizeref, 3)
+
+    def test_get_ref_len_by_variantkey_not_found(self):
+        osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, 0xffffffffffffffff)
+        self.assertEqual(osizeref, 0)
+
     def test_vknr_bin_to_tsv(self):
         fsize = bs.vknr_bin_to_tsv(mfsrc, mflast, "vknr.test")
         self.assertEqual(fsize, 305)

@@ -1031,6 +1031,18 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     return result;
 }
 
+static PyObject* py_get_ref_len_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    size_t len = get_ref_len_by_variantkey(src, last, vk);
+    return Py_BuildValue("K", len);
+}
+
 static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t last;
@@ -1198,6 +1210,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     // NRVK
     {"find_ref_alt_by_variantkey", (PyCFunction)py_find_ref_alt_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYFINDREFALTBYVARIANTKEY_DOCSTRING},
     {"reverse_variantkey", (PyCFunction)py_reverse_variantkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEVARIANTKEY_DOCSTRING},
+    {"get_ref_len_by_variantkey", (PyCFunction)py_get_ref_len_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYGETREFLENGTHBYVARIANTKEY_DOCSTRING},
     {"vknr_bin_to_tsv", (PyCFunction)py_vknr_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF

@@ -344,6 +344,16 @@ SEXP R_reverse_variantkey(SEXP src, SEXP last, SEXP vk)
     return res;
 }
 
+SEXP R_get_ref_len_by_variantkey(SEXP src, SEXP last, SEXP vk)
+{
+    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = get_ref_len_by_variantkey(R_ExternalPtrAddr(src), asInteger(last), varkey);
+    UNPROTECT(1);
+    return res;
+}
+
 SEXP R_vknr_bin_to_tsv(SEXP src, SEXP last, SEXP tsvfile)
 {
     SEXP res;

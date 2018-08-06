@@ -103,13 +103,13 @@ func BenchmarkReverseVariantkey(b *testing.B) {
 	}
 }
 
-func TestGetRefLengthByVariantkey(t *testing.T) {
+func TestGetRefLenByVariantkey(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			sizeref := vknr.GetRefLengthByVariantkey(tt.vk)
+			sizeref := vknr.GetRefLenByVariantkey(tt.vk)
 			if sizeref != tt.sizeref {
 				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, sizeref)
 			}
@@ -117,15 +117,15 @@ func TestGetRefLengthByVariantkey(t *testing.T) {
 	}
 }
 
-func TestGetRefLengthByVariantkeyReversible(t *testing.T) {
-	sizeref := vknr.GetRefLengthByVariantkey(0x1800925199160000)
+func TestGetRefLenByVariantkeyReversible(t *testing.T) {
+	sizeref := vknr.GetRefLenByVariantkey(0x1800925199160000)
 	if sizeref != 3 {
 		t.Errorf("Expected REF size 3, got %d", sizeref)
 	}
 }
 
-func TestGetRefLengthByVariantkeyNotFound(t *testing.T) {
-	sizeref := vknr.GetRefLengthByVariantkey(0xffffffffffffffff)
+func TestGetRefLenByVariantkeyNotFound(t *testing.T) {
+	sizeref := vknr.GetRefLenByVariantkey(0xffffffffffffffff)
 	if sizeref != 0 {
 		t.Errorf("Expected REF size 0, got %d", sizeref)
 	}

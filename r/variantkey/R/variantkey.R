@@ -269,6 +269,17 @@ ReverseVariantkey <- function(src, last, vk) {
     return(.Call("R_reverse_variantkey", src, last, vk))
 }
 
+#' Retrieve the REF length for the specified VariantKey.
+#' Return REF length or 0 if the VariantKey is not reversible and not found.
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last     Number of variants in the src file -1.
+#' @param vk       VariantKey to search.
+#' @useDynLib   variantkey R_get_ref_len_by_variantkey
+#' @export
+GetRefLenByVariantkey <- function(src, last, vk) {
+    return(.Call("R_get_ref_len_by_variantkey", src, last, vk))
+}
+
 #' Convert a vrnr.bin file to a simple TSV.
 #' Return Number of written bytes or 0 in case of error.
 #' For the reverse operation see the resources/tools/vknr.sh script.

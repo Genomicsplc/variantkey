@@ -112,7 +112,7 @@ func main() {
 	fmt.Println(vknr.ReverseVariantkey(0x2000c3521f1c15ab))
 	// {4 100004 ACGTACGT ACGT 8 4} 12
 
-	fmt.Println(vknr.GetRefLengthByVariantkey(0x2000c3521f1c15ab))
+	fmt.Println(vknr.GetRefLenByVariantkey(0x2000c3521f1c15ab))
 	// 8
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\

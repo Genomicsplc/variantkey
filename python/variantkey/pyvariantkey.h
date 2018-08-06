@@ -99,6 +99,7 @@ static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args, PyObj
 // NRVK
 static PyObject *py_find_ref_alt_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_ref_len_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_vknr_bin_to_tsv(PyObject *self, PyObject *args, PyObject *keywds);
 
 // GENOREF
@@ -1459,6 +1460,22 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - REF length.\n"\
 "    - ALT length.\n"\
 "    - REF+ALT length."
+
+#define PYGETREFLENGTHBYVARIANTKEY_DOCSTRING "Retrieve the REF length for the specified VariantKey..\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mfsrc : obj\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"last : int\n"\
+"    Number of variants in the src file -1.\n"\
+"vk : int\n"\
+"    VariantKey to search.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    REF length or 0 if the VariantKey is not reversible and not found."
 
 #define PYVKNRBINTOTSV_DOCSTRING "Convert a vrnr.bin file to a simple TSV.\n"\
 "For the reverse operation see the resources/tools/vknr.sh script.\n"\
