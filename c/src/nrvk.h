@@ -103,6 +103,17 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
 size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev);
 
 /**
+ * Retrieve the REF length for the specified VariantKey.
+ *
+ * @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last     Number of variants in the src file -1.
+ * @param vk       VariantKey to search.
+ *
+ * @return REF length or 0 if the VariantKey is not reversible and not found.
+ */
+size_t get_ref_length_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk);
+
+/**
  * Convert a vrnr.bin file to a simple TSV.
  * For the reverse operation see the resources/tools/vknr.sh script.
  *

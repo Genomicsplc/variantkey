@@ -137,7 +137,7 @@ int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr)
 void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr)
 {
     char ref[256], alt[256];
-    size_t sizeref,sizealt;
+    size_t sizeref, sizealt;
     uint64_t tstart, tend;
     int i;
     int size = 100000;
@@ -213,6 +213,47 @@ void benchmark_reverse_variantkey(mmfile_t vknr)
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
+int test_get_ref_length_by_variantkey(mmfile_t vknr)
+{
+    int errors = 0;
+    int i;
+    size_t sizeref;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        sizeref = get_ref_length_by_variantkey(vknr.src, vknr.last, test_data[i].vk);
+        if (sizeref != test_data[i].sizeref)
+        {
+            fprintf(stderr, "%s (%d) Expecting REF size %lu, got %lu\n", __func__, i, test_data[i].sizeref, sizeref);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+int test_get_ref_length_by_variantkey_reversible(mmfile_t vknr)
+{
+    int errors = 0;
+    size_t sizeref = get_ref_length_by_variantkey(vknr.src, vknr.last, 0x1800925199160000);
+    if (sizeref != 3)
+    {
+        fprintf(stderr, "%s : Expected REF size 3, got %lu\n",  __func__, sizeref);
+        ++errors;
+    }
+    return errors;
+}
+
+int test_get_ref_length_by_variantkey_notfound(mmfile_t vknr)
+{
+    int errors = 0;
+    size_t sizeref = get_ref_length_by_variantkey(vknr.src, vknr.last, 0xffffffffffffffff);
+    if (sizeref != 0)
+    {
+        fprintf(stderr, "%s : Expected REF size 0, got %lu\n",  __func__, sizeref);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_vknr_bin_to_tsv(mmfile_t vknr)
 {
     int errors = 0;
@@ -254,6 +295,9 @@ int main()
     errors += test_find_ref_alt_by_variantkey(vknr);
     errors += test_find_ref_alt_by_variantkey_notfound(vknr);
     errors += test_reverse_variantkey(vknr);
+    errors += test_get_ref_length_by_variantkey(vknr);
+    errors += test_get_ref_length_by_variantkey_reversible(vknr);
+    errors += test_get_ref_length_by_variantkey_notfound(vknr);
     errors += test_vknr_bin_to_tsv(vknr);
     errors += test_vknr_bin_to_tsv_error(vknr);
 

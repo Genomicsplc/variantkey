@@ -35,6 +35,7 @@
 #include "nrvk.h"
 
 #define KEYBLKLEN 16 //!< Length in bytes of a binary block containing VARIANTKEY + OFFSET ADDRESS
+#define ADDRBLKPOS 8 //!< Position of the OFFSET ADDRESS in bytes in the binary block
 
 size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
@@ -45,7 +46,7 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
     {
         return 0; // not found
     }
-    uint64_t offset = bytes_to_uint64_t(src, get_address(KEYBLKLEN, 8, found));
+    uint64_t offset = bytes_to_uint64_t(src, get_address(KEYBLKLEN, ADDRBLKPOS, found));
     *sizeref = (size_t) bytes_to_uint8_t(src, offset++);
     *sizealt = (size_t) bytes_to_uint8_t(src, offset++);
     memcpy(ref, &src[offset], *sizeref);
@@ -67,6 +68,22 @@ size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, 
         len = find_ref_alt_by_variantkey(src, last, vk, rev->ref, &rev->sizeref, rev->alt, &rev->sizealt);
     }
     return len;
+}
+
+size_t get_ref_length_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk)
+{
+    if ((vk & 0x1) == 0) // check last bit for reversible encoding
+    {
+        return (size_t)((vk & 0x0000000078000000) >> 27); // [00000000 00000000 00000000 00000000 01111000 00000000 00000000 00000000]
+    }
+    uint64_t first = 0;
+    uint64_t max = last;
+    uint64_t found = find_first_uint64_t(src, KEYBLKLEN, 0, &first, &max, vk);
+    if (found > last)
+    {
+        return 0; // not found
+    }
+    return (size_t) bytes_to_uint8_t(src, bytes_to_uint64_t(src, get_address(KEYBLKLEN, ADDRBLKPOS, found)));
 }
 
 size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
