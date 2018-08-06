@@ -30,6 +30,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#include <stdio.h>
 #include <string.h>
 #include "astring.h"
 
@@ -47,4 +48,37 @@ void prepend_char(const unsigned char pre, char *string, size_t *size)
     memmove(string + 1, string, (*size + 1));
     string[0] = pre;
     (*size)++;
+}
+
+size_t hex_uint64_t(uint64_t n, char *str)
+{
+    return sprintf(str, "%016" PRIx64, n);
+}
+
+uint64_t parse_hex_uint64_t(const char *s)
+{
+    uint64_t v = 0;
+    uint8_t b;
+    size_t i;
+    for (i = 0; i < 16; i++)
+    {
+        b = s[i];
+        if (b >= 'a')
+        {
+            b -= ('a' - 10); // a-f
+        }
+        else
+        {
+            if (b >= 'A')
+            {
+                b -= ('A' - 10); // A-F
+            }
+            else
+            {
+                b -= '0'; // 0-9
+            }
+        }
+        v = ((v << 4) | b);
+    }
+    return v;
 }

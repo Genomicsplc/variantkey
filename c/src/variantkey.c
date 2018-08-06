@@ -30,7 +30,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <inttypes.h>
 #include <stdio.h>
 #include "variantkey.h"
 
@@ -321,33 +320,10 @@ int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
 
 size_t variantkey_hex(uint64_t vk, char *str)
 {
-    return sprintf(str, "%016" PRIx64, vk);
+    return hex_uint64_t(vk, str);
 }
 
 uint64_t parse_variantkey_hex(const char *vs)
 {
-    uint64_t v = 0;
-    uint8_t b;
-    size_t i;
-    for (i = 0; i < 16; i++)
-    {
-        b = vs[i];
-        if (b >= 'a')
-        {
-            b -= ('a' - 10); // a-f
-        }
-        else
-        {
-            if (b >= 'A')
-            {
-                b -= ('A' - 10); // A-F
-            }
-            else
-            {
-                b -= '0'; // 0-9
-            }
-        }
-        v = ((v << 4) | b);
-    }
-    return v;
+    return parse_hex_uint64_t(vs);
 }
