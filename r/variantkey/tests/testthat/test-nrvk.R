@@ -62,6 +62,11 @@ test_that("GetRefLenByVariantkeyNotFound", {
     expect_that(res, equals(0))
 })
 
+test_that("GetVariantkeyEndPos", {
+    res <- mapply(GetVariantkeyEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(unlist(res), equals(unlist(x[,"pos"]) + unlist(x[,"sizeref"])))
+})
+
 test_that("VknrBinToTsv", {
     size <- VknrBinToTsv(vknr$SRC, vknr$LAST, "vknr.test")
     expect_that(size, equals(305))

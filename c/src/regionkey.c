@@ -36,7 +36,7 @@
 uint8_t encode_region_strand(int8_t strand)
 {
     static const uint8_t map[] = {2, 0, 1, 0};
-    return map[((uint8_t)(strand + 1) & 3)];
+    return map[((uint8_t)(++strand) & 3)];
 }
 
 int8_t decode_region_strand(uint8_t code)
@@ -106,4 +106,24 @@ uint64_t parse_regionkey_hex(const char *rs)
 uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos)
 {
     return (uint8_t)((a_chrom == b_chrom) && (a_startpos < b_endpos) && (a_endpos > b_startpos));
+}
+
+uint64_t get_regionkey_chrom_startpos(uint64_t rk)
+{
+    return (rk >> RKSHIFT_STARTPOS);
+}
+
+uint64_t get_regionkey_chrom_endpos(uint64_t rk)
+{
+    return (((rk & RKMASK_CHROM) >> RKSHIFT_STARTPOS) | extract_regionkey_endpos(rk));
+}
+
+uint64_t get_variantkey_chrom_startpos(uint64_t vk)
+{
+    return (vk >> VKSHIFT_POS);
+}
+
+uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, uint64_t vk)
+{
+    return (((vk & VKMASK_CHROM) >> VKSHIFT_POS) | get_variantkey_endpos(src, last, vk));
 }

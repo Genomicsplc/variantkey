@@ -80,6 +80,11 @@ class TestFunctions(TestCase):
         osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, 0xffffffffffffffff)
         self.assertEqual(osizeref, 0)
 
+    def test_get_variantkey_endpos(self):
+        for vkey, chrom, pos, ralen, sizeref, sizealt, ref, alt in testData:
+            endpos = bs.get_variantkey_endpos(mfsrc, mflast, vkey)
+            self.assertEqual(endpos, (pos + sizeref))
+
     def test_vknr_bin_to_tsv(self):
         fsize = bs.vknr_bin_to_tsv(mfsrc, mflast, "vknr.test")
         self.assertEqual(fsize, 305)

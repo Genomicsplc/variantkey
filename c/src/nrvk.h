@@ -107,11 +107,22 @@ size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, 
  *
  * @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
  * @param last     Number of variants in the src file -1.
- * @param vk       VariantKey to search.
+ * @param vk       VariantKey.
  *
  * @return REF length or 0 if the VariantKey is not reversible and not found.
  */
 size_t get_ref_len_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk);
+
+/**
+ * Get the VariantKey end position (POS + REF length).
+ *
+ * @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last     Number of variants in the src file -1.
+ * @param vk       VariantKey.
+ *
+ * @return Variant end position (POS + REF length).
+ */
+uint32_t get_variantkey_endpos(const unsigned char *src, uint64_t last, uint64_t vk);
 
 /**
  * Convert a vrnr.bin file to a simple TSV.

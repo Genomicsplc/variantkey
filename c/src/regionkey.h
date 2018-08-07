@@ -45,8 +45,7 @@
 extern "C" {
 #endif
 
-#include <stddef.h>
-#include "variantkey.h"
+#include "nrvk.h"
 
 #define RKMASK_CHROM     0xF800000000000000  //!< RegionKey binary mask for CHROM     [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
 #define RKMASK_STARTPOS  0x07FFFFFF80000000  //!< RegionKey binary mask for START POS [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
@@ -198,6 +197,40 @@ uint64_t parse_regionkey_hex(const char *rs);
  * @return 1 if the regions overlap, 0 otherwise.
  */
 uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos);
+
+/** @brief Extract the CHROM + START POS code from RegionKey.
+ *
+ * @param rk RegionKey code.
+ *
+ * @return CHROM + START POS.
+ */
+uint64_t get_regionkey_chrom_startpos(uint64_t rk);
+
+/** @brief Extract the CHROM + END POS code from RegionKey.
+ *
+ * @param rk RegionKey code.
+ *
+ * @return CHROM + END POS.
+ */
+uint64_t get_regionkey_chrom_endpos(uint64_t rk);
+
+/** @brief Extract the CHROM + START POS code from VariantKey.
+ *
+ * @param vk VariantKey code.
+ *
+ * @return CHROM + START POS.
+ */
+uint64_t get_variantkey_chrom_startpos(uint64_t vk);
+
+/** @brief Extract the CHROM + END POS code from VariantKey.
+ *
+ * @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last  Number of variants in the src file -1.
+ * @param vk    VariantKey code.
+ *
+ * @return CHROM + END POS.
+ */
+uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, uint64_t vk);
 
 #ifdef __cplusplus
 }

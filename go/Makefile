@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help all test format fmtcheck vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan qa deps clean
+.PHONY: help all test format fmtcheck vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan qa deps clean example
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -201,3 +201,7 @@ deps:
 clean:
 	rm -rf ./target src.test
 	GOPATH=$(GOPATH) go clean -i ./...
+
+# build example
+example:
+	GOPATH=$(GOPATH) go build -o ./target/example ./example

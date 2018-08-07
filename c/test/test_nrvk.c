@@ -254,6 +254,24 @@ int test_get_ref_len_by_variantkey_notfound(mmfile_t vknr)
     return errors;
 }
 
+int test_get_variantkey_endpos(mmfile_t vknr)
+{
+    int errors = 0;
+    int i;
+    uint32_t endpos, exp;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        endpos = get_variantkey_endpos(vknr.src, vknr.last, test_data[i].vk);
+        exp = test_data[i].pos + test_data[i].sizeref;
+        if (endpos != exp)
+        {
+            fprintf(stderr, "%s (%d) Expecting END POS size %" PRIu32 ", got %" PRIu32 "\n", __func__, i, exp, endpos);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int test_vknr_bin_to_tsv(mmfile_t vknr)
 {
     int errors = 0;
@@ -298,6 +316,7 @@ int main()
     errors += test_get_ref_len_by_variantkey(vknr);
     errors += test_get_ref_len_by_variantkey_reversible(vknr);
     errors += test_get_ref_len_by_variantkey_notfound(vknr);
+    errors += test_get_variantkey_endpos(vknr);
     errors += test_vknr_bin_to_tsv(vknr);
     errors += test_vknr_bin_to_tsv_error(vknr);
 

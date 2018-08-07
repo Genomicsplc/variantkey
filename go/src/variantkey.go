@@ -733,6 +733,11 @@ func (mf TMMFile) GetRefLenByVariantkey(vk uint64) uint8 {
 	return uint8(C.get_ref_len_by_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
 
+// GetVariantkeyEndPos get the VariantKey end position (POS + REF length).
+func (mf TMMFile) GetVariantkeyEndPos(vk uint64) uint32 {
+	return uint32(C.get_variantkey_endpos((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+}
+
 // VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/vknr.sh script.
 func (mf TMMFile) VknrBinToTSV(tsvfile string) uint64 {
 	file := StringToNTBytes(tsvfile)

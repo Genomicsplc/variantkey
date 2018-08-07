@@ -168,6 +168,10 @@ int main()
     fprintf(stdout, "%lu\n", len);
     // 8
 
+    uint32_t endpos = get_variantkey_endpos(vknr.src, vknr.last, 0x2000c3521f1c15ab);
+    fprintf(stdout, "%" PRIu32 "\n", endpos);
+    // 100012
+
     err = munmap_binfile(vknr);
     if (err != 0)
     {

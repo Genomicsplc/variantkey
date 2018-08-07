@@ -86,6 +86,11 @@ size_t get_ref_len_by_variantkey(const unsigned char *src, uint64_t last, uint64
     return (size_t) bytes_to_uint8_t(src, bytes_to_uint64_t(src, get_address(KEYBLKLEN, ADDRBLKPOS, found)));
 }
 
+uint32_t get_variantkey_endpos(const unsigned char *src, uint64_t last, uint64_t vk)
+{
+    return (extract_variantkey_pos(vk) + (uint32_t)get_ref_len_by_variantkey(src, last, vk));
+}
+
 size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
 {
     FILE * fp;

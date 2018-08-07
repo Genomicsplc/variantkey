@@ -131,6 +131,21 @@ func TestGetRefLenByVariantkeyNotFound(t *testing.T) {
 	}
 }
 
+func TestGetVariantkeyEndPos(t *testing.T) {
+	for i, tt := range testNonRevVKData {
+		i := i
+		tt := tt
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			endpos := vknr.GetVariantkeyEndPos(tt.vk)
+			exp := tt.pos + uint32(tt.sizeref)
+			if endpos != exp {
+				t.Errorf("%d. Expected END POS %d, got %d", i, exp, endpos)
+			}
+		})
+	}
+}
+
 func TestVknrBinToTSV(t *testing.T) {
 	len := vknr.VknrBinToTSV("vknr.test")
 	if len != 305 {

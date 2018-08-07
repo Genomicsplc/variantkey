@@ -115,6 +115,9 @@ func main() {
 	fmt.Println(vknr.GetRefLenByVariantkey(0x2000c3521f1c15ab))
 	// 8
 
+	fmt.Println(vknr.GetVariantkeyEndPos(0x2000c3521f1c15ab))
+	// 100012
+
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 	// RSIDVAR
