@@ -117,13 +117,3 @@ uint64_t get_regionkey_chrom_endpos(uint64_t rk)
 {
     return (((rk & RKMASK_CHROM) >> RKSHIFT_STARTPOS) | extract_regionkey_endpos(rk));
 }
-
-uint64_t get_variantkey_chrom_startpos(uint64_t vk)
-{
-    return (vk >> VKSHIFT_POS);
-}
-
-uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, uint64_t vk)
-{
-    return (((vk & VKMASK_CHROM) >> VKSHIFT_POS) | get_variantkey_endpos(src, last, vk));
-}

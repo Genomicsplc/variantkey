@@ -56,22 +56,24 @@ typedef struct test_data_t
     uint64_t len;
     size_t sizeref;
     size_t sizealt;
+    uint64_t chrom_startpos;
+    uint64_t chrom_endpos;
     const char ref[256];
     const char alt[256];
 } test_data_t;
 
 static test_data_t test_data[TEST_DATA_SIZE] =
 {
-    {0x0800c35093ace339,  "1", 100001, 0x00000004, 0x01, 0x01, "N", "A"},
-    {0x1000c3517f91cdb1,  "2", 100002, 0x0000000e, 0x0b, 0x01, "AAGAAAGAAAG", "A"},
-    {0x1800c351f61f65d3,  "3", 100003, 0x0000000e, 0x01, 0x0b, "A", "AAGAAAGAAAG"},
-    {0x2000c3521f1c15ab,  "4", 100004, 0x0000000e, 0x08, 0x04, "ACGTACGT", "ACGT"},
-    {0x2800c352d8f2d5b5,  "5", 100005, 0x0000000e, 0x04, 0x08, "ACGT", "ACGTACGT"},
-    {0x5000c3553bbf9c19, "10", 100010, 0x00000012, 0x08, 0x08, "ACGTACGT", "CGTACGTA"},
-    {0xb000c35b64690b25, "22", 100022, 0x0000000b, 0x08, 0x01, "ACGTACGT", "N"},
-    {0xb800c35bbcece603,  "X", 100023, 0x0000000e, 0x0a, 0x02, "AAAAAAAAGG", "AG"},
-    {0xc000c35c63741ee7,  "Y", 100024, 0x0000000e, 0x02, 0x0a, "AG", "AAAAAAAAGG"},
-    {0xc800c35c96c18499, "MT", 100025, 0x00000012, 0x04, 0x0c, "ACGT", "AAACCCGGGTTT"},
+    {0x0800c35093ace339,  "1", 100001, 0x00000004, 0x01, 0x01, 0x00000000100186a1, 0x00000000100186a2, "N", "A"},
+    {0x1000c3517f91cdb1,  "2", 100002, 0x0000000e, 0x0b, 0x01, 0x00000000200186a2, 0x00000000200186ad, "AAGAAAGAAAG", "A"},
+    {0x1800c351f61f65d3,  "3", 100003, 0x0000000e, 0x01, 0x0b, 0x00000000300186a3, 0x00000000300186a4, "A", "AAGAAAGAAAG"},
+    {0x2000c3521f1c15ab,  "4", 100004, 0x0000000e, 0x08, 0x04, 0x00000000400186a4, 0x00000000400186ac, "ACGTACGT", "ACGT"},
+    {0x2800c352d8f2d5b5,  "5", 100005, 0x0000000e, 0x04, 0x08, 0x00000000500186a5, 0x00000000500186a9, "ACGT", "ACGTACGT"},
+    {0x5000c3553bbf9c19, "10", 100010, 0x00000012, 0x08, 0x08, 0x00000000a00186aa, 0x00000000a00186b2, "ACGTACGT", "CGTACGTA"},
+    {0xb000c35b64690b25, "22", 100022, 0x0000000b, 0x08, 0x01, 0x00000001600186b6, 0x00000001600186be, "ACGTACGT", "N"},
+    {0xb800c35bbcece603,  "X", 100023, 0x0000000e, 0x0a, 0x02, 0x00000001700186b7, 0x00000001700186c1, "AAAAAAAAGG", "AG"},
+    {0xc000c35c63741ee7,  "Y", 100024, 0x0000000e, 0x02, 0x0a, 0x00000001800186b8, 0x00000001800186ba, "AG", "AAAAAAAAGG"},
+    {0xc800c35c96c18499, "MT", 100025, 0x00000012, 0x04, 0x0c, 0x00000001900186b9, 0x00000001900186bd, "ACGT", "AAACCCGGGTTT"},
 };
 
 // returns current time in nanoseconds
@@ -272,6 +274,41 @@ int test_get_variantkey_endpos(mmfile_t vknr)
     return errors;
 }
 
+int test_get_variantkey_chrom_startpos()
+{
+    int errors = 0;
+    int i;
+    uint64_t res;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        res = get_variantkey_chrom_startpos(test_data[i].vk);
+        if (res != test_data[i].chrom_startpos)
+        {
+            fprintf(stderr, "%s (%d) Expecting CHROM + START POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_startpos, res);
+            ++errors;
+        }
+    }
+    fprintf(stderr, "\n");
+    return errors;
+}
+
+int test_get_variantkey_chrom_endpos(mmfile_t vknr)
+{
+    int errors = 0;
+    int i;
+    uint64_t res;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        res = get_variantkey_chrom_endpos(vknr.src, vknr.last, test_data[i].vk);
+        if (res != test_data[i].chrom_endpos)
+        {
+            fprintf(stderr, "%s (%d) Expecting CHROM + END POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_endpos, res);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int test_vknr_bin_to_tsv(mmfile_t vknr)
 {
     int errors = 0;
@@ -317,6 +354,8 @@ int main()
     errors += test_get_ref_len_by_variantkey_reversible(vknr);
     errors += test_get_ref_len_by_variantkey_notfound(vknr);
     errors += test_get_variantkey_endpos(vknr);
+    errors += test_get_variantkey_chrom_startpos();
+    errors += test_get_variantkey_chrom_endpos(vknr);
     errors += test_vknr_bin_to_tsv(vknr);
     errors += test_vknr_bin_to_tsv_error(vknr);
 
