@@ -68,7 +68,7 @@ func main() {
 	// Load the reference genome binary file.
 	// The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 	// This example uses the "c/test/data/genoref.bin".
-	gref, err := vk.MmapBinFile("../../c/test/data/genoref.bin")
+	gref, err := vk.MmapBinFile("../c/test/data/genoref.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -98,7 +98,7 @@ func main() {
 	// The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
 	// The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
 	// This example uses the "c/test/data/vknr.10.bin".
-	vknr, err := vk.MmapBinFile("../../c/test/data/vknr.10.bin")
+	vknr, err := vk.MmapBinFile("../c/test/data/vknr.10.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)
@@ -118,6 +118,12 @@ func main() {
 	fmt.Println(vknr.GetVariantkeyEndPos(0x2000c3521f1c15ab))
 	// 100012
 
+	fmt.Println(vk.GetVariantkeyChromStartPos(0x2000c3521f1c15ab))
+	// 1073841828
+
+	fmt.Println(vknr.GetVariantkeyChromEndPos(0x2000c3521f1c15ab))
+	// 1073841836
+
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 	// RSIDVAR
@@ -126,7 +132,7 @@ func main() {
 	// Load the lookup table for rsID to VariantKey.
 	// The input binary file can be generated using the resources/tools/vkhexbin.sh script.
 	// This example uses the "c/test/data/rsvk.10.bin".
-	rv, err := vk.MmapBinFile("../../c/test/data/rsvk.10.bin")
+	rv, err := vk.MmapBinFile("../c/test/data/rsvk.10.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(3)
@@ -147,7 +153,7 @@ func main() {
 	// Load the lookup table for rsID to VariantKey.
 	// The input binary file can be generated using the resources/tools/vkhexbin.sh script.
 	// This example uses the "c/test/data/rsvk.m.10.bin".
-	rvm, err := vk.MmapBinFile("../../c/test/data/rsvk.m.10.bin")
+	rvm, err := vk.MmapBinFile("../c/test/data/rsvk.m.10.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(4)
@@ -162,7 +168,7 @@ func main() {
 	// Load the lookup table for VariantKey ro rsID
 	// The input binary file can be generated using the resources/tools/vkhexbin.sh script.
 	// This example uses the "c/test/data/vkrs.10.bin".
-	vr, err := vk.MmapBinFile("../../c/test/data/vkrs.10.bin")
+	vr, err := vk.MmapBinFile("../c/test/data/vkrs.10.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(5)

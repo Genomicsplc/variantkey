@@ -101,6 +101,8 @@ static PyObject *py_find_ref_alt_by_variantkey(PyObject *self, PyObject *args, P
 static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_ref_len_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_variantkey_endpos(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_variantkey_chrom_startpos(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_variantkey_chrom_endpos(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_vknr_bin_to_tsv(PyObject *self, PyObject *args, PyObject *keywds);
 
 // GENOREF
@@ -1471,7 +1473,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
-"    VariantKey to search.\n"\
+"    VariantKey\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
@@ -1487,12 +1489,40 @@ PyMODINIT_FUNC initvariantkey(void);
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
-"    VariantKey to search.\n"\
+"    VariantKey.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "int :\n"\
 "    Variant end position."
+
+#define PYGETVARIANTKEYCHROMSTARTPOS_DOCSTRING "Get the CHROM + START POS encoding from VariantKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"vk : int\n"\
+"    VariantKey.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    CHROM + START POS encoding."
+
+#define PYGETVARIANTKEYCHROMENDPOS_DOCSTRING "Get the CHROM + END POS encoding from VariantKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mfsrc : obj\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"last : int\n"\
+"    Number of variants in the src file -1.\n"\
+"vk : int\n"\
+"    VariantKey.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    CHROM + END POS encoding."
 
 #define PYVKNRBINTOTSV_DOCSTRING "Convert a vrnr.bin file to a simple TSV.\n"\
 "For the reverse operation see the resources/tools/vknr.sh script.\n"\

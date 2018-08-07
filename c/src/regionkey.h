@@ -198,7 +198,7 @@ uint64_t parse_regionkey_hex(const char *rs);
  */
 uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos);
 
-/** @brief Extract the CHROM + START POS code from RegionKey.
+/** @brief Get the CHROM + START POS encoding from RegionKey.
  *
  * @param rk RegionKey code.
  *
@@ -206,7 +206,7 @@ uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a
  */
 uint64_t get_regionkey_chrom_startpos(uint64_t rk);
 
-/** @brief Extract the CHROM + END POS code from RegionKey.
+/** @brief Get the CHROM + END POS encoding from RegionKey.
  *
  * @param rk RegionKey code.
  *

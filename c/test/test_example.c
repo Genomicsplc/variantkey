@@ -172,6 +172,14 @@ int main()
     fprintf(stdout, "%" PRIu32 "\n", endpos);
     // 100012
 
+    uint64_t csp = get_variantkey_chrom_startpos(0x2000c3521f1c15ab);
+    fprintf(stdout, "%016" PRIx64 "\n", csp);
+    // 00000000400186a4
+
+    uint64_t cep = get_variantkey_chrom_endpos(vknr.src, vknr.last, 0x2000c3521f1c15ab);
+    fprintf(stdout, "%016" PRIx64 "\n", cep);
+    // 00000000400186ac
+
     err = munmap_binfile(vknr);
     if (err != 0)
     {

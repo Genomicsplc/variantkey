@@ -1055,6 +1055,28 @@ static PyObject* py_get_variantkey_endpos(PyObject *Py_UNUSED(ignored), PyObject
     return Py_BuildValue("I", endpos);
 }
 
+static PyObject* py_get_variantkey_chrom_startpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t vk;
+    static char *kwlist[] = {"vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &vk))
+        return NULL;
+    uint64_t h = get_variantkey_chrom_startpos(vk);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_get_variantkey_chrom_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    uint64_t h = get_variantkey_chrom_endpos(src, last, vk);
+    return Py_BuildValue("K", h);
+}
+
 static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t last;
@@ -1224,6 +1246,8 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"reverse_variantkey", (PyCFunction)py_reverse_variantkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEVARIANTKEY_DOCSTRING},
     {"get_ref_len_by_variantkey", (PyCFunction)py_get_ref_len_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYGETREFLENGTHBYVARIANTKEY_DOCSTRING},
     {"get_variantkey_endpos", (PyCFunction)py_get_variantkey_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYENDPOS_DOCSTRING},
+    {"get_variantkey_chrom_startpos", (PyCFunction)py_get_variantkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMSTARTPOS_DOCSTRING},
+    {"get_variantkey_chrom_endpos", (PyCFunction)py_get_variantkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMENDPOS_DOCSTRING},
     {"vknr_bin_to_tsv", (PyCFunction)py_vknr_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF

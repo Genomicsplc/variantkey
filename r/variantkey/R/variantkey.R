@@ -291,6 +291,24 @@ GetVariantkeyEndPos <- function(src, last, vk) {
     return(.Call("R_get_variantkey_endpos", src, last, vk))
 }
 
+#' Get the CHROM + START POS encoding from VariantKey.
+#' @param vk       VariantKey.
+#' @useDynLib   variantkey R_get_variantkey_chrom_startpos
+#' @export
+GetVariantkeyChromStartPos <- function(vk) {
+    return(.Call("R_get_variantkey_chrom_startpos", vk))
+}
+
+#' Get the CHROM + END POS encoding from VariantKey.
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last     Number of variants in the src file -1.
+#' @param vk       VariantKey.
+#' @useDynLib   variantkey R_get_variantkey_chrom_endpos
+#' @export
+GetVariantkeyChromEndPos <- function(src, last, vk) {
+    return(.Call("R_get_variantkey_chrom_endpos", src, last, vk))
+}
+
 #' Convert a vrnr.bin file to a simple TSV.
 #' Return Number of written bytes or 0 in case of error.
 #' For the reverse operation see the resources/tools/vknr.sh script.

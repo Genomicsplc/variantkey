@@ -128,6 +128,12 @@ print(vk.get_ref_len_by_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
 print(vk.get_variantkey_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
 # 100012
 
+print(vk.get_variantkey_chrom_startpos(vk=0x2000c3521f1c15ab))
+# 1073841828
+
+print(vk.get_variantkey_chrom_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+# 1073841836
+
 vk.munmap_binfile(mfsrc, mffd, mfsize)
 
 

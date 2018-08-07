@@ -364,6 +364,24 @@ SEXP R_get_variantkey_endpos(SEXP src, SEXP last, SEXP vk)
     return res;
 }
 
+SEXP R_get_variantkey_chrom_startpos(SEXP vk)
+{
+    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
+    uint64_t res = get_variantkey_chrom_startpos(varkey);
+    char hex[17];
+    hex_uint64_t(res, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP R_get_variantkey_chrom_endpos(SEXP src, SEXP last, SEXP vk)
+{
+    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
+    uint64_t res = get_variantkey_chrom_endpos(R_ExternalPtrAddr(src), asInteger(last), varkey);
+    char hex[17];
+    hex_uint64_t(res, hex);
+    return Rf_mkString(hex);
+}
+
 SEXP R_vknr_bin_to_tsv(SEXP src, SEXP last, SEXP tsvfile)
 {
     SEXP res;

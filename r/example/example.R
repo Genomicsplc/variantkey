@@ -192,6 +192,14 @@ x <- GetVariantkeyEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
 print(x)
 # [1] 100012
 
+x <- GetVariantkeyChromStartPos(vk="2000c3521f1c15ab")
+print(x)
+# [1] "00000000400186a4"
+
+x <- GetVariantkeyChromEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+print(x)
+# [1] "00000000400186ac"
+
 MunmapBinfile(vknr$SRC, vknr$FD, vknr$SIZE)
 # [1] 0
 
