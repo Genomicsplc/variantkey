@@ -27,8 +27,8 @@ test_that("MmapBinfile", {
     expect_that(vknr$SIZE, equals(299))
 })
 
-test_that("FindRefAltByVariantkey", {
-    res <- mapply(FindRefAltByVariantkey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("FindRefAltByVariantKey", {
+    res <- mapply(FindRefAltByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"ref"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"alt"])))
     expect_that(unlist(res[3,]), equals(unlist(x[,"sizeref"])))
@@ -36,8 +36,8 @@ test_that("FindRefAltByVariantkey", {
     expect_that(unlist(res[5,]), equals(unlist(x[,"ralen"]) - 2))
 })
 
-test_that("ReverseVariantkey", {
-    res <- mapply(ReverseVariantkey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("ReverseVariantKey", {
+    res <- mapply(ReverseVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"chrom"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"pos"])))
     expect_that(unlist(res[3,]), equals(unlist(x[,"ref"])))
@@ -47,33 +47,33 @@ test_that("ReverseVariantkey", {
     expect_that(unlist(res[7,]), equals(unlist(x[,"ralen"]) - 2))
 })
 
-test_that("GetRefLenByVariantkey", {
-    res <- mapply(GetRefLenByVariantkey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("GetRefLenByVariantKey", {
+    res <- mapply(GetRefLenByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"sizeref"])))
 })
 
-test_that("GetRefLenByVariantkeyReversible", {
-    res <- GetRefLenByVariantkey(vknr$SRC, vknr$LAST, "1800925199160000")
+test_that("GetRefLenByVariantKeyReversible", {
+    res <- GetRefLenByVariantKey(vknr$SRC, vknr$LAST, "1800925199160000")
     expect_that(res, equals(3))
 })
 
-test_that("GetRefLenByVariantkeyNotFound", {
-    res <- GetRefLenByVariantkey(vknr$SRC, vknr$LAST, "ffffffffffffffff")
+test_that("GetRefLenByVariantKeyNotFound", {
+    res <- GetRefLenByVariantKey(vknr$SRC, vknr$LAST, "ffffffffffffffff")
     expect_that(res, equals(0))
 })
 
-test_that("GetVariantkeyEndPos", {
-    res <- mapply(GetVariantkeyEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("GetVariantKeyEndPos", {
+    res <- mapply(GetVariantKeyEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"pos"]) + unlist(x[,"sizeref"])))
 })
 
-test_that("GetVariantkeyChromStartPos", {
-    res <- mapply(GetVariantkeyChromStartPos, vk = unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("GetVariantKeyChromStartPos", {
+    res <- mapply(GetVariantKeyChromStartPos, vk = unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"csp"])))
 })
 
-test_that("GetVariantkeyChromEndPos", {
-    res <- mapply(GetVariantkeyChromEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("GetVariantKeyChromEndPos", {
+    res <- mapply(GetVariantKeyChromEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = vknr$SRC, last = vknr$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"cep"])))
 })
 

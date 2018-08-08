@@ -451,3 +451,137 @@ SEXP R_normalize_variant(SEXP src, SEXP idx, SEXP chrom, SEXP pos, SEXP ref, SEX
     UNPROTECT(1);
     return res;
 }
+
+// --- REGIONKEY ---
+
+SEXP R_encode_region_strand(SEXP strand)
+{
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = encode_region_strand(asInteger(strand));
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_decode_region_strand(SEXP strand)
+{
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = decode_region_strand(asInteger(strand));
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_encode_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand)
+{
+    uint64_t code = encode_regionkey(asInteger(chrom), asInteger(startpos), asInteger(endpos), asInteger(strand));
+    char hex[17];
+    regionkey_hex(code, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP R_extract_regionkey_chrom(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = extract_regionkey_chrom(code);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_extract_regionkey_startpos(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = extract_regionkey_startpos(code);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_extract_regionkey_endpos(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = extract_regionkey_endpos(code);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_extract_regionkey_strand(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = extract_regionkey_strand(code);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_decode_regionkey(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    regionkey_t v = {0};
+    decode_regionkey(code, &v);
+    const char *names[] = {"CHROM", "STARTPOS", "ENDPOS", "STRAND", ""};
+    SEXP res = PROTECT(mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(res, 0, ScalarInteger(v.chrom));
+    SET_VECTOR_ELT(res, 1, ScalarInteger(v.startpos));
+    SET_VECTOR_ELT(res, 2, ScalarInteger(v.endpos));
+    SET_VECTOR_ELT(res, 3, ScalarInteger(v.strand));
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_reverse_regionkey(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    regionkey_rev_t v = {0};
+    reverse_regionkey(code, &v);
+    const char *names[] = {"CHROM", "STARTPOS", "ENDPOS", "STRAND", ""};
+    SEXP res = PROTECT(mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(res, 0, Rf_mkString(v.chrom));
+    SET_VECTOR_ELT(res, 1, ScalarInteger(v.startpos));
+    SET_VECTOR_ELT(res, 2, ScalarInteger(v.endpos));
+    SET_VECTOR_ELT(res, 3, ScalarInteger(v.strand));
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand)
+{
+    const char *chr = CHAR(STRING_ELT(chrom, 0));
+    uint64_t code = regionkey(chr, strlen(chr), asInteger(startpos), asInteger(endpos), asInteger(strand));
+    char hex[17];
+    regionkey_hex(code, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEXP b_chrom, SEXP b_startpos, SEXP b_endpos)
+{
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = are_overlapping_regions(asInteger(a_chrom), asInteger(a_startpos), asInteger(a_endpos), asInteger(b_chrom), asInteger(b_startpos), asInteger(b_endpos));
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_get_regionkey_chrom_startpos(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    uint64_t cp = get_regionkey_chrom_startpos(code);
+    char hex[17];
+    regionkey_hex(cp, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP R_get_regionkey_chrom_endpos(SEXP rk)
+{
+    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    uint64_t cp = get_regionkey_chrom_endpos(code);
+    char hex[17];
+    regionkey_hex(cp, hex);
+    return Rf_mkString(hex);
+}

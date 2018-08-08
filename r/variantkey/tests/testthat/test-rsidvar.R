@@ -36,40 +36,40 @@ test_that("GetVrRsid", {
     expect_that(res, equals(unlist(x[,"rsid"])))
 })
 
-test_that("GetRvVariantkey", {
-    res <- mapply(GetRvVariantkey, item = unlist(x[,"item"]), MoreArgs = list(src = rsvk$SRC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("GetRvVariantKey", {
+    res <- mapply(GetRvVariantKey, item = unlist(x[,"item"]), MoreArgs = list(src = rsvk$SRC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"vk"])))
 })
 
-test_that("FindRvVariantkeyByRsid", {
-    res <- mapply(FindRvVariantkeyByRsid, rsid = unlist(x[,"rsid"]), MoreArgs = list(src = rsvk$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("FindRvVariantKeyByRsid", {
+    res <- mapply(FindRvVariantKeyByRsid, rsid = unlist(x[,"rsid"]), MoreArgs = list(src = rsvk$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"vk"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"item"])))
 })
 
-test_that("FindRvVariantkeyByRsidNotFound", {
-    res <- FindRvVariantkeyByRsid(rsvk$SRC, 0, 9, 0xfffffff0)
+test_that("FindRvVariantKeyByRsidNotFound", {
+    res <- FindRvVariantKeyByRsid(rsvk$SRC, 0, 9, 0xfffffff0)
     expect_that(res$VK, equals("0000000000000000"))
     expect_that(res$FIRST, equals(10))
 })
 
-test_that("GetNextRvVariantkeyByRsid", {
-    res <- GetNextRvVariantkeyByRsid(rsvk$SRC, 2, 9, 0x00000061)
+test_that("GetNextRvVariantKeyByRsid", {
+    res <- GetNextRvVariantKeyByRsid(rsvk$SRC, 2, 9, 0x00000061)
     expect_that(res$VK, equals("80010274003a0000"))
     expect_that(res$POS, equals(3))
-    res <- GetNextRvVariantkeyByRsid(rsvk$SRC, res$POS, 9, 0x00000061)
+    res <- GetNextRvVariantKeyByRsid(rsvk$SRC, res$POS, 9, 0x00000061)
     expect_that(res$VK, equals("0000000000000000"))
     expect_that(res$POS, equals(4))
 })
 
-test_that("FindVrRsidByVariantkey", {
-    res <- mapply(FindVrRsidByVariantkey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vkrs$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("FindVrRsidByVariantKey", {
+    res <- mapply(FindVrRsidByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vkrs$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"rsid"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"item"])))
 })
 
-test_that("FindVrRsidByVariantkeyNotFound", {
-    res <- FindVrRsidByVariantkey(vkrs$SRC, 0, 9, "fffffffffffffff0")
+test_that("FindVrRsidByVariantKeyNotFound", {
+    res <- FindVrRsidByVariantKey(vkrs$SRC, 0, 9, "fffffffffffffff0")
     expect_that(res$RSID, equals(0))
     expect_that(res$FIRST, equals(10))
 })
@@ -88,16 +88,16 @@ test_that("FindVrChromposRangeNotFound", {
     expect_that(res$LAST, equals(9))
 })
 
-test_that("FindAllRvVariantkeyByRsid", {
-    res <- FindAllRvVariantkeyByRsid(rsvkm$SRC, 0, 9, 0x00000003)
+test_that("FindAllRvVariantKeyByRsid", {
+    res <- FindAllRvVariantKeyByRsid(rsvkm$SRC, 0, 9, 0x00000003)
     expect_that(length(res), equals(3))
     expect_that(unlist(res[1]), equals("80010274003a0000"))
     expect_that(unlist(res[2]), equals("8001028d00138000"))
     expect_that(unlist(res[3]), equals("80010299007a0000"))
 })
 
-test_that("FindAllRvVariantkeyByRsidNotFound", {
-    res <- FindAllRvVariantkeyByRsid(rsvkm$SRC, 0, 9, 0xfffffff0)
+test_that("FindAllRvVariantKeyByRsidNotFound", {
+    res <- FindAllRvVariantKeyByRsid(rsvkm$SRC, 0, 9, 0xfffffff0)
     expect_that(length(res), equals(0))
 })
 

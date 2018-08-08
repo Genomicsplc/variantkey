@@ -33,13 +33,13 @@ var testNonRevVKData = []struct {
 	{0xc800c35c96c18499, "MT", 100025, 0x00000012, 0x04, 0x0c, 0x00000001900186b9, 0x00000001900186bd, "ACGT", "AAACCCGGGTTT"},
 }
 
-func TestFindRefAltByVariantkey(t *testing.T) {
+func TestFindRefAltByVariantKey(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			ref, alt, sizeref, sizealt, len := vknr.FindRefAltByVariantkey(tt.vk)
+			ref, alt, sizeref, sizealt, len := vknr.FindRefAltByVariantKey(tt.vk)
 			if ref != tt.ref {
 				t.Errorf("%d. Expected REF %s, got %s", i, tt.ref, ref)
 			}
@@ -59,20 +59,20 @@ func TestFindRefAltByVariantkey(t *testing.T) {
 	}
 }
 
-func BenchmarkFindRefAltByVariantkey(b *testing.B) {
+func BenchmarkFindRefAltByVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vknr.FindRefAltByVariantkey(0xb000c35b64690b25)
+		vknr.FindRefAltByVariantKey(0xb000c35b64690b25)
 	}
 }
 
-func TestReverseVariantkey(t *testing.T) {
+func TestNRReverseVariantKey(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			rev, len := vknr.ReverseVariantkey(tt.vk)
+			rev, len := vknr.ReverseVariantKey(tt.vk)
 			if rev.Chrom != tt.chrom {
 				t.Errorf("%d. Expected CHROM %s, got %s", i, tt.chrom, rev.Chrom)
 			}
@@ -98,20 +98,20 @@ func TestReverseVariantkey(t *testing.T) {
 	}
 }
 
-func BenchmarkReverseVariantkey(b *testing.B) {
+func BenchmarkNRReverseVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vknr.ReverseVariantkey(0xb000c35b64690b25)
+		vknr.ReverseVariantKey(0xb000c35b64690b25)
 	}
 }
 
-func TestGetRefLenByVariantkey(t *testing.T) {
+func TestGetRefLenByVariantKey(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			sizeref := vknr.GetRefLenByVariantkey(tt.vk)
+			sizeref := vknr.GetRefLenByVariantKey(tt.vk)
 			if sizeref != tt.sizeref {
 				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, sizeref)
 			}
@@ -119,27 +119,27 @@ func TestGetRefLenByVariantkey(t *testing.T) {
 	}
 }
 
-func TestGetRefLenByVariantkeyReversible(t *testing.T) {
-	sizeref := vknr.GetRefLenByVariantkey(0x1800925199160000)
+func TestGetRefLenByVariantKeyReversible(t *testing.T) {
+	sizeref := vknr.GetRefLenByVariantKey(0x1800925199160000)
 	if sizeref != 3 {
 		t.Errorf("Expected REF size 3, got %d", sizeref)
 	}
 }
 
-func TestGetRefLenByVariantkeyNotFound(t *testing.T) {
-	sizeref := vknr.GetRefLenByVariantkey(0xffffffffffffffff)
+func TestGetRefLenByVariantKeyNotFound(t *testing.T) {
+	sizeref := vknr.GetRefLenByVariantKey(0xffffffffffffffff)
 	if sizeref != 0 {
 		t.Errorf("Expected REF size 0, got %d", sizeref)
 	}
 }
 
-func TestGetVariantkeyEndPos(t *testing.T) {
+func TestGetVariantKeyEndPos(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			endpos := vknr.GetVariantkeyEndPos(tt.vk)
+			endpos := vknr.GetVariantKeyEndPos(tt.vk)
 			exp := tt.pos + uint32(tt.sizeref)
 			if endpos != exp {
 				t.Errorf("%d. Expected END POS %d, got %d", i, exp, endpos)
@@ -148,13 +148,13 @@ func TestGetVariantkeyEndPos(t *testing.T) {
 	}
 }
 
-func TestGetVariantkeyChromStartPos(t *testing.T) {
+func TestGetVariantKeyChromStartPos(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			res := GetVariantkeyChromStartPos(tt.vk)
+			res := GetVariantKeyChromStartPos(tt.vk)
 			if res != tt.chrom_startpos {
 				t.Errorf("%d. Expected CHROM + START POS %d, got %d", i, tt.chrom_startpos, res)
 			}
@@ -162,13 +162,13 @@ func TestGetVariantkeyChromStartPos(t *testing.T) {
 	}
 }
 
-func TestGetVariantkeyChromEndPos(t *testing.T) {
+func TestGetVariantKeyChromEndPos(t *testing.T) {
 	for i, tt := range testNonRevVKData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			res := vknr.GetVariantkeyChromEndPos(tt.vk)
+			res := vknr.GetVariantKeyChromEndPos(tt.vk)
 			if res != tt.chrom_endpos {
 				t.Errorf("%d. Expected CHROM + END POS %d, got %d", i, tt.chrom_endpos, res)
 			}

@@ -89,11 +89,11 @@ uint8_t encode_region_strand(int8_t strand);
 
 /** @brief Decode the strand direction code (0 > 0, 1 > +1, 2 > -1).
  *
- * @param code     Strand code.
+ * @param strand     Strand code.
  *
  * @return      Strand direction.
  */
-int8_t decode_region_strand(uint8_t code);
+int8_t decode_region_strand(uint8_t strand);
 
 /** @brief Returns a 64 bit regionkey
  *

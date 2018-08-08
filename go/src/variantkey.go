@@ -659,29 +659,29 @@ func (mf TMMFile) GetVRRsid(item uint64) uint32 {
 	return uint32(C.get_vr_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// GetRVVariantkey returns the VariantKey at the specified position in the RV file.
-func (mf TMMFile) GetRVVariantkey(item uint64) uint64 {
+// GetRVVariantKey returns the VariantKey at the specified position in the RV file.
+func (mf TMMFile) GetRVVariantKey(item uint64) uint64 {
 	return uint64(C.get_rv_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
 }
 
-// FindRVVariantkeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
-func (mf TMMFile) FindRVVariantkeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
+// FindRVVariantKeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
+func (mf TMMFile) FindRVVariantKeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	vk := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
 	return vk, uint64(cfirst)
 }
 
-// GetNextRVVariantkeyByRsid get the next VariantKey for the specified rsID in the RV file.
+// GetNextRVVariantKeyByRsid get the next VariantKey for the specified rsID in the RV file.
 // Returns the VariantKey or 0, and the position
-func (mf TMMFile) GetNextRVVariantkeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64) {
+func (mf TMMFile) GetNextRVVariantKeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64) {
 	cpos := C.uint64_t(pos)
 	vk := uint64(C.get_next_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cpos, C.uint64_t(last), C.uint32_t(rsid)))
 	return vk, uint64(cpos)
 }
 
-// FindAllRVVariantkeyByRsid get all VariantKeys for the specified rsID in the RV file.
+// FindAllRVVariantKeyByRsid get all VariantKeys for the specified rsID in the RV file.
 // Returns a list of VariantKeys
-func (mf TMMFile) FindAllRVVariantkeyByRsid(first, last uint64, rsid uint32) (vks []uint64) {
+func (mf TMMFile) FindAllRVVariantKeyByRsid(first, last uint64, rsid uint32) (vks []uint64) {
 	csrc := (*C.uchar)(mf.Src)
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
@@ -694,8 +694,8 @@ func (mf TMMFile) FindAllRVVariantkeyByRsid(first, last uint64, rsid uint32) (vk
 	return
 }
 
-// FindVRRsidByVariantkey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
-func (mf TMMFile) FindVRRsidByVariantkey(first uint64, last uint64, vk uint64) (uint32, uint64) {
+// FindVRRsidByVariantKey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
+func (mf TMMFile) FindVRRsidByVariantKey(first uint64, last uint64, vk uint64) (uint32, uint64) {
 	cfirst := C.uint64_t(first)
 	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vk)))
 	return rsid, uint64(cfirst)
@@ -711,8 +711,8 @@ func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, p
 
 // --- NRVK ---
 
-// FindRefAltByVariantkey retrieve the REF and ALT strings for the specified VariantKey.
-func (mf TMMFile) FindRefAltByVariantkey(vk uint64) (string, string, uint8, uint8, uint32) {
+// FindRefAltByVariantKey retrieve the REF and ALT strings for the specified VariantKey.
+func (mf TMMFile) FindRefAltByVariantKey(vk uint64) (string, string, uint8, uint8, uint32) {
 	cref := C.malloc(256)
 	defer C.free(unsafe.Pointer(cref)) // #nosec
 	calt := C.malloc(256)
@@ -723,30 +723,30 @@ func (mf TMMFile) FindRefAltByVariantkey(vk uint64) (string, string, uint8, uint
 	return C.GoStringN((*C.char)(cref), C.int(csizeref)), C.GoStringN((*C.char)(calt), C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint32(len)
 }
 
-// ReverseVariantkey reverse a VariantKey code and returns the normalized components.
-func (mf TMMFile) ReverseVariantkey(vk uint64) (TVariantKeyRev, uint32) {
+// ReverseVariantKey reverse a VariantKey code and returns the normalized components.
+func (mf TMMFile) ReverseVariantKey(vk uint64) (TVariantKeyRev, uint32) {
 	var rev C.variantkey_rev_t
 	len := C.reverse_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), &rev)
 	return castCVariantKeyRev(rev), uint32(len)
 }
 
-// GetRefLenByVariantkey retrieve the REF length for the specified VariantKey.
-func (mf TMMFile) GetRefLenByVariantkey(vk uint64) uint8 {
+// GetRefLenByVariantKey retrieve the REF length for the specified VariantKey.
+func (mf TMMFile) GetRefLenByVariantKey(vk uint64) uint8 {
 	return uint8(C.get_ref_len_by_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
 
-// GetVariantkeyEndPos get the VariantKey end position (POS + REF length).
-func (mf TMMFile) GetVariantkeyEndPos(vk uint64) uint32 {
+// GetVariantKeyEndPos get the VariantKey end position (POS + REF length).
+func (mf TMMFile) GetVariantKeyEndPos(vk uint64) uint32 {
 	return uint32(C.get_variantkey_endpos((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
 
-// GetVariantkeyChromStartPos get the CHROM + START POS encoding from VariantKey.
-func GetVariantkeyChromStartPos(vk uint64) uint64 {
+// GetVariantKeyChromStartPos get the CHROM + START POS encoding from VariantKey.
+func GetVariantKeyChromStartPos(vk uint64) uint64 {
 	return uint64(C.get_variantkey_chrom_startpos(C.uint64_t(vk)))
 }
 
-// GetVariantkeyChromEndPos get the CHROM + END POS encoding from VariantKey.
-func (mf TMMFile) GetVariantkeyChromEndPos(vk uint64) uint64 {
+// GetVariantKeyChromEndPos get the CHROM + END POS encoding from VariantKey.
+func (mf TMMFile) GetVariantKeyChromEndPos(vk uint64) uint64 {
 	return uint64(C.get_variantkey_chrom_endpos((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
 
@@ -906,12 +906,12 @@ func AreOverlappingRegions(chromA uint8, startposA, endposA uint32, chromB uint8
 	return (uint8(C.are_overlapping_regions(C.uint8_t(chromA), C.uint32_t(startposA), C.uint32_t(endposA), C.uint8_t(chromB), C.uint32_t(startposB), C.uint32_t(endposB))) != 0)
 }
 
-// GetRegionkeyChromStartPos get the CHROM + START POS encoding from RegionKey.
-func GetRegionkeyChromStartPos(rk uint64) uint64 {
+// GetRegionKeyChromStartPos get the CHROM + START POS encoding from RegionKey.
+func GetRegionKeyChromStartPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_startpos(C.uint64_t(rk)))
 }
 
-// GetRegionkeyChromEndPos get the CHROM + END POS encoding from RegionKey.
-func GetRegionkeyChromEndPos(rk uint64) uint64 {
+// GetRegionKeyChromEndPos get the CHROM + END POS encoding from RegionKey.
+func GetRegionKeyChromEndPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_endpos(C.uint64_t(rk)))
 }

@@ -105,23 +105,23 @@ func main() {
 	}
 	defer vknr.Close()
 
-	fmt.Println(vknr.FindRefAltByVariantkey(0x2000c3521f1c15ab))
+	fmt.Println(vknr.FindRefAltByVariantKey(0x2000c3521f1c15ab))
 	// ACGTACGT ACGT 8 4 12
 
 	// Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-	fmt.Println(vknr.ReverseVariantkey(0x2000c3521f1c15ab))
+	fmt.Println(vknr.ReverseVariantKey(0x2000c3521f1c15ab))
 	// {4 100004 ACGTACGT ACGT 8 4} 12
 
-	fmt.Println(vknr.GetRefLenByVariantkey(0x2000c3521f1c15ab))
+	fmt.Println(vknr.GetRefLenByVariantKey(0x2000c3521f1c15ab))
 	// 8
 
-	fmt.Println(vknr.GetVariantkeyEndPos(0x2000c3521f1c15ab))
+	fmt.Println(vknr.GetVariantKeyEndPos(0x2000c3521f1c15ab))
 	// 100012
 
-	fmt.Println(vk.GetVariantkeyChromStartPos(0x2000c3521f1c15ab))
+	fmt.Println(vk.GetVariantKeyChromStartPos(0x2000c3521f1c15ab))
 	// 1073841828
 
-	fmt.Println(vknr.GetVariantkeyChromEndPos(0x2000c3521f1c15ab))
+	fmt.Println(vknr.GetVariantKeyChromEndPos(0x2000c3521f1c15ab))
 	// 1073841836
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -139,13 +139,13 @@ func main() {
 	}
 	defer rv.Close()
 
-	fmt.Println(rv.GetRVVariantkey(3))
+	fmt.Println(rv.GetRVVariantKey(3))
 	// 9223656209074749440
 
-	fmt.Println(rv.FindRVVariantkeyByRsid(0, 9, 0x00000061))
+	fmt.Println(rv.FindRVVariantKeyByRsid(0, 9, 0x00000061))
 	// 9223656209074749440 3
 
-	fmt.Println(rv.GetNextRVVariantkeyByRsid(2, 9, 0x00000061))
+	fmt.Println(rv.GetNextRVVariantKeyByRsid(2, 9, 0x00000061))
 	// 9223656209074749440 3
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -160,7 +160,7 @@ func main() {
 	}
 	defer rvm.Close()
 
-	fmt.Println(rvm.FindAllRVVariantkeyByRsid(0, 9, 0x00000003))
+	fmt.Println(rvm.FindAllRVVariantKeyByRsid(0, 9, 0x00000003))
 	// [9223656209074749440 9223656316446408704 9223656367992733696]
 
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -178,7 +178,7 @@ func main() {
 	fmt.Println(vr.GetVRRsid(3))
 	// 97
 
-	fmt.Println(vr.FindVRRsidByVariantkey(0, 9, 0x80010274003A0000))
+	fmt.Println(vr.FindVRRsidByVariantKey(0, 9, 0x80010274003A0000))
 	// 97 3
 
 	fmt.Println(vr.FindVRChromPosRange(0, 9, 0x14, 0x000256C5, 0x000256CB))
@@ -222,9 +222,9 @@ func main() {
 	fmt.Println(vk.AreOverlappingRegions(25, 1000, 2000, 25, 1500, 2500))
 	// true
 
-	fmt.Println(vk.GetRegionkeyChromStartPos(0xc80001f400003e84))
+	fmt.Println(vk.GetRegionKeyChromStartPos(0xc80001f400003e84))
 	// 6710887400
 
-	fmt.Println(vk.GetRegionkeyChromEndPos(0xc80001f400003e84))
+	fmt.Println(vk.GetRegionKeyChromEndPos(0xc80001f400003e84))
 	// 6710888400
 }

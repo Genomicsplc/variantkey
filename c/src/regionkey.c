@@ -39,10 +39,10 @@ uint8_t encode_region_strand(int8_t strand)
     return map[((uint8_t)(++strand) & 3)];
 }
 
-int8_t decode_region_strand(uint8_t code)
+int8_t decode_region_strand(uint8_t strand)
 {
     static const int8_t map[] = {0, 1, -1, 0};
-    return map[(code & 3)];
+    return map[(strand & 3)];
 }
 
 uint64_t encode_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uint8_t strand)

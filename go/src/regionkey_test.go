@@ -297,12 +297,12 @@ func BenchmarkAreOverlappingRegions(b *testing.B) {
 	}
 }
 
-func TestGetRegionkeyChromStartPos(t *testing.T) {
+func TestGetRegionKeyChromStartPos(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			csp := GetRegionkeyChromStartPos(v.rk)
+			csp := GetRegionKeyChromStartPos(v.rk)
 			if csp != v.csp {
 				t.Errorf("The chrom-startpos value is different, expected %#v got %#v", v.csp, csp)
 			}
@@ -310,19 +310,19 @@ func TestGetRegionkeyChromStartPos(t *testing.T) {
 	}
 }
 
-func BenchmarkGetRegionkeyChromStartPos(b *testing.B) {
+func BenchmarkGetRegionKeyChromStartPos(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		GetRegionkeyChromStartPos(0x080001f400002260)
+		GetRegionKeyChromStartPos(0x080001f400002260)
 	}
 }
 
-func TestGetRegionkeyChromEndPos(t *testing.T) {
+func TestGetRegionKeyChromEndPos(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			cep := GetRegionkeyChromEndPos(v.rk)
+			cep := GetRegionKeyChromEndPos(v.rk)
 			if cep != v.cep {
 				t.Errorf("The chrom-endpos value is different, expected %#v got %#v", v.cep, cep)
 			}
@@ -330,9 +330,9 @@ func TestGetRegionkeyChromEndPos(t *testing.T) {
 	}
 }
 
-func BenchmarkGetRegionkeyChromEndPos(b *testing.B) {
+func BenchmarkGetRegionKeyChromEndPos(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		GetRegionkeyChromEndPos(0x080001f400002260)
+		GetRegionKeyChromEndPos(0x080001f400002260)
 	}
 }
