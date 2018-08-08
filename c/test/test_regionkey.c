@@ -235,6 +235,21 @@ int test_decode_regionkey()
     return errors;
 }
 
+void benchmark_decode_regionkey()
+{
+    regionkey_t h = {0};
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        decode_regionkey(0x080001f400002260 + i, &h);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_reverse_regionkey()
 {
     int errors = 0;
@@ -267,6 +282,21 @@ int test_reverse_regionkey()
     return errors;
 }
 
+void benchmark_reverse_regionkey()
+{
+    regionkey_rev_t h = {0};
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        reverse_regionkey(0x080001f400002260 + i, &h);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_regionkey()
 {
     int errors = 0;
@@ -282,6 +312,21 @@ int test_regionkey()
         }
     }
     return errors;
+}
+
+void benchmark_regionkey()
+{
+    uint64_t res;
+    uint64_t tstart, tend;
+    int i;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        res = regionkey("MT", 2, 1000, 2000, 1);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op (%" PRIx64 ")\n", __func__, (tend - tstart)/size, res);
 }
 
 int test_regionkey_hex()
@@ -376,18 +421,18 @@ int test_are_overlapping_regions()
     {
         { 1, 5,  7,  2, 5, 7, 0}, // different chromosome
         { 1, 0,  2,  1, 3, 7, 0}, // [ ]|   |
-        { 2, 1,  3,  2, 3, 7, 0}, //  [ |   |
+        { 2, 1,  3,  2, 3, 7, 0}, //  [ ]   |
         { 3, 2,  4,  3, 3, 7, 1}, //   [|]  |
-        { 4, 3,  5,  4, 3, 7, 1}, //    | ] |
+        { 4, 3,  5,  4, 3, 7, 1}, //    [ ] |
         { 5, 4,  6,  5, 3, 7, 1}, //    |[ ]|
-        { 6, 5,  7,  6, 3, 7, 1}, //    | [ |
+        { 6, 5,  7,  6, 3, 7, 1}, //    | [ ]
         {10, 6,  8, 10, 3, 7, 1}, //    |  [|]
-        {22, 7,  9, 22, 3, 7, 0}, //    |   | ]
+        {22, 7,  9, 22, 3, 7, 0}, //    |   [ ]
         {23, 8, 10, 23, 3, 7, 0}, //    |   |[ ]
         {24, 2,  8, 24, 3, 7, 1}, //   [|   |]
         {25, 3,  7, 25, 3, 7, 1}, //    [   ]
     };
-    uint64_t res;
+    uint8_t res;
     for (i=0 ; i < 12; i++)
     {
         res = are_overlapping_regions(test_overlap[i].a_chrom, test_overlap[i].a_startpos, test_overlap[i].a_endpos, test_overlap[i].b_chrom, test_overlap[i].b_startpos, test_overlap[i].b_endpos);
@@ -429,6 +474,10 @@ int main()
     errors += test_get_regionkey_chrom_startpos();
     errors += test_get_regionkey_chrom_endpos();
     errors += test_are_overlapping_regions();
+
+    benchmark_decode_regionkey();
+    benchmark_reverse_regionkey();
+    benchmark_regionkey();
 
     err = munmap_binfile(vknr);
     if (err != 0)
