@@ -369,40 +369,6 @@ int test_parse_regionkey_hex()
     return errors;
 }
 
-int test_get_regionkey_chrom_startpos()
-{
-    int errors = 0;
-    int i;
-    uint64_t res;
-    for (i=0 ; i < TEST_DATA_SIZE; i++)
-    {
-        res = get_regionkey_chrom_startpos(test_data[i].rk);
-        if (res != test_data[i].chrom_startpos)
-        {
-            fprintf(stderr, "%s (%d) Expecting CHROM + START POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_startpos, res);
-            ++errors;
-        }
-    }
-    return errors;
-}
-
-int test_get_regionkey_chrom_endpos()
-{
-    int errors = 0;
-    int i;
-    uint64_t res;
-    for (i=0 ; i < TEST_DATA_SIZE; i++)
-    {
-        res = get_regionkey_chrom_endpos(test_data[i].rk);
-        if (res != test_data[i].chrom_endpos)
-        {
-            fprintf(stderr, "%s (%d) Expecting CHROM + END POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_endpos, res);
-            ++errors;
-        }
-    }
-    return errors;
-}
-
 int test_are_overlapping_regions()
 {
     int errors = 0;
@@ -445,6 +411,40 @@ int test_are_overlapping_regions()
     return errors;
 }
 
+int test_get_regionkey_chrom_startpos()
+{
+    int errors = 0;
+    int i;
+    uint64_t res;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        res = get_regionkey_chrom_startpos(test_data[i].rk);
+        if (res != test_data[i].chrom_startpos)
+        {
+            fprintf(stderr, "%s (%d) Expecting CHROM + START POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_startpos, res);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+int test_get_regionkey_chrom_endpos()
+{
+    int errors = 0;
+    int i;
+    uint64_t res;
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        res = get_regionkey_chrom_endpos(test_data[i].rk);
+        if (res != test_data[i].chrom_endpos)
+        {
+            fprintf(stderr, "%s (%d) Expecting CHROM + END POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_endpos, res);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int main()
 {
     int errors = 0;
@@ -471,9 +471,9 @@ int main()
     errors += test_regionkey();
     errors += test_regionkey_hex();
     errors += test_parse_regionkey_hex();
+    errors += test_are_overlapping_regions();
     errors += test_get_regionkey_chrom_startpos();
     errors += test_get_regionkey_chrom_endpos();
-    errors += test_are_overlapping_regions();
 
     benchmark_decode_regionkey();
     benchmark_reverse_regionkey();

@@ -876,8 +876,8 @@ func ExtractRegionKeyEndPos(rk uint64) uint32 {
 }
 
 // ExtractRegionKeyStrand extract the STRAND from RegionKey.
-func ExtractRegionKeyStrand(rk uint64) uint32 {
-	return uint32(C.extract_regionkey_strand(C.uint64_t(rk)))
+func ExtractRegionKeyStrand(rk uint64) uint8 {
+	return uint8(C.extract_regionkey_strand(C.uint64_t(rk)))
 }
 
 // DecodeRegionKey parses a regionkey string and returns the components as TRegionKey structure.
@@ -906,12 +906,12 @@ func AreOverlappingRegions(chromA uint8, startposA, endposA uint32, chromB uint8
 	return (uint8(C.are_overlapping_regions(C.uint8_t(chromA), C.uint32_t(startposA), C.uint32_t(endposA), C.uint8_t(chromB), C.uint32_t(startposB), C.uint32_t(endposB))) != 0)
 }
 
-// GetRegionkeyChromStartpos get the CHROM + START POS encoding from RegionKey.
-func GetRegionkeyChromStartpos(rk uint64) uint64 {
+// GetRegionkeyChromStartPos get the CHROM + START POS encoding from RegionKey.
+func GetRegionkeyChromStartPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_startpos(C.uint64_t(rk)))
 }
 
-// GetRegionkeyChromEndpos get the CHROM + END POS encoding from RegionKey.
-func GetRegionkeyChromEndpos(rk uint64) uint64 {
+// GetRegionkeyChromEndPos get the CHROM + END POS encoding from RegionKey.
+func GetRegionkeyChromEndPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_endpos(C.uint64_t(rk)))
 }

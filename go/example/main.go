@@ -183,4 +183,48 @@ func main() {
 
 	fmt.Println(vr.FindVRChromPosRange(0, 9, 0x14, 0x000256C5, 0x000256CB))
 	// 9973 7 8
+
+	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+	// REGIONKEY
+	// ---------
+
+	fmt.Println(vk.EncodeRegionStrand(-1))
+	// 2
+
+	fmt.Println(vk.DecodeRegionStrand(2))
+	// -1
+
+	fmt.Println(vk.EncodeRegionKey(25, 1000, 2000, 2))
+	// 14411520955069251204
+
+	fmt.Println(vk.ExtractRegionKeyChrom(0xc80001f400003e84))
+	// 25
+
+	fmt.Println(vk.ExtractRegionKeyStartPos(0xc80001f400003e84))
+	// 1000
+
+	fmt.Println(vk.ExtractRegionKeyEndPos(0xc80001f400003e84))
+	// 2000
+
+	fmt.Println(vk.ExtractRegionKeyStrand(0xc80001f400003e84))
+	// 2
+
+	fmt.Println(vk.DecodeRegionKey(0xc80001f400003e84))
+	// {25 1000 2000 2}
+
+	fmt.Println(vk.ReverseRegionKey(0xc80001f400003e84))
+	// {MT 1000 2000 -1}
+
+	fmt.Println(vk.RegionKey("MT", 1000, 2000, -1))
+	// 14411520955069251204
+
+	fmt.Println(vk.AreOverlappingRegions(25, 1000, 2000, 25, 1500, 2500))
+	// true
+
+	fmt.Println(vk.GetRegionkeyChromStartPos(0xc80001f400003e84))
+	// 6710887400
+
+	fmt.Println(vk.GetRegionkeyChromEndPos(0xc80001f400003e84))
+	// 6710888400
 }

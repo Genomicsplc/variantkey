@@ -813,7 +813,7 @@ func TestExtractVariantKeyChrom(t *testing.T) {
 			t.Parallel()
 			chrom := ExtractVariantKeyChrom(v.vk)
 			if chrom != v.vkchrom {
-				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, chrom)
+				t.Errorf("The chrom value is different, expected %#v got: %#v", v.vkchrom, chrom)
 			}
 		})
 	}
@@ -1046,22 +1046,22 @@ func TestReverseVariantKey(t *testing.T) {
 			chrom, pos, ref, alt, sizeref, sizealt := ReverseVariantKey(v.vk)
 			if sizealt > 0 {
 				if EncodeChrom(chrom) != v.vkchrom {
-					t.Errorf("The chrom (encoded) value is different, expected %#v got: %#v", EncodeChrom(chrom), v.vkchrom)
+					t.Errorf("The chrom (encoded) value is different, expected %#v got: %#v", v.vkchrom, EncodeChrom(chrom))
 				}
 				if pos != v.vkpos {
-					t.Errorf("The pos value is different, expected %#v got: %#v", pos, v.vkpos)
+					t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, pos)
 				}
 				if ref != strings.ToUpper(v.ref) {
-					t.Errorf("The ref value is different, expected %#v got: %#v", ref, v.ref)
+					t.Errorf("The ref value is different, expected %#v got: %#v", v.ref, ref)
 				}
 				if alt != strings.ToUpper(v.alt) {
-					t.Errorf("The alt value is different, expected %#v got: %#v", alt, v.alt)
+					t.Errorf("The alt value is different, expected %#v got: %#v", v.alt, alt)
 				}
 				if sizeref != uint8(len(v.ref)) {
-					t.Errorf("The sizeref value is different, expected %#v got: %#v", sizeref, len(v.ref))
+					t.Errorf("The sizeref value is different, expected %#v got: %#v", len(v.ref), sizeref)
 				}
 				if sizealt != uint8(len(v.alt)) {
-					t.Errorf("The sizealt value is different, expected %#v got: %#v", sizealt, len(v.alt))
+					t.Errorf("The sizealt value is different, expected %#v got: %#v", len(v.alt), sizealt)
 				}
 			}
 		})
