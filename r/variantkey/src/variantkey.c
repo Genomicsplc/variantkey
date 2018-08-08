@@ -36,9 +36,9 @@
 #include "../../../c/src/binsearch.c"
 #include "../../../c/src/genoref.c"
 #include "../../../c/src/nrvk.c"
+#include "../../../c/src/regionkey.c"
 #include "../../../c/src/rsidvar.c"
 #include "../../../c/src/variantkey.c"
-
 
 SEXP R_encode_chrom(SEXP chrom)
 {

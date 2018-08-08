@@ -7,9 +7,10 @@ include ../README.md
 include ../LICENSE
 include ../c/src/astring.h
 include ../c/src/binsearch.h
-include ../c/src/rsidvar.h
-include ../c/src/nrvk.h
 include ../c/src/genoref.h
+include ../c/src/nrvk.h
+include ../c/src/regionkey.h
+include ../c/src/rsidvar.h
 include ../c/src/variantkey.h
 include variantkey/pyvariantkey.h
 prune .cache

@@ -9,6 +9,7 @@
 #include "../src/binsearch.h"
 #include "../src/genoref.h"
 #include "../src/nrvk.h"
+#include "../src/regionkey.h"
 #include "../src/rsidvar.h"
 #include "../src/variantkey.h"
 
@@ -294,6 +295,79 @@ int main()
         fprintf(stderr, "Got %d error while unmapping the vr file\n", err);
         return 1;
     }
+
+
+    // ============================================================================
+
+
+    // REGIONKEY
+    // ---------
+
+    uint8_t estrand = encode_region_strand(-1);
+    fprintf(stdout, "%" PRIu8 "\n", estrand);
+    // 2
+
+    int8_t strand = decode_region_strand(2);
+    fprintf(stdout, "%" PRIi8 "\n", strand);
+    // -1
+
+    uint64_t rk = encode_regionkey(25, 1000, 2000, 2);
+    fprintf(stdout, "%016" PRIx64 "\n", rk);
+    // c80001f400003e84
+
+    ec = extract_regionkey_chrom(0xc80001f400003e84);
+    fprintf(stdout, "%" PRIu8 "\n", ec);
+    // 25
+
+    pos = extract_regionkey_startpos(0xc80001f400003e84);
+    fprintf(stdout, "%" PRIu32 "\n", pos);
+    // 1000
+
+    pos = extract_regionkey_endpos(0xc80001f400003e84);
+    fprintf(stdout, "%" PRIu32 "\n", pos);
+    // 2000
+
+    estrand = extract_regionkey_strand(0xc80001f400003e84);
+    fprintf(stdout, "%" PRIu8 "\n", estrand);
+    // 2
+
+    regionkey_t drk = {0,0,0,0};
+    decode_regionkey(0xc80001f400003e84, &drk);
+    fprintf(stdout, "%" PRIu8 " %" PRIu32 " %" PRIu32 " %" PRIu8 "\n", drk.chrom, drk.startpos, drk.endpos, drk.strand);
+    // 25 1000 2000 2
+
+    regionkey_rev_t rrk = {0};
+    reverse_regionkey(0xc80001f400003e84, &rrk);
+    fprintf(stdout, "%s %" PRIu32 " %" PRIu32 " %" PRIi8 "\n", rrk.chrom, rrk.startpos, rrk.endpos, rrk.strand);
+    // MT 1000 2000 -1
+
+    rk = regionkey("MT", 2, 1000, 2000, -1);
+    fprintf(stdout, "%016" PRIx64 "\n", rk);
+    // c80001f400003e84
+
+    char rs[17] = "";
+    regionkey_hex(0xc80001f400003e84, rs);
+    fprintf(stdout, "%s\n", rs);
+    // c80001f400003e84
+
+    rk = parse_regionkey_hex("c80001f400003e84");
+    fprintf(stdout, "%016" PRIx64 "\n", rk);
+    // c80001f400003e84
+
+    uint8_t ov = are_overlapping_regions(25, 1000, 2000, 25, 1500, 2500);
+    fprintf(stdout, "%" PRIu8 "\n", ov);
+    // 1
+
+    uint64_t cp = get_regionkey_chrom_startpos(0xc80001f400003e84);
+    fprintf(stdout, "%016" PRIx64 "\n", cp);
+    // 00000001900003e8
+
+    cp = get_regionkey_chrom_endpos(0xc80001f400003e84);
+    fprintf(stdout, "%016" PRIx64 "\n", cp);
+    // 00000001900007d0
+
+
+    // ============================================================================
 
     return 0;
 }

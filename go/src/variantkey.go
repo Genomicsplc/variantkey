@@ -43,6 +43,8 @@ package variantkey
 #include "../../c/src/genoref.c"
 #include "../../c/src/nrvk.h"
 #include "../../c/src/nrvk.c"
+#include "../../c/src/regionkey.h"
+#include "../../c/src/regionkey.c"
 #include "../../c/src/rsidvar.h"
 #include "../../c/src/rsidvar.c"
 #include "../../c/src/variantkey.h"

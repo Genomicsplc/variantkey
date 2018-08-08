@@ -37,6 +37,7 @@
 #include "../../c/src/binsearch.h"
 #include "../../c/src/genoref.h"
 #include "../../c/src/nrvk.h"
+#include "../../c/src/regionkey.h"
 #include "../../c/src/rsidvar.h"
 #include "../../c/src/variantkey.h"
 #include "pyvariantkey.h"
