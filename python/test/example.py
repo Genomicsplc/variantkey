@@ -122,6 +122,18 @@ print(vk.reverse_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
 # (b'4', 100004, b'ACGTACGT', b'ACGT', 8, 4, 12)
 # Return values are: CHROM, POS, REF, ALT, REF length, ALT length, REF+ALT length
 
+print(vk.get_variantkey_ref_length(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+# 8
+
+print(vk.get_variantkey_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+# 100012
+
+print(vk.get_variantkey_chrom_startpos(vk=0x2000c3521f1c15ab))
+# 1073841828
+
+print(vk.get_variantkey_chrom_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+# 1073841836
+
 vk.munmap_binfile(mfsrc, mffd, mfsize)
 
 
@@ -182,3 +194,67 @@ print(vk.find_vr_chrompos_range(mfsrc, 0, 9, 0X14, 0X000256C5, 0X000256CB))
 # (9973, 7, 8)
 
 vk.munmap_binfile(mfsrc, mffd, mfsize)
+
+
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+
+# REGIONKEY
+# ---------
+
+print(vk.encode_region_strand(-1))
+# 2
+
+print(vk.decode_region_strand(2))
+# -1
+
+print(vk.encode_regionkey(25, 1000, 2000, 2))
+# 14411520955069251204
+
+print(vk.extract_regionkey_chrom(0xc80001f400003e84))
+# 25
+
+print(vk.extract_regionkey_startpos(0xc80001f400003e84))
+# 1000
+
+print(vk.extract_regionkey_endpos(0xc80001f400003e84))
+# 2000
+
+print(vk.extract_regionkey_strand(0xc80001f400003e84))
+# 2
+
+print(vk.decode_regionkey(0xc80001f400003e84))
+# (25, 1000, 2000, 2)
+
+print(vk.reverse_regionkey(0xc80001f400003e84))
+# (b'MT', 1000, 2000, -1)
+
+print(vk.regionkey("MT", 1000, 2000, -1))
+# 14411520955069251204
+
+print(vk.regionkey_hex(0xc80001f400003e84))
+# b'c80001f400003e84'
+
+print(vk.parse_regionkey_hex("c80001f400003e84"))
+# 14411520955069251204
+
+print(vk.get_regionkey_chrom_startpos(0xc80001f400003e84))
+# 6710887400
+
+print(vk.get_regionkey_chrom_endpos(0xc80001f400003e84))
+# 6710888400
+
+print(vk.are_overlapping_regions(5, 4,  6, 5, 3, 7))
+# 1
+
+print(vk.are_overlapping_region_regionkey(5, 4, 6, 0x2800000180000038))
+# 1
+
+print(vk.are_overlapping_regionkeys(0x2800000200000030, 0x2800000180000038))
+# 1
+
+print(vk.are_overlapping_variantkey_regionkey(None, 0, 0x2800000210920000, 0x2800000180000038))
+# 1
+
+print(vk.variantkey_to_regionkey(None, 0, 0x2800000210920000))
+# 2882303770107052080

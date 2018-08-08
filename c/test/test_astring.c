@@ -96,6 +96,31 @@ int test_prepend_char()
     return errors;
 }
 
+int test_hex_uint64_t()
+{
+    int errors = 0;
+    char s[17] = "";
+    hex_uint64_t(0x1234567890abcdef, s);
+    if (strcmp(s, "1234567890abcdef"))
+    {
+        fprintf(stderr, "%s : Unexpected variantkey: expected %s, got %s\n", __func__, "1234567890abcdef", s);
+        ++errors;
+    }
+    return errors;
+}
+
+int test_parse_hex_uint64_t()
+{
+    int errors = 0;
+    uint64_t k;
+    k = parse_hex_uint64_t("1234567890AbCdEf");
+    if (k != 0x1234567890abcdef)
+    {
+        fprintf(stderr, "%s : Unexpected value: expected 0x1234567890abcdef, got 0x%016" PRIx64 "\n", __func__, k);
+        ++errors;
+    }
+    return errors;
+}
 
 int main()
 {
@@ -103,6 +128,8 @@ int main()
 
     errors += test_aztoupper();
     errors += test_prepend_char();
+    errors += test_hex_uint64_t();
+    errors += test_parse_hex_uint64_t();
 
     return errors;
 }

@@ -44,6 +44,8 @@
 extern "C" {
 #endif
 
+#include <inttypes.h>
+
 /**
  * Returns the uppercase version of the input character.
  * Note that this is safe to be used only with a-z characters.
@@ -65,6 +67,26 @@ int aztoupper(int c);
  * @return void
  */
 void prepend_char(unsigned char pre, char *string, size_t *size);
+
+/** @brief Returns uint64_t hexadecimal string (16 characters).
+ *
+ * @param n     Number to parse
+ * @param str   String buffer to be returned (it must be sized 17 bytes at least).
+ *
+ * @return      Upon successful return, these function returns the number of characters processed
+ *              (excluding the null byte used to end output to strings).
+ *              If the buffer size is not sufficient, then the return value is the number of characters required for
+ *              buffer string, including the terminating null byte.
+ */
+size_t hex_uint64_t(uint64_t n, char *str);
+
+/** @brief Parses a 16 chars hexadecimal string and returns the code.
+ *
+ * @param s    Hexadecimal string to parse (it must contain 16 hexadecimal characters).
+ *
+ * @return uint64_t unsigned integer number.
+ */
+uint64_t parse_hex_uint64_t(const char *s);
 
 #ifdef __cplusplus
 }

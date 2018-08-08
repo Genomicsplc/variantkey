@@ -813,9 +813,16 @@ func TestExtractVariantKeyChrom(t *testing.T) {
 			t.Parallel()
 			chrom := ExtractVariantKeyChrom(v.vk)
 			if chrom != v.vkchrom {
-				t.Errorf("The chrom hash value is different, expected %#v got: %#v", v.vkchrom, chrom)
+				t.Errorf("The chrom value is different, expected %#v got: %#v", v.vkchrom, chrom)
 			}
 		})
+	}
+}
+
+func BenchmarkExtractVariantKeyChrom(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractVariantKeyChrom(0x880082d600138000)
 	}
 }
 
@@ -832,6 +839,13 @@ func TestExtractVariantKeyPos(t *testing.T) {
 	}
 }
 
+func BenchmarkExtractVariantKeyPos(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractVariantKeyPos(0x880082d600138000)
+	}
+}
+
 func TestExtractVariantKeyRefAlt(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
@@ -842,6 +856,13 @@ func TestExtractVariantKeyRefAlt(t *testing.T) {
 				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, refalt)
 			}
 		})
+	}
+}
+
+func BenchmarkExtractVariantKeyRefAlt(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractVariantKeyRefAlt(0x880082d600138000)
 	}
 }
 
@@ -971,6 +992,13 @@ func TestCompareVariantKeyChrom(t *testing.T) {
 	}
 }
 
+func BenchmarkCompareVariantKeyChrom(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		CompareVariantKeyChrom(0x0fffffff88b80000, 0x08027a2188c80000)
+	}
+}
+
 func TestCompareVariantKeyChromPos(t *testing.T) {
 	type TVKCmpData struct {
 		vka uint64
@@ -993,6 +1021,13 @@ func TestCompareVariantKeyChromPos(t *testing.T) {
 				t.Errorf("Unexpected variantkey CHROM+POS comparison, expected %#v got %#v", v.cmp, cmp)
 			}
 		})
+	}
+}
+
+func BenchmarkCompareVariantKeyChromPos(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		CompareVariantKeyChromPos(0x0fffffff88b80000, 0x0fffffff8ae2503b)
 	}
 }
 
@@ -1046,24 +1081,31 @@ func TestReverseVariantKey(t *testing.T) {
 			chrom, pos, ref, alt, sizeref, sizealt := ReverseVariantKey(v.vk)
 			if sizealt > 0 {
 				if EncodeChrom(chrom) != v.vkchrom {
-					t.Errorf("The chrom (encoded) value is different, expected %#v got: %#v", EncodeChrom(chrom), v.vkchrom)
+					t.Errorf("The chrom (encoded) value is different, expected %#v got: %#v", v.vkchrom, EncodeChrom(chrom))
 				}
 				if pos != v.vkpos {
-					t.Errorf("The pos value is different, expected %#v got: %#v", pos, v.vkpos)
+					t.Errorf("The pos value is different, expected %#v got: %#v", v.vkpos, pos)
 				}
 				if ref != strings.ToUpper(v.ref) {
-					t.Errorf("The ref value is different, expected %#v got: %#v", ref, v.ref)
+					t.Errorf("The ref value is different, expected %#v got: %#v", v.ref, ref)
 				}
 				if alt != strings.ToUpper(v.alt) {
-					t.Errorf("The alt value is different, expected %#v got: %#v", alt, v.alt)
+					t.Errorf("The alt value is different, expected %#v got: %#v", v.alt, alt)
 				}
 				if sizeref != uint8(len(v.ref)) {
-					t.Errorf("The sizeref value is different, expected %#v got: %#v", sizeref, len(v.ref))
+					t.Errorf("The sizeref value is different, expected %#v got: %#v", len(v.ref), sizeref)
 				}
 				if sizealt != uint8(len(v.alt)) {
-					t.Errorf("The sizealt value is different, expected %#v got: %#v", sizealt, len(v.alt))
+					t.Errorf("The sizealt value is different, expected %#v got: %#v", len(v.alt), sizealt)
 				}
 			}
 		})
+	}
+}
+
+func BenchmarkReverseVariantKey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ReverseVariantKey(0x08027a2588b00000)
 	}
 }

@@ -37,6 +37,7 @@
 #include "../../c/src/binsearch.h"
 #include "../../c/src/genoref.h"
 #include "../../c/src/nrvk.h"
+#include "../../c/src/regionkey.h"
 #include "../../c/src/rsidvar.h"
 #include "../../c/src/variantkey.h"
 #include "pyvariantkey.h"
@@ -235,6 +236,15 @@ static PyObject* py_parse_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject 
 
 // --- BINSEARCH ---
 
+static const unsigned char *py_get_mmsrc(PyObject *src)
+{
+    if (src == Py_None)
+    {
+        return NULL;
+    }
+    return (const unsigned char *)PyCapsule_GetPointer(src, "src");
+}
+
 static PyObject* py_mmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     PyObject *result;
@@ -260,7 +270,7 @@ static PyObject* py_munmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args,
     static char *kwlist[] = {"mfsrc", "fd", "size", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OiK", kwlist, &mfsrc, &mf.fd, &mf.size))
         return NULL;
-    mf.src = (unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    mf.src = py_get_mmsrc(mfsrc);
     int h = munmap_binfile(mf);
     result = Py_BuildValue("i", h);
     return result;
@@ -289,7 +299,7 @@ static PyObject* py_find_first_uint8(PyObject *Py_UNUSED(ignored), PyObject *arg
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKB", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_uint8_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -307,7 +317,7 @@ static PyObject* py_find_first_uint16(PyObject *Py_UNUSED(ignored), PyObject *ar
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKH", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_uint16_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -325,7 +335,7 @@ static PyObject* py_find_first_uint32(PyObject *Py_UNUSED(ignored), PyObject *ar
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKI", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_uint32_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -343,7 +353,7 @@ static PyObject* py_find_first_uint64(PyObject *Py_UNUSED(ignored), PyObject *ar
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKK", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_uint64_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -363,7 +373,7 @@ static PyObject* py_find_last_uint8(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKB", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_uint8_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -381,7 +391,7 @@ static PyObject* py_find_last_uint16(PyObject *Py_UNUSED(ignored), PyObject *arg
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKH", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_uint16_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -399,7 +409,7 @@ static PyObject* py_find_last_uint32(PyObject *Py_UNUSED(ignored), PyObject *arg
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKI", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_uint32_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -417,7 +427,7 @@ static PyObject* py_find_last_uint64(PyObject *Py_UNUSED(ignored), PyObject *arg
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKK", kwlist, &mfsrc, &blklen, &blkpos, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_uint64_t(src, blklen, blkpos, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -438,7 +448,7 @@ static PyObject* py_find_first_sub_uint8(PyObject *Py_UNUSED(ignored), PyObject 
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKB", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_sub_uint8_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -457,7 +467,7 @@ static PyObject* py_find_first_sub_uint16(PyObject *Py_UNUSED(ignored), PyObject
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKH", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_sub_uint16_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -476,7 +486,7 @@ static PyObject* py_find_first_sub_uint32(PyObject *Py_UNUSED(ignored), PyObject
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKI", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_sub_uint32_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -495,7 +505,7 @@ static PyObject* py_find_first_sub_uint64(PyObject *Py_UNUSED(ignored), PyObject
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKK", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_first_sub_uint64_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -516,7 +526,7 @@ static PyObject* py_find_last_sub_uint8(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKB", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_sub_uint8_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -535,7 +545,7 @@ static PyObject* py_find_last_sub_uint16(PyObject *Py_UNUSED(ignored), PyObject 
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKH", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_sub_uint16_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -554,7 +564,7 @@ static PyObject* py_find_last_sub_uint32(PyObject *Py_UNUSED(ignored), PyObject 
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKI", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_sub_uint32_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -573,7 +583,7 @@ static PyObject* py_find_last_sub_uint64(PyObject *Py_UNUSED(ignored), PyObject 
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKK", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_last_sub_uint64_t(src, blklen, blkpos, bitstart, bitend, &first, &last, search);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -593,7 +603,7 @@ static PyObject* py_has_next_uint8(PyObject *Py_UNUSED(ignored), PyObject *args,
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKB", kwlist, &mfsrc, &blklen, &blkpos, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_uint8_t(src, blklen, blkpos, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -610,7 +620,7 @@ static PyObject* py_has_next_uint16(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKH", kwlist, &mfsrc, &blklen, &blkpos, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_uint16_t(src, blklen, blkpos, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -627,7 +637,7 @@ static PyObject* py_has_next_uint32(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKI", kwlist, &mfsrc, &blklen, &blkpos, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_uint32_t(src, blklen, blkpos, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -644,7 +654,7 @@ static PyObject* py_has_next_uint64(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKK", kwlist, &mfsrc, &blklen, &blkpos, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_uint64_t(src, blklen, blkpos, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -664,7 +674,7 @@ static PyObject* py_has_next_sub_uint8(PyObject *Py_UNUSED(ignored), PyObject *a
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKB", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_sub_uint8_t(src, blklen, blkpos, bitstart, bitend, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -682,7 +692,7 @@ static PyObject* py_has_next_sub_uint16(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKH", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_sub_uint16_t(src, blklen, blkpos, bitstart, bitend, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -700,7 +710,7 @@ static PyObject* py_has_next_sub_uint32(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKI", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_sub_uint32_t(src, blklen, blkpos, bitstart, bitend, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -718,7 +728,7 @@ static PyObject* py_has_next_sub_uint64(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "pos", "last", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKK", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &pos, &last, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_next_sub_uint64_t(src, blklen, blkpos, bitstart, bitend, &pos, last, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -737,7 +747,7 @@ static PyObject* py_has_prev_uint8(PyObject *Py_UNUSED(ignored), PyObject *args,
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKB", kwlist, &mfsrc, &blklen, &blkpos, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_uint8_t(src, blklen, blkpos, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -754,7 +764,7 @@ static PyObject* py_has_prev_uint16(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKH", kwlist, &mfsrc, &blklen, &blkpos, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_uint16_t(src, blklen, blkpos, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -771,7 +781,7 @@ static PyObject* py_has_prev_uint32(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKI", kwlist, &mfsrc, &blklen, &blkpos, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_uint32_t(src, blklen, blkpos, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -788,7 +798,7 @@ static PyObject* py_has_prev_uint64(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKKKK", kwlist, &mfsrc, &blklen, &blkpos, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_uint64_t(src, blklen, blkpos, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -808,7 +818,7 @@ static PyObject* py_has_prev_sub_uint8(PyObject *Py_UNUSED(ignored), PyObject *a
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKB", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_sub_uint8_t(src, blklen, blkpos, bitstart, bitend, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -826,7 +836,7 @@ static PyObject* py_has_prev_sub_uint16(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKH", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_sub_uint16_t(src, blklen, blkpos, bitstart, bitend, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -844,7 +854,7 @@ static PyObject* py_has_prev_sub_uint32(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKI", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_sub_uint32_t(src, blklen, blkpos, bitstart, bitend, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -862,7 +872,7 @@ static PyObject* py_has_prev_sub_uint64(PyObject *Py_UNUSED(ignored), PyObject *
     static char *kwlist[] = {"mfsrc", "blklen", "blkpos", "bitstart", "bitend", "first", "pos", "search", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBBKKK", kwlist, &mfsrc, &blklen, &blkpos, &bitstart, &bitend, &first, &pos, &search))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     bool h = has_prev_sub_uint64_t(src, blklen, blkpos, bitstart, bitend, first, &pos, search);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", h));
@@ -881,7 +891,7 @@ static PyObject* py_get_vr_rsid(PyObject *Py_UNUSED(ignored), PyObject *args, Py
     static char *kwlist[] = {"mfsrc", "item", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OK", kwlist, &mfsrc, &item))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t h = get_vr_rsid(src, item);
     return Py_BuildValue("I", h);
 }
@@ -893,7 +903,7 @@ static PyObject* py_get_rv_variantkey(PyObject *Py_UNUSED(ignored), PyObject *ar
     static char *kwlist[] = {"mfsrc", "item", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OK", kwlist, &mfsrc, &item))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = get_rv_variantkey(src, item);
     return Py_BuildValue("K", h);
 }
@@ -907,7 +917,7 @@ static PyObject* py_find_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyO
     static char *kwlist[] = {"mfsrc", "first", "last", "rsid", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKI", kwlist, &mfsrc, &first, &last, &rsid))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_rv_variantkey_by_rsid(src, &first, last, rsid);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -924,7 +934,7 @@ static PyObject* py_get_next_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored),
     static char *kwlist[] = {"mfsrc", "pos", "last", "rsid", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKI", kwlist, &mfsrc, &pos, &last, &rsid))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = get_next_rv_variantkey_by_rsid(src, &pos, last, rsid);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("K", h));
@@ -941,7 +951,7 @@ static PyObject* py_find_all_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored),
     static char *kwlist[] = {"mfsrc", "first", "last", "rsid", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKI", kwlist, &mfsrc, &first, &last, &rsid))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint64_t h = find_rv_variantkey_by_rsid(src, &first, last, rsid);
     while (h > 0)
     {
@@ -959,7 +969,7 @@ static PyObject* py_find_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyO
     static char *kwlist[] = {"mfsrc", "first", "last", "vk", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKK", kwlist, &mfsrc, &first, &last, &vk))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t h = find_vr_rsid_by_variantkey(src, &first, last, vk);
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
@@ -977,7 +987,7 @@ static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObjec
     static char *kwlist[] = {"mfsrc", "first", "last", "chrom", "pos_min", "pos_max", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKBII", kwlist, &mfsrc, &first, &last, &chrom, &pos_min, &pos_max))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t h = find_vr_chrompos_range(src, &first, &last, chrom, pos_min, pos_max);
     result = PyTuple_New(3);
     PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
@@ -998,7 +1008,7 @@ static PyObject* py_find_ref_alt_by_variantkey(PyObject *Py_UNUSED(ignored), PyO
         return NULL;
     char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
     size_t sizeref = 0, sizealt = 0;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     size_t len = find_ref_alt_by_variantkey(src, last, vk, ref, &sizeref, alt, &sizealt);
     result = PyTuple_New(5);
     PyTuple_SetItem(result, 0, Py_BuildValue("y", ref));
@@ -1017,7 +1027,7 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     variantkey_rev_t rev = {0};
     size_t len = reverse_variantkey(src, last, vk, &rev);
     result = PyTuple_New(7);
@@ -1031,6 +1041,52 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     return result;
 }
 
+static PyObject* py_get_variantkey_ref_length(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = py_get_mmsrc(mfsrc);
+    size_t len = get_variantkey_ref_length(src, last, vk);
+    return Py_BuildValue("K", len);
+}
+
+static PyObject* py_get_variantkey_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = py_get_mmsrc(mfsrc);
+    uint32_t endpos = get_variantkey_endpos(src, last, vk);
+    return Py_BuildValue("I", endpos);
+}
+
+static PyObject* py_get_variantkey_chrom_startpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t vk;
+    static char *kwlist[] = {"vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &vk))
+        return NULL;
+    uint64_t h = get_variantkey_chrom_startpos(vk);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_get_variantkey_chrom_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = py_get_mmsrc(mfsrc);
+    uint64_t h = get_variantkey_chrom_endpos(src, last, vk);
+    return Py_BuildValue("K", h);
+}
+
 static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t last;
@@ -1039,7 +1095,7 @@ static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "last", "tsvfile", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKs", kwlist, &mfsrc, &last, &tsvfile))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     size_t len = vknr_bin_to_tsv(src, last, tsvfile);
     return Py_BuildValue("K", len);
 }
@@ -1052,7 +1108,7 @@ static PyObject* py_load_genoref_index(PyObject *Py_UNUSED(ignored), PyObject *a
     static char *kwlist[] = {"mfsrc", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "O", kwlist, &mfsrc))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t *idx = (uint32_t *)malloc(27 * sizeof(uint32_t));
     load_genoref_index(src, idx);
     return PyCapsule_New((void*)idx, "idx", NULL);
@@ -1067,7 +1123,7 @@ static PyObject* py_get_genoref_seq(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "mfidx", "chrom", "pos", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBI", kwlist, &mfsrc, &mfidx, &chrom, &pos))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
     char ref = get_genoref_seq(src, idx, chrom, pos);
     return Py_BuildValue("c", ref);
@@ -1084,7 +1140,7 @@ static PyObject *py_check_reference(PyObject *Py_UNUSED(ignored), PyObject *args
     static char *kwlist[] = {"mfsrc", "mfidx", "chrom", "pos", "ref", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBIs#", kwlist, &mfsrc, &mfidx, &chrom, &pos, &ref, &sizeref))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
     int ret = check_reference(src, idx, chrom, pos, ref, (size_t)sizeref);
     return Py_BuildValue("i", ret);
@@ -1113,7 +1169,7 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     static char *kwlist[] = {"mfsrc", "mfidx", "chrom", "pos", "ref", "alt", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBIs#s#", kwlist, &mfsrc, &mfidx, &chrom, &pos, &ref, &sizeref, &alt, &sizealt))
         return NULL;
-    const unsigned char *src = (const unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
     size_t stref = (size_t)sizeref;
     size_t stalt = (size_t)sizealt;
@@ -1126,6 +1182,229 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     PyTuple_SetItem(result, 4, Py_BuildValue("K", stref));
     PyTuple_SetItem(result, 5, Py_BuildValue("K", stalt));
     return result;
+}
+
+// --- REGIONKEY ---
+
+static PyObject* py_encode_region_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    short int strand;
+    static char *kwlist[] = {"strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "h", kwlist, &strand))
+        return NULL;
+    uint8_t h = encode_region_strand((int8_t)strand);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_decode_region_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t strand;
+    static char *kwlist[] = {"strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "B", kwlist, &strand))
+        return NULL;
+    int8_t h = decode_region_strand(strand);
+    return Py_BuildValue("h", (short int)h);
+}
+
+static PyObject* py_encode_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t chrom, strand;
+    uint32_t startpos, endpos;
+    static char *kwlist[] = {"chrom", "startpos", "endpos", "strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "BIIB", kwlist, &chrom, &startpos, &endpos, &strand))
+        return NULL;
+    uint64_t h = encode_regionkey(chrom, startpos, endpos, strand);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_extract_regionkey_chrom(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint8_t h = extract_regionkey_chrom(rk);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_extract_regionkey_startpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint32_t h = extract_regionkey_startpos(rk);
+    return Py_BuildValue("I", h);
+}
+
+static PyObject* py_extract_regionkey_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint32_t h = extract_regionkey_endpos(rk);
+    return Py_BuildValue("I", h);
+}
+
+static PyObject* py_extract_regionkey_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint32_t h = extract_regionkey_strand(rk);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_decode_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    PyObject *result;
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    regionkey_t h = {0};
+    decode_regionkey(rk, &h);
+    result = PyTuple_New(4);
+    PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.startpos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.endpos));
+    PyTuple_SetItem(result, 3, Py_BuildValue("B", h.strand));
+    return result;
+}
+
+static PyObject* py_reverse_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    PyObject *result;
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    regionkey_rev_t rev = {0};
+    reverse_regionkey(rk, &rev);
+    result = PyTuple_New(4);
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", rev.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", rev.startpos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("I", rev.endpos));
+    PyTuple_SetItem(result, 3, Py_BuildValue("h", rev.strand));
+    return result;
+}
+
+static PyObject* py_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *chrom;
+    Py_ssize_t sizechrom;
+    uint32_t startpos, endpos;
+    short int strand;
+    static char *kwlist[] = {"chrom", "startpos", "endpos", "strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#IIh", kwlist, &chrom, &sizechrom, &startpos, &endpos, &strand))
+        return NULL;
+    uint64_t h = regionkey(chrom, (size_t)sizechrom, startpos, endpos, (int8_t)strand);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_regionkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t code;
+    static char *kwlist[] = {"code", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &code))
+        return NULL;
+    char str[17];
+    regionkey_hex(code, str);
+    return PyBytes_FromString(str);
+}
+
+static PyObject* py_parse_regionkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *rs;
+    Py_ssize_t sizers;
+    static char *kwlist[] = {"rs", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &rs, &sizers))
+        return NULL;
+    uint64_t h = 0;
+    if (sizers == 16)
+    {
+        h = parse_regionkey_hex(rs);
+    }
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_get_regionkey_chrom_startpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint64_t h = get_regionkey_chrom_startpos(rk);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_get_regionkey_chrom_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint64_t h = get_regionkey_chrom_endpos(rk);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_are_overlapping_regions(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t a_chrom, b_chrom;
+    uint32_t a_startpos, b_startpos, a_endpos, b_endpos;
+    static char *kwlist[] = {"a_chrom", "a_startpos", "a_endpos", "b_chrom", "b_startpos", "b_endpos", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "BIIBII", kwlist, &a_chrom, &a_startpos, &a_endpos, &b_chrom, &b_startpos, &b_endpos))
+        return NULL;
+    uint8_t h = are_overlapping_regions(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_are_overlapping_region_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t chrom;
+    uint32_t startpos, endpos;
+    uint64_t rk;
+    static char *kwlist[] = {"chrom", "startpos", "endpos", "rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "BIIK", kwlist, &chrom, &startpos, &endpos, &rk))
+        return NULL;
+    uint8_t h = are_overlapping_region_regionkey(chrom, startpos, endpos, rk);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_are_overlapping_regionkeys(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rka, rkb;
+    static char *kwlist[] = {"rka", "rkb", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "KK", kwlist, &rka, &rkb))
+        return NULL;
+    uint8_t h = are_overlapping_regionkeys(rka, rkb);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_are_overlapping_variantkey_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk, rk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", "rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKK", kwlist, &mfsrc, &last, &vk, &rk))
+        return NULL;
+    const unsigned char *src = py_get_mmsrc(mfsrc);
+    uint8_t h = are_overlapping_variantkey_regionkey(src, last, vk, rk);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_variantkey_to_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t last, vk;
+    PyObject* mfsrc = NULL;
+    static char *kwlist[] = {"mfsrc", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
+        return NULL;
+    const unsigned char *src = py_get_mmsrc(mfsrc);
+    uint64_t h = variantkey_to_regionkey(src, last, vk);
+    return Py_BuildValue("K", h);
 }
 
 // ---
@@ -1198,14 +1477,39 @@ static PyMethodDef PyVariantKeyMethods[] =
     // NRVK
     {"find_ref_alt_by_variantkey", (PyCFunction)py_find_ref_alt_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYFINDREFALTBYVARIANTKEY_DOCSTRING},
     {"reverse_variantkey", (PyCFunction)py_reverse_variantkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEVARIANTKEY_DOCSTRING},
+    {"get_variantkey_ref_length", (PyCFunction)py_get_variantkey_ref_length, METH_VARARGS|METH_KEYWORDS, PYGETREFLENGTHBYVARIANTKEY_DOCSTRING},
+    {"get_variantkey_endpos", (PyCFunction)py_get_variantkey_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYENDPOS_DOCSTRING},
+    {"get_variantkey_chrom_startpos", (PyCFunction)py_get_variantkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMSTARTPOS_DOCSTRING},
+    {"get_variantkey_chrom_endpos", (PyCFunction)py_get_variantkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMENDPOS_DOCSTRING},
     {"vknr_bin_to_tsv", (PyCFunction)py_vknr_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF
-    {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX},
-    {"get_genoref_seq", (PyCFunction)py_get_genoref_seq, METH_VARARGS|METH_KEYWORDS, PYGETGENOREFSEQ},
-    {"check_reference", (PyCFunction)py_check_reference, METH_VARARGS|METH_KEYWORDS, PYCHECKREFERENCE},
-    {"flip_allele", (PyCFunction)py_flip_allele, METH_VARARGS|METH_KEYWORDS, PYFLIPALLELE},
-    {"normalize_variant", (PyCFunction)py_normalize_variant, METH_VARARGS|METH_KEYWORDS, PYNORMALIZEVARIANT},
+    {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX_DOCSTRING},
+    {"get_genoref_seq", (PyCFunction)py_get_genoref_seq, METH_VARARGS|METH_KEYWORDS, PYGETGENOREFSEQ_DOCSTRING},
+    {"check_reference", (PyCFunction)py_check_reference, METH_VARARGS|METH_KEYWORDS, PYCHECKREFERENCE_DOCSTRING},
+    {"flip_allele", (PyCFunction)py_flip_allele, METH_VARARGS|METH_KEYWORDS, PYFLIPALLELE_DOCSTRING},
+    {"normalize_variant", (PyCFunction)py_normalize_variant, METH_VARARGS|METH_KEYWORDS, PYNORMALIZEVARIANT_DOCSTRING},
+
+    // REGIONKEY
+    {"encode_region_strand", (PyCFunction)py_encode_region_strand, METH_VARARGS|METH_KEYWORDS, PYENCODEREGIONSTRAND_DOCSTRING},
+    {"decode_region_strand", (PyCFunction)py_decode_region_strand, METH_VARARGS|METH_KEYWORDS, PYDECODEREGIONSTRAND_DOCSTRING},
+    {"encode_regionkey", (PyCFunction)py_encode_regionkey, METH_VARARGS|METH_KEYWORDS, PYENCODEREGIONKEY_DOCSTRING},
+    {"extract_regionkey_chrom", (PyCFunction)py_extract_regionkey_chrom, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYCHROM_DOCSTRING},
+    {"extract_regionkey_startpos", (PyCFunction)py_extract_regionkey_startpos, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYSTARTPOS_DOCSTRING},
+    {"extract_regionkey_endpos", (PyCFunction)py_extract_regionkey_endpos, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYENDPOS_DOCSTRING},
+    {"extract_regionkey_strand", (PyCFunction)py_extract_regionkey_strand, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYSTRAND_DOCSTRING},
+    {"decode_regionkey", (PyCFunction)py_decode_regionkey, METH_VARARGS|METH_KEYWORDS, PYDECODEREGIONKEY_DOCSTRING},
+    {"reverse_regionkey", (PyCFunction)py_reverse_regionkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEREGIONKEY_DOCSTRING},
+    {"regionkey", (PyCFunction)py_regionkey, METH_VARARGS|METH_KEYWORDS, PYREGIONKEY_DOCSTRING},
+    {"regionkey_hex", (PyCFunction)py_regionkey_hex, METH_VARARGS|METH_KEYWORDS, PYREGIONKEYHEX_DOCSTRING},
+    {"parse_regionkey_hex", (PyCFunction)py_parse_regionkey_hex, METH_VARARGS|METH_KEYWORDS, PYPARSEREGIONKEYHEX_DOCSTRING},
+    {"get_regionkey_chrom_startpos", (PyCFunction)py_get_regionkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETREGIONKEYCHROMSTARTPOS_DOCSTRING},
+    {"get_regionkey_chrom_endpos", (PyCFunction)py_get_regionkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETREGIONKEYCHROMENDPOS_DOCSTRING},
+    {"are_overlapping_regions", (PyCFunction)py_are_overlapping_regions, METH_VARARGS|METH_KEYWORDS, PYAREOVERLAPPINGREGIONS_DOCSTRING},
+    {"are_overlapping_region_regionkey", (PyCFunction)py_are_overlapping_region_regionkey, METH_VARARGS|METH_KEYWORDS, AREOVERLAPPINGREGIONREGIONKEY_DOCSTRING},
+    {"are_overlapping_regionkeys", (PyCFunction)py_are_overlapping_regionkeys, METH_VARARGS|METH_KEYWORDS, AREOVERLAPPINGREGIONKEYS_DOCSTRING},
+    {"are_overlapping_variantkey_regionkey", (PyCFunction)py_are_overlapping_variantkey_regionkey, METH_VARARGS|METH_KEYWORDS, AREOVERLAPPINGVARIANTKEYREGIONKEY_DOCSTRING},
+    {"variantkey_to_regionkey", (PyCFunction)py_variantkey_to_regionkey, METH_VARARGS|METH_KEYWORDS, VARIANTKEYTOREGIONKEY_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
 };

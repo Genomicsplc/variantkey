@@ -604,23 +604,23 @@ test_that("EncodeVariantKey", {
     expect_identical(res, unlist(x[,"vk"]))
 })
 
-test_that("ExtractVariantkeyChrom", {
-    res <- mapply(ExtractVariantkeyChrom, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("ExtractVariantKeyChrom", {
+    res <- mapply(ExtractVariantKeyChrom, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"kchrom"])))
 })
 
-test_that("ExtractVariantkeyPos", {
-    res <- mapply(ExtractVariantkeyPos, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("ExtractVariantKeyPos", {
+    res <- mapply(ExtractVariantKeyPos, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"pos"])))
 })
 
-test_that("ExtractVariantkeyRefAlt", {
-    res <- mapply(ExtractVariantkeyRefAlt, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("ExtractVariantKeyRefAlt", {
+    res <- mapply(ExtractVariantKeyRefAlt, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"refalt"])))
 })
 
-test_that("DecodeVariantkey", {
-    res <- mapply(DecodeVariantkey, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("DecodeVariantKey", {
+    res <- mapply(DecodeVariantKey, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"kchrom"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"pos"])))
     expect_that(unlist(res[3,]), equals(unlist(x[,"refalt"])))
@@ -637,24 +637,24 @@ test_that("VariantKeyRange", {
     expect_that(res$MAX, equals("0fffffffffffffff"))
 })
 
-test_that("CompareVariantkeyChrom", {
-    res <- mapply(CompareVariantkeyChrom, "08027a3c08e80000", "100036cc08900000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("CompareVariantKeyChrom", {
+    res <- mapply(CompareVariantKeyChrom, "08027a3c08e80000", "100036cc08900000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(-1))
-    res <- mapply(CompareVariantkeyChrom, "0fffffff88b80000", "08027a2188c80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CompareVariantKeyChrom, "0fffffff88b80000", "08027a2188c80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(0))
-    res <- mapply(CompareVariantkeyChrom, "100036cc08900000", "08027a3c08e80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CompareVariantKeyChrom, "100036cc08900000", "08027a3c08e80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(1))
 })
 
-test_that("CompareVariantkeyChromPos", {
-    res <- mapply(CompareVariantkeyChromPos, "08027a3c08e80000", "100036cc08900000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+test_that("CompareVariantKeyChromPos", {
+    res <- mapply(CompareVariantKeyChromPos, "08027a3c08e80000", "100036cc08900000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(-1))
-    res <- mapply(CompareVariantkeyChromPos, "100036cc08900000", "08027a3c08e80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CompareVariantKeyChromPos, "100036cc08900000", "08027a3c08e80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(1))
-    res <- mapply(CompareVariantkeyChromPos, "08027a2588b00000", "0fffffff88b80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CompareVariantKeyChromPos, "08027a2588b00000", "0fffffff88b80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(-1))
-    res <- mapply(CompareVariantkeyChromPos, "0fffffff88b80000", "0fffffff8ae2503b", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CompareVariantKeyChromPos, "0fffffff88b80000", "0fffffff8ae2503b", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(0))
-    res <- mapply(CompareVariantkeyChromPos, "0fffffff88b80000", "08027a2588b00000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CompareVariantKeyChromPos, "0fffffff88b80000", "08027a2588b00000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(1))
 })

@@ -47,6 +47,7 @@
 extern "C" {
 #endif
 
+#include <inttypes.h>
 #include <stddef.h>
 #include "astring.h"
 
@@ -59,7 +60,7 @@ extern "C" {
 
 /**
  * VariantKey struct.
- * Contains the numeically encoded VariantKey components (CHROM, POS, REF+ALT).
+ * Contains the numerically encoded VariantKey components (CHROM, POS, REF+ALT).
  */
 typedef struct variantkey_t
 {
@@ -148,7 +149,7 @@ uint8_t extract_variantkey_chrom(uint64_t vk);
  *
  * @param vk VariantKey code.
  *
- * @return POS code.
+ * @return POS.
  */
 uint32_t extract_variantkey_pos(uint64_t vk);
 
@@ -164,8 +165,6 @@ uint32_t extract_variantkey_refalt(uint64_t vk);
  *
  * @param code VariantKey code.
  * @param vk   Decoded variantkey structure.
- *
- * @return A variantkey_t structure.
  */
 void decode_variantkey(uint64_t code, variantkey_t *vk);
 
@@ -192,8 +191,6 @@ uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const cha
  * @param pos_min   Start reference position, with the first base having position 0.
  * @param pos_max   End reference position, with the first base having position 0.
  * @param range     VariantKey range values.
- *
- * @return      Min and Max variant keys for any given REF+ALT encoding.
  */
 void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range);
 
@@ -204,7 +201,7 @@ void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange
  *
  * @return -1 if the first chromosome is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
-int compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
+int8_t compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
 
 /** @brief Compares two VariantKeys by chromosome and position.
  *
@@ -213,7 +210,7 @@ int compare_variantkey_chrom(uint64_t vka, uint64_t vkb);
  *
  * @return -1 if the first CHROM+POS is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
-int compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
+int8_t compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb);
 
 /** @brief Returns VariantKey hexadecimal string (16 characters).
  *

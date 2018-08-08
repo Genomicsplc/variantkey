@@ -77,7 +77,7 @@ EncodeVariantKey <- function(chrom, pos, refalt) {
 #' @param vk VariantKey code.
 #' @useDynLib   variantkey R_extract_variantkey_chrom
 #' @export
-ExtractVariantkeyChrom <- function(vk) {
+ExtractVariantKeyChrom <- function(vk) {
     return(.Call("R_extract_variantkey_chrom", vk))
 }
 
@@ -85,7 +85,7 @@ ExtractVariantkeyChrom <- function(vk) {
 #' @param vk VariantKey code.
 #' @useDynLib   variantkey R_extract_variantkey_pos
 #' @export
-ExtractVariantkeyPos <- function(vk) {
+ExtractVariantKeyPos <- function(vk) {
     return(.Call("R_extract_variantkey_pos", vk))
 }
 
@@ -93,7 +93,7 @@ ExtractVariantkeyPos <- function(vk) {
 #' @param vk VariantKey code.
 #' @useDynLib   variantkey R_extract_variantkey_refalt
 #' @export
-ExtractVariantkeyRefAlt <- function(vk) {
+ExtractVariantKeyRefAlt <- function(vk) {
     return(.Call("R_extract_variantkey_refalt", vk))
 }
 
@@ -102,7 +102,7 @@ ExtractVariantkeyRefAlt <- function(vk) {
 #' @param vk   Decoded variantkey structure.
 #' @useDynLib   variantkey R_decode_variantkey
 #' @export
-DecodeVariantkey <- function(vk) {
+DecodeVariantKey <- function(vk) {
     return(.Call("R_decode_variantkey", vk))
 }
 
@@ -133,7 +133,7 @@ VariantKeyRange <- function(chrom, pos_min, pos_max) {
 #' @param vkb    The second VariantKey to be compared.
 #' @useDynLib   variantkey R_compare_variantkey_chrom
 #' @export
-CompareVariantkeyChrom <- function(vka, vkb) {
+CompareVariantKeyChrom <- function(vka, vkb) {
     return(.Call("R_compare_variantkey_chrom", vka, vkb))
 }
 
@@ -143,7 +143,7 @@ CompareVariantkeyChrom <- function(vka, vkb) {
 #' @param vkb    The second VariantKey to be compared.
 #' @useDynLib   variantkey R_compare_variantkey_chrom_pos
 #' @export
-CompareVariantkeyChromPos <- function(vka, vkb) {
+CompareVariantKeyChromPos <- function(vka, vkb) {
     return(.Call("R_compare_variantkey_chrom_pos", vka, vkb))
 }
 
@@ -183,7 +183,7 @@ GetVrRsid <- function(src, item) {
 #' @param item      Binary block number.
 #' @useDynLib   variantkey R_get_rv_variantkey
 #' @export
-GetRvVariantkey <- function(src, item) {
+GetRvVariantKey <- function(src, item) {
     return(.Call("R_get_rv_variantkey", src, item))
 }
 
@@ -194,7 +194,7 @@ GetRvVariantkey <- function(src, item) {
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_rv_variantkey_by_rsid
 #' @export
-FindRvVariantkeyByRsid <- function(src, first, last, rsid) {
+FindRvVariantKeyByRsid <- function(src, first, last, rsid) {
     return(.Call("R_find_rv_variantkey_by_rsid", src, first, last, rsid))
 }
 
@@ -206,7 +206,7 @@ FindRvVariantkeyByRsid <- function(src, first, last, rsid) {
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_get_next_rv_variantkey_by_rsid
 #' @export
-GetNextRvVariantkeyByRsid <- function(src, pos, last, rsid) {
+GetNextRvVariantKeyByRsid <- function(src, pos, last, rsid) {
     return(.Call("R_get_next_rv_variantkey_by_rsid", src, pos, last, rsid))
 }
 
@@ -218,7 +218,7 @@ GetNextRvVariantkeyByRsid <- function(src, pos, last, rsid) {
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_all_rv_variantkey_by_rsid
 #' @export
-FindAllRvVariantkeyByRsid <- function(src, first, last, rsid) {
+FindAllRvVariantKeyByRsid <- function(src, first, last, rsid) {
     return(.Call("R_find_all_rv_variantkey_by_rsid", src, first, last, rsid))
 }
 
@@ -229,7 +229,7 @@ FindAllRvVariantkeyByRsid <- function(src, first, last, rsid) {
 #' @param vk        VariantKey.
 #' @useDynLib   variantkey R_find_vr_rsid_by_variantkey
 #' @export
-FindVrRsidByVariantkey <- function(src, first, last, vk) {
+FindVrRsidByVariantKey <- function(src, first, last, vk) {
     return(.Call("R_find_vr_rsid_by_variantkey", src, first, last, vk))
 }
 
@@ -255,7 +255,7 @@ FindVrChromposRange <- function(src, first, last, chrom, pos_min, pos_max) {
 #' @param vk       VariantKey to search.
 #' @useDynLib   variantkey R_find_ref_alt_by_variantkey
 #' @export
-FindRefAltByVariantkey <- function(src, last, vk) {
+FindRefAltByVariantKey <- function(src, last, vk) {
     return(.Call("R_find_ref_alt_by_variantkey", src, last, vk))
 }
 
@@ -265,8 +265,48 @@ FindRefAltByVariantkey <- function(src, last, vk) {
 #' @param vk       VariantKey code.
 #' @useDynLib   variantkey R_reverse_variantkey
 #' @export
-ReverseVariantkey <- function(src, last, vk) {
+ReverseVariantKey <- function(src, last, vk) {
     return(.Call("R_reverse_variantkey", src, last, vk))
+}
+
+#' Retrieve the REF length for the specified VariantKey.
+#' Return REF length or 0 if the VariantKey is not reversible and not found.
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last     Number of variants in the src file -1.
+#' @param vk       VariantKey.
+#' @useDynLib   variantkey R_get_variantkey_ref_length
+#' @export
+GetVariantKeyRefLength <- function(src, last, vk) {
+    return(.Call("R_get_variantkey_ref_length", src, last, vk))
+}
+
+#' Get the VariantKey end position (POS + REF length).
+#' Return variant end position.
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last     Number of variants in the src file -1.
+#' @param vk       VariantKey.
+#' @useDynLib   variantkey R_get_variantkey_endpos
+#' @export
+GetVariantKeyEndPos <- function(src, last, vk) {
+    return(.Call("R_get_variantkey_endpos", src, last, vk))
+}
+
+#' Get the CHROM + START POS encoding from VariantKey.
+#' @param vk       VariantKey.
+#' @useDynLib   variantkey R_get_variantkey_chrom_startpos
+#' @export
+GetVariantKeyChromStartPos <- function(vk) {
+    return(.Call("R_get_variantkey_chrom_startpos", vk))
+}
+
+#' Get the CHROM + END POS encoding from VariantKey.
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last     Number of variants in the src file -1.
+#' @param vk       VariantKey.
+#' @useDynLib   variantkey R_get_variantkey_chrom_endpos
+#' @export
+GetVariantKeyChromEndPos <- function(src, last, vk) {
+    return(.Call("R_get_variantkey_chrom_endpos", src, last, vk))
 }
 
 #' Convert a vrnr.bin file to a simple TSV.
@@ -360,3 +400,165 @@ NormalizeVariant <- function(src, idx, chrom, pos, ref, alt) {
     return(.Call("R_normalize_variant", src, idx, chrom, pos, ref, alt))
 }
 
+# --- REGIONKEY ---
+
+#' Encode the strand direction (-1 > 2, 0 > 0, +1 > 1).
+#' @param strand     Strand direction (-1, 0, +1).
+#' @useDynLib   variantkey R_encode_region_strand
+#' @export
+EncodeRegionStrand <- function(strand) {
+    return(.Call("R_encode_region_strand", strand))
+}
+
+#' Decode the strand direction code (0 > 0, 1 > +1, 2 > -1).
+#' @param code     Strand code.
+#' @useDynLib   variantkey R_decode_region_strand
+#' @export
+DecodeRegionStrand <- function(strand) {
+    return(.Call("R_decode_region_strand", strand))
+}
+
+#' Returns a 64 bit regionkey
+#' @param chrom      Encoded Chromosome (see encode_chrom).
+#' @param startpos   Start position (zero based).
+#' @param endpos     End position (startpos + region_length).
+#' @param strand     Encoded Strand direction (-1 > 2, 0 > 0, +1 > 1)
+#' @useDynLib   variantkey R_encode_regionkey
+#' @export
+EncodeRegionKey <- function(chrom, startpos, endpos, strand) {
+    return(.Call("R_encode_regionkey", chrom, startpos, endpos, strand))
+}
+
+#' Extract the CHROM code from RegionKey.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_extract_regionkey_chrom
+#' @export
+ExtractRegionKeyChrom <- function(rk) {
+    return(.Call("R_extract_regionkey_chrom", rk))
+}
+
+#' Extract the START POS code from RegionKey.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_extract_regionkey_startpos
+#' @export
+ExtractRegionKeyStartPos <- function(rk) {
+    return(.Call("R_extract_regionkey_startpos", rk))
+}
+
+#' Extract the END POS code from RegionKey.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_extract_regionkey_endpos
+#' @export
+ExtractRegionKeyEndPos <- function(rk) {
+    return(.Call("R_extract_regionkey_endpos", rk))
+}
+
+#' Extract the STRAND from RegionKey.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_extract_regionkey_strand
+#' @export
+ExtractRegionKeyStrand <- function(rk) {
+    return(.Call("R_extract_regionkey_strand", rk))
+}
+
+#' Decode a RegionKey code and returns the components as regionkey_t structure.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_decode_regionkey
+#' @export
+DecodeRegionKey <- function(rk) {
+    return(.Call("R_decode_regionkey", rk))
+}
+
+#' Reverse a RegionKey code and returns the normalized components as regionkey_rev_t structure.
+#' @param rk       RegionKey code.
+#' @useDynLib   variantkey R_reverse_regionkey
+#' @export
+ReverseRegionKey <- function(rk) {
+    return(.Call("R_reverse_regionkey", rk))
+}
+
+#' Returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STRAND.
+#' @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+#' @param sizechrom  Length of the chrom string, excluding the terminating null byte.
+#' @param startpos   Start position (zero based).
+#' @param endpos     End position (startpos + region_length).
+#' @param strand     Strand direction (-1, 0, +1)
+#' @useDynLib   variantkey R_regionkey
+#' @export
+RegionKey <- function(chrom, startpos, endpos, strand) {
+    return(.Call("R_regionkey", chrom, startpos, endpos, strand))
+}
+
+#' Get the CHROM + START POS encoding from RegionKey.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_get_regionkey_chrom_startpos
+#' @export
+GetRegionKeyChromStartPos <- function(rk) {
+    return(.Call("R_get_regionkey_chrom_startpos", rk))
+}
+
+#' Get the CHROM + END POS encoding from RegionKey.
+#' @param rk RegionKey code.
+#' @useDynLib   variantkey R_get_regionkey_chrom_endpos
+#' @export
+GetRegionKeyChromEndPos <- function(rk) {
+    return(.Call("R_get_regionkey_chrom_endpos", rk))
+}
+
+#' Check if two regions are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param a_chrom     Region A chromosome code.
+#' @param a_startpos  Region A start position.
+#' @param a_endpos    Region A end position (startpos + region length).
+#' @param b_chrom     Region B chromosome code.
+#' @param b_startpos  Region B start position.
+#' @param b_endpos    Region B end position (startpos + region length).
+#' @useDynLib   variantkey R_are_overlapping_regions
+#' @export
+AreOverlappingRegions <- function(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos) {
+    return(.Call("R_are_overlapping_regions", a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos))
+}
+
+#' Check if a region and a regionkey are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param chrom     Region A chromosome code.
+#' @param startpos  Region A start position.
+#' @param endpos    Region A end position (startpos + region length).
+#' @param rk        RegionKey or region B.
+#' @useDynLib   variantkey R_are_overlapping_region_regionkey
+#' @export
+AreOverlappingRegionRegionKey <- function(chrom, startpos, endpos, rk) {
+    return(.Call("R_are_overlapping_region_regionkey", chrom, startpos, endpos, rk))
+}
+
+#' Check if two regionkeys are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param rka        RegionKey A.
+#' @param rkb        RegionKey B.
+#' @useDynLib   variantkey R_are_overlapping_regionkeys
+#' @export
+AreOverlappingRegionKeys <- function(rka, rkb) {
+    return(.Call("R_are_overlapping_regionkeys", rka, rkb))
+}
+
+#' Check if variantkey and regionkey are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last  Number of variants in the src file -1.
+#' @param vk    VariantKey code.
+#' @param rk    RegionKey code.
+#' @useDynLib   variantkey R_are_overlapping_variantkey_regionkey
+#' @export
+AreOverlappingVariantKeyRegionKey <- function(src, last, vk, rk) {
+    return(.Call("R_are_overlapping_variantkey_regionkey", src, last, vk, rk))
+}
+
+#' Get RegionKey from VariantKey.
+#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last  Number of variants in the src file -1.
+#' @param vk    VariantKey code.
+#' @useDynLib   variantkey R_variantkey_to_regionkey
+#' @export
+VariantToRegionkey <- function(src, last, vk) {
+    return(.Call("R_variantkey_to_regionkey", src, last, vk))
+}

@@ -43,3 +43,6 @@ SMOKE_TEST (test_genoref test_genoref.c variantkey)
 
 file (COPY data/rsvk.m.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_example test_example.c variantkey)
+
+file (COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_regionkey test_regionkey.c variantkey)

@@ -38,19 +38,19 @@ x <- EncodeVariantKey(23, 12345, 286097408)
 print(x)
 # [1] "b800181c910d8000"
 
-x <- ExtractVariantkeyChrom("b800181c910d8000")
+x <- ExtractVariantKeyChrom("b800181c910d8000")
 print(x)
 # [1] 23
 
-x <- ExtractVariantkeyPos("b800181c910d8000")
+x <- ExtractVariantKeyPos("b800181c910d8000")
 print(x)
 # [1] 12345
 
-x <- ExtractVariantkeyRefAlt("b800181c910d8000")
+x <- ExtractVariantKeyRefAlt("b800181c910d8000")
 print(x)
 # 286097408
 
-x <- DecodeVariantkey("b800181c910d8000")
+x <- DecodeVariantKey("b800181c910d8000")
 print(x)
 # $CHROM
 # [1] 23
@@ -73,11 +73,11 @@ print(x)
 # $MAX
 # [1] "b8000b177fffffff"
 
-x <- CompareVariantkeyChrom("B800026900000000", "B8000B177FFFFFFF")
+x <- CompareVariantKeyChrom("B800026900000000", "B8000B177FFFFFFF")
 print(x)
 # [1] 0
 
-x <- CompareVariantkeyChromPos("B800026900000000", "B8000B177FFFFFFF")
+x <- CompareVariantKeyChromPos("B800026900000000", "B8000B177FFFFFFF")
 print(x)
 # [1] -1
 
@@ -143,7 +143,7 @@ MunmapBinfile(genoref$SRC, genoref$FD, genoref$SIZE)
 # This example uses the "c/test/data/vknr.10.bin".
 vknr <- MmapBinfile("../c/test/data/vknr.10.bin")
 
-x <- FindRefAltByVariantkey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- FindRefAltByVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
 print(x)
 # $REF
 # [1] "ACGTACGT"
@@ -161,7 +161,7 @@ print(x)
 # [1] 12
 
 # Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-x <- ReverseVariantkey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- ReverseVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
 print(x)
 # $CHROM
 # [1] "4"
@@ -184,8 +184,25 @@ print(x)
 # $LEN
 # [1] 12
 
+x <- GetVariantKeyRefLength(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+print(x)
+# [1] 8
+
+x <- GetVariantKeyEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+print(x)
+# [1] 100012
+
+x <- GetVariantKeyChromStartPos(vk="2000c3521f1c15ab")
+print(x)
+# [1] "00000000400186a4"
+
+x <- GetVariantKeyChromEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+print(x)
+# [1] "00000000400186ac"
+
 MunmapBinfile(vknr$SRC, vknr$FD, vknr$SIZE)
 # [1] 0
+
 
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
@@ -198,11 +215,11 @@ MunmapBinfile(vknr$SRC, vknr$FD, vknr$SIZE)
 # This example uses the "c/test/data/rsvk.10.bin".
 rsvk <- MmapBinfile("../c/test/data/rsvk.10.bin")
 
-x <- GetRvVariantkey(rsvk$SRC, item=3)
+x <- GetRvVariantKey(rsvk$SRC, item=3)
 print(x)
 # [1] "80010274003a0000"
 
-x <- FindRvVariantkeyByRsid(rsvk$SRC, 0, 9, rsid=0x00000061)
+x <- FindRvVariantKeyByRsid(rsvk$SRC, 0, 9, rsid=0x00000061)
 print(x)
 # $VK
 # [1] "80010274003a0000"
@@ -210,7 +227,7 @@ print(x)
 # $FIRST
 # [1] 3
 
-x <- GetNextRvVariantkeyByRsid(rsvk$SRC, 2, 9, rsid=0x00000061)
+x <- GetNextRvVariantKeyByRsid(rsvk$SRC, 2, 9, rsid=0x00000061)
 print(x)
 # $VK
 # [1] "80010274003a0000"
@@ -228,7 +245,7 @@ MunmapBinfile(rsvk$SRC, rsvk$FD, rsvk$SIZE)
 # This example uses the "c/test/data/rsvk.m.10.bin".
 rsvkm <- MmapBinfile("../c/test/data/rsvk.m.10.bin")
 
-x <- FindAllRvVariantkeyByRsid(rsvkm$SRC, 0, 9, rsid=0x00000003)
+x <- FindAllRvVariantKeyByRsid(rsvkm$SRC, 0, 9, rsid=0x00000003)
 print(x)
 # [[1]]
 # [1] "80010274003a0000"
@@ -253,7 +270,7 @@ x <- GetVrRsid(vkrs$SRC, item=3)
 print(x)
 # [1] 97
 
-x <- FindVrRsidByVariantkey(vkrs$SRC, 0, 9, vk="80010274003A0000")
+x <- FindVrRsidByVariantKey(vkrs$SRC, 0, 9, vk="80010274003A0000")
 print(x)
 # $RSID
 # [1] 97
@@ -274,3 +291,98 @@ print(x)
 
 MunmapBinfile(vkrs$SRC, vkrs$FD, vkrs$SIZE)
 # [1] 0
+
+
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+
+# REGIONKEY
+# ---------
+
+x <- EncodeRegionStrand(-1)
+print(x)
+# [1] 2
+
+x <- DecodeRegionStrand(2)
+print(x)
+# [1] -1
+
+x <- EncodeRegionKey(chrom=25, startpos=1000, endpos=2000, strand=2)
+print(x)
+# [1] "c80001f400003e84"
+
+x <- ExtractRegionKeyChrom("c80001f400003e84")
+print(x)
+# [1] 25
+
+x <- ExtractRegionKeyStartPos("c80001f400003e84")
+print(x)
+# [1] 1000
+
+x <- ExtractRegionKeyEndPos("c80001f400003e84")
+print(x)
+# [1] 2000
+
+x <- ExtractRegionKeyStrand("c80001f400003e84")
+print(x)
+# [1] 2
+
+x <- DecodeRegionKey("c80001f400003e84")
+print(x)
+# $CHROM
+# [1] 25
+#
+# $STARTPOS
+# [1] 1000
+#
+# $ENDPOS
+# [1] 2000
+#
+# $STRAND
+# [1] 2
+
+x <- ReverseRegionKey("c80001f400003e84")
+print(x)
+# $CHROM
+# [1] "MT"
+#
+# $STARTPOS
+# [1] 1000
+#
+# $ENDPOS
+# [1] 2000
+#
+# $STRAND
+# [1] -1
+
+x <- RegionKey(chrom="MT", startpos=1000, endpos=2000, strand=-1)
+print(x)
+# [1] "c80001f400003e84"
+
+x <- GetRegionKeyChromStartPos("c80001f400003e84")
+print(x)
+# [1] "00000001900003e8"
+
+x <- GetRegionKeyChromEndPos("c80001f400003e84")
+print(x)
+# [1] "00000001900007d0"
+
+x <- AreOverlappingRegions(a_chrom=5, a_startpos=4, a_endpos=6, b_chrom=5, b_startpos=3, b_endpos=7)
+print(x)
+# [1] 1
+
+x <- AreOverlappingRegionRegionKey(5, 4, 6, "2800000180000038")
+print(x)
+# [1] 1
+
+x <- AreOverlappingRegionKeys("2800000200000030", "2800000180000038")
+print(x)
+# [1] 1
+
+x <- AreOverlappingVariantKeyRegionKey(NULL, 0, "2800000210920000", "2800000180000038")
+print(x)
+# [1] 1
+
+x <- VariantToRegionkey(NULL, 0, "2800000210920000")
+print(x)
+# [1] "2800000200000030"

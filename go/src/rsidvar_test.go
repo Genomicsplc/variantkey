@@ -49,13 +49,13 @@ func BenchmarkGetVRRsid(b *testing.B) {
 	}
 }
 
-func TestGetRVVariantkey(t *testing.T) {
+func TestGetRVVariantKey(t *testing.T) {
 	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vk := rv.GetRVVariantkey(uint64(i))
+			vk := rv.GetRVVariantKey(uint64(i))
 			if vk != tt.vk {
 				t.Errorf("Expected VariantKey %x, got %x", tt.vk, vk)
 			}
@@ -63,20 +63,20 @@ func TestGetRVVariantkey(t *testing.T) {
 	}
 }
 
-func BenchmarkGetRVVariantkey(b *testing.B) {
+func BenchmarkGetRVVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		rv.GetRVVariantkey(3)
+		rv.GetRVVariantKey(3)
 	}
 }
 
-func TestFindRVVariantkeyByRsid(t *testing.T) {
+func TestFindRVVariantKeyByRsid(t *testing.T) {
 	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vk, first := rv.FindRVVariantkeyByRsid(0, 9, tt.rsid)
+			vk, first := rv.FindRVVariantKeyByRsid(0, 9, tt.rsid)
 			if first != uint64(i) {
 				t.Errorf("Expected first %d, got %d", i, first)
 			}
@@ -87,8 +87,8 @@ func TestFindRVVariantkeyByRsid(t *testing.T) {
 	}
 }
 
-func TestFindRVVariantkeyByRsidNotFound(t *testing.T) {
-	vk, first := rv.FindRVVariantkeyByRsid(0, 9, 0xfffffff0)
+func TestFindRVVariantKeyByRsidNotFound(t *testing.T) {
+	vk, first := rv.FindRVVariantKeyByRsid(0, 9, 0xfffffff0)
 	if first != 10 {
 		t.Errorf("Expected first 10, got %d", first)
 	}
@@ -97,24 +97,24 @@ func TestFindRVVariantkeyByRsidNotFound(t *testing.T) {
 	}
 }
 
-func BenchmarkFindRVVariantkeyByRsid(b *testing.B) {
+func BenchmarkFindRVVariantKeyByRsid(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		rv.FindRVVariantkeyByRsid(0, 9, 0x2F81F575)
+		rv.FindRVVariantKeyByRsid(0, 9, 0x2F81F575)
 	}
 }
 
-func TestGetNextRVVariantkeyByRsid(t *testing.T) {
+func TestGetNextRVVariantKeyByRsid(t *testing.T) {
 	var vk uint64
 	pos := uint64(2)
-	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0x00000061)
+	vk, pos = rv.GetNextRVVariantKeyByRsid(pos, 9, 0x00000061)
 	if pos != 3 {
 		t.Errorf("(1) Expected pos 3, got %d", pos)
 	}
 	if vk != 0x80010274003A0000 {
 		t.Errorf("(1) Expected VariantKey 0x80010274003A0000, got %x", vk)
 	}
-	vk, pos = rv.GetNextRVVariantkeyByRsid(pos, 9, 0x00000061)
+	vk, pos = rv.GetNextRVVariantKeyByRsid(pos, 9, 0x00000061)
 	if pos != 4 {
 		t.Errorf("(2) Expected pos 4, got %d", pos)
 	}
@@ -123,8 +123,8 @@ func TestGetNextRVVariantkeyByRsid(t *testing.T) {
 	}
 }
 
-func TestFindAllRVVariantkeyByRsid(t *testing.T) {
-	vks := rvm.FindAllRVVariantkeyByRsid(0, 9, 0x00000003)
+func TestFindAllRVVariantKeyByRsid(t *testing.T) {
+	vks := rvm.FindAllRVVariantKeyByRsid(0, 9, 0x00000003)
 	if len(vks) != 3 {
 		t.Errorf("Expected len 3, got %d", len(vks))
 	}
@@ -139,20 +139,20 @@ func TestFindAllRVVariantkeyByRsid(t *testing.T) {
 	}
 }
 
-func TestFindAllRVVariantkeyByRsidNotFound(t *testing.T) {
-	vks := rvm.FindAllRVVariantkeyByRsid(0, 9, 0x12345678)
+func TestFindAllRVVariantKeyByRsidNotFound(t *testing.T) {
+	vks := rvm.FindAllRVVariantKeyByRsid(0, 9, 0x12345678)
 	if len(vks) != 0 {
 		t.Errorf("Expected len 0, got %d", len(vks))
 	}
 }
 
-func TestFindVRRsidByVariantkey(t *testing.T) {
+func TestFindVRRsidByVariantKey(t *testing.T) {
 	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			rsid, first := vr.FindVRRsidByVariantkey(0, 9, tt.vk)
+			rsid, first := vr.FindVRRsidByVariantKey(0, 9, tt.vk)
 			if rsid != tt.rsid {
 				t.Errorf("%d. Expected rsid %x, got %x", i, tt.rsid, rsid)
 			}
@@ -163,8 +163,8 @@ func TestFindVRRsidByVariantkey(t *testing.T) {
 	}
 }
 
-func TestFindVRRsidByVariantkeyNotFound(t *testing.T) {
-	rsid, first := vr.FindVRRsidByVariantkey(0, 9, 0xfffffffffffffff0)
+func TestFindVRRsidByVariantKeyNotFound(t *testing.T) {
+	rsid, first := vr.FindVRRsidByVariantKey(0, 9, 0xfffffffffffffff0)
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
@@ -173,10 +173,10 @@ func TestFindVRRsidByVariantkeyNotFound(t *testing.T) {
 	}
 }
 
-func BenchmarkFindVRRsidByVariantkey(b *testing.B) {
+func BenchmarkFindVRRsidByVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRRsidByVariantkey(0, 9, 0x160017CCA313D0E0)
+		vr.FindVRRsidByVariantKey(0, 9, 0x160017CCA313D0E0)
 	}
 }
 

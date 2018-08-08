@@ -782,11 +782,47 @@ class TestFunctions(TestCase):
 
 class TestBenchmark(object):
 
+    def test_encode_chrom_benchmark(self, benchmark):
+        benchmark(variantkey.encode_chrom, b"X")
+
+    def test_decode_chrom_benchmark(self, benchmark):
+        benchmark(variantkey.decode_chrom, 23)
+
+    def test_encode_refalt_benchmark(self, benchmark):
+        benchmark(variantkey.encode_refalt, b'AC', b'GT')
+
+    def test_decode_refalt_benchmark(self, benchmark):
+        benchmark(variantkey.decode_refalt, 286097408)
+
+    def test_encode_variantkey_benchmark(self, benchmark):
+        benchmark(variantkey.encode_variantkey, 23, 12345, 286097408)
+
+    def test_extract_variantkey_chrom_benchmark(self, benchmark):
+        benchmark(variantkey.extract_variantkey_chrom, 13258623813950472192)
+
+    def test_extract_variantkey_pos_benchmark(self, benchmark):
+        benchmark(variantkey.extract_variantkey_pos, 13258623813950472192)
+
+    def test_extract_variantkey_refalt_benchmark(self, benchmark):
+        benchmark(variantkey.extract_variantkey_refalt, 13258623813950472192)
+
+    def test_decode_variantkey_benchmark(self, benchmark):
+        benchmark(variantkey.decode_variantkey, 13258623813950472192)
+
     def test_variantkey_benchmark(self, benchmark):
-        benchmark(variantkey.variantkey, b"MT", 16527, b"C", b"T")
+        benchmark(variantkey.variantkey, b'X', 12345, b'AC', b'GT')
+
+    def test_variantkey_range_benchmark(self, benchmark):
+        benchmark(variantkey.variantkey_range, 23, 1234, 5678)
+
+    def test_compare_variantkey_chrom_benchmark(self, benchmark):
+        benchmark(variantkey.compare_variantkey_chrom, 13258599952973561856, 13258609498538377215)
+
+    def test_compare_variantkey_chrom_pos_benchmark(self, benchmark):
+        benchmark(variantkey.compare_variantkey_chrom_pos, 13258599952973561856, 13258609498538377215)
 
     def test_variantkey_hex_benchmark(self, benchmark):
-        benchmark(variantkey.variantkey_hex, 0x880082d600138000)
+        benchmark(variantkey.variantkey_hex, 13258623813950472192)
 
     def test_parse_variantkey_hex_benchmark(self, benchmark):
-        benchmark(variantkey.parse_variantkey_hex, b"880082d600138000")
+        benchmark(variantkey.parse_variantkey_hex, b'b800181c910d8000')
