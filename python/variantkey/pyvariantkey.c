@@ -1175,6 +1175,183 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     return result;
 }
 
+// --- REGIONKEY ---
+
+static PyObject* py_encode_region_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    int8_t strand;
+    static char *kwlist[] = {"strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "b", kwlist, &strand))
+        return NULL;
+    uint8_t h = encode_region_strand(strand);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_decode_region_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t strand;
+    static char *kwlist[] = {"strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "B", kwlist, &strand))
+        return NULL;
+    int8_t h = decode_region_strand(strand);
+    return Py_BuildValue("b", h);
+}
+
+static PyObject* py_encode_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t chrom, strand;
+    uint32_t startpos, endpos;
+    static char *kwlist[] = {"chrom", "startpos", "endpos", "strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "BIIB", kwlist, &chrom, &startpos, &endpos, &strand))
+        return NULL;
+    uint64_t h = encode_regionkey(chrom, startpos, endpos, strand);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_extract_regionkey_chrom(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint8_t h = extract_regionkey_chrom(rk);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_extract_regionkey_startpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint32_t h = extract_regionkey_startpos(rk);
+    return Py_BuildValue("I", h);
+}
+
+static PyObject* py_extract_regionkey_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint32_t h = extract_regionkey_endpos(rk);
+    return Py_BuildValue("I", h);
+}
+
+static PyObject* py_extract_regionkey_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint32_t h = extract_regionkey_strand(rk);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_decode_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    PyObject *result;
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    regionkey_t h = {0};
+    decode_regionkey(rk, &h);
+    result = PyTuple_New(4);
+    PyTuple_SetItem(result, 0, Py_BuildValue("B", h.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", h.startpos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("I", h.endpos));
+    PyTuple_SetItem(result, 3, Py_BuildValue("B", h.strand));
+    return result;
+}
+
+static PyObject* py_reverse_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    PyObject *result;
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    regionkey_rev_t rev = {0};
+    reverse_regionkey(rk, &rev);
+    result = PyTuple_New(4);
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", rev.chrom));
+    PyTuple_SetItem(result, 1, Py_BuildValue("I", rev.startpos));
+    PyTuple_SetItem(result, 2, Py_BuildValue("I", rev.endpos));
+    PyTuple_SetItem(result, 3, Py_BuildValue("b", rev.strand));
+    return result;
+}
+
+static PyObject* py_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *chrom;
+    Py_ssize_t sizechrom;
+    uint32_t startpos, endpos;
+    int8_t strand;
+    static char *kwlist[] = {"chrom", "startpos", "endpos", "strand", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#IIb", kwlist, &chrom, &sizechrom, &startpos, &endpos, &strand))
+        return NULL;
+    uint64_t h = regionkey(chrom, (size_t)sizechrom, startpos, endpos, (int8_t)strand);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_regionkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t code;
+    static char *kwlist[] = {"code", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &code))
+        return NULL;
+    char str[17];
+    regionkey_hex(code, str);
+    return PyBytes_FromString(str);
+}
+
+static PyObject* py_parse_regionkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *rs;
+    Py_ssize_t sizers;
+    static char *kwlist[] = {"rs", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &rs, &sizers))
+        return NULL;
+    uint64_t h = 0;
+    if (sizers == 16)
+    {
+        h = parse_regionkey_hex(rs);
+    }
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_are_overlapping_regions(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint8_t a_chrom, b_chrom;
+    uint32_t a_startpos, b_startpos, a_endpos, b_endpos;
+    static char *kwlist[] = {"a_chrom", "a_startpos", "a_endpos", "b_chrom", "b_startpos", "b_endpos", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "BIIBII", kwlist, &a_chrom, &a_startpos, &a_endpos, &b_chrom, &b_startpos, &b_endpos))
+        return NULL;
+    uint8_t h = are_overlapping_regions(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos);
+    return Py_BuildValue("B", h);
+}
+
+static PyObject* py_get_regionkey_chrom_startpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint64_t h = get_regionkey_chrom_startpos(rk);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_get_regionkey_chrom_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    static char *kwlist[] = {"rk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &rk))
+        return NULL;
+    uint64_t h = get_regionkey_chrom_endpos(rk);
+    return Py_BuildValue("K", h);
+}
+
 // ---
 
 static PyMethodDef PyVariantKeyMethods[] =
@@ -1252,11 +1429,28 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"vknr_bin_to_tsv", (PyCFunction)py_vknr_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF
-    {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX},
-    {"get_genoref_seq", (PyCFunction)py_get_genoref_seq, METH_VARARGS|METH_KEYWORDS, PYGETGENOREFSEQ},
-    {"check_reference", (PyCFunction)py_check_reference, METH_VARARGS|METH_KEYWORDS, PYCHECKREFERENCE},
-    {"flip_allele", (PyCFunction)py_flip_allele, METH_VARARGS|METH_KEYWORDS, PYFLIPALLELE},
-    {"normalize_variant", (PyCFunction)py_normalize_variant, METH_VARARGS|METH_KEYWORDS, PYNORMALIZEVARIANT},
+    {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX_DOCSTRING},
+    {"get_genoref_seq", (PyCFunction)py_get_genoref_seq, METH_VARARGS|METH_KEYWORDS, PYGETGENOREFSEQ_DOCSTRING},
+    {"check_reference", (PyCFunction)py_check_reference, METH_VARARGS|METH_KEYWORDS, PYCHECKREFERENCE_DOCSTRING},
+    {"flip_allele", (PyCFunction)py_flip_allele, METH_VARARGS|METH_KEYWORDS, PYFLIPALLELE_DOCSTRING},
+    {"normalize_variant", (PyCFunction)py_normalize_variant, METH_VARARGS|METH_KEYWORDS, PYNORMALIZEVARIANT_DOCSTRING},
+
+    // REGIONKEY
+    {"encode_region_strand", (PyCFunction)py_encode_region_strand, METH_VARARGS|METH_KEYWORDS, PYENCODEREGIONSTRAND_DOCSTRING},
+    {"decode_region_strand", (PyCFunction)py_decode_region_strand, METH_VARARGS|METH_KEYWORDS, PYDECODEREGIONSTRAND_DOCSTRING},
+    {"encode_regionkey", (PyCFunction)py_encode_regionkey, METH_VARARGS|METH_KEYWORDS, PYENCODEREGIONKEY_DOCSTRING},
+    {"extract_regionkey_chrom", (PyCFunction)py_extract_regionkey_chrom, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYCHROM_DOCSTRING},
+    {"extract_regionkey_startpos", (PyCFunction)py_extract_regionkey_startpos, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYSTARTPOS_DOCSTRING},
+    {"extract_regionkey_endpos", (PyCFunction)py_extract_regionkey_endpos, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYENDPOS_DOCSTRING},
+    {"extract_regionkey_strand", (PyCFunction)py_extract_regionkey_strand, METH_VARARGS|METH_KEYWORDS, PYEXTRACTREGIONKEYSTRAND_DOCSTRING},
+    {"decode_regionkey", (PyCFunction)py_decode_regionkey, METH_VARARGS|METH_KEYWORDS, PYDECODEREGIONKEY_DOCSTRING},
+    {"reverse_regionkey", (PyCFunction)py_reverse_regionkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEREGIONKEY_DOCSTRING},
+    {"regionkey", (PyCFunction)py_regionkey, METH_VARARGS|METH_KEYWORDS, PYREGIONKEY_DOCSTRING},
+    {"regionkey_hex", (PyCFunction)py_regionkey_hex, METH_VARARGS|METH_KEYWORDS, PYREGIONKEYHEX_DOCSTRING},
+    {"parse_regionkey_hex", (PyCFunction)py_parse_regionkey_hex, METH_VARARGS|METH_KEYWORDS, PYPARSEREGIONKEYHEX_DOCSTRING},
+    {"are_overlapping_regions", (PyCFunction)py_are_overlapping_regions, METH_VARARGS|METH_KEYWORDS, PYAREOVERLAPPINGREGIONS_DOCSTRING},
+    {"get_regionkey_chrom_startpos", (PyCFunction)py_get_regionkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETREGIONKEYCHROMSTARTPOS_DOCSTRING},
+    {"get_regionkey_chrom_endpos", (PyCFunction)py_get_regionkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETREGIONKEYCHROMENDPOS_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
 };

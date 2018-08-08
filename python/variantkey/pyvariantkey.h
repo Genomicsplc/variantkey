@@ -112,6 +112,23 @@ static PyObject *py_check_reference(PyObject *self, PyObject *args, PyObject *ke
 static PyObject *py_flip_allele(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_normalize_variant(PyObject *self, PyObject *args, PyObject *keywds);
 
+// REGIONKEY
+static PyObject *py_encode_region_strand(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_decode_region_strand(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_encode_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_extract_regionkey_chrom(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_extract_regionkey_startpos(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_extract_regionkey_endpos(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_extract_regionkey_strand(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_decode_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_reverse_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_regionkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_parse_regionkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_are_overlapping_regions(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_regionkey_chrom_startpos(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_regionkey_chrom_endpos(PyObject *self, PyObject *args, PyObject *keywds);
+
 PyMODINIT_FUNC initvariantkey(void);
 
 // VARIANTKEY
@@ -1545,7 +1562,7 @@ PyMODINIT_FUNC initvariantkey(void);
 
 // GENOREF
 
-#define PYLOADGENOREFINDEX "Return the index object from the genome reference memory mapped file.\n"\
+#define PYLOADGENOREFINDEX_DOCSTRING "Return the index object from the genome reference memory mapped file.\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -1557,7 +1574,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "obj :\n"\
 "    Index of sequences offset by chromosome number (1 to 25)."
 
-#define PYGETGENOREFSEQ "Returns the genome reference nucleotide at the specified chromosome and position.\n"\
+#define PYGETGENOREFSEQ_DOCSTRING "Returns the genome reference nucleotide at the specified chromosome and position.\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -1575,7 +1592,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bytes :\n"\
 "    Nucleotide letter or 0 (NULL char) in case of invalid position."
 
-#define PYCHECKREFERENCE "Check if the reference allele matches the reference genome data.\n"\
+#define PYCHECKREFERENCE_DOCSTRING "Check if the reference allele matches the reference genome data.\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -1599,7 +1616,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "       -1 the reference allele don't match the reference genome;\n"\
 "       -2 the reference allele is longer than the genome reference sequence."
 
-#define PYFLIPALLELE "Flip the allele nucleotides (replaces each letter with its complement).\n"\
+#define PYFLIPALLELE_DOCSTRING "Flip the allele nucleotides (replaces each letter with its complement).\n"\
 " The resulting string is always in uppercase."\
 " Support extended nucleotide letters."\
 "\n"\
@@ -1613,7 +1630,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bytes :\n"\
 "    Flipped allele."
 
-#define PYNORMALIZEVARIANT "Normalize a variant."\
+#define PYNORMALIZEVARIANT_DOCSTRING "Normalize a variant."\
 " Flip alleles if required and apply the normalization algorithm described at:"\
 " https://genome.sph.umich.edu/wiki/Variant_Normalization\n"\
 "\n"\
@@ -1647,6 +1664,222 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - ALT string.\n"\
 "    - REF length.\n"\
 "    - ALT length."
+
+// ----------
+
+// REGIONKEY
+
+#define PYENCODEREGIONSTRAND_DOCSTRING "Encode the strand direction (-1 > 2, 0 > 0, +1 > 1).\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"strand :\n"\
+"    Strand direction (-1, 0, +1).\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    Strand code."
+
+#define PYDECODEREGIONSTRAND_DOCSTRING "Decode the strand direction code (0 > 0, 1 > +1, 2 > -1).\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"code :\n"\
+"    Strand code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    Strand direction."
+
+#define PYENCODEREGIONKEY_DOCSTRING "Returns a 64 bit regionkey\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"chrom :\n"\
+"    Encoded Chromosome (see encode_chrom).\n"\
+"startpos :\n"\
+"    Start position (zero based).\n"\
+"endpos :\n"\
+"    End position (startpos + region_length).\n"\
+"strand :\n"\
+"    Encoded Strand direction (-1 > 2, 0 > 0, +1 > 1)\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    RegionKey 64 bit code."
+
+#define PYEXTRACTREGIONKEYCHROM_DOCSTRING "Extract the CHROM code from RegionKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    CHROM code."
+
+#define PYEXTRACTREGIONKEYSTARTPOS_DOCSTRING "Extract the START POS code from RegionKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    START POS."
+
+#define PYEXTRACTREGIONKEYENDPOS_DOCSTRING "Extract the END POS code from RegionKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    END POS."
+
+#define PYEXTRACTREGIONKEYSTRAND_DOCSTRING "Extract the STRAND from RegionKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    STRAND."
+
+#define PYDECODEREGIONKEY_DOCSTRING "Decode a RegionKey code and returns the components as regionkey_t structure.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"code :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"tuple:\n"\
+"    - encodeed chromosome\n"\
+"    - start position\n"\
+"    - end position\n"\
+"    - encoded strand"
+
+#define PYREVERSEREGIONKEY_DOCSTRING "Reverse a RegionKey code and returns the normalized components as regionkey_rev_t structure.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"tuple:\n"\
+"    - chromosome\n"\
+"    - start position\n"\
+"    - end position\n"\
+"    - strand"
+
+#define PYREGIONKEY_DOCSTRING "Returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STRAND.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"chrom :\n"\
+"    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.\n"\
+"sizechrom :\n"\
+"    Length of the chrom string, excluding the terminating null byte.\n"\
+"startpos :\n"\
+"    Start position (zero based).\n"\
+"endpos :\n"\
+"    End position (startpos + region_length).\n"\
+"strand :\n"\
+"    Strand direction (-1, 0, +1)\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    RegionKey 64 bit code."
+
+#define PYREGIONKEYHEX_DOCSTRING "Returns RegionKey hexadecimal string (16 characters).\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"str:\n"\
+"    String buffer to be returned (it must be sized 17 bytes at least)..\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"string :\n"\
+"    RegionKey hexadecimal string."
+
+#define PYPARSEREGIONKEYHEX_DOCSTRING "Parses a RegionKey hexadecimal string and returns the code.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rs :\n"\
+"    RegionKey hexadecimal string (it must contain 16 hexadecimal characters).\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    A RegionKey code."
+
+#define PYAREOVERLAPPINGREGIONS_DOCSTRING "Check if two regions are overlapping.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"a_chrom :\n"\
+"    Region A chromosome code.\n"\
+"a_startpos :\n"\
+"    Region A start position.\n"\
+"a_endpos :\n"\
+"    Region A end position (startpos + region length).\n"\
+"b_chrom :\n"\
+"    Region B chromosome code.\n"\
+"b_startpos :\n"\
+"    Region B start position.\n"\
+"b_endpos :\n"\
+"    Region B end position (startpos + region length).\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    1 if the regions overlap, 0 otherwise."
+
+#define PYGETREGIONKEYCHROMSTARTPOS_DOCSTRING "Get the CHROM + START POS encoding from RegionKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    CHROM + START POS encoding."
+
+#define PYGETREGIONKEYCHROMENDPOS_DOCSTRING "Get the CHROM + END POS encoding from RegionKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk :\n"\
+"    RegionKey code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    CHROM + END POS encoding."
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
 #define inline
