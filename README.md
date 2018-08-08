@@ -24,6 +24,7 @@
 * **[VariantKey Format](#vkformat)**
     * [VariantKey Properties](#vkproperties)
 * [VariantKey Input values](#vkinput)
+* [RegionKey](#regionkey)
 * [Binary file formats for lookup tables](#binaryfiles)
 * [C Library](#clib)
 * [GO Library](#golib)
@@ -363,6 +364,76 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
     The value in the `POS` field refers to the position of the first nucleotide in the string.
 * **`ALT`**   - *alternate non-reference allele* : 
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
+
+
+<a name="regionkey"></a>
+## RegionKey
+
+This library also includes functions to represent a human genetic region as number.
+
+The RegionKey is composed of 4 sections arranged in 64 bit:
+
+
+```
+    1      8      16      24      32      40      48      56      64
+    |      |       |       |       |       |       |       |       |
+    0123456789012345678901234567890123456789012345678901234567890123
+    CHROM|<------ START POS -------->||<------ END POS -------->|||
+      |               |                           |              |
+      5 bit           28 bit                      28 bit         2 bit STRAND
+```
+
+* **`CHROM`**   : 5 bit to represent the chromosome.
+
+    ```
+    0   4
+    |   |
+    11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+        |
+        LSB
+    ```
+    The chromosome is encoded as in VariantKey.
+
+* **`STARTPOS`** : 28 bit for the region START position.
+
+    ```
+    0    5                             32
+    |    |                              |
+    00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
+         |                              |
+        MSB                            LSB
+    ```
+    This section is encoded as in VariantKey POS.
+
+* **`ENDPOS`** : 28 bit for the region END position.
+
+    ```
+    0                                   33                            60
+    |                                    |                             |
+    00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111000
+                                         |                             |
+                                        MSB                           LSB
+    ```
+    The end position is equivalent to (STARTPOS + REGION_LENGTH).
+
+* **`STRAND`** : 2 bit to encode the strand direction.
+
+    ```
+    0                                                                 61  62
+    |                                                                   ||
+    00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000110
+                                                                        ||
+                                                                     MSB  LSB
+    ```
+    The strand direction is encoded as:
+    
+    ```
+    -1 : 2 dec = "10" bin
+     0 : 0 dec = "00" bin
+    +1 : 1 dec = "01" bin
+    ```
+
+The last bit of RegionKey is reserved.
 
 
 <a name="binaryfiles"></a>
