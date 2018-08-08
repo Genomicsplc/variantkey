@@ -274,10 +274,10 @@ ReverseVariantKey <- function(src, last, vk) {
 #' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
 #' @param last     Number of variants in the src file -1.
 #' @param vk       VariantKey.
-#' @useDynLib   variantkey R_get_ref_len_by_variantkey
+#' @useDynLib   variantkey R_get_variantkey_ref_length
 #' @export
-GetRefLenByVariantKey <- function(src, last, vk) {
-    return(.Call("R_get_ref_len_by_variantkey", src, last, vk))
+GetVariantKeyRefLength <- function(src, last, vk) {
+    return(.Call("R_get_variantkey_ref_length", src, last, vk))
 }
 
 #' Get the VariantKey end position (POS + REF length).

@@ -67,17 +67,17 @@ class TestFunctions(TestCase):
             self.assertEqual(osizealt, sizealt)
             self.assertEqual(oralen, (ralen - 2))
 
-    def test_get_ref_len_by_variantkey(self):
+    def test_get_variantkey_ref_length(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
-            osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, vkey)
+            osizeref = bs.get_variantkey_ref_length(mfsrc, mflast, vkey)
             self.assertEqual(osizeref, sizeref)
 
-    def test_get_ref_len_by_variantkey_reversible(self):
-        osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, 0x1800925199160000)
+    def test_get_variantkey_ref_length_reversible(self):
+        osizeref = bs.get_variantkey_ref_length(mfsrc, mflast, 0x1800925199160000)
         self.assertEqual(osizeref, 3)
 
-    def test_get_ref_len_by_variantkey_not_found(self):
-        osizeref = bs.get_ref_len_by_variantkey(mfsrc, mflast, 0xffffffffffffffff)
+    def test_get_variantkey_ref_length_not_found(self):
+        osizeref = bs.get_variantkey_ref_length(mfsrc, mflast, 0xffffffffffffffff)
         self.assertEqual(osizeref, 0)
 
     def test_get_variantkey_endpos(self):

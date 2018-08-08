@@ -184,7 +184,7 @@ print(x)
 # $LEN
 # [1] 12
 
-x <- GetRefLenByVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyRefLength(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
 print(x)
 # [1] 8
 

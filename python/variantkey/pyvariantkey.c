@@ -1041,7 +1041,7 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     return result;
 }
 
-static PyObject* py_get_ref_len_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+static PyObject* py_get_variantkey_ref_length(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t last, vk;
     PyObject* mfsrc = NULL;
@@ -1049,7 +1049,7 @@ static PyObject* py_get_ref_len_by_variantkey(PyObject *Py_UNUSED(ignored), PyOb
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKK", kwlist, &mfsrc, &last, &vk))
         return NULL;
     const unsigned char *src = py_get_mmsrc(mfsrc);
-    size_t len = get_ref_len_by_variantkey(src, last, vk);
+    size_t len = get_variantkey_ref_length(src, last, vk);
     return Py_BuildValue("K", len);
 }
 
@@ -1477,7 +1477,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     // NRVK
     {"find_ref_alt_by_variantkey", (PyCFunction)py_find_ref_alt_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYFINDREFALTBYVARIANTKEY_DOCSTRING},
     {"reverse_variantkey", (PyCFunction)py_reverse_variantkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEVARIANTKEY_DOCSTRING},
-    {"get_ref_len_by_variantkey", (PyCFunction)py_get_ref_len_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYGETREFLENGTHBYVARIANTKEY_DOCSTRING},
+    {"get_variantkey_ref_length", (PyCFunction)py_get_variantkey_ref_length, METH_VARARGS|METH_KEYWORDS, PYGETREFLENGTHBYVARIANTKEY_DOCSTRING},
     {"get_variantkey_endpos", (PyCFunction)py_get_variantkey_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYENDPOS_DOCSTRING},
     {"get_variantkey_chrom_startpos", (PyCFunction)py_get_variantkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMSTARTPOS_DOCSTRING},
     {"get_variantkey_chrom_endpos", (PyCFunction)py_get_variantkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMENDPOS_DOCSTRING},

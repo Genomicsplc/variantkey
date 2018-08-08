@@ -111,7 +111,7 @@ size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, 
  *
  * @return REF length or 0 if the VariantKey is not reversible and not found.
  */
-size_t get_ref_len_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk);
+size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64_t vk);
 
 /**
  * Get the VariantKey end position (POS + REF length).

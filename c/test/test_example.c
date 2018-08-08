@@ -165,7 +165,7 @@ int main()
     fprintf(stdout, "%s %" PRIu32 " %s %s %lu %lu %lu\n", rev.chrom, rev.pos, rev.ref, rev.alt, rev.sizeref, rev.sizealt, len);
     // 4 100004 ACGTACGT ACGT 8 4 12
 
-    len = get_ref_len_by_variantkey(vknr.src, vknr.last, 0x2000c3521f1c15ab);
+    len = get_variantkey_ref_length(vknr.src, vknr.last, 0x2000c3521f1c15ab);
     fprintf(stdout, "%lu\n", len);
     // 8
 

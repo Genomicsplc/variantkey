@@ -112,7 +112,7 @@ func main() {
 	fmt.Println(vknr.ReverseVariantKey(0x2000c3521f1c15ab))
 	// {4 100004 ACGTACGT ACGT 8 4} 12
 
-	fmt.Println(vknr.GetRefLenByVariantKey(0x2000c3521f1c15ab))
+	fmt.Println(vknr.GetVariantKeyRefLength(0x2000c3521f1c15ab))
 	// 8
 
 	fmt.Println(vknr.GetVariantKeyEndPos(0x2000c3521f1c15ab))

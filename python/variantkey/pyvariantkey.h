@@ -99,7 +99,7 @@ static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args, PyObj
 // NRVK
 static PyObject *py_find_ref_alt_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_reverse_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
-static PyObject *py_get_ref_len_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_variantkey_ref_length(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_variantkey_endpos(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_variantkey_chrom_startpos(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_variantkey_chrom_endpos(PyObject *self, PyObject *args, PyObject *keywds);

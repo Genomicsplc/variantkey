@@ -730,9 +730,9 @@ func (mf TMMFile) ReverseVariantKey(vk uint64) (TVariantKeyRev, uint32) {
 	return castCVariantKeyRev(rev), uint32(len)
 }
 
-// GetRefLenByVariantKey retrieve the REF length for the specified VariantKey.
-func (mf TMMFile) GetRefLenByVariantKey(vk uint64) uint8 {
-	return uint8(C.get_ref_len_by_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+// GetVariantKeyRefLength retrieve the REF length for the specified VariantKey.
+func (mf TMMFile) GetVariantKeyRefLength(vk uint64) uint8 {
+	return uint8(C.get_variantkey_ref_length((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
 
 // GetVariantKeyEndPos get the VariantKey end position (POS + REF length).

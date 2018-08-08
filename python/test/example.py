@@ -122,7 +122,7 @@ print(vk.reverse_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
 # (b'4', 100004, b'ACGTACGT', b'ACGT', 8, 4, 12)
 # Return values are: CHROM, POS, REF, ALT, REF length, ALT length, REF+ALT length
 
-print(vk.get_ref_len_by_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+print(vk.get_variantkey_ref_length(mfsrc, mflast, vk=0x2000c3521f1c15ab))
 # 8
 
 print(vk.get_variantkey_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
