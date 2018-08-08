@@ -819,6 +819,13 @@ func TestExtractVariantKeyChrom(t *testing.T) {
 	}
 }
 
+func BenchmarkExtractVariantKeyChrom(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractVariantKeyChrom(0x880082d600138000)
+	}
+}
+
 func TestExtractVariantKeyPos(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
@@ -832,6 +839,13 @@ func TestExtractVariantKeyPos(t *testing.T) {
 	}
 }
 
+func BenchmarkExtractVariantKeyPos(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractVariantKeyPos(0x880082d600138000)
+	}
+}
+
 func TestExtractVariantKeyRefAlt(t *testing.T) {
 	for _, v := range variantsTestData {
 		v := v
@@ -842,6 +856,13 @@ func TestExtractVariantKeyRefAlt(t *testing.T) {
 				t.Errorf("The ref_alt value is different, expected %#v got: %#v", v.vkrefalt, refalt)
 			}
 		})
+	}
+}
+
+func BenchmarkExtractVariantKeyRefAlt(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractVariantKeyRefAlt(0x880082d600138000)
 	}
 }
 
@@ -971,6 +992,13 @@ func TestCompareVariantKeyChrom(t *testing.T) {
 	}
 }
 
+func BenchmarkCompareVariantKeyChrom(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		CompareVariantKeyChrom(0x0fffffff88b80000, 0x08027a2188c80000)
+	}
+}
+
 func TestCompareVariantKeyChromPos(t *testing.T) {
 	type TVKCmpData struct {
 		vka uint64
@@ -993,6 +1021,13 @@ func TestCompareVariantKeyChromPos(t *testing.T) {
 				t.Errorf("Unexpected variantkey CHROM+POS comparison, expected %#v got %#v", v.cmp, cmp)
 			}
 		})
+	}
+}
+
+func BenchmarkCompareVariantKeyChromPos(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		CompareVariantKeyChromPos(0x0fffffff88b80000, 0x0fffffff8ae2503b)
 	}
 }
 
@@ -1065,5 +1100,12 @@ func TestReverseVariantKey(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+func BenchmarkReverseVariantKey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ReverseVariantKey(0x08027a2588b00000)
 	}
 }

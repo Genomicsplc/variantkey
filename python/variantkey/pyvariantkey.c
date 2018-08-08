@@ -1179,11 +1179,11 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
 
 static PyObject* py_encode_region_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
-    int8_t strand;
+    short int strand;
     static char *kwlist[] = {"strand", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "b", kwlist, &strand))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "h", kwlist, &strand))
         return NULL;
-    uint8_t h = encode_region_strand(strand);
+    uint8_t h = encode_region_strand((int8_t)strand);
     return Py_BuildValue("B", h);
 }
 
@@ -1194,7 +1194,7 @@ static PyObject* py_decode_region_strand(PyObject *Py_UNUSED(ignored), PyObject 
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "B", kwlist, &strand))
         return NULL;
     int8_t h = decode_region_strand(strand);
-    return Py_BuildValue("b", h);
+    return Py_BuildValue("h", (short int)h);
 }
 
 static PyObject* py_encode_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
@@ -1278,7 +1278,7 @@ static PyObject* py_reverse_regionkey(PyObject *Py_UNUSED(ignored), PyObject *ar
     PyTuple_SetItem(result, 0, Py_BuildValue("y", rev.chrom));
     PyTuple_SetItem(result, 1, Py_BuildValue("I", rev.startpos));
     PyTuple_SetItem(result, 2, Py_BuildValue("I", rev.endpos));
-    PyTuple_SetItem(result, 3, Py_BuildValue("b", rev.strand));
+    PyTuple_SetItem(result, 3, Py_BuildValue("h", rev.strand));
     return result;
 }
 
@@ -1287,9 +1287,9 @@ static PyObject* py_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyOb
     const char *chrom;
     Py_ssize_t sizechrom;
     uint32_t startpos, endpos;
-    int8_t strand;
+    short int strand;
     static char *kwlist[] = {"chrom", "startpos", "endpos", "strand", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#IIb", kwlist, &chrom, &sizechrom, &startpos, &endpos, &strand))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#IIh", kwlist, &chrom, &sizechrom, &startpos, &endpos, &strand))
         return NULL;
     uint64_t h = regionkey(chrom, (size_t)sizechrom, startpos, endpos, (int8_t)strand);
     return Py_BuildValue("K", h);

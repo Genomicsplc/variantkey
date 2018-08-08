@@ -109,6 +109,13 @@ func TestExtractRegionKeyChrom(t *testing.T) {
 	}
 }
 
+func BenchmarkExtractRegionKeyChrom(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractRegionKeyChrom(0x080001f400002260)
+	}
+}
+
 func TestExtractRegionKeyStartPos(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v
@@ -119,6 +126,13 @@ func TestExtractRegionKeyStartPos(t *testing.T) {
 				t.Errorf("The startpos value is different, expected %#v got: %#v", v.startpos, startpos)
 			}
 		})
+	}
+}
+
+func BenchmarkExtractRegionKeyStartPos(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractRegionKeyStartPos(0x080001f400002260)
 	}
 }
 
@@ -135,6 +149,13 @@ func TestExtractRegionKeyEndPos(t *testing.T) {
 	}
 }
 
+func BenchmarkExtractRegionKeyEndPos(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractRegionKeyEndPos(0x080001f400002260)
+	}
+}
+
 func TestExtractRegionKeyStrand(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v
@@ -145,6 +166,13 @@ func TestExtractRegionKeyStrand(t *testing.T) {
 				t.Errorf("The strand value is different, expected %#v got: %#v", v.estrand, estrand)
 			}
 		})
+	}
+}
+
+func BenchmarkExtractRegionKeyStrand(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		ExtractRegionKeyStrand(0x080001f400002260)
 	}
 }
 
@@ -222,7 +250,7 @@ func TestRegionKey(t *testing.T) {
 func BenchmarkRegionKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		RegionKey("MT", 1000, 2000, 1)
+		RegionKey("MT", 1000, 2000, -1)
 	}
 }
 
@@ -238,17 +266,17 @@ func TestAreOverlappingRegions(t *testing.T) {
 	}
 	var overlapData = []TOverlapData{
 		{1, 5, 7, 2, 5, 7, false},    // different chromosome
-		{1, 0, 2, 1, 3, 7, false},    // [ ]|   |
-		{2, 1, 3, 2, 3, 7, false},    //  [ ]   |
-		{3, 2, 4, 3, 3, 7, true},     //   [|]  |
-		{4, 3, 5, 4, 3, 7, true},     //    [ ] |
-		{5, 4, 6, 5, 3, 7, true},     //    |[ ]|
-		{6, 5, 7, 6, 3, 7, true},     //    | [ ]
-		{10, 6, 8, 10, 3, 7, true},   //    |  [|]
-		{22, 7, 9, 22, 3, 7, false},  //    |   [ ]
-		{23, 8, 10, 23, 3, 7, false}, //    |   |[ ]
-		{24, 2, 8, 24, 3, 7, true},   //   [|   |]
-		{25, 3, 7, 25, 3, 7, true},   //    [   ]
+		{1, 0, 2, 1, 3, 7, false},    // -[-]|---|----
+		{2, 1, 3, 2, 3, 7, false},    // --[-]---|----
+		{3, 2, 4, 3, 3, 7, true},     // ---[|]--|----
+		{4, 3, 5, 4, 3, 7, true},     // ----[-]-|----
+		{5, 4, 6, 5, 3, 7, true},     // ----|[-]|----
+		{6, 5, 7, 6, 3, 7, true},     // ----|-[ ]----
+		{10, 6, 8, 10, 3, 7, true},   // ----|--[|]---
+		{22, 7, 9, 22, 3, 7, false},  // ----|---[-]--
+		{23, 8, 10, 23, 3, 7, false}, // ----|---|[-]-
+		{24, 2, 8, 24, 3, 7, true},   // ---[|---|]---
+		{25, 3, 7, 25, 3, 7, true},   // ----[---]----
 	}
 	for _, v := range overlapData {
 		v := v

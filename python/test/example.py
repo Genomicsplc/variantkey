@@ -194,3 +194,55 @@ print(vk.find_vr_chrompos_range(mfsrc, 0, 9, 0X14, 0X000256C5, 0X000256CB))
 # (9973, 7, 8)
 
 vk.munmap_binfile(mfsrc, mffd, mfsize)
+
+
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+
+# REGIONKEY
+# ---------
+
+print(vk.encode_region_strand(-1))
+# 2
+
+print(vk.decode_region_strand(2))
+# -1
+
+print(vk.encode_regionkey(25, 1000, 2000, 2))
+# 14411520955069251204
+
+print(vk.extract_regionkey_chrom(0xc80001f400003e84))
+# 25
+
+print(vk.extract_regionkey_startpos(0xc80001f400003e84))
+# 1000
+
+print(vk.extract_regionkey_endpos(0xc80001f400003e84))
+# 2000
+
+print(vk.extract_regionkey_strand(0xc80001f400003e84))
+# 2
+
+print(vk.decode_regionkey(0xc80001f400003e84))
+# (25, 1000, 2000, 2)
+
+print(vk.reverse_regionkey(0xc80001f400003e84))
+# (b'MT', 1000, 2000, -1)
+
+print(vk.regionkey("MT", 1000, 2000, -1))
+# 14411520955069251204
+
+print(vk.regionkey_hex(0xc80001f400003e84))
+# b'c80001f400003e84'
+
+print(vk.parse_regionkey_hex("c80001f400003e84"))
+# 14411520955069251204
+
+print(vk.are_overlapping_regions(25, 1000, 2000, 25, 1500, 2500))
+# 1
+
+print(vk.get_regionkey_chrom_startpos(0xc80001f400003e84))
+# 6710887400
+
+print(vk.get_regionkey_chrom_endpos(0xc80001f400003e84))
+# 6710888400
