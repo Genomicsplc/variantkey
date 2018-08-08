@@ -559,15 +559,6 @@ SEXP R_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand)
     return Rf_mkString(hex);
 }
 
-SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEXP b_chrom, SEXP b_startpos, SEXP b_endpos)
-{
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = are_overlapping_regions(asInteger(a_chrom), asInteger(a_startpos), asInteger(a_endpos), asInteger(b_chrom), asInteger(b_startpos), asInteger(b_endpos));
-    UNPROTECT(1);
-    return res;
-}
-
 SEXP R_get_regionkey_chrom_startpos(SEXP rk)
 {
     uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
@@ -583,5 +574,55 @@ SEXP R_get_regionkey_chrom_endpos(SEXP rk)
     uint64_t cp = get_regionkey_chrom_endpos(code);
     char hex[17];
     regionkey_hex(cp, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEXP b_chrom, SEXP b_startpos, SEXP b_endpos)
+{
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = are_overlapping_regions(asInteger(a_chrom), asInteger(a_startpos), asInteger(a_endpos), asInteger(b_chrom), asInteger(b_startpos), asInteger(b_endpos));
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_are_overlapping_region_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP rk)
+{
+    uint64_t rkcode = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = are_overlapping_region_regionkey(asInteger(chrom), asInteger(startpos), asInteger(endpos), rkcode);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_are_overlapping_regionkeys(SEXP rka, SEXP rkb)
+{
+    uint64_t rkacode = parse_regionkey_hex(CHAR(STRING_ELT(rka, 0)));
+    uint64_t rkbcode = parse_regionkey_hex(CHAR(STRING_ELT(rkb, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = are_overlapping_regionkeys(rkacode, rkbcode);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_are_overlapping_variantkey_regionkey(SEXP src, SEXP last, SEXP vk, SEXP rk)
+{
+    uint64_t vkcode = parse_regionkey_hex(CHAR(STRING_ELT(vk, 0)));
+    uint64_t rkcode = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    SEXP res;
+    PROTECT(res = NEW_INTEGER(1));
+    INTEGER(res)[0] = are_overlapping_variantkey_regionkey(R_ExternalPtrAddr(src), asInteger(last), vkcode, rkcode);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_variantkey_to_regionkey(SEXP src, SEXP last, SEXP vk)
+{
+    uint64_t vkcode = parse_regionkey_hex(CHAR(STRING_ELT(vk, 0)));
+    uint64_t rk = variantkey_to_regionkey(R_ExternalPtrAddr(src), asInteger(last), vkcode);
+    char hex[17];
+    regionkey_hex(rk, hex);
     return Rf_mkString(hex);
 }

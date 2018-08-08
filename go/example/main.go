@@ -219,12 +219,25 @@ func main() {
 	fmt.Println(vk.RegionKey("MT", 1000, 2000, -1))
 	// 14411520955069251204
 
-	fmt.Println(vk.AreOverlappingRegions(25, 1000, 2000, 25, 1500, 2500))
-	// true
-
 	fmt.Println(vk.GetRegionKeyChromStartPos(0xc80001f400003e84))
 	// 6710887400
 
 	fmt.Println(vk.GetRegionKeyChromEndPos(0xc80001f400003e84))
 	// 6710888400
+
+	fmt.Println(vk.AreOverlappingRegions(5, 4, 6, 5, 3, 7))
+	// true
+
+	fmt.Println(vk.AreOverlappingRegionRegionKey(5, 4, 6, 0x2800000180000038))
+	// true
+
+	fmt.Println(vk.AreOverlappingRegionKeys(0x2800000200000030, 0x2800000180000038))
+	// true
+
+	fmt.Println(vknr.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038))
+	// true
+
+	fmt.Println(vknr.VariantToRegionkey(0x2800000210920000))
+	// 2882303770107052080
+
 }

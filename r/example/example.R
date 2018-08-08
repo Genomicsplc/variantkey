@@ -359,10 +359,6 @@ x <- RegionKey(chrom="MT", startpos=1000, endpos=2000, strand=-1)
 print(x)
 # [1] "c80001f400003e84"
 
-x <- AreOverlappingRegions(a_chrom=25, a_startpos=1000, a_endpos=2000, b_chrom=25, b_startpos=1500, b_endpos=2500)
-print(x)
-# [1] 1
-
 x <- GetRegionKeyChromStartPos("c80001f400003e84")
 print(x)
 # [1] "00000001900003e8"
@@ -370,3 +366,23 @@ print(x)
 x <- GetRegionKeyChromEndPos("c80001f400003e84")
 print(x)
 # [1] "00000001900007d0"
+
+x <- AreOverlappingRegions(a_chrom=5, a_startpos=4, a_endpos=6, b_chrom=5, b_startpos=3, b_endpos=7)
+print(x)
+# [1] 1
+
+x <- AreOverlappingRegionRegionKey(5, 4, 6, "2800000180000038")
+print(x)
+# [1] 1
+
+x <- AreOverlappingRegionKeys("2800000200000030", "2800000180000038")
+print(x)
+# [1] 1
+
+x <- AreOverlappingVariantKeyRegionKey(NULL, 0, "2800000210920000", "2800000180000038")
+print(x)
+# [1] 1
+
+x <- VariantToRegionkey(NULL, 0, "2800000210920000")
+print(x)
+# [1] "2800000200000030"

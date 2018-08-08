@@ -10,6 +10,7 @@
 import variantkey
 from unittest import TestCase
 
+# chrom, startpos, endpos, strand, echrom, estrand, rk, rs, chrom_startpos, chrom_endpos
 regionsTestData = [
     (b"1", 1000, 1100,  0,  1, 0, 0x080001f400002260, b"080001f400002260", 0x00000000100003e8, 0x000000001000044c),
     (b"2", 1001, 1201,  1,  2, 1, 0x100001f48000258a, b"100001f48000258a", 0x00000000200003e9, 0x00000000200004b1),
@@ -21,6 +22,22 @@ regionsTestData = [
     (b"X", 1007, 1807,  1, 23, 1, 0xb80001f78000387a, b"b80001f78000387a", 0x00000001700003ef, 0x000000017000070f),
     (b"Y", 1008, 1908, -1, 24, 2, 0xc00001f800003ba4, b"c00001f800003ba4", 0x00000001800003f0, 0x0000000180000774),
     (b"MT", 1009, 2009,  0, 25, 0, 0xc80001f880003ec8, b"c80001f880003ec8", 0x00000001900003f1, 0x00000001900007d9),
+]
+
+# a_chrom, a_startpos, a_endpos, a_rk, a_vk, b_chrom, b_startpos, b_endpos, b_rk, res
+overlapTestData = [
+    (1, 5,  7, 0x0800000280000038, 0x0800000290920000,  2, 5, 7, 0x1000000280000038, 0),   # different chromosome
+    (1, 0,  2, 0x0800000000000010, 0x0800000010920000,  1, 3, 7, 0x0800000180000038, 0),   # -[-]|---|----
+    (2, 1,  3, 0x1000000080000018, 0x1000000090920000,  2, 3, 7, 0x1000000180000038, 0),   # --[-]---|----
+    (3, 2,  4, 0x1800000100000020, 0x1800000110920000,  3, 3, 7, 0x1800000180000038, 1),   # ---[|]--|----
+    (4, 3,  5, 0x2000000180000028, 0x2000000190920000,  4, 3, 7, 0x2000000180000038, 1),   # ----[-]-|----
+    (5, 4,  6, 0x2800000200000030, 0x2800000210920000,  5, 3, 7, 0x2800000180000038, 1),   # ----|[-]|----
+    (6, 5,  7, 0x3000000280000038, 0x3000000290920000,  6, 3, 7, 0x3000000180000038, 1),   # ----|-[ ]----
+    (10, 6,  8, 0x5000000300000040, 0x5000000310920000, 10, 3, 7, 0x5000000180000038, 1),  # ----|--[|]---
+    (22, 7,  9, 0xb000000380000048, 0xb000000390920000, 22, 3, 7, 0xb000000180000038, 0),  # ----|---[-]--
+    (23, 8, 10, 0xb800000400000050, 0xb800000410920000, 23, 3, 7, 0xb800000180000038, 0),  # ----|---|[-]-
+    (24, 2,  8, 0xc000000100000040, 0xc000000130911200, 24, 3, 7, 0xc000000180000038, 1),  # ---[|---|]---
+    (25, 3,  7, 0xc800000180000038, 0xc8000001a0912000, 25, 3, 7, 0xc800000180000038, 1),  # ----[---]----
 ]
 
 
@@ -92,25 +109,6 @@ class TestFunctions(TestCase):
             h = variantkey.parse_regionkey_hex(rs)
             self.assertEqual(h, rk)
 
-    def test_are_overlapping_regions(self):
-        overlapTestData = [
-            (1, 5,  7,  2, 5, 7, 0),  # different chromosome
-            (1, 0,  2,  1, 3, 7, 0),  # -[-]|---|----
-            (2, 1,  3,  2, 3, 7, 0),  # --[-]---|----
-            (3, 2,  4,  3, 3, 7, 1),  # ---[|]--|----
-            (4, 3,  5,  4, 3, 7, 1),  # ----[-]-|----
-            (5, 4,  6,  5, 3, 7, 1),  # ----|[-]|----
-            (6, 5,  7,  6, 3, 7, 1),  # ----|-[ ]----
-            (10, 6,  8, 10, 3, 7, 1),  # ----|--[|]---
-            (22, 7,  9, 22, 3, 7, 0),  # ----|---[-]--
-            (23, 8, 10, 23, 3, 7, 0),  # ----|---|[-]-
-            (24, 2,  8, 24, 3, 7, 1),  # ---[|---|]---
-            (25, 3,  7, 25, 3, 7, 1),  # ----[---]----
-        ]
-        for a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos, res in overlapTestData:
-            h = variantkey.are_overlapping_regions(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos)
-            self.assertEqual(h, res)
-
     def test_get_regionkey_chrom_startpos(self):
         for _, _, _, _, _, _, rk, _, chrom_startpos, _ in regionsTestData:
             h = variantkey.get_regionkey_chrom_startpos(rk)
@@ -120,6 +118,31 @@ class TestFunctions(TestCase):
         for _, _, _, _, _, _, rk, _, _, chrom_endpos in regionsTestData:
             h = variantkey.get_regionkey_chrom_endpos(rk)
             self.assertEqual(h, chrom_endpos)
+
+    def test_are_overlapping_regions(self):
+        for a_chrom, a_startpos, a_endpos, a_rk, a_vk, b_chrom, b_startpos, b_endpos, b_rk, res in overlapTestData:
+            h = variantkey.are_overlapping_regions(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos)
+            self.assertEqual(h, res)
+
+    def test_are_overlapping_region_regionkey(self):
+        for a_chrom, a_startpos, a_endpos, a_rk, _, _, _, _, b_rk, res in overlapTestData:
+            h = variantkey.are_overlapping_region_regionkey(a_chrom, a_startpos, a_endpos, b_rk)
+            self.assertEqual(h, res)
+
+    def test_are_overlapping_regionkeys(self):
+        for _, _, _, a_rk, _, _, _, _, b_rk, res in overlapTestData:
+            h = variantkey.are_overlapping_regionkeys(a_rk, b_rk)
+            self.assertEqual(h, res)
+
+    def test_are_overlapping_variantkey_regionkey(self):
+        for _, _, _, _, a_vk, _, _, _, b_rk, res in overlapTestData:
+            h = variantkey.are_overlapping_variantkey_regionkey(None, 0, a_vk, b_rk)
+            self.assertEqual(h, res)
+
+    def test_variantkey_to_regionkey(self):
+        for _, _, _, a_rk, a_vk, _, _, _, _, _ in overlapTestData:
+            h = variantkey.variantkey_to_regionkey(None, 0, a_vk)
+            self.assertEqual(h, a_rk)
 
 
 class TestBenchmark(object):
@@ -154,11 +177,23 @@ class TestBenchmark(object):
     def test_regionkey_benchmark(self, benchmark):
         benchmark(variantkey.regionkey, "MT", 1000, 2000, -1)
 
-    def test_are_overlapping_regions_benchmark(self, benchmark):
-        benchmark(variantkey.are_overlapping_regions, 25, 1000, 2000, 25, 1500, 2500)
-
     def test_get_regionkey_chrom_startpos_benchmark(self, benchmark):
         benchmark(variantkey.get_regionkey_chrom_startpos, 0x080001f400002260)
 
     def test_get_regionkey_chrom_endpos_benchmark(self, benchmark):
         benchmark(variantkey.get_regionkey_chrom_endpos, 0x080001f400002260)
+
+    def test_are_overlapping_regions_benchmark(self, benchmark):
+        benchmark(variantkey.are_overlapping_regions, 5, 4,  6, 5, 3, 7)
+
+    def test_are_overlapping_region_regionkey_benchmark(self, benchmark):
+        benchmark(variantkey.are_overlapping_region_regionkey, 5, 4, 6, 0x2800000180000038)
+
+    def test_are_overlapping_regionkeys_benchmark(self, benchmark):
+        benchmark(variantkey.are_overlapping_regionkeys, 0x2800000200000030, 0x2800000180000038)
+
+    def test_are_overlapping_variantkey_regionkey_benchmark(self, benchmark):
+        benchmark(variantkey.are_overlapping_variantkey_regionkey, None, 0, 0x2800000210920000, 0x2800000180000038)
+
+    def test_variantkey_to_regionkey_benchmark(self, benchmark):
+        benchmark(variantkey.variantkey_to_regionkey, None, 0, 0x2800000210920000)

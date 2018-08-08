@@ -901,11 +901,6 @@ func RegionKey(chrom string, startpos, endpos uint32, strand int8) uint64 {
 	return uint64(C.regionkey((*C.char)(pchrom), C.size_t(len(chrom)), C.uint32_t(startpos), C.uint32_t(endpos), C.int8_t(strand)))
 }
 
-// AreOverlappingRegions check if two regions are overlapping.
-func AreOverlappingRegions(chromA uint8, startposA, endposA uint32, chromB uint8, startposB, endposB uint32) bool {
-	return (uint8(C.are_overlapping_regions(C.uint8_t(chromA), C.uint32_t(startposA), C.uint32_t(endposA), C.uint8_t(chromB), C.uint32_t(startposB), C.uint32_t(endposB))) != 0)
-}
-
 // GetRegionKeyChromStartPos get the CHROM + START POS encoding from RegionKey.
 func GetRegionKeyChromStartPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_startpos(C.uint64_t(rk)))
@@ -914,4 +909,29 @@ func GetRegionKeyChromStartPos(rk uint64) uint64 {
 // GetRegionKeyChromEndPos get the CHROM + END POS encoding from RegionKey.
 func GetRegionKeyChromEndPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_endpos(C.uint64_t(rk)))
+}
+
+// AreOverlappingRegions check if two regions are overlapping.
+func AreOverlappingRegions(chromA uint8, startposA, endposA uint32, chromB uint8, startposB, endposB uint32) bool {
+	return (uint8(C.are_overlapping_regions(C.uint8_t(chromA), C.uint32_t(startposA), C.uint32_t(endposA), C.uint8_t(chromB), C.uint32_t(startposB), C.uint32_t(endposB))) != 0)
+}
+
+// AreOverlappingRegionRegionKey check if a region and a regionkey are overlapping.
+func AreOverlappingRegionRegionKey(chrom uint8, startpos, endpos uint32, rk uint64) bool {
+	return (uint8(C.are_overlapping_region_regionkey(C.uint8_t(chrom), C.uint32_t(startpos), C.uint32_t(endpos), C.uint64_t(rk))) != 0)
+}
+
+// AreOverlappingRegionKeys check if two regionkeys are overlapping.
+func AreOverlappingRegionKeys(rka, rkb uint64) bool {
+	return (uint8(C.are_overlapping_regionkeys(C.uint64_t(rka), C.uint64_t(rkb))) != 0)
+}
+
+// AreOverlappingVariantKeyRegionKey check if variantkey and regionkey are overlapping.
+func (mf TMMFile) AreOverlappingVariantKeyRegionKey(vk, rk uint64) bool {
+	return (uint8(C.are_overlapping_variantkey_regionkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), C.uint64_t(rk))) != 0)
+}
+
+// VariantToRegionkey get RegionKey from VariantKey.
+func (mf TMMFile) VariantToRegionkey(vk uint64) uint64 {
+	return uint64(C.variantkey_to_regionkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }

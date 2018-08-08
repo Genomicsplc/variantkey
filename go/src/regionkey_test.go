@@ -36,6 +36,34 @@ var regionsTestData = []TRegionData{
 	{"MT", 1009, 2009, 0, 25, 0, 0xc80001f880003ec8, "c80001f880003ec8", 0x00000001900003f1, 0x00000001900007d9},
 }
 
+type TOverlapData struct {
+	chromA    uint8
+	startposA uint32
+	endposA   uint32
+	rkA       uint64
+	vkA       uint64
+	chromB    uint8
+	startposB uint32
+	endposB   uint32
+	rkB       uint64
+	res       bool
+}
+
+var overlapData = []TOverlapData{
+	{1, 5, 7, 0x0800000280000038, 0x0800000290920000, 2, 5, 7, 0x1000000280000038, false},    // different chromosome
+	{1, 0, 2, 0x0800000000000010, 0x0800000010920000, 1, 3, 7, 0x0800000180000038, false},    // -[-]|---|----
+	{2, 1, 3, 0x1000000080000018, 0x1000000090920000, 2, 3, 7, 0x1000000180000038, false},    // --[-]---|----
+	{3, 2, 4, 0x1800000100000020, 0x1800000110920000, 3, 3, 7, 0x1800000180000038, true},     // ---[|]--|----
+	{4, 3, 5, 0x2000000180000028, 0x2000000190920000, 4, 3, 7, 0x2000000180000038, true},     // ----[-]-|----
+	{5, 4, 6, 0x2800000200000030, 0x2800000210920000, 5, 3, 7, 0x2800000180000038, true},     // ----|[-]|----
+	{6, 5, 7, 0x3000000280000038, 0x3000000290920000, 6, 3, 7, 0x3000000180000038, true},     // ----|-[ ]----
+	{10, 6, 8, 0x5000000300000040, 0x5000000310920000, 10, 3, 7, 0x5000000180000038, true},   // ----|--[|]---
+	{22, 7, 9, 0xb000000380000048, 0xb000000390920000, 22, 3, 7, 0xb000000180000038, false},  // ----|---[-]--
+	{23, 8, 10, 0xb800000400000050, 0xb800000410920000, 23, 3, 7, 0xb800000180000038, false}, // ----|---|[-]-
+	{24, 2, 8, 0xc000000100000040, 0xc000000130911200, 24, 3, 7, 0xc000000180000038, true},   // ---[|---|]---
+	{25, 3, 7, 0xc800000180000038, 0xc8000001a0912000, 25, 3, 7, 0xc800000180000038, true},   // ----[---]----
+}
+
 func TestEncodeRegionStrand(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v
@@ -254,49 +282,6 @@ func BenchmarkRegionKey(b *testing.B) {
 	}
 }
 
-func TestAreOverlappingRegions(t *testing.T) {
-	type TOverlapData struct {
-		chromA    uint8
-		startposA uint32
-		endposA   uint32
-		chromB    uint8
-		startposB uint32
-		endposB   uint32
-		res       bool
-	}
-	var overlapData = []TOverlapData{
-		{1, 5, 7, 2, 5, 7, false},    // different chromosome
-		{1, 0, 2, 1, 3, 7, false},    // -[-]|---|----
-		{2, 1, 3, 2, 3, 7, false},    // --[-]---|----
-		{3, 2, 4, 3, 3, 7, true},     // ---[|]--|----
-		{4, 3, 5, 4, 3, 7, true},     // ----[-]-|----
-		{5, 4, 6, 5, 3, 7, true},     // ----|[-]|----
-		{6, 5, 7, 6, 3, 7, true},     // ----|-[ ]----
-		{10, 6, 8, 10, 3, 7, true},   // ----|--[|]---
-		{22, 7, 9, 22, 3, 7, false},  // ----|---[-]--
-		{23, 8, 10, 23, 3, 7, false}, // ----|---|[-]-
-		{24, 2, 8, 24, 3, 7, true},   // ---[|---|]---
-		{25, 3, 7, 25, 3, 7, true},   // ----[---]----
-	}
-	for _, v := range overlapData {
-		v := v
-		t.Run("", func(t *testing.T) {
-			t.Parallel()
-			res := AreOverlappingRegions(v.chromA, v.startposA, v.endposA, v.chromB, v.startposB, v.endposB)
-			if res != v.res {
-				t.Errorf("The result value is different, expected %#v got: %#v", v.res, res)
-			}
-		})
-	}
-}
-
-func BenchmarkAreOverlappingRegions(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		AreOverlappingRegions(25, 1000, 2000, 25, 1500, 2500)
-	}
-}
-
 func TestGetRegionKeyChromStartPos(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v
@@ -334,5 +319,105 @@ func BenchmarkGetRegionKeyChromEndPos(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		GetRegionKeyChromEndPos(0x080001f400002260)
+	}
+}
+
+func TestAreOverlappingRegions(t *testing.T) {
+	for _, v := range overlapData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			res := AreOverlappingRegions(v.chromA, v.startposA, v.endposA, v.chromB, v.startposB, v.endposB)
+			if res != v.res {
+				t.Errorf("The result value is different, expected %#v got: %#v", v.res, res)
+			}
+		})
+	}
+}
+
+func BenchmarkAreOverlappingRegions(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		AreOverlappingRegions(5, 4, 6, 5, 3, 7)
+	}
+}
+
+func TestAreOverlappingRegionRegionKey(t *testing.T) {
+	for _, v := range overlapData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			res := AreOverlappingRegionRegionKey(v.chromA, v.startposA, v.endposA, v.rkB)
+			if res != v.res {
+				t.Errorf("The result value is different, expected %#v got: %#v", v.res, res)
+			}
+		})
+	}
+}
+
+func BenchmarkAreOverlappingRegionRegionKey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		AreOverlappingRegionRegionKey(5, 4, 6, 0x2800000180000038)
+	}
+}
+
+func TestAreOverlappingRegionKeys(t *testing.T) {
+	for _, v := range overlapData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			res := AreOverlappingRegionKeys(v.rkA, v.rkB)
+			if res != v.res {
+				t.Errorf("The result value is different, expected %#v got: %#v", v.res, res)
+			}
+		})
+	}
+}
+
+func BenchmarkAreOverlappingRegionKeys(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		AreOverlappingRegionKeys(0x2800000200000030, 0x2800000180000038)
+	}
+}
+
+func TestAreOverlappingVariantKeyRegionKey(t *testing.T) {
+	for _, v := range overlapData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			res := vknr.AreOverlappingVariantKeyRegionKey(v.vkA, v.rkB)
+			if res != v.res {
+				t.Errorf("The result value is different, expected %#v got: %#v", v.res, res)
+			}
+		})
+	}
+}
+
+func BenchmarkAreOverlappingVariantKeyRegionKey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		vknr.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038)
+	}
+}
+
+func TestVariantToRegionkey(t *testing.T) {
+	for _, v := range overlapData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			res := vknr.VariantToRegionkey(v.vkA)
+			if res != v.rkA {
+				t.Errorf("The result value is different, expected %#v got: %#v", v.rkA, res)
+			}
+		})
+	}
+}
+
+func BenchmarkVariantToRegionkey(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		vknr.VariantToRegionkey(0x2800000210920000)
 	}
 }

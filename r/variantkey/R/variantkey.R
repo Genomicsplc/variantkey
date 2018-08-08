@@ -489,20 +489,6 @@ RegionKey <- function(chrom, startpos, endpos, strand) {
     return(.Call("R_regionkey", chrom, startpos, endpos, strand))
 }
 
-#' Check if two regions are overlapping.
-#' Return 1 if the regions overlap, 0 otherwise.
-#' @param a_chrom     Region A chromosome code.
-#' @param a_startpos  Region A start position.
-#' @param a_endpos    Region A end position (startpos + region length).
-#' @param b_chrom     Region B chromosome code.
-#' @param b_startpos  Region B start position.
-#' @param b_endpos    Region B end position (startpos + region length).
-#' @useDynLib   variantkey R_are_overlapping_regions
-#' @export
-AreOverlappingRegions <- function(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos) {
-    return(.Call("R_are_overlapping_regions", a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos))
-}
-
 #' Get the CHROM + START POS encoding from RegionKey.
 #' @param rk RegionKey code.
 #' @useDynLib   variantkey R_get_regionkey_chrom_startpos
@@ -517,4 +503,62 @@ GetRegionKeyChromStartPos <- function(rk) {
 #' @export
 GetRegionKeyChromEndPos <- function(rk) {
     return(.Call("R_get_regionkey_chrom_endpos", rk))
+}
+
+#' Check if two regions are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param a_chrom     Region A chromosome code.
+#' @param a_startpos  Region A start position.
+#' @param a_endpos    Region A end position (startpos + region length).
+#' @param b_chrom     Region B chromosome code.
+#' @param b_startpos  Region B start position.
+#' @param b_endpos    Region B end position (startpos + region length).
+#' @useDynLib   variantkey R_are_overlapping_regions
+#' @export
+AreOverlappingRegions <- function(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos) {
+    return(.Call("R_are_overlapping_regions", a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos))
+}
+
+#' Check if a region and a regionkey are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param chrom     Region A chromosome code.
+#' @param startpos  Region A start position.
+#' @param endpos    Region A end position (startpos + region length).
+#' @param rk        RegionKey or region B.
+#' @useDynLib   variantkey R_are_overlapping_region_regionkey
+#' @export
+AreOverlappingRegionRegionKey <- function(chrom, startpos, endpos, rk) {
+    return(.Call("R_are_overlapping_region_regionkey", chrom, startpos, endpos, rk))
+}
+
+#' Check if two regionkeys are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param rka        RegionKey A.
+#' @param rkb        RegionKey B.
+#' @useDynLib   variantkey R_are_overlapping_regionkeys
+#' @export
+AreOverlappingRegionKeys <- function(rka, rkb) {
+    return(.Call("R_are_overlapping_regionkeys", rka, rkb))
+}
+
+#' Check if variantkey and regionkey are overlapping.
+#' Return 1 if the regions overlap, 0 otherwise.
+#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last  Number of variants in the src file -1.
+#' @param vk    VariantKey code.
+#' @param rk    RegionKey code.
+#' @useDynLib   variantkey R_are_overlapping_variantkey_regionkey
+#' @export
+AreOverlappingVariantKeyRegionKey <- function(src, last, vk, rk) {
+    return(.Call("R_are_overlapping_variantkey_regionkey", src, last, vk, rk))
+}
+
+#' Get RegionKey from VariantKey.
+#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param last  Number of variants in the src file -1.
+#' @param vk    VariantKey code.
+#' @useDynLib   variantkey R_variantkey_to_regionkey
+#' @export
+VariantToRegionkey <- function(src, last, vk) {
+    return(.Call("R_variantkey_to_regionkey", src, last, vk))
 }

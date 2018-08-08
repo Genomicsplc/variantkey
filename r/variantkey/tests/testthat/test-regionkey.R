@@ -22,6 +22,22 @@ x <- rbind(
 )
 colnames(x) <- list("chrom", "startpos", "endpos", "strand", "echrom", "estrand", "rk", "csp", "cep")
 
+t <- rbind(
+    list(1,  5,  7, "0800000280000038", "0800000290920000",  2, 5, 7, "1000000280000038", 0),  # different chromosome
+    list(1,  0,  2, "0800000000000010", "0800000010920000",  1, 3, 7, "0800000180000038", 0),  # -[-]|---|----
+    list(2,  1,  3, "1000000080000018", "1000000090920000",  2, 3, 7, "1000000180000038", 0),  # --[-]---|----
+    list(3,  2,  4, "1800000100000020", "1800000110920000",  3, 3, 7, "1800000180000038", 1),  # ---[|]--|----
+    list(4,  3,  5, "2000000180000028", "2000000190920000",  4, 3, 7, "2000000180000038", 1),  # ----[-]-|----
+    list(5,  4,  6, "2800000200000030", "2800000210920000",  5, 3, 7, "2800000180000038", 1),  # ----|[-]|----
+    list(6,  5,  7, "3000000280000038", "3000000290920000",  6, 3, 7, "3000000180000038", 1),  # ----|-[ ]----
+    list(10, 6,  8, "5000000300000040", "5000000310920000", 10, 3, 7, "5000000180000038", 1),  # ----|--[|]---
+    list(22, 7,  9, "b000000380000048", "b000000390920000", 22, 3, 7, "b000000180000038", 0),  # ----|---[-]--
+    list(23, 8, 10, "b800000400000050", "b800000410920000", 23, 3, 7, "b800000180000038", 0),  # ----|---|[-]-
+    list(24, 2,  8, "c000000100000040", "c000000130911200", 24, 3, 7, "c000000180000038", 1),  # ---[|---|]---
+    list(25, 3,  7, "c800000180000038", "c8000001a0912000", 25, 3, 7, "c800000180000038", 1)   # ----[---]----
+)
+colnames(t) <- list("a_chrom", "a_startpos", "a_endpos", "a_rk", "a_vk", "b_chrom", "b_startpos", "b_endpos", "b_rk", "exp")
+
 test_that("EncodeRegionStrand", {
     res <- mapply(EncodeRegionStrand, unlist(x[,"strand"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"estrand"])))
@@ -78,26 +94,6 @@ test_that("RegionKey", {
     expect_identical(res, unlist(x[,"rk"]))
 })
 
-test_that("AreOverlappingRegions", {
-    t <- rbind(
-        list(1, 5,  7,  2, 5, 7, 0),  # different chromosome
-        list(1, 0,  2,  1, 3, 7, 0),  # -[-]|---|----
-        list(2, 1,  3,  2, 3, 7, 0),  # --[-]---|----
-        list(3, 2,  4,  3, 3, 7, 1),  # ---[|]--|----
-        list(4, 3,  5,  4, 3, 7, 1),  # ----[-]-|----
-        list(5, 4,  6,  5, 3, 7, 1),  # ----|[-]|----
-        list(6, 5,  7,  6, 3, 7, 1),  # ----|-[ ]----
-        list(10, 6,  8, 10, 3, 7, 1), # ----|--[|]---
-        list(22, 7,  9, 22, 3, 7, 0), # ----|---[-]--
-        list(23, 8, 10, 23, 3, 7, 0), # ----|---|[-]-
-        list(24, 2,  8, 24, 3, 7, 1), # ---[|---|]---
-        list(25, 3,  7, 25, 3, 7, 1)  # ----[---]----
-    )
-    colnames(t) <- list("a_chrom", "a_startpos", "a_endpos", "b_chrom", "b_startpos", "b_endpos", "exp")
-    res <- mapply(AreOverlappingRegions, unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), unlist(t[,"b_chrom"]), unlist(t[,"b_startpos"]), unlist(t[,"b_endpos"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(t[,"exp"])))
-})
-
 test_that("GetRegionKeyChromStartPos", {
     res <- mapply(GetRegionKeyChromStartPos, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"csp"])))
@@ -106,4 +102,29 @@ test_that("GetRegionKeyChromStartPos", {
 test_that("GetRegionKeyChromEndPos", {
     res <- mapply(GetRegionKeyChromEndPos, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"cep"])))
+})
+
+test_that("AreOverlappingRegions", {
+    res <- mapply(AreOverlappingRegions, unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), unlist(t[,"b_chrom"]), unlist(t[,"b_startpos"]), unlist(t[,"b_endpos"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(t[,"exp"])))
+})
+
+test_that("AreOverlappingRegionRegionKey", {
+    res <- mapply(AreOverlappingRegionRegionKey, unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), unlist(t[,"b_rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(t[,"exp"])))
+})
+
+test_that("AreOverlappingRegionKeys", {
+    res <- mapply(AreOverlappingRegionKeys, unlist(t[,"a_rk"]), unlist(t[,"b_rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(t[,"exp"])))
+})
+
+test_that("AreOverlappingVariantKeyRegionKey", {
+    res <- mapply(AreOverlappingVariantKeyRegionKey, unlist(t[,"a_vk"]), unlist(t[,"b_rk"]), MoreArgs = list(src = NULL, last = 0), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(t[,"exp"])))
+})
+
+test_that("VariantToRegionkey", {
+    res <- mapply(VariantToRegionkey, unlist(t[,"a_vk"]), MoreArgs = list(src = NULL, last = 0), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(t[,"a_rk"])))
 })

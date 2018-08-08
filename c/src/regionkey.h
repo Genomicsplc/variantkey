@@ -185,19 +185,6 @@ size_t regionkey_hex(uint64_t rk, char *str);
  */
 uint64_t parse_regionkey_hex(const char *rs);
 
-/** @brief Check if two regions are overlapping.
- *
- * @param a_chrom     Region A chromosome code.
- * @param a_startpos  Region A start position.
- * @param a_endpos    Region A end position (startpos + region length).
- * @param b_chrom     Region B chromosome code.
- * @param b_startpos  Region B start position.
- * @param b_endpos    Region B end position (startpos + region length).
- *
- * @return 1 if the regions overlap, 0 otherwise.
- */
-uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos);
-
 /** @brief Get the CHROM + START POS encoding from RegionKey.
  *
  * @param rk RegionKey code.
@@ -213,6 +200,60 @@ uint64_t get_regionkey_chrom_startpos(uint64_t rk);
  * @return CHROM + END POS.
  */
 uint64_t get_regionkey_chrom_endpos(uint64_t rk);
+
+/** @brief Check if two regions are overlapping.
+ *
+ * @param a_chrom     Region A chromosome code.
+ * @param a_startpos  Region A start position.
+ * @param a_endpos    Region A end position (startpos + region length).
+ * @param b_chrom     Region B chromosome code.
+ * @param b_startpos  Region B start position.
+ * @param b_endpos    Region B end position (startpos + region length).
+ *
+ * @return 1 if the regions overlap, 0 otherwise.
+ */
+uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos);
+
+/** @brief Check if a region and a regionkey are overlapping.
+ *
+ * @param chrom     Region A chromosome code.
+ * @param startpos  Region A start position.
+ * @param endpos    Region A end position (startpos + region length).
+ * @param rk        RegionKey or region B.
+ *
+ * @return 1 if the regions overlap, 0 otherwise.
+ */
+uint8_t are_overlapping_region_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uint64_t rk);
+
+/** @brief Check if two regionkeys are overlapping.
+ *
+ * @param rka        RegionKey A.
+ * @param rkb        RegionKey B.
+ *
+ * @return 1 if the regions overlap, 0 otherwise.
+ */
+uint8_t are_overlapping_regionkeys(uint64_t rka, uint64_t rkb);
+
+/** @brief Check if variantkey and regionkey are overlapping.
+ *
+ * @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last  Number of variants in the src file -1.
+ * @param vk    VariantKey code.
+ * @param rk    RegionKey code.
+ *
+ * @return 1 if the regions overlap, 0 otherwise.
+ */
+uint8_t are_overlapping_variantkey_regionkey(const unsigned char *src, uint64_t last, uint64_t vk, uint64_t rk);
+
+/** @brief Get RegionKey from VariantKey.
+ *
+ * @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+ * @param last  Number of variants in the src file -1.
+ * @param vk    VariantKey code.
+ *
+ * @return RegionKey.
+ */
+uint64_t variantkey_to_regionkey(const unsigned char *src, uint64_t last, uint64_t vk);
 
 #ifdef __cplusplus
 }

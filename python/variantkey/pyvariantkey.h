@@ -125,9 +125,13 @@ static PyObject *py_reverse_regionkey(PyObject *self, PyObject *args, PyObject *
 static PyObject *py_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_regionkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_parse_regionkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
-static PyObject *py_are_overlapping_regions(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_regionkey_chrom_startpos(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_regionkey_chrom_endpos(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_are_overlapping_regions(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_are_overlapping_region_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_are_overlapping_regionkeys(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_are_overlapping_variantkey_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_variantkey_to_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 
 PyMODINIT_FUNC initvariantkey(void);
 
@@ -1835,28 +1839,6 @@ PyMODINIT_FUNC initvariantkey(void);
 "int :\n"\
 "    A RegionKey code."
 
-#define PYAREOVERLAPPINGREGIONS_DOCSTRING "Check if two regions are overlapping.\n"\
-"\n"\
-"Parameters\n"\
-"----------\n"\
-"a_chrom :\n"\
-"    Region A chromosome code.\n"\
-"a_startpos :\n"\
-"    Region A start position.\n"\
-"a_endpos :\n"\
-"    Region A end position (startpos + region length).\n"\
-"b_chrom :\n"\
-"    Region B chromosome code.\n"\
-"b_startpos :\n"\
-"    Region B start position.\n"\
-"b_endpos :\n"\
-"    Region B end position (startpos + region length).\n"\
-"\n"\
-"Returns\n"\
-"-------\n"\
-"int :\n"\
-"    1 if the regions overlap, 0 otherwise."
-
 #define PYGETREGIONKEYCHROMSTARTPOS_DOCSTRING "Get the CHROM + START POS encoding from RegionKey.\n"\
 "\n"\
 "Parameters\n"\
@@ -1880,6 +1862,94 @@ PyMODINIT_FUNC initvariantkey(void);
 "-------\n"\
 "int :\n"\
 "    CHROM + END POS encoding."
+
+#define PYAREOVERLAPPINGREGIONS_DOCSTRING "Check if two regions are overlapping.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"a_chrom :\n"\
+"    Region A chromosome code.\n"\
+"a_startpos :\n"\
+"    Region A start position.\n"\
+"a_endpos :\n"\
+"    Region A end position (startpos + region length).\n"\
+"b_chrom :\n"\
+"    Region B chromosome code.\n"\
+"b_startpos :\n"\
+"    Region B start position.\n"\
+"b_endpos :\n"\
+"    Region B end position (startpos + region length).\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    1 if the regions overlap, 0 otherwise."
+
+#define AREOVERLAPPINGREGIONREGIONKEY_DOCSTRING "Check if a region and a regionkey are overlapping.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"chrom :\n"\
+"    Region A chromosome code.\n"\
+"startpos :\n"\
+"    Region A start position.\n"\
+"endpos :\n"\
+"    Region A end position (startpos + region length).\n"\
+"rk :\n"\
+"    RegionKey B.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    1 if the regions overlap, 0 otherwise."
+
+#define AREOVERLAPPINGREGIONKEYS_DOCSTRING "Check if two regionkeys are overlapping.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rka :\n"\
+"    RegionKey A.\n"\
+"rkb :\n"\
+"    RegionKey B.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    1 if the regions overlap, 0 otherwise."
+
+#define AREOVERLAPPINGVARIANTKEYREGIONKEY_DOCSTRING "Check if variantkey and regionkey are overlapping.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mfsrc : obj\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"last : int\n"\
+"    Number of variants in the src file -1.\n"\
+"vk : int\n"\
+"    VariantKey.\n"\
+"rk : int\n"\
+"    RegionKey.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    1 if the regions overlap, 0 otherwise."
+
+#define VARIANTKEYTOREGIONKEY_DOCSTRING "Get RegionKey from VariantKey.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mfsrc : obj\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"last : int\n"\
+"    Number of variants in the src file -1.\n"\
+"vk : int\n"\
+"    VariantKey.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    A RegionKey code."
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
 #define inline

@@ -238,11 +238,23 @@ print(vk.regionkey_hex(0xc80001f400003e84))
 print(vk.parse_regionkey_hex("c80001f400003e84"))
 # 14411520955069251204
 
-print(vk.are_overlapping_regions(25, 1000, 2000, 25, 1500, 2500))
-# 1
-
 print(vk.get_regionkey_chrom_startpos(0xc80001f400003e84))
 # 6710887400
 
 print(vk.get_regionkey_chrom_endpos(0xc80001f400003e84))
 # 6710888400
+
+print(vk.are_overlapping_regions(5, 4,  6, 5, 3, 7))
+# 1
+
+print(vk.are_overlapping_region_regionkey(5, 4, 6, 0x2800000180000038))
+# 1
+
+print(vk.are_overlapping_regionkeys(0x2800000200000030, 0x2800000180000038))
+# 1
+
+print(vk.are_overlapping_variantkey_regionkey(None, 0, 0x2800000210920000, 0x2800000180000038))
+# 1
+
+print(vk.variantkey_to_regionkey(None, 0, 0x2800000210920000))
+# 2882303770107052080

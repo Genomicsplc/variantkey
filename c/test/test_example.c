@@ -354,10 +354,6 @@ int main()
     fprintf(stdout, "%016" PRIx64 "\n", rk);
     // c80001f400003e84
 
-    uint8_t ov = are_overlapping_regions(25, 1000, 2000, 25, 1500, 2500);
-    fprintf(stdout, "%" PRIu8 "\n", ov);
-    // 1
-
     uint64_t cp = get_regionkey_chrom_startpos(0xc80001f400003e84);
     fprintf(stdout, "%016" PRIx64 "\n", cp);
     // 00000001900003e8
@@ -366,6 +362,25 @@ int main()
     fprintf(stdout, "%016" PRIx64 "\n", cp);
     // 00000001900007d0
 
+    uint8_t ov = are_overlapping_regions(5, 4, 6, 5, 3, 7);
+    fprintf(stdout, "%" PRIu8 "\n", ov);
+    // 1
+
+    ov = are_overlapping_region_regionkey(5, 4, 6, 0x2800000180000038);
+    fprintf(stdout, "%" PRIu8 "\n", ov);
+    // 1
+
+    ov = are_overlapping_regionkeys(0x2800000200000030, 0x2800000180000038);
+    fprintf(stdout, "%" PRIu8 "\n", ov);
+    // 1
+
+    ov = are_overlapping_variantkey_regionkey(NULL, 0, 0x2800000210920000, 0x2800000180000038);
+    fprintf(stdout, "%" PRIu8 "\n", ov);
+    // 1
+
+    rk = variantkey_to_regionkey(NULL, 0, 0x2800000210920000);
+    fprintf(stdout, "%016" PRIx64 "\n", rk);
+    // 2800000200000030
 
     // ============================================================================
 

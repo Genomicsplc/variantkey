@@ -98,7 +98,7 @@ uint64_t get_variantkey_chrom_startpos(uint64_t vk)
 
 uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, uint64_t vk)
 {
-    return (((vk & VKMASK_CHROM) >> VKSHIFT_POS) | get_variantkey_endpos(src, last, vk));
+    return (((vk & VKMASK_CHROM) >> VKSHIFT_POS) | (uint64_t)get_variantkey_endpos(src, last, vk));
 }
 
 size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
