@@ -153,7 +153,7 @@ void decode_regionkey(uint64_t code, regionkey_t *rk);
  */
 void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev);
 
-/** @brief Returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STARND.
+/** @brief Returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STRAND.
  *
  * @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
  * @param sizechrom  Length of the chrom string, excluding the terminating null byte.
