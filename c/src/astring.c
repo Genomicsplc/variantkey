@@ -82,3 +82,39 @@ uint64_t parse_hex_uint64_t(const char *s)
     }
     return v;
 }
+
+uint64_t encode_string_id(const char *str, size_t size)
+{
+    if (size > ESIDSHIFT_MAXLEN)
+    {
+        str += (size - ESIDSHIFT_MAXLEN);
+        size = ESIDSHIFT_MAXLEN;
+    }
+    int c;
+    uint64_t h = ((uint64_t)size << ESIDSHIFT_POS);
+    uint8_t bitpos = ESIDSHIFT_POS;
+    while ((c = aztoupper(*str++)) && (size--))
+    {
+        if ((c < '!') || (c > 'z'))
+        {
+            c = '_';
+        }
+        bitpos -= 6; // 6 bit to represent 64 symbols
+        h |= ((uint64_t)(c - '!' + 1) << bitpos); // '!' will be coded as 1
+    }
+    return h;
+}
+
+size_t decode_string_id(uint64_t esid, char *str)
+{
+    size_t size = (size_t)((esid & 0xF000000000000000) >> ESIDSHIFT_POS);
+    uint8_t bitpos = ESIDSHIFT_POS;
+    size_t i = 0;
+    for(i = 0; i < size; i++)
+    {
+        bitpos -= 6;
+        str[i] = (((esid >> bitpos) & 0x3f) + '!' - 1);  // 0x3f is the 6 bit mask [00111111]
+    }
+    str[i] = 0;
+    return size;
+}

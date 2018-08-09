@@ -46,6 +46,9 @@ extern "C" {
 
 #include <inttypes.h>
 
+#define ESIDSHIFT_MAXLEN 10 //!< Maximum number of characters that can be encoded 
+#define ESIDSHIFT_POS 60    //!< Encoded string ID LEN LSB position from LSB [ LLLL0000 00111111 22222233 33334444 44555555 66666677 77778888 88999999 ]
+
 /**
  * Returns the uppercase version of the input character.
  * Note that this is safe to be used only with a-z characters.
@@ -87,6 +90,31 @@ size_t hex_uint64_t(uint64_t n, char *str);
  * @return uint64_t unsigned integer number.
  */
 uint64_t parse_hex_uint64_t(const char *s);
+
+/**
+ * Encode the last 10 characters of a string into a 64 bit unsigned integer.
+ * This function can be used to convert generic string IDs to numeric IDs.
+ *
+ * @param str    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.
+ * @param size   Length of the string, excluding the terminating null byte.
+ *
+ * @return Encoded string ID.
+ */
+uint64_t encode_string_id(const char *str, size_t size);
+
+/**
+ * Decode the encoded string ID.
+ * This function is the reverse of encode_string_id.
+ * The string is always returned in uppercase mode.
+ *
+ * @param esid   Encoded string ID code.
+ * @param str    String buffer to be returned. Its size should be enough to contain the results (at least 11 bytes).
+ *
+ * @return If successful, the total number of characters written is returned,
+ *         excluding the null-character appended at the end of the string,
+ *         otherwise a negative number is returned in case of failure.
+ */
+size_t decode_string_id(uint64_t esid, char *str);
 
 #ifdef __cplusplus
 }

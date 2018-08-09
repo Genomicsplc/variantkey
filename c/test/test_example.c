@@ -382,6 +382,22 @@ int main()
     fprintf(stdout, "%016" PRIx64 "\n", rk);
     // 2800000200000030
 
+
+    // ============================================================================
+
+
+    // VARIOUS
+    // -------
+
+    uint64_t esid = encode_string_id("A0A022YWF9", 10);
+    fprintf(stdout, "%016" PRIx64 "\n", esid);
+    // a850850492e77999
+
+    char strid[11];
+    size_t stridlen = decode_string_id(0xa850850492e77999, strid);
+    fprintf(stdout, "%s %lu\n", strid, stridlen);
+    // A0A022YWF9 10
+
     // ============================================================================
 
     return 0;
