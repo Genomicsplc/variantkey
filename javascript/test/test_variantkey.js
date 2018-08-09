@@ -32,10 +32,10 @@
 // THE SOFTWARE.
 
 const {
-    parseHex,
-    azToUpper,
     encodeChrom,
     decodeChrom,
+    parseHex,
+    azToUpper,
     encodeRefAlt,
     decodeRefAlt,
     encodeVariantKey,
@@ -48,7 +48,7 @@ const {
     compareVariantKeyChrom,
     compareVariantKeyChromPos,
     variantKeyString,
-    reverseVariantKey
+    reverseVariantKey,
 } = require(process.argv[2]);
 
 var k_test_size = 566;
@@ -2510,7 +2510,7 @@ function test_extractVariantKeyChrom() {
     for (i = 0; i < k_test_size; i++) {
         h = extractVariantKeyChrom(test_data[i][4]);
         if (h != test_data[i][6]) {
-            console.error("(", i, "): Unexpected chrom code: expected ", test_data[i][6], ", got ", h.chrom);
+            console.error("(", i, "): Unexpected chrom code: expected ", test_data[i][6], ", got ", h);
             ++errors;
         }
     }
@@ -2524,7 +2524,7 @@ function test_extractVariantKeyPos() {
     for (i = 0; i < k_test_size; i++) {
         h = extractVariantKeyPos(test_data[i][4]);
         if (h != test_data[i][7]) {
-            console.error("(", i, "): Unexpected pos code: expected ", test_data[i][7], ", got ", h.pos);
+            console.error("(", i, "): Unexpected pos code: expected ", test_data[i][7], ", got ", h);
             ++errors;
         }
     }
@@ -2538,7 +2538,7 @@ function test_extractVariantKeyRefAlt() {
     for (i = 0; i < k_test_size; i++) {
         h = extractVariantKeyRefAlt(test_data[i][4]);
         if (h != test_data[i][8]) {
-            console.error("(", i, "): Unexpected ref+alt code: expected ", test_data[i][8], ", got ", h.refalt);
+            console.error("(", i, "): Unexpected ref+alt code: expected ", test_data[i][8], ", got ", h);
             ++errors;
         }
     }
@@ -2562,6 +2562,34 @@ function test_decodeVariantKey() {
         if (h.refalt != test_data[i][8]) {
             console.error("(", i, "): Unexpected ref+alt code: expected ", test_data[i][8], ", got ", h.refalt);
             ++errors;
+        }
+    }
+    return errors;
+}
+
+function test_reverseVariantKey() {
+    var errors = 0;
+    var i;
+    var h;
+    for (i = 0; i < k_test_size; i++) {
+        h = reverseVariantKey(test_data[i][4]);
+        if (h.alt.length > 0) {
+            if (encodeChrom(h.chrom) != encodeChrom(test_data[i][0])) {
+                console.error("(", i, "): Unexpected chrom code: expected ", test_data[i][0], ", got ", h.chrom);
+                ++errors;
+            }
+            if (h.pos != test_data[i][1]) {
+                console.error("(", i, "): Unexpected pos code: expected ", test_data[i][1], ", got ", h.pos);
+                ++errors;
+            }
+            if (h.ref != test_data[i][2].toUpperCase()) {
+                console.error("(", i, "): Unexpected ref code: expected ", test_data[i][2].toUpperCase(), ", got ", h.ref);
+                ++errors;
+            }
+            if (h.alt != test_data[i][3].toUpperCase()) {
+                console.error("(", i, "): Unexpected alt code: expected ", test_data[i][3].toUpperCase(), ", got ", h.alt);
+                ++errors;
+            }
         }
     }
     return errors;
@@ -2901,38 +2929,6 @@ function test_parseHex() {
     return errors;
 }
 
-function test_reverseVariantKey() {
-    var errors = 0;
-    var i;
-    var h;
-    for (i = 0; i < k_test_size; i++) {
-        h = reverseVariantKey({
-            "chrom": test_data[i][6],
-            "pos": test_data[i][7],
-            "refalt": test_data[i][8]
-        });
-        if (h.alt.length > 0) {
-            if (encodeChrom(h.chrom) != encodeChrom(test_data[i][0])) {
-                console.error("(", i, "): Unexpected chrom code: expected ", test_data[i][0], ", got ", h.chrom);
-                ++errors;
-            }
-            if (h.pos != test_data[i][1]) {
-                console.error("(", i, "): Unexpected pos code: expected ", test_data[i][1], ", got ", h.pos);
-                ++errors;
-            }
-            if (h.ref != test_data[i][2].toUpperCase()) {
-                console.error("(", i, "): Unexpected ref code: expected ", test_data[i][2].toUpperCase(), ", got ", h.ref);
-                ++errors;
-            }
-            if (h.alt != test_data[i][3].toUpperCase()) {
-                console.error("(", i, "): Unexpected alt code: expected ", test_data[i][3].toUpperCase(), ", got ", h.alt);
-                ++errors;
-            }
-        }
-    }
-    return errors;
-}
-
 var errors = 0;
 
 errors += test_azToUpper();
@@ -2944,13 +2940,13 @@ errors += test_extractVariantKeyChrom();
 errors += test_extractVariantKeyPos();
 errors += test_extractVariantKeyRefAlt();
 errors += test_decodeVariantKey();
+errors += test_reverseVariantKey();
 errors += test_variantKey();
 errors += test_variantKeyRange();
 errors += test_compareVariantKeyChrom();
 errors += test_compareVariantKeyChromPos();
 errors += test_variantKeyString();
 errors += test_parseHex();
-errors += test_reverseVariantKey();
 
 if (errors > 0) {
     console.log("FAILED: " + errors);

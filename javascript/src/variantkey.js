@@ -39,7 +39,7 @@ function encodeChrom(chrom) {
         return 0;
     }
     // X > 23 ; Y > 24 ; M > 25
-    onecharmap = [
+    var onecharmap = [
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         /*                                     M                                 X   Y */
@@ -90,7 +90,7 @@ function encodeBase(c) {
       G > 2
       T > 3
     */
-    map = [
+    var map = [
         4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
         4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
         /* A     C           G                                      T */
@@ -259,7 +259,7 @@ function extractVariantKeyChrom(vk) {
 }
 
 function extractVariantKeyPos(vk) {
-    return (((vk.hi & 0x7FFFFFF) << 1) | (vk.lo >>> 31)) >>> 0;
+    return (((vk.hi & 0x07FFFFFF) << 1) | (vk.lo >>> 31)) >>> 0;
 }
 
 function extractVariantKeyRefAlt(vk) {
@@ -272,6 +272,16 @@ function decodeVariantKey(vk) {
         "pos": extractVariantKeyPos(vk),
         "refalt": extractVariantKeyRefAlt(vk)
     };
+}
+
+function reverseVariantKey(vk) {
+    var ra = decodeRefAlt(extractVariantKeyRefAlt(vk));
+    return {
+        "chrom": decodeChrom(extractVariantKeyChrom(vk)),
+        "pos": extractVariantKeyPos(vk),
+        "ref": ra.ref,
+        "alt": ra.alt
+    }
 }
 
 function variantKey(chrom, pos, ref, alt) {
@@ -322,14 +332,90 @@ function parseHex(vs) {
     };
 }
 
-function reverseVariantKey(dvk) {
-    var ra = decodeRefAlt(dvk.refalt);
+function encodeRegionStrand(strand) {
+    var map = [2, 0, 1, 0];
+    return map[((++strand) & 3)];
+}
+
+function decodeRegionStrand(strand) {
+    var map = [0, 1, -1, 0];
+    return map[(strand & 3)];
+}
+
+function encodeRegionKey(chrom, startpos, endpos, strand) {
     return {
-        "chrom": decodeChrom(dvk.chrom),
-        "pos": dvk.pos,
-        "ref": ra.ref,
-        "alt": ra.alt
-    }
+        "hi": ((((chrom >>> 0) << 27) | (startpos >>> 1)) >>> 0),
+        "lo": ((((startpos >>> 0) << 31) | ((endpos >>> 0) << 3) | ((strand >>> 0) << 1)) >>> 0)
+    };
+}
+
+function extractRegionKeyChrom(rk) {
+    return ((rk.hi & 0xF8000000) >>> 27);
+}
+
+function extractRegionKeyStartPos(rk) {
+    return (((rk.hi & 0x07FFFFFF) << 1) | (rk.lo >>> 31)) >>> 0;
+}
+
+function extractRegionKeyEndPos(rk) {
+    return (rk.lo & 0x7FFFFFF8) >>> 3
+}
+
+function extractRegionKeyStrand(rk) {
+    return (rk.lo & 0x00000006) >>> 1;
+}
+
+function decodeRegionKey(rk) {
+    return {
+        "chrom": extractRegionKeyChrom(rk),
+        "startpos": extractRegionKeyStartPos(rk),
+        "endpos": extractRegionKeyEndPos(rk),
+        "strand": extractRegionKeyStrand(rk)
+    };
+}
+
+function reverseRegionKey(rk) {
+    return {
+        "chrom": decodeChrom(extractRegionKeyChrom(rk)),
+        "startpos": extractRegionKeyStartPos(rk),
+        "endpos": extractRegionKeyEndPos(rk),
+        "strand": decodeRegionStrand(extractRegionKeyStrand(rk))
+    };
+}
+
+function regionKey(chrom, startpos, endpos, strand) {
+    return encodeRegionKey(encodeChrom(chrom), startpos, endpos, encodeRegionStrand(strand));
+}
+
+function regionKeyString(rk) {
+    return padL08(rk.hi.toString(16)) + padL08(rk.lo.toString(16));
+}
+
+function getVariantKeyEndPos(vk) {
+    return extractVariantKeyPos(vk) + ((vk.lo & 0x78000000) >>> 27);
+}
+
+function areOverlappingRegions(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos) {
+    return ((a_chrom == b_chrom) && (a_startpos < b_endpos) && (a_endpos > b_startpos));
+}
+
+function areOverlappingRegionRegionKey(chrom, startpos, endpos, rk) {
+    return ((chrom == extractRegionKeyChrom(rk)) && (startpos < extractRegionKeyEndPos(rk)) && (endpos > extractRegionKeyStartPos(rk)));
+}
+
+function areOverlappingRegionKeys(rka, rkb) {
+    return ((extractRegionKeyChrom(rka) == extractRegionKeyChrom(rkb)) && (extractRegionKeyStartPos(rka) < extractRegionKeyEndPos(rkb)) && (extractRegionKeyEndPos(rka) > extractRegionKeyStartPos(rkb)));
+}
+
+function areOverlappingVariantKeyRegionKey(vk, rk) {
+    return ((extractVariantKeyChrom(vk) == extractRegionKeyChrom(rk)) && (extractVariantKeyPos(vk) < extractRegionKeyEndPos(rk)) && (getVariantKeyEndPos(vk) > extractRegionKeyStartPos(rk)));
+}
+
+function variantKeyToRegionKey(vk) {
+    return {
+        "hi": vk.hi,
+        "lo": ((vk.lo & 0x80000000) | ((getVariantKeyEndPos(vk) << 3) >>> 0)) >>> 0
+    };
 }
 
 if (typeof(module) !== 'undefined') {
@@ -351,5 +437,22 @@ if (typeof(module) !== 'undefined') {
         compareVariantKeyChromPos: compareVariantKeyChromPos,
         variantKeyString: variantKeyString,
         reverseVariantKey: reverseVariantKey,
+        encodeRegionStrand: encodeRegionStrand,
+        decodeRegionStrand: decodeRegionStrand,
+        encodeRegionKey: encodeRegionKey,
+        extractRegionKeyChrom: extractRegionKeyChrom,
+        extractRegionKeyStartPos: extractRegionKeyStartPos,
+        extractRegionKeyEndPos: extractRegionKeyEndPos,
+        extractRegionKeyStrand: extractRegionKeyStrand,
+        decodeRegionKey: decodeRegionKey,
+        reverseRegionKey: reverseRegionKey,
+        regionKey: regionKey,
+        regionKeyString: regionKeyString,
+        getVariantKeyEndPos: getVariantKeyEndPos,
+        areOverlappingRegions: areOverlappingRegions,
+        areOverlappingRegionRegionKey: areOverlappingRegionRegionKey,
+        areOverlappingRegionKeys: areOverlappingRegionKeys,
+        areOverlappingVariantKeyRegionKey: areOverlappingVariantKeyRegionKey,
+        variantKeyToRegionKey: variantKeyToRegionKey,
     }
 }
