@@ -80,12 +80,10 @@ void decode_regionkey(uint64_t code, regionkey_t *rk)
 
 void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev)
 {
-    regionkey_t h = {0,0,0,0};
-    decode_regionkey(rk, &h);
-    decode_chrom(h.chrom, rev->chrom);
-    rev->startpos = h.startpos;
-    rev->endpos = h.endpos;
-    rev->strand = decode_region_strand(h.strand);
+    decode_chrom(extract_regionkey_chrom(rk), rev->chrom);
+    rev->startpos = extract_regionkey_startpos(rk);
+    rev->endpos = extract_regionkey_endpos(rk);
+    rev->strand = decode_region_strand(extract_regionkey_strand(rk));
 }
 
 uint64_t regionkey(const char *chrom, size_t sizechrom, uint32_t startpos, uint32_t endpos, int8_t strand)

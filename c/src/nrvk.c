@@ -58,11 +58,9 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
 
 size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev)
 {
-    variantkey_t h = {0,0,0};
-    decode_variantkey(vk, &h);
-    decode_chrom(h.chrom, rev->chrom);
-    rev->pos = h.pos;
-    size_t len = decode_refalt(h.refalt, rev->ref, &rev->sizeref, rev->alt, &rev->sizealt);
+    decode_chrom(extract_variantkey_chrom(vk), rev->chrom);
+    rev->pos = extract_variantkey_pos(vk);
+    size_t len = decode_refalt(extract_variantkey_refalt(vk), rev->ref, &rev->sizeref, rev->alt, &rev->sizealt);
     if ((len == 0) && (last > 0))
     {
         len = find_ref_alt_by_variantkey(src, last, vk, rev->ref, &rev->sizeref, rev->alt, &rev->sizealt);

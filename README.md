@@ -24,7 +24,7 @@
 * **[VariantKey Format](#vkformat)**
     * [VariantKey Properties](#vkproperties)
 * [VariantKey Input values](#vkinput)
-* [RegionKey](#regionkey)
+* **[RegionKey](#regionkey)**
 * [Binary file formats for lookup tables](#binaryfiles)
 * [C Library](#clib)
 * [GO Library](#golib)
@@ -369,7 +369,11 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 <a name="regionkey"></a>
 ## RegionKey
 
-This library also includes functions to represent a human genetic region as number.
+*RegionKey* encodes a human genetic region (defined as the set of *chromosome*, *start position*, *end position* and *strand direction*) in a 64 bit unsigned integer number.
+
+RegionKey allows to repesent a region as a single entity, and provides analogous properties as the ones listed in [VariantKey Properties](#vkproperties).
+
+The encoding of the first 33 bit (CROM, STARTPOS) is the same as in VariantKey.
 
 The RegionKey is composed of 4 sections arranged in 64 bit:
 
@@ -433,7 +437,9 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
     +1 : 1 dec = "01" bin
     ```
 
-The last bit of RegionKey is reserved.
+* The last bit of RegionKey is reserved.
+
+This software library provides several functions to operate with *RegionKey* and interact with *VariantKey*.
 
 
 <a name="binaryfiles"></a>

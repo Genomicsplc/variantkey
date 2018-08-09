@@ -33,6 +33,7 @@ build:
 	@mkdir -p target/build
 	uglifyjs --compress --keep-fnames --comments --output target/build/variantkey.js src/variantkey.js 
 	cd test && node test_variantkey.js '../target/build/variantkey.js'
+	cd test && node test_regionkey.js '../target/build/variantkey.js'
 
 # Format the source code
 format:
