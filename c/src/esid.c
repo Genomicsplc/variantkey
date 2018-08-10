@@ -121,16 +121,22 @@ uint64_t hash_string_id(const char *str, size_t size)
     {
     case 7:
         v ^= (uint64_t)tail[6] << 48;
+    // fall through
     case 6:
         v ^= (uint64_t)tail[5] << 40;
+    // fall through
     case 5:
         v ^= (uint64_t)tail[4] << 32;
+    // fall through
     case 4:
         v ^= (uint64_t)tail[3] << 24;
+    // fall through
     case 3:
         v ^= (uint64_t)tail[2] << 16;
+    // fall through
     case 2:
         v ^= (uint64_t)tail[1] << 8;
+    // fall through
     case 1:
         v ^= (uint64_t)tail[0];
     }

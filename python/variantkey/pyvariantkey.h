@@ -133,6 +133,11 @@ static PyObject *py_are_overlapping_regionkeys(PyObject *self, PyObject *args, P
 static PyObject *py_are_overlapping_variantkey_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_variantkey_to_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 
+// ESID
+static PyObject *py_encode_string_id(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_decode_string_id(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_hash_string_id(PyObject *self, PyObject *args, PyObject *keywds);
+
 PyMODINIT_FUNC initvariantkey(void);
 
 // VARIANTKEY
@@ -194,7 +199,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"code :\n"\
+"code : int\n"\
 "    REF+ALT code\n"\
 "\n"\
 "Returns\n"\
@@ -214,11 +219,11 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"chrom :\n"\
+"chrom : int\n"\
 "    Encoded Chromosome (see encode_chrom).\n"\
-"pos :\n"\
+"pos : int\n"\
 "    Position. The reference position, with the first base having position 0.\n"\
-"refalt :\n"\
+"refalt : int\n"\
 "    Encoded Reference + Alternate (see encode_refalt).\n"\
 "\n"\
 "Returns\n"\
@@ -235,7 +240,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vk :\n"\
+"vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -252,7 +257,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vk :\n"\
+"vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -269,7 +274,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vk :\n"\
+"vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -286,7 +291,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vk :\n"\
+"vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -305,13 +310,13 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"chrom :\n"\
+"chrom : str or bytes\n"\
 "    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.\n"\
-"pos :\n"\
+"pos : int\n"\
 "    Position. The reference position, with the first base having position 0.\n"\
-"ref :\n"\
+"ref : str or bytes\n"\
 "    Reference allele. String containing a sequence of nucleotide letters. The value in the pos field refers to the position of the first nucleotide in the String. Characters must be A-Z, a-z or *\n"\
-"alt :\n"\
+"alt : str or bytes\n"\
 "    Alternate non-reference allele string. Characters must be A-Z, a-z or *\n"\
 "\n"\
 "Returns\n"\
@@ -334,11 +339,11 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"chrom :\n"\
+"chrom : int\n"\
 "    Chromosome encoded number.\n"\
-"pos_min :\n"\
+"pos_min : int\n"\
 "    Start reference position, with the first base having position 0.\n"\
-"pos_max :\n"\
+"pos_max : int\n"\
 "    End reference position, with the first base having position 0.\n"\
 "\n"\
 "Returns\n"\
@@ -356,9 +361,9 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vka :\n"\
+"vka : int\n"\
 "    The first VariantKey to be compared.\n"\
-"vkb :\n"\
+"vkb : int\n"\
 "    The second VariantKey to be compared.\n"\
 "\n"\
 "Returns\n"\
@@ -375,9 +380,9 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vka :\n"\
+"vka : int\n"\
 "    The first VariantKey to be compared.\n"\
-"vkb :\n"\
+"vkb : int\n"\
 "    The second VariantKey to be compared.\n"\
 "\n"\
 "Returns\n"\
@@ -394,7 +399,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vk :\n"\
+"vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -411,7 +416,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"vs :\n"\
+"vs : str or bytes\n"\
 "    VariantKey hexadecimal string (it must contain 16 hexadecimal characters).\n"\
 "\n"\
 "Returns\n"\
@@ -1600,15 +1605,15 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mfsrc :\n"\
+"mfsrc : obj\n"\
 "    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
 "mfidx : int\n"\
 "    File index object.\n"\
 "chrom :\n"\
 "    Encoded Chromosome number (see encode_chrom).\n"\
-"pos :\n"\
+"pos : int\n"\
 "    Position. The reference position, with the first base having position 0.\n"\
-"ref :\n"\
+"ref : str or bytes\n"\
 "    Reference allele. String containing a sequence of nucleotide letters.\n"\
 "\n"\
 "Returns\n"\
@@ -1626,7 +1631,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"allele :\n"\
+"allele : str or bytes\n"\
 "    String containing a sequence of nucleotide letters.\n"\
 "\n"\
 "Returns\n"\
@@ -1640,17 +1645,17 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mfsrc :\n"\
+"mfsrc : obj\n"\
 "    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
-"mfidx :\n"\
+"mfidx : int\n"\
 "    Index of sequences offset by chromosome number (1 to 25).\n"\
-"chrom :\n"\
+"chrom : int\n"\
 "    Chromosome encoded number.\n"\
-"pos :\n"\
+"pos : int\n"\
 "    Position. The reference position, with the first base having position 0.\n"\
-"ref :\n"\
+"ref : str or bytes\n"\
 "    Reference allele. String containing a sequence of nucleotide letters.\n"\
-"alt :\n"\
+"alt : str or bytes\n"\
 "    Alternate non-reference allele string.\n"\
 "\n"\
 "Returns\n"\
@@ -1677,7 +1682,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"strand :\n"\
+"strand : int\n"\
 "    Strand direction (-1, 0, +1).\n"\
 "\n"\
 "Returns\n"\
@@ -1689,7 +1694,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"code :\n"\
+"strand : int\n"\
 "    Strand code.\n"\
 "\n"\
 "Returns\n"\
@@ -1701,13 +1706,13 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"chrom :\n"\
+"chrom : int\n"\
 "    Encoded Chromosome (see encode_chrom).\n"\
-"startpos :\n"\
+"startpos : int\n"\
 "    Start position (zero based).\n"\
-"endpos :\n"\
+"endpos : int\n"\
 "    End position (startpos + region_length).\n"\
-"strand :\n"\
+"strand : int\n"\
 "    Encoded Strand direction (-1 > 2, 0 > 0, +1 > 1)\n"\
 "\n"\
 "Returns\n"\
@@ -1719,7 +1724,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1731,7 +1736,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1743,7 +1748,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1755,7 +1760,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1767,7 +1772,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"code :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1782,7 +1787,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1797,15 +1802,15 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"chrom :\n"\
+"chrom : str or bytes\n"\
 "    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.\n"\
-"sizechrom :\n"\
+"sizechrom : int\n"\
 "    Length of the chrom string, excluding the terminating null byte.\n"\
-"startpos :\n"\
+"startpos : int\n"\
 "    Start position (zero based).\n"\
-"endpos :\n"\
+"endpos : int\n"\
 "    End position (startpos + region_length).\n"\
-"strand :\n"\
+"strand : int\n"\
 "    Strand direction (-1, 0, +1)\n"\
 "\n"\
 "Returns\n"\
@@ -1817,10 +1822,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
-"str:\n"\
-"    String buffer to be returned (it must be sized 17 bytes at least)..\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
@@ -1831,7 +1834,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rs :\n"\
+"rs : str or bytes\n"\
 "    RegionKey hexadecimal string (it must contain 16 hexadecimal characters).\n"\
 "\n"\
 "Returns\n"\
@@ -1843,7 +1846,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1855,7 +1858,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey code.\n"\
 "\n"\
 "Returns\n"\
@@ -1867,17 +1870,17 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"a_chrom :\n"\
+"a_chrom : int\n"\
 "    Region A chromosome code.\n"\
-"a_startpos :\n"\
+"a_startpos : int\n"\
 "    Region A start position.\n"\
-"a_endpos :\n"\
+"a_endpos : int\n"\
 "    Region A end position (startpos + region length).\n"\
-"b_chrom :\n"\
+"b_chrom : int\n"\
 "    Region B chromosome code.\n"\
-"b_startpos :\n"\
+"b_startpos : int\n"\
 "    Region B start position.\n"\
-"b_endpos :\n"\
+"b_endpos : int\n"\
 "    Region B end position (startpos + region length).\n"\
 "\n"\
 "Returns\n"\
@@ -1889,13 +1892,13 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"chrom :\n"\
+"chrom : int\n"\
 "    Region A chromosome code.\n"\
-"startpos :\n"\
+"startpos : int\n"\
 "    Region A start position.\n"\
-"endpos :\n"\
+"endpos : int\n"\
 "    Region A end position (startpos + region length).\n"\
-"rk :\n"\
+"rk : int\n"\
 "    RegionKey B.\n"\
 "\n"\
 "Returns\n"\
@@ -1907,9 +1910,9 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"rka :\n"\
+"rka : int\n"\
 "    RegionKey A.\n"\
-"rkb :\n"\
+"rkb : int\n"\
 "    RegionKey B.\n"\
 "\n"\
 "Returns\n"\
@@ -1950,6 +1953,52 @@ PyMODINIT_FUNC initvariantkey(void);
 "-------\n"\
 "int :\n"\
 "    A RegionKey code."
+
+// ----------
+
+// ESID
+
+#define ENCODESTRINGID_DOCSTRING "Encode maximum 10 characters of a string into a 64 bit unsigned integer.\n"\
+"This function can be used to convert generic string IDs to numeric IDs.\n"\
+"Parameters\n"\
+"----------\n"\
+"str : str or bytes\n"\
+"    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.\n"\
+"size : int\n"\
+"    Length of the string, excluding the terminating null byte.\n"\
+"start : int\n"\
+"    First character to encode, starting from 0. To encode the last 10 characters, set this value at (size - 10).\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    Encoded string ID."
+
+#define DECODESTRINGID_DOCSTRING "Decode the encoded string ID.\n"\
+"This function is the reverse of encode_string_id.\n"\
+"The string is always returned in uppercase mode.\n"\
+"Parameters\n"\
+"----------\n"\
+"esid : int\n"\
+"    Encoded string ID code.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"tuple:\n"\
+"    - STRING\n"\
+"    - STRING length"
+
+#define HASHSTRINGID_DOCSTRING "Hash the input string into a 64 bit unsigned integer.\n"\
+"This function can be used to convert long string IDs to numeric IDs.\n"\
+"Parameters\n"\
+"----------\n"\
+"str : str or bytes\n"\
+"    The string to encode.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    Hash string ID."
 
 #if defined(__SUNPRO_C) || defined(__hpux) || defined(_AIX)
 #define inline
