@@ -7,6 +7,7 @@
 #include <string.h>
 #include "../src/astring.h"
 #include "../src/binsearch.h"
+#include "../src/esid.h"
 #include "../src/genoref.h"
 #include "../src/nrvk.h"
 #include "../src/regionkey.h"
@@ -386,17 +387,18 @@ int main()
     // ============================================================================
 
 
-    // VARIOUS
+    // ESID
     // -------
 
-    uint64_t esid = encode_string_id("A0A022YWF9", 10);
+    uint64_t esid = encode_string_id("A0A022YWF9", 10, 0);
     fprintf(stdout, "%016" PRIx64 "\n", esid);
-    // a850850492e77999
+    // 0850850492e77999
 
     char strid[11];
     size_t stridlen = decode_string_id(0xa850850492e77999, strid);
     fprintf(stdout, "%s %lu\n", strid, stridlen);
     // A0A022YWF9 10
+
 
     // ============================================================================
 

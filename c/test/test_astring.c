@@ -76,6 +76,24 @@ int test_aztoupper()
     return errors;
 }
 
+void benchmark_aztoupper()
+{
+    int c;
+    uint64_t tstart, tend;
+    int i, j;
+    int size = 100000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        for (j=0 ; j < 256; j++)
+        {
+            c = aztoupper(j);
+        }
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op (%d)\n", __func__, (tend - tstart)/(256*size), c);
+}
+
 int test_prepend_char()
 {
     int errors = 0;
@@ -96,6 +114,22 @@ int test_prepend_char()
     return errors;
 }
 
+void benchmark_prepend_char()
+{
+    char original[1002] =   "B";
+    size_t len = 1;
+    uint64_t tstart, tend;
+    int i;
+    int size = 1000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        prepend_char('A', original, &len);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+}
+
 int test_hex_uint64_t()
 {
     int errors = 0;
@@ -107,6 +141,21 @@ int test_hex_uint64_t()
         ++errors;
     }
     return errors;
+}
+
+void benchmark_hex_uint64_t()
+{
+    char s[17] = "";
+    uint64_t tstart, tend;
+    int i;
+    int size = 1000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        hex_uint64_t(size, s);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int test_parse_hex_uint64_t()
@@ -122,70 +171,19 @@ int test_parse_hex_uint64_t()
     return errors;
 }
 
-static const int k_esid_data_size = 11;
-
-typedef struct esid_data_t
+void benchmark_parse_hex_uint64_t()
 {
-    const char str[14];
-    size_t size;
-    uint64_t esid;
-    const char estr[11];
-    size_t esize;
-} esid_data_t;
-
-static esid_data_t esid_data[] =
-{
-    {"ABC0123456789", 13, 0xa411493515597619, "0123456789",  10},
-    {"\t !\"#$%&'()", 11, 0xafc1083105187209, "_!\"#$%&'()", 10},
-    {"*+,-./0123",    10, 0xa28b30d38f411493, "*+,-./0123",  10},
-    {"456789:;<=",    10, 0xa51559761969b71d, "456789:;<=",  10},
-    {">?@ABCDEFG",    10, 0xa79f8218a39259a7, ">?@ABCDEFG",  10},
-    {"HIJKLMNOPQ",    10, 0xaa29aabb2dbafc31, "HIJKLMNOPQ",  10},
-    {"RSTUVWXYZ[",    10, 0xacb3d35db7e39ebb, "RSTUVWXYZ[",  10},
-    {"\\]^_`abcde",   10, 0xaf3dfbf0218a3925, "\\]^_ ABCDE", 10},
-    {"fghijklmno",    10, 0xa9a7a29aabb2dbaf, "FGHIJKLMNO",  10},
-    {"pqrstuvwxy",    10, 0xac31cb3d35db7e39, "PQRSTUVWXY",  10},
-    {"z{|}~",          5, 0x5ebbf3df80000000, "Z[\\]^",       5},
-};
-
-int test_encode_string_id()
-{
+    uint64_t k;
+    uint64_t tstart, tend;
     int i;
-    int errors = 0;
-    uint64_t esid;
-    for (i=0 ; i < k_esid_data_size; i++)
+    int size = 1000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
     {
-        esid = encode_string_id(esid_data[i].str, esid_data[i].size);
-        if (esid != esid_data[i].esid)
-        {
-            fprintf(stderr, "%s (%d): Expected 0x%016" PRIx64 ", got 0x%016" PRIx64 "\n", __func__, i, esid_data[i].esid, esid);
-            ++errors;
-        }
+        k = parse_hex_uint64_t("1234567890AbCdEf");
     }
-    return errors;
-}
-
-int test_decode_string_id()
-{
-    int i;
-    int errors = 0;
-    char esid[11];
-    size_t size;
-    for (i=0 ; i < 11; i++)
-    {
-        size = decode_string_id(esid_data[i].esid, esid);
-        if (strcmp(esid, esid_data[i].estr) != 0)
-        {
-            fprintf(stderr, "%s (%d): Expected %s, got %s\n", __func__, i, esid_data[i].estr, esid);
-            ++errors;
-        }
-        if (size != esid_data[i].esize)
-        {
-            fprintf(stderr, "%s (%d): Expected size %lu, got %lu\n", __func__, i, esid_data[i].esize, size);
-            ++errors;
-        }
-    }
-    return errors;
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op (%" PRIx64 ")\n", __func__, (tend - tstart)/size, k);
 }
 
 int main()
@@ -196,8 +194,11 @@ int main()
     errors += test_prepend_char();
     errors += test_hex_uint64_t();
     errors += test_parse_hex_uint64_t();
-    errors += test_encode_string_id();
-    errors += test_decode_string_id();
+
+    benchmark_aztoupper();
+    benchmark_prepend_char();
+    benchmark_hex_uint64_t();
+    benchmark_parse_hex_uint64_t();
 
     return errors;
 }

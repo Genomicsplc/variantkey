@@ -23,26 +23,15 @@ function(SMOKE_TEST test_name test_file dependencies)
   do_test (${test_name})
 endfunction(SMOKE_TEST)
 
-file (COPY data/test_data.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
+file(GLOB TEST_BIN_FILES "data/*.bin")
+file (COPY ${TEST_BIN_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-file (COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_variantkey test_variantkey.c variantkey)
-
-file (COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 SMOKE_TEST (test_astring test_astring.c variantkey)
-
-file (COPY data/rsvk.10.bin data/vkrs.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_rsidvar test_rsidvar.c variantkey)
-
-file (COPY data/vknr.10.bin data/vknr.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_nrvk test_nrvk.c variantkey)
-
-file (COPY data/genoref.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-SMOKE_TEST (test_genoref test_genoref.c variantkey)
-
-file (COPY data/rsvk.m.10.bin DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
+SMOKE_TEST (test_esid test_esid.c variantkey)
 SMOKE_TEST (test_example test_example.c variantkey)
-
-file (COPY DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+SMOKE_TEST (test_genoref test_genoref.c variantkey)
+SMOKE_TEST (test_nrvk test_nrvk.c variantkey)
 SMOKE_TEST (test_regionkey test_regionkey.c variantkey)
+SMOKE_TEST (test_test_rsidvar test_rsidvar.c variantkey)
+SMOKE_TEST (test_test_variantkey test_variantkey.c variantkey)
