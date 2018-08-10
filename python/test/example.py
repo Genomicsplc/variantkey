@@ -258,3 +258,22 @@ print(vk.are_overlapping_variantkey_regionkey(None, 0, 0x2800000210920000, 0x280
 
 print(vk.variantkey_to_regionkey(None, 0, 0x2800000210920000))
 # 2882303770107052080
+
+
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+
+# ESID
+# ---------
+
+print(vk.encode_string_id("A0A022YWF9", 0))
+# 599125005131282841
+
+print(vk.decode_string_id(0x0850850492e77999))
+(b'A0A022YWF9', 10)
+
+print(vk.hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+# 12945031672818874332
+
+
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\

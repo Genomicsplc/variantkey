@@ -1,6 +1,6 @@
 // VariantKey
 //
-// astring.c
+// hex.h
 //
 // @category   Libraries
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
@@ -30,55 +30,44 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
-#include <string.h>
-#include "astring.h"
+/**
+ * @file hex.h
+ * @brief Utility functions to manipulate strings.
+ *
+ * Collection of utility functions to manipulate strings.
+ */
 
-int aztoupper(int c)
-{
-    if (c >= 'a')
-    {
-        return (c ^ ('a' - 'A'));
-    }
-    return c;
-}
+#ifndef ASTRING_H
+#define ASTRING_H
 
-void prepend_char(const unsigned char pre, char *string, size_t *size)
-{
-    memmove(string + 1, string, (*size + 1));
-    string[0] = pre;
-    (*size)++;
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-size_t hex_uint64_t(uint64_t n, char *str)
-{
-    return sprintf(str, "%016" PRIx64, n);
-}
+#include <inttypes.h>
 
-uint64_t parse_hex_uint64_t(const char *s)
-{
-    uint64_t v = 0;
-    uint8_t b;
-    size_t i;
-    for (i = 0; i < 16; i++)
-    {
-        b = s[i];
-        if (b >= 'a')
-        {
-            b -= ('a' - 10); // a-f
-        }
-        else
-        {
-            if (b >= 'A')
-            {
-                b -= ('A' - 10); // A-F
-            }
-            else
-            {
-                b -= '0'; // 0-9
-            }
-        }
-        v = ((v << 4) | b);
-    }
-    return v;
+/** @brief Returns uint64_t hexadecimal string (16 characters).
+ *
+ * @param n     Number to parse
+ * @param str   String buffer to be returned (it must be sized 17 bytes at least).
+ *
+ * @return      Upon successful return, these function returns the number of characters processed
+ *              (excluding the null byte used to end output to strings).
+ *              If the buffer size is not sufficient, then the return value is the number of characters required for
+ *              buffer string, including the terminating null byte.
+ */
+size_t hex_uint64_t(uint64_t n, char *str);
+
+/** @brief Parses a 16 chars hexadecimal string and returns the code.
+ *
+ * @param s    Hexadecimal string to parse (it must contain 16 hexadecimal characters).
+ *
+ * @return uint64_t unsigned integer number.
+ */
+uint64_t parse_hex_uint64_t(const char *s);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif  // ASTRING_H

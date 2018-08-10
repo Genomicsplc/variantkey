@@ -125,11 +125,10 @@ static inline uint32_t encode_base(const unsigned char c)
 
 static inline int encode_allele(uint32_t *h, uint8_t *bitpos, const char *str, size_t size)
 {
-    int c;
     uint32_t v;
-    while ((c = *str++) && (size--))
+    while (size--)
     {
-        v = encode_base(c);
+        v = encode_base(*str++);
         if (v > 3)
         {
             return -1;
@@ -154,32 +153,43 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
     return h;
 }
 
-static inline uint32_t pack_chars(const char *str, size_t size)
-{
-    int c;
-    uint32_t h = 0;
-    uint8_t bitpos = VKSHIFT_POS;
-    while ((c = aztoupper(*str++)) && (size--))
-    {
-        if (c == '*')
-        {
-            c = ('Z' + 1);
-        }
-        bitpos -= 5;
-        h |= ((c - 'A' + 1) << bitpos); // 'A' will be coded as 1
-    }
-    return h;
-}
-
-// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
+// Mix two 32 bit hash numbers using a MurmurHash3-like algorithm
 static inline uint32_t muxhash(uint32_t k, uint32_t h)
 {
     k *= 0xcc9e2d51;
-    k = (k >> 17) | (k << (32 - 17));
+    k = (k >> 17) | (k << 15);
     k *= 0x1b873593;
     h ^= k;
-    h = (h >> 19) | (h << (32 - 19));
+    h = (h >> 19) | (h << 13);
     return ((h * 5) + 0xe6546b64);
+}
+
+static inline int encode_packchar(int c)
+{
+    if (c < 'A')
+    {
+        return 27;
+    }
+    if (c >= 'a')
+    {
+        return (c - 'a' + 1);
+    }
+    return (c - 'A' + 1);
+}
+
+// pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit) [ 01111122 22233333 44444555 55666660 ]
+static inline uint32_t pack_chars(const char *str, size_t size)
+{
+    uint32_t c;
+    uint32_t h = 0;
+    uint8_t bitpos = VKSHIFT_POS;
+    while (size--)
+    {
+        bitpos -= 5;
+        c = (uint32_t)encode_packchar(*str++);
+        h |= (c << bitpos);
+    }
+    return h;
 }
 
 // Return a 32 bit hash of a nucleotide string
@@ -187,17 +197,15 @@ static inline uint32_t hash32(const char *str, size_t size)
 {
     uint32_t h = 0;
     size_t len = 6;
-    while (size > 0)
+    while (size >= len)
     {
-        if (size < len)
-        {
-            len = size;
-        }
-        // [ 01111122 22233333 44444555 55666660 ]
-        // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(pack_chars(str, len), h);
         size -= len;
         str += len;
+    }
+    if (size > 0)
+    {
+        h = muxhash(pack_chars(str, size), h);
     }
     return h;
 }
@@ -206,7 +214,7 @@ static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const
 {
     // 0x3 is the separator character between REF and ALT [00000000 00000000 00000000 00000011]
     uint32_t h = muxhash(hash32(alt, sizealt), muxhash(0x3, hash32(ref, sizeref)));
-    // finalization mix - MurmurHash3 algorithm
+    // MurmurHash3 finalization mix - force all bits of a hash block to avalanche
     h ^= h >> 16;
     h *= 0x85ebca6b;
     h ^= h >> 13;

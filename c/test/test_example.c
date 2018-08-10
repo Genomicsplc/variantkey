@@ -5,8 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../src/astring.h"
+#include "../src/hex.h"
 #include "../src/binsearch.h"
+#include "../src/esid.h"
 #include "../src/genoref.h"
 #include "../src/nrvk.h"
 #include "../src/regionkey.h"
@@ -381,6 +382,26 @@ int main()
     rk = variantkey_to_regionkey(NULL, 0, 0x2800000210920000);
     fprintf(stdout, "%016" PRIx64 "\n", rk);
     // 2800000200000030
+
+
+    // ============================================================================
+
+
+    // ESID
+    // -------
+
+    uint64_t esid = encode_string_id("A0A022YWF9", 10, 0);
+    fprintf(stdout, "%016" PRIx64 "\n", esid);
+    // 0850850492e77999
+
+    char strid[11];
+    size_t stridlen = decode_string_id(0x0850850492e77999, strid);
+    fprintf(stdout, "%s %lu\n", strid, stridlen);
+    // A0A022YWF9 10
+
+    esid = hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36);
+    fprintf(stdout, "%016" PRIx64 "\n", esid);
+    // b3a5fdb8808cb7dc
 
     // ============================================================================
 

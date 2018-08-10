@@ -1,6 +1,6 @@
-"""Tests for regionkey module."""
+"""Tests for variantkey regionkey module."""
 
-# test_variantkey.py
+# test_regionkey.py
 # @category   Libraries
 # @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 # @copyright  2017-2018 GENOMICS plc

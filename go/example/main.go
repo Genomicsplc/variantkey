@@ -240,4 +240,18 @@ func main() {
 	fmt.Println(vknr.VariantToRegionkey(0x2800000210920000))
 	// 2882303770107052080
 
+	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+	// ESID
+	// ---------
+
+	fmt.Println(vk.EncodeStringID("A0A022YWF9", 0))
+	// 599125005131282841
+
+	fmt.Println(vk.DecodeStringID(0x0850850492e77999))
+	// A0A022YWF9
+
+	fmt.Println(vk.HashStringID("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
+	// 12945031672818874332
+
 }

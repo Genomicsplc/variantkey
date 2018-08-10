@@ -33,9 +33,10 @@
 #define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
 
 #include <Python.h>
-#include "../../c/src/astring.h"
 #include "../../c/src/binsearch.h"
+#include "../../c/src/esid.h"
 #include "../../c/src/genoref.h"
+#include "../../c/src/hex.h"
 #include "../../c/src/nrvk.h"
 #include "../../c/src/regionkey.h"
 #include "../../c/src/rsidvar.h"
@@ -270,7 +271,7 @@ static PyObject* py_munmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args,
     static char *kwlist[] = {"mfsrc", "fd", "size", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OiK", kwlist, &mfsrc, &mf.fd, &mf.size))
         return NULL;
-    mf.src = py_get_mmsrc(mfsrc);
+    mf.src = (unsigned char *)PyCapsule_GetPointer(mfsrc, "src");
     int h = munmap_binfile(mf);
     result = Py_BuildValue("i", h);
     return result;
@@ -1407,6 +1408,46 @@ static PyObject* py_variantkey_to_regionkey(PyObject *Py_UNUSED(ignored), PyObje
     return Py_BuildValue("K", h);
 }
 
+// --- ESID ---
+
+static PyObject* py_encode_string_id(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *str;
+    Py_ssize_t size;
+    uint32_t start;
+    static char *kwlist[] = {"str", "start", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#I", kwlist, &str, &size, &start))
+        return NULL;
+    uint64_t h = encode_string_id(str, (size_t)size, (size_t)start);
+    return Py_BuildValue("K", h);
+}
+
+static PyObject* py_decode_string_id(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t esid;
+    static char *kwlist[] = {"esid", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &esid))
+        return NULL;
+    char str[11] = "";
+    size_t len = decode_string_id(esid, str);
+    PyObject *result;
+    result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("y", str));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", len));
+    return result;
+}
+
+static PyObject* py_hash_string_id(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *str;
+    Py_ssize_t size;
+    static char *kwlist[] = {"str", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &str, &size))
+        return NULL;
+    uint64_t h = hash_string_id(str, (size_t)size);
+    return Py_BuildValue("K", h);
+}
+
 // ---
 
 static PyMethodDef PyVariantKeyMethods[] =
@@ -1510,6 +1551,11 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"are_overlapping_regionkeys", (PyCFunction)py_are_overlapping_regionkeys, METH_VARARGS|METH_KEYWORDS, AREOVERLAPPINGREGIONKEYS_DOCSTRING},
     {"are_overlapping_variantkey_regionkey", (PyCFunction)py_are_overlapping_variantkey_regionkey, METH_VARARGS|METH_KEYWORDS, AREOVERLAPPINGVARIANTKEYREGIONKEY_DOCSTRING},
     {"variantkey_to_regionkey", (PyCFunction)py_variantkey_to_regionkey, METH_VARARGS|METH_KEYWORDS, VARIANTKEYTOREGIONKEY_DOCSTRING},
+
+    // ESID
+    {"encode_string_id", (PyCFunction)py_encode_string_id, METH_VARARGS|METH_KEYWORDS, ENCODESTRINGID_DOCSTRING},
+    {"decode_string_id", (PyCFunction)py_decode_string_id, METH_VARARGS|METH_KEYWORDS, DECODESTRINGID_DOCSTRING},
+    {"hash_string_id", (PyCFunction)py_hash_string_id, METH_VARARGS|METH_KEYWORDS, HASHSTRINGID_DOCSTRING},
 
     {NULL, NULL, 0, NULL}
 };

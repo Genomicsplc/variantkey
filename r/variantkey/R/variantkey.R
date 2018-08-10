@@ -562,3 +562,34 @@ AreOverlappingVariantKeyRegionKey <- function(src, last, vk, rk) {
 VariantToRegionkey <- function(src, last, vk) {
     return(.Call("R_variantkey_to_regionkey", src, last, vk))
 }
+
+# --- ESID ---
+
+#' Encode maximum 10 characters of a string into a 64 bit unsigned integer.
+#' This function can be used to convert generic string IDs to numeric IDs.
+#' @param str    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.
+#' @param start  First character to encode, starting from 0. To encode the last 10 characters, set this value at (size - 10).
+#' @useDynLib   variantkey R_encode_string_id
+#' @export
+EncodeStringID <- function(str, start) {
+    return(.Call("R_encode_string_id", str, start))
+}
+
+#' Decode the encoded string ID.
+#' This function is the reverse of encode_string_id.
+#' The string is always returned in uppercase mode.
+#' @param esid   Encoded string ID code.
+#' @useDynLib   variantkey R_decode_string_id
+#' @export
+DecodeStringID <- function(esid) {
+    return(.Call("R_decode_string_id", esid))
+}
+
+#' Hash the input string into a 64 bit unsigned integer.
+#' This function can be used to convert long string IDs to numeric IDs.
+#' @param str    The string to encode.
+#' @useDynLib   variantkey R_hash_string_id
+#' @export
+HashStringID <- function(str) {
+    return(.Call("R_hash_string_id", str))
+}

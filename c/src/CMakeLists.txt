@@ -8,7 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 link_directories( ${CMAKE_CURRENT_BINARY_DIR} )
 include_directories (${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_BINARY_DIR}/src )
 
-add_library (variantkey astring.h astring.c variantkey.h variantkey.c binsearch.h binsearch.c rsidvar.h rsidvar.c nrvk.h nrvk.c genoref.h genoref.c regionkey.h regionkey.c)
+add_library (variantkey binsearch.c binsearch.h esid.c esid.h genoref.c genoref.h hex.c hex.h nrvk.c nrvk.h regionkey.c regionkey.h rsidvar.c rsidvar.h variantkey.c variantkey.h)
 target_include_directories (variantkey PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Required to link the math library
