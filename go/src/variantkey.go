@@ -937,3 +937,27 @@ func (mf TMMFile) AreOverlappingVariantKeyRegionKey(vk, rk uint64) bool {
 func (mf TMMFile) VariantToRegionkey(vk uint64) uint64 {
 	return uint64(C.variantkey_to_regionkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
+
+// --- ESID ---
+
+// EncodeStringID encode maximum 10 characters of a string into a 64 bit unsigned integer. The argument "start" indicate the first character to encode.
+func EncodeStringID(s string, start uint32) uint64 {
+	bs := StringToNTBytes(s)
+	ps := unsafe.Pointer(&bs[0]) // #nosec
+	return uint64(C.encode_string_id((*C.char)(ps), C.size_t(len(s)), C.size_t(start)))
+}
+
+// DecodeStringID decode the encoded string ID.
+func DecodeStringID(esid uint64) string {
+	cstr := C.malloc(11)
+	defer C.free(unsafe.Pointer(cstr)) // #nosec
+	len := C.decode_string_id(C.uint64_t(esid), (*C.char)(cstr))
+	return C.GoStringN((*C.char)(cstr), C.int(len))
+}
+
+// HashStringID hash the input string into a 64 bit unsigned integer.
+func HashStringID(s string) uint64 {
+	bs := StringToNTBytes(s)
+	ps := unsafe.Pointer(&bs[0]) // #nosec
+	return uint64(C.hash_string_id((*C.char)(ps), C.size_t(len(s))))
+}

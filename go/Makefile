@@ -204,4 +204,5 @@ clean:
 
 # build example
 example:
-	GOPATH=$(GOPATH) go build -o ./target/example ./example
+	GOPATH=$(GOPATH) go build -o ./target/example ./example \
+	&& ./target/example

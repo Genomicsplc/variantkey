@@ -88,7 +88,7 @@ static esid_data_t esid_data[] =
     {"\\]^_`abcde",                          10,  0, 0x0f3dfbf8218a3925, "\\]^_@ABCDE", 10, 0x878ef2947ee3cc2b},
     {"fghijklmno",                           10,  0, 0x09a7a29aabb2dbaf, "FGHIJKLMNO",  10, 0xbaadaef07826969b},
     {"pqrstuvwxy",                           10,  0, 0x0c31cb3d35db7e39, "PQRSTUVWXY",  10, 0xd3da4d5e28be3590},
-    {"z{|}~\t",                               6,  0, 0x0ebbf3dfbf000000, "Z[\\]^",       6, 0xeadc752a50c5b850},
+    {"z{|}~\t",                               6,  0, 0x0ebbf3dfbf000000, "Z[\\]^_",      6, 0xeadc752a50c5b850},
     {"123456781234567",                      15,  0, 0x04524d45565d8452, "1234567812",  10, 0x9af6ee553ba41827},
     {"12345678123456",                       14,  0, 0x04524d45565d8452, "1234567812",  10, 0xc94e10e9fe153fd2},
     {"1234567812345",                        13,  0, 0x04524d45565d8452, "1234567812",  10, 0x9b56411c7abdefe6},
