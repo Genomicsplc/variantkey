@@ -69,15 +69,15 @@ uint64_t encode_string_id(const char *str, size_t size, size_t start);
  * @param str    String buffer to be returned. Its size should be enough to contain the results (at least 11 bytes).
  *
  * @return The total number of characters excluding the null-character appended at the end of the string.
- *         In case of hash-string ID returns 0.
+ *         Returns 0 if the string is not reversible.
  */
 size_t decode_string_id(uint64_t esid, char *str);
 
 /**
- * Hash the imput string into a 64 bit unsigned integer.
+ * Hash the input string into a 64 bit unsigned integer.
  * This function can be used to convert long string IDs to numeric IDs.
  *
- * @param str    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.
+ * @param str    The string to encode.
  * @param size   Length of the string, excluding the terminating null byte.
  *
  * @return Hash string ID.
