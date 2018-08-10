@@ -54,7 +54,6 @@
 extern "C" {
 #endif
 
-#include "astring.h"
 #include "binsearch.h"
 
 #ifndef ALLELE_MAXSIZE

@@ -917,16 +917,18 @@ void benchmark_encode_refalt_rev()
 
 void benchmark_encode_refalt_hash()
 {
+    const char *allele = "ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACG";
+    uint32_t hash;
     uint64_t tstart, tend;
     int i;
-    int size = 100000;
+    int size = 1000;
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        encode_refalt("GAGTGGAATGGAATAGAGTGTAGTGAAATGC", 31, "G", 1);
+        hash = encode_refalt_hash(allele, 255, allele, 255);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+    fprintf(stdout, " * %s : %lu ns/op (%" PRIx32 ")\n", __func__, (tend - tstart)/size, hash);
 }
 
 void benchmark_decode_refalt()

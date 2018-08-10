@@ -1,6 +1,6 @@
 // VariantKey
 //
-// esid.c
+// hex.c
 //
 // @category   Libraries
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
@@ -31,61 +31,38 @@
 // THE SOFTWARE.
 
 #include <stdio.h>
-#include "esid.h"
+#include <string.h>
+#include "hex.h"
 
-#define ESID_SHIFT    32 //!< Number used to translate ASCII character values
-#define ESIDSHIFT_POS 60 //!< Encoded string ID LEN LSB position from LSB [ ----0000 00111111 22222233 33334444 44555555 66666677 77778888 88999999 ]
-
-static inline int esid_encode_char(int c)
+size_t hex_uint64_t(uint64_t n, char *str)
 {
-    if (c < '!')
-    {
-        return ('_' - ESID_SHIFT);
-    }
-    if (c > '_')
-    {
-        return (c - ('a' - 'A' + ESID_SHIFT));
-    }
-    return (c - ESID_SHIFT);
+    return sprintf(str, "%016" PRIx64, n);
 }
 
-uint64_t encode_string_id(const char *str, size_t size, size_t start)
+uint64_t parse_hex_uint64_t(const char *s)
 {
-    size -= start;
-    if (size > ESIDSHIFT_MAXLEN)
+    uint64_t v = 0;
+    uint8_t b;
+    size_t i;
+    for (i = 0; i < 16; i++)
     {
-        size = ESIDSHIFT_MAXLEN;
-    }
-    int c;
-    uint64_t h = 0;
-    uint8_t bitpos = ESIDSHIFT_POS;
-    str += start;
-    while (size--)
-    {
-        bitpos -= 6;
-        c = esid_encode_char(*str++);
-        h |= ((uint64_t)c << bitpos);
-    }
-    return h;
-}
-
-size_t decode_string_id(uint64_t esid, char *str)
-{
-    size_t size = 0;
-    uint8_t bitpos = ESIDSHIFT_POS;
-    size_t i = 0;
-    char code;
-    for(i = 0; i < ESIDSHIFT_MAXLEN; i++)
-    {
-        bitpos -= 6;
-        code = ((esid >> bitpos) & 0x3f);
-        if (code == 0)
+        b = s[i];
+        if (b >= 'a')
         {
-            break;
+            b -= ('a' - 10); // a-f
         }
-        str[i] = (code + ESID_SHIFT); // 0x3f is the 6 bit mask [00111111]
-        size++;
+        else
+        {
+            if (b >= 'A')
+            {
+                b -= ('A' - 10); // A-F
+            }
+            else
+            {
+                b -= '0'; // 0-9
+            }
+        }
+        v = ((v << 4) | b);
     }
-    str[i] = 0;
-    return size;
+    return v;
 }

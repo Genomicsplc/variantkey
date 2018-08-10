@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../src/astring.h"
+#include "../src/hex.h"
 #include "../src/binsearch.h"
 #include "../src/esid.h"
 #include "../src/genoref.h"

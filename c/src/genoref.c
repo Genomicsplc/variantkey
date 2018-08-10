@@ -34,6 +34,40 @@
 #include <string.h>
 #include "genoref.h"
 
+/**
+ * Returns the uppercase version of the input character.
+ * Note that this is safe to be used only with a-z characters.
+ * All characters above 'a' will be changed.
+ *
+ * @param c Character to uppercase.
+ *
+ * @return Uppercased character
+ */
+static inline int aztoupper(int c)
+{
+    if (c >= 'a')
+    {
+        return (c ^ ('a' - 'A'));
+    }
+    return c;
+}
+
+/**
+ * Prepend a character to a string.
+ *
+ * @param pre    Character to prepend.
+ * @param string String to modify.
+ * @param size   Input string length.
+ *
+ * @return void
+ */
+void prepend_char(const unsigned char pre, char *string, size_t *size)
+{
+    memmove(string + 1, string, (*size + 1));
+    string[0] = pre;
+    (*size)++;
+}
+
 void load_genoref_index(const unsigned char *src, uint32_t idx[])
 {
     idx[0] = 0;

@@ -125,17 +125,16 @@ static inline uint32_t encode_base(const unsigned char c)
 
 static inline int encode_allele(uint32_t *h, uint8_t *bitpos, const char *str, size_t size)
 {
-    int c;
     uint32_t v;
-    while ((c = *str++) && (size--))
+    while (size--)
     {
-        v = encode_base(c);
+        v = encode_base(*str++);
         if (v > 3)
         {
             return -1;
         }
         *bitpos -= 2;
-        *h |= (v << *bitpos); // A will be coded as 1
+        *h |= ((uint32_t)(v) << *bitpos); // A will be coded as 1
     }
     return 0;
 }
@@ -154,19 +153,29 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
     return h;
 }
 
+static inline int encode_packchar(int c)
+{
+    if (c < 'A')
+    {
+        return 27;
+    }
+    if (c >= 'a')
+    {
+        return (c - 'a' + 1);
+    }
+    return (c - 'A' + 1);
+}
+
 static inline uint32_t pack_chars(const char *str, size_t size)
 {
     int c;
     uint32_t h = 0;
     uint8_t bitpos = VKSHIFT_POS;
-    while ((c = aztoupper(*str++)) && (size--))
+    while (size--)
     {
-        if (c == '*')
-        {
-            c = ('Z' + 1);
-        }
         bitpos -= 5;
-        h |= ((c - 'A' + 1) << bitpos); // 'A' will be coded as 1
+        c = encode_packchar(*str++);
+        h |= ((uint32_t)(c) << bitpos);
     }
     return h;
 }
@@ -202,11 +211,23 @@ static inline uint32_t hash32(const char *str, size_t size)
     return h;
 }
 
+/*static inline uint32_t hash32(const char *str, size_t size)
+{
+    uint32_t h = 0;
+    const uint32_t *pos = (const uint32_t *)str;
+    const uint32_t *end = pos + (size / 4);
+    const unsigned char *pos2;
+    while (pos != end) {
+        h = muxhash(*pos++, h);
+    }
+    return h;
+}*/
+
 static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     // 0x3 is the separator character between REF and ALT [00000000 00000000 00000000 00000011]
     uint32_t h = muxhash(hash32(alt, sizealt), muxhash(0x3, hash32(ref, sizeref)));
-    // finalization mix - MurmurHash3 algorithm
+    // MurmurHash3 finalization mix - force all bits of a hash block to avalanche
     h ^= h >> 16;
     h *= 0x85ebca6b;
     h ^= h >> 13;

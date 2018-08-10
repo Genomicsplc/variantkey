@@ -1,6 +1,6 @@
 // VariantKey
 //
-// test_astring.c
+// test_hex.c
 //
 // @category   Tools
 // @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
@@ -30,7 +30,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-// Test for astring
+// Test for hex
 
 #if __STDC_VERSION__ >= 199901L
 #define _XOPEN_SOURCE 600
@@ -44,7 +44,7 @@
 #include <string.h>
 #include <strings.h>
 #include <time.h>
-#include "../src/astring.c"
+#include "../src/hex.c"
 
 // returns current time in nanoseconds
 uint64_t get_time()
@@ -52,82 +52,6 @@ uint64_t get_time()
     struct timespec t;
     clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &t);
     return (((uint64_t)t.tv_sec * 1000000000) + (uint64_t)t.tv_nsec);
-}
-
-int test_aztoupper()
-{
-    int errors = 0;
-    int i, c;
-    for (i=97 ; i <= 122; i++)
-    {
-        c = aztoupper(i);
-        if (c != (i - 32))
-        {
-            fprintf(stderr, "%s : Wrong uppercase value for %d - expecting %d, got %d\n", __func__, i, (i - 32), c);
-            ++errors;
-        }
-    }
-    c = aztoupper(96);
-    if (c != 96)
-    {
-        fprintf(stderr, "%s : Wrong uppercase value - expecting 96, got %d\n", __func__, c);
-        ++errors;
-    }
-    return errors;
-}
-
-void benchmark_aztoupper()
-{
-    int c;
-    uint64_t tstart, tend;
-    int i, j;
-    int size = 100000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        for (j=0 ; j < 256; j++)
-        {
-            c = aztoupper(j);
-        }
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op (%d)\n", __func__, (tend - tstart)/(256*size), c);
-}
-
-int test_prepend_char()
-{
-    int errors = 0;
-    char original[5] =   "BCD";
-    char expected[5] = "ABCD";
-    size_t size = 3;
-    prepend_char('A', original, &size);
-    if (size != 4)
-    {
-        fprintf(stderr, "%s : Expected size 4, got %lu\n", __func__, size);
-        ++errors;
-    }
-    if (strcmp(original, expected) != 0)
-    {
-        fprintf(stderr, "%s : Expected %s, got %s\n", __func__, expected, original);
-        ++errors;
-    }
-    return errors;
-}
-
-void benchmark_prepend_char()
-{
-    char original[1002] =   "B";
-    size_t len = 1;
-    uint64_t tstart, tend;
-    int i;
-    int size = 1000;
-    tstart = get_time();
-    for (i=0 ; i < size; i++)
-    {
-        prepend_char('A', original, &len);
-    }
-    tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
 int test_hex_uint64_t()
@@ -190,13 +114,9 @@ int main()
 {
     int errors = 0;
 
-    errors += test_aztoupper();
-    errors += test_prepend_char();
     errors += test_hex_uint64_t();
     errors += test_parse_hex_uint64_t();
 
-    benchmark_aztoupper();
-    benchmark_prepend_char();
     benchmark_hex_uint64_t();
     benchmark_parse_hex_uint64_t();
 

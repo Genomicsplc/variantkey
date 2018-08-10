@@ -49,7 +49,7 @@ extern "C" {
 
 #include <inttypes.h>
 #include <stddef.h>
-#include "astring.h"
+#include "hex.h"
 
 #define VKMASK_CHROM    0xF800000000000000  //!< VariantKey binary mask for CHROM     [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
 #define VKMASK_POS      0x07FFFFFF80000000  //!< VariantKey binary mask for POS       [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
