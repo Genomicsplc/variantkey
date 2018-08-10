@@ -395,10 +395,13 @@ int main()
     // 0850850492e77999
 
     char strid[11];
-    size_t stridlen = decode_string_id(0xa850850492e77999, strid);
+    size_t stridlen = decode_string_id(0x0850850492e77999, strid);
     fprintf(stdout, "%s %lu\n", strid, stridlen);
     // A0A022YWF9 10
 
+    esid = hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36);
+    fprintf(stdout, "%016" PRIx64 "\n", esid);
+    // b3a5fdb8808cb7dc
 
     // ============================================================================
 

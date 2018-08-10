@@ -134,7 +134,7 @@ static inline int encode_allele(uint32_t *h, uint8_t *bitpos, const char *str, s
             return -1;
         }
         *bitpos -= 2;
-        *h |= ((uint32_t)(v) << *bitpos); // A will be coded as 1
+        *h |= (v << *bitpos); // A will be coded as 1
     }
     return 0;
 }
@@ -153,14 +153,14 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
     return h;
 }
 
-// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
+// Mix two 32 bit hash numbers using a MurmurHash3-like algorithm
 static inline uint32_t muxhash(uint32_t k, uint32_t h)
 {
     k *= 0xcc9e2d51;
-    k = (k >> 17) | (k << (32 - 17));
+    k = (k >> 17) | (k << 15);
     k *= 0x1b873593;
     h ^= k;
-    h = (h >> 19) | (h << (32 - 19));
+    h = (h >> 19) | (h << 13);
     return ((h * 5) + 0xe6546b64);
 }
 

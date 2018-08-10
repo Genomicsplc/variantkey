@@ -71,6 +71,11 @@ uint64_t encode_string_id(const char *str, size_t size, size_t start)
 
 size_t decode_string_id(uint64_t esid, char *str)
 {
+    if (esid >> 63)
+    {
+        str[0] = 0;
+        return 0; // hash encoding
+    }
     size_t size = 0;
     uint8_t bitpos = ESIDSHIFT_POS;
     size_t i = 0;
@@ -88,4 +93,56 @@ size_t decode_string_id(uint64_t esid, char *str)
     }
     str[i] = 0;
     return size;
+}
+
+// Mix two 64 bit hash numbers using a MurmurHash3-like algorithm
+static inline uint64_t muxhash64(uint64_t k, uint64_t h)
+{
+    k *= 0x87c37b91114253d5;
+    k = (k >> 33) | (k << 31);
+    k *= 0x4cf5ad432745937f;
+    h ^= k;
+    h = (h >> 37) | (h << 27);
+    return ((h * 5) + 0x52dce729);
+}
+
+uint64_t hash_string_id(const char *str, size_t size)
+{
+    const uint64_t *pos = (const uint64_t *)str;
+    const uint64_t *end = pos + (size / 8);
+    uint64_t h = 0;
+    while (pos < end)
+    {
+        h = muxhash64(*pos++, h);
+    }
+    const uint8_t* tail = (const uint8_t*)pos;
+    uint64_t v = 0;
+    switch (size & 7)
+    {
+    case 7:
+        v ^= (uint64_t)tail[6] << 48;
+    case 6:
+        v ^= (uint64_t)tail[5] << 40;
+    case 5:
+        v ^= (uint64_t)tail[4] << 32;
+    case 4:
+        v ^= (uint64_t)tail[3] << 24;
+    case 3:
+        v ^= (uint64_t)tail[2] << 16;
+    case 2:
+        v ^= (uint64_t)tail[1] << 8;
+    case 1:
+        v ^= (uint64_t)tail[0];
+    }
+    if (v > 0)
+    {
+        h = muxhash64(v, h);
+    }
+    // MurmurHash3 finalization mix - force all bits of a hash block to avalanche
+    h ^= h >> 33;
+    h *= 0xff51afd7ed558ccd;
+    h ^= h >> 33;
+    h *= 0xc4ceb9fe1a85ec53;
+    h ^= h >> 33;
+    return (h | 0x8000000000000000); // set the first bit to indicate HASH mode
 }
