@@ -33,9 +33,10 @@
 #define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
 
 #include <Python.h>
-#include "../../c/src/hex.h"
 #include "../../c/src/binsearch.h"
+#include "../../c/src/esid.h"
 #include "../../c/src/genoref.h"
+#include "../../c/src/hex.h"
 #include "../../c/src/nrvk.h"
 #include "../../c/src/regionkey.h"
 #include "../../c/src/rsidvar.h"

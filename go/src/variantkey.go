@@ -35,12 +35,14 @@ package variantkey
 /*
 #include <stdlib.h>
 #include <inttypes.h>
-#include "../../c/src/hex.h"
-#include "../../c/src/hex.c"
 #include "../../c/src/binsearch.h"
 #include "../../c/src/binsearch.c"
+#include "../../c/src/esid.h"
+#include "../../c/src/esid.c"
 #include "../../c/src/genoref.h"
 #include "../../c/src/genoref.c"
+#include "../../c/src/hex.h"
+#include "../../c/src/hex.c"
 #include "../../c/src/nrvk.h"
 #include "../../c/src/nrvk.c"
 #include "../../c/src/regionkey.h"

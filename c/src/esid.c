@@ -108,7 +108,7 @@ static inline uint64_t muxhash64(uint64_t k, uint64_t h)
 
 uint64_t hash_string_id(const char *str, size_t size)
 {
-    const uint64_t *pos = (const uint64_t *)str;
+    const uint64_t *pos = (const uint64_t *)str; // NOTE endianness
     const uint64_t *end = pos + (size / 8);
     uint64_t h = 0;
     while (pos < end)
