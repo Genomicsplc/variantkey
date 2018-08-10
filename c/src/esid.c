@@ -31,7 +31,6 @@
 // THE SOFTWARE.
 
 #include <stdio.h>
-#include <string.h>
 #include "esid.h"
 
 #define ESID_SHIFT    32 //!< Number used to translate ASCII character values
