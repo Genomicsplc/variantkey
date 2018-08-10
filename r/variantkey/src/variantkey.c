@@ -627,3 +627,31 @@ SEXP R_variantkey_to_regionkey(SEXP src, SEXP last, SEXP vk)
     regionkey_hex(rk, hex);
     return Rf_mkString(hex);
 }
+
+// --- ESID ---
+
+SEXP R_encode_string_id(SEXP str, SEXP start)
+{
+    const char *chr = CHAR(STRING_ELT(str, 0));
+    uint64_t esid = encode_string_id(chr, strlen(chr), asInteger(start));
+    char hex[17];
+    hex_uint64_t(esid, hex);
+    return Rf_mkString(hex);
+}
+
+SEXP R_decode_string_id(SEXP esid)
+{
+    uint64_t code = parse_hex_uint64_t(CHAR(STRING_ELT(esid, 0)));
+    char str[11] = "";
+    decode_string_id(code, str);
+    return Rf_mkString(str);
+}
+
+SEXP R_hash_string_id(SEXP str)
+{
+    const char *chr = CHAR(STRING_ELT(str, 0));
+    uint64_t hsid = hash_string_id(chr, strlen(chr));
+    char hex[17];
+    hex_uint64_t(hsid, hex);
+    return Rf_mkString(hex);
+}

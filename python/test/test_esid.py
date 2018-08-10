@@ -61,9 +61,6 @@ class TestFunctions(TestCase):
     def test_decode_string_id(self):
         for _, _, _, esid, estr, esize, _ in esidTestData:
             h = variantkey.decode_string_id(esid)
-            print(esid)
-            print(h)
-            print(esize)
             self.assertEqual(h[0], estr)
             self.assertEqual(h[1], esize)
 
