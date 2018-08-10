@@ -42,7 +42,7 @@ setup(
     packages=find_packages(exclude=['doc', 'test*']),
     ext_modules=[
         Extension('variantkey', [
-            '../c/src/astring.c',
+            '../c/src/hex.c',
             '../c/src/binsearch.c',
             '../c/src/genoref.c',
             '../c/src/nrvk.c',

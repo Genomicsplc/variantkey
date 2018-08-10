@@ -35,8 +35,8 @@ package variantkey
 /*
 #include <stdlib.h>
 #include <inttypes.h>
-#include "../../c/src/astring.h"
-#include "../../c/src/astring.c"
+#include "../../c/src/hex.h"
+#include "../../c/src/hex.c"
 #include "../../c/src/binsearch.h"
 #include "../../c/src/binsearch.c"
 #include "../../c/src/genoref.h"

@@ -56,15 +56,15 @@ uint64_t encode_string_id(const char *str, size_t size, size_t start)
     {
         size = ESIDSHIFT_MAXLEN;
     }
-    int c;
+    uint64_t c;
     uint64_t h = 0;
     uint8_t bitpos = ESIDSHIFT_POS;
     str += start;
     while (size--)
     {
         bitpos -= 6;
-        c = esid_encode_char(*str++);
-        h |= ((uint64_t)c << bitpos);
+        c = (uint64_t)esid_encode_char(*str++);
+        h |= (c << bitpos);
     }
     return h;
 }

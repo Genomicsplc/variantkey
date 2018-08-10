@@ -917,7 +917,7 @@ void benchmark_encode_refalt_rev()
 
 void benchmark_encode_refalt_hash()
 {
-    const char *allele = "ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACG";
+    const char *allele = "ACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGTACGT";
     uint32_t hash;
     uint64_t tstart, tend;
     int i;
@@ -925,7 +925,7 @@ void benchmark_encode_refalt_hash()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        hash = encode_refalt_hash(allele, 255, allele, 255);
+        hash = encode_refalt_hash(allele, 92, allele, 92);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op (%" PRIx32 ")\n", __func__, (tend - tstart)/size, hash);

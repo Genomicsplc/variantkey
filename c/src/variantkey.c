@@ -153,6 +153,17 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
     return h;
 }
 
+// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
+static inline uint32_t muxhash(uint32_t k, uint32_t h)
+{
+    k *= 0xcc9e2d51;
+    k = (k >> 17) | (k << (32 - 17));
+    k *= 0x1b873593;
+    h ^= k;
+    h = (h >> 19) | (h << (32 - 19));
+    return ((h * 5) + 0xe6546b64);
+}
+
 static inline int encode_packchar(int c)
 {
     if (c < 'A')
@@ -166,29 +177,19 @@ static inline int encode_packchar(int c)
     return (c - 'A' + 1);
 }
 
+// pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit) [ 01111122 22233333 44444555 55666660 ]
 static inline uint32_t pack_chars(const char *str, size_t size)
 {
-    int c;
+    uint32_t c;
     uint32_t h = 0;
     uint8_t bitpos = VKSHIFT_POS;
     while (size--)
     {
         bitpos -= 5;
-        c = encode_packchar(*str++);
-        h |= ((uint32_t)(c) << bitpos);
+        c = (uint32_t)encode_packchar(*str++);
+        h |= (c << bitpos);
     }
     return h;
-}
-
-// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
-static inline uint32_t muxhash(uint32_t k, uint32_t h)
-{
-    k *= 0xcc9e2d51;
-    k = (k >> 17) | (k << (32 - 17));
-    k *= 0x1b873593;
-    h ^= k;
-    h = (h >> 19) | (h << (32 - 19));
-    return ((h * 5) + 0xe6546b64);
 }
 
 // Return a 32 bit hash of a nucleotide string
@@ -196,32 +197,18 @@ static inline uint32_t hash32(const char *str, size_t size)
 {
     uint32_t h = 0;
     size_t len = 6;
-    while (size > 0)
+    while (size >= len)
     {
-        if (size < len)
-        {
-            len = size;
-        }
-        // [ 01111122 22233333 44444555 55666660 ]
-        // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
         h = muxhash(pack_chars(str, len), h);
         size -= len;
         str += len;
     }
-    return h;
-}
-
-/*static inline uint32_t hash32(const char *str, size_t size)
-{
-    uint32_t h = 0;
-    const uint32_t *pos = (const uint32_t *)str;
-    const uint32_t *end = pos + (size / 4);
-    const unsigned char *pos2;
-    while (pos != end) {
-        h = muxhash(*pos++, h);
+    if (size > 0)
+    {
+        h = muxhash(pack_chars(str, size), h);
     }
     return h;
-}*/
+}
 
 static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
