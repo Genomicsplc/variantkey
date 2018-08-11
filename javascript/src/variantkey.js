@@ -140,18 +140,6 @@ function azToUpper(c) {
     return c;
 }
 
-// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
-function muxHash(k, h) {
-    k = ((((k & 0xffff) * 0xcc9e2d51) + ((((k >>> 16) * 0xcc9e2d51) & 0xffff) << 16))) & 0xffffffff;
-    k = ((k << 15) | (k >>> 17));
-    k = ((((k & 0xffff) * 0x1b873593) + ((((k >>> 16) * 0x1b873593) & 0xffff) << 16))) & 0xffffffff;
-    h ^= k;
-    h = ((h << 13) | (h >>> 19));
-    hb = ((((h & 0xffff) * 5) + ((((h >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
-    h = (((hb & 0xffff) + 0x6b64) + ((((hb >>> 16) + 0xe654) & 0xffff) << 16));
-    return h >>> 0;
-}
-
 function packChars(str, size, offset) {
     var h = 0 >>> 0;
     var bitpos = (31 >>> 0);
@@ -164,6 +152,18 @@ function packChars(str, size, offset) {
         bitpos -= 5;
         h |= (((c - 64) << bitpos) >>> 0); // A will be coded as 1 ('A' - 1 = 64)
     }
+    return h >>> 0;
+}
+
+// Mix two 32 bit hash numbers using the MurmurHash3 algorithm
+function muxHash(k, h) {
+    k = ((((k & 0xffff) * 0xcc9e2d51) + ((((k >>> 16) * 0xcc9e2d51) & 0xffff) << 16))) & 0xffffffff;
+    k = ((k << 15) | (k >>> 17));
+    k = ((((k & 0xffff) * 0x1b873593) + ((((k >>> 16) * 0x1b873593) & 0xffff) << 16))) & 0xffffffff;
+    h ^= k;
+    h = ((h << 13) | (h >>> 19));
+    hb = ((((h & 0xffff) * 5) + ((((h >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
+    h = (((hb & 0xffff) + 0x6b64) + ((((hb >>> 16) + 0xe654) & 0xffff) << 16));
     return h >>> 0;
 }
 
