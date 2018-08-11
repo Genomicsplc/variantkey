@@ -180,16 +180,29 @@ static inline int encode_packchar(int c)
 // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit) [ 01111122 22233333 44444555 55666660 ]
 static inline uint32_t pack_chars(const char *str, size_t size)
 {
-    uint32_t c;
-    uint32_t h = 0;
-    uint8_t bitpos = VKSHIFT_POS;
-    while (size--)
+    uint32_t c1 = 0, c2 = 0, c3 = 0, c4 = 0, c5 = 0, c6 = 0;
+    const char *pos = str + size - 1;
+    switch (size)
     {
-        bitpos -= 5;
-        c = (uint32_t)encode_packchar(*str++);
-        h |= (c << bitpos);
+    case 6:
+        c1 = (uint32_t)encode_packchar(*pos--);
+    // fall through
+    case 5:
+        c2 = (uint32_t)encode_packchar(*pos--);
+    // fall through
+    case 4:
+        c3 = (uint32_t)encode_packchar(*pos--);
+    // fall through
+    case 3:
+        c4 = (uint32_t)encode_packchar(*pos--);
+    // fall through
+    case 2:
+        c5 = (uint32_t)encode_packchar(*pos--);
+    // fall through
+    case 1:
+        c6 = (uint32_t)encode_packchar(*pos);
     }
-    return h;
+    return ((c1 << 1) | (c2 << 6) | (c3 << 11) | (c4 << 16) | (c5 << 21) | (c6 << 26));
 }
 
 // Return a 32 bit hash of a nucleotide string
