@@ -69,35 +69,17 @@ uint64_t get_address(uint64_t blklen, uint64_t blkpos, uint64_t item)
     return ((blklen * item) + blkpos);
 }
 
-uint8_t bytes_to_uint8_t(const unsigned char *src, uint64_t i)
-{
-    return ((uint8_t)src[i]);
+#define define_bytes_to(T) \
+T bytes_to_##T(const unsigned char *src, uint64_t i) \
+{ \
+    const T *pos = (const T *)(src + i); \
+    return order_##T(*pos); \
 }
 
-uint16_t bytes_to_uint16_t(const unsigned char *src, uint64_t i)
-{
-    return (((uint16_t)src[i] << 8) | (uint16_t)src[i+1]);
-}
-
-uint32_t bytes_to_uint32_t(const unsigned char *src, uint64_t i)
-{
-    return (((uint32_t)src[i] << 24)
-            | ((uint32_t)src[i+1] << 16)
-            | ((uint32_t)src[i+2] << 8)
-            | (uint32_t)src[i+3]);
-}
-
-uint64_t bytes_to_uint64_t(const unsigned char *src, uint64_t i)
-{
-    return (((uint64_t)src[i] << 56)
-            | ((uint64_t)src[i+1] << 48)
-            | ((uint64_t)src[i+2] << 40)
-            | ((uint64_t)src[i+3] << 32)
-            | ((uint64_t)src[i+4] << 24)
-            | ((uint64_t)src[i+5] << 16)
-            | ((uint64_t)src[i+6] << 8)
-            | (uint64_t)src[i+7]);
-}
+define_bytes_to(uint8_t)
+define_bytes_to(uint16_t)
+define_bytes_to(uint32_t)
+define_bytes_to(uint64_t)
 
 #define define_find_first(T) \
 uint64_t find_first_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
