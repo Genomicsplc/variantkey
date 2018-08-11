@@ -164,7 +164,7 @@ static inline uint32_t muxhash(uint32_t k, uint32_t h)
     return ((h * 5) + 0xe6546b64);
 }
 
-static inline int encode_packchar(int c)
+static inline uint32_t encode_packchar(int c)
 {
     if (c < 'A')
     {
@@ -172,37 +172,37 @@ static inline int encode_packchar(int c)
     }
     if (c >= 'a')
     {
-        return (c - 'a' + 1);
+        return (uint32_t)(c - 'a' + 1);
     }
-    return (c - 'A' + 1);
+    return (uint32_t)(c - 'A' + 1);
 }
 
 // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit) [ 01111122 22233333 44444555 55666660 ]
 static inline uint32_t pack_chars(const char *str, size_t size)
 {
-    uint32_t c1 = 0, c2 = 0, c3 = 0, c4 = 0, c5 = 0, c6 = 0;
-    const char *pos = str + size - 1;
+    uint32_t h = 0;
+    const char *pos = (str + size - 1);
     switch (size)
     {
     case 6:
-        c1 = (uint32_t)encode_packchar(*pos--);
+        h ^= encode_packchar(*pos--) << 1;
     // fall through
     case 5:
-        c2 = (uint32_t)encode_packchar(*pos--);
+        h ^= encode_packchar(*pos--) << 6;
     // fall through
     case 4:
-        c3 = (uint32_t)encode_packchar(*pos--);
+        h ^= encode_packchar(*pos--) << 11;
     // fall through
     case 3:
-        c4 = (uint32_t)encode_packchar(*pos--);
+        h ^= encode_packchar(*pos--) << 16;
     // fall through
     case 2:
-        c5 = (uint32_t)encode_packchar(*pos--);
+        h ^= encode_packchar(*pos--) << 21;
     // fall through
     case 1:
-        c6 = (uint32_t)encode_packchar(*pos);
+        h ^= encode_packchar(*pos) << 26;
     }
-    return ((c1 << 1) | (c2 << 6) | (c3 << 11) | (c4 << 16) | (c5 << 21) | (c6 << 26));
+    return h;
 }
 
 // Return a 32 bit hash of a nucleotide string
