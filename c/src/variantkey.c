@@ -101,7 +101,6 @@ static inline uint32_t encode_base(const unsigned char c)
 {
     /*
       Encode base:
-
       A > 0
       C > 1
       G > 2
@@ -134,7 +133,7 @@ static inline int encode_allele(uint32_t *h, uint8_t *bitpos, const char *str, s
             return -1;
         }
         *bitpos -= 2;
-        *h |= (v << *bitpos); // A will be coded as 1
+        *h |= (v << *bitpos);
     }
     return 0;
 }
