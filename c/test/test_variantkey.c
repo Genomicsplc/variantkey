@@ -45,7 +45,7 @@
 #include <time.h>
 #include "../src/variantkey.c"
 
-static const int k_test_size = 566;
+static const int k_test_size = 568;
 
 typedef struct test_data_t
 {
@@ -60,7 +60,7 @@ typedef struct test_data_t
     uint32_t vkrefalt;
 } test_data_t;
 
-static test_data_t test_data[566] =
+static test_data_t test_data[] =
 {
     {"chr1", 268435455, "C", "T", 0x0fffffff88b80000, "0fffffff88b80000", 0x01, 0x0fffffff, 0x08b80000},
     {"CHR01", 324675, "G", "C", 0x08027a2188c80000, "08027a2188c80000", 0x01, 0x0004f443, 0x08c80000},
@@ -628,6 +628,8 @@ static test_data_t test_data[566] =
     {"MT", 16518, "T", "C", 0xc800204308e80000, "c800204308e80000", 0x19, 0x00004086, 0x08e80000},
     {"MT", 16527, "C", "T", 0xc800204788b80000, "c800204788b80000", 0x19, 0x0000408f, 0x08b80000},
     {"mt", 16528, "t", "c", 0xc800204808e80000, "c800204808e80000", 0x19, 0x00004090, 0x08e80000},
+    {"MT", 19870, "T", "ACGTACGTAC", 0xc80026cf0d636362, "c80026cf0d636362", 0x19, 0x00004d9e, 0x0d636362},
+    {"MT", 19871, "ACGTACGTAC", "T", 0xc80026cfd08d8d8e, "c80026cfd08d8d8e", 0x19, 0x00004d9f, 0x508d8d8e},
 };
 
 // generate the test map
@@ -784,93 +786,100 @@ int test_encode_refalt()
     int errors = 0;
     int i, j;
     uint32_t h;
-    char ref[12], alt[12];
+    char ref[15], alt[15];
     size_t len, lenref, lenalt, sizeref, sizealt;
-    static const char *input_data[10] =
-    {"A", "C", "N", "GT", "ACG", "ACGTa", "ACGTac", "ACGTacg", "ACGTacgt", "ACGTacgtACGT"};
-    static uint32_t expected_data[110] =
+    static const tlen = 11;
+    static const char *input_data[] =
+    {"A", "C", "N", "GT", "ACG", "ACGTa", "ACGTac", "ACGTacg", "ACGTacgt", "ACGTACGTAC", "ACGTacgtACGT"};
+    static uint32_t expected_data[] =
     {
         0x08800000,0x08800000,0x08880000,0x08a00000,0x2b524725,
         0x13ace339,0x09160000,0x10d80000,0x09830000,0x188c0000,
         0x0a836000,0x288d8000,0x0b036200,0x308d8800,0x0b836300,
-        0x388d8c00,0x0c036360,0x408d8d80,0x3f0ad81b,0x519ec623,
-        0x08a80000,0x08a80000,0x51fde969,0x5a3ad561,0x09360000,
-        0x10da0000,0x09a30000,0x188c8000,0x0aa36000,0x288d8800,
-        0x0b236200,0x308d8a00,0x0ba36300,0x388d8c80,0x0c236360,
-        0x408d8da0,0x535d6025,0x50fd215f,0x756046af,0x756046af,
-        0x39e18639,0x699d04d1,0x2e4f3f0b,0x3bc2ca01,0x688d4593,
-        0x4b35f78d,0x3c371093,0x6ad462d3,0x56f03e05,0x709febcd,
-        0x10529813,0x64690b25,0x2ed058cb,0x77413a59,0x115d8000,
-        0x115d8000,0x11d8c000,0x190d6000,0x12d8d800,0x290d9600,
-        0x1358d880,0x310d8d80,0x13d8d8c0,0x390d8d60,0x1458d8d8,
-        0x410d8dd8,0x650dd623,0x5869066f,0x198c3000,0x198c3000,
-        0x1a8c3600,0x298d8300,0x1b0c3620,0x318d88c0,0x1b8c3630,
-        0x398d8c30,0x1c0c3636,0x418d8d8c,0x5461bb97,0x121cc5b3,
+        0x388d8c00,0x0c036360,0x408d8d80,0x0d036362,0x508d8d88,
+        0x3f0ad81b,0x519ec623,0x08a80000,0x08a80000,0x51fde969,
+        0x5a3ad561,0x09360000,0x10da0000,0x09a30000,0x188c8000,
+        0x0aa36000,0x288d8800,0x0b236200,0x308d8a00,0x0ba36300,
+        0x388d8c80,0x0c236360,0x408d8da0,0x0d236362,0x508d8d8a,
+        0x535d6025,0x50fd215f,0x756046af,0x756046af,0x39e18639,
+        0x699d04d1,0x2e4f3f0b,0x3bc2ca01,0x688d4593,0x4b35f78d,
+        0x3c371093,0x6ad462d3,0x56f03e05,0x709febcd,0x10529813,
+        0x64690b25,0x62a17681,0x46f770b7,0x2ed058cb,0x77413a59,
+        0x115d8000,0x115d8000,0x11d8c000,0x190d6000,0x12d8d800,
+        0x290d9600,0x1358d880,0x310d8d80,0x13d8d8c0,0x390d8d60,
+        0x1458d8d8,0x410d8dd8,0x25eff603,0x69e4072b,0x650dd623,
+        0x5869066f,0x198c3000,0x198c3000,0x1a8c3600,0x298d8300,
+        0x1b0c3620,0x318d88c0,0x1b8c3630,0x398d8c30,0x1c0c3636,
+        0x418d8d8c,0x0b6df65d,0x7087bc41,0x5461bb97,0x121cc5b3,
         0x2a8d8360,0x2a8d8360,0x2b0d8362,0x328d88d8,0x2b21970d,
-        0x6a552833,0x1e5367a7,0x1b5a1cd9,0x554389ed,0x2578e3b3,
-        0x490569b1,0x490569b1,0x3fda5cad,0x48a04ed9,0x3eb532e3,
-        0x28a272e3,0x1f7f9b69,0x68244db3,0x333e12a5,0x333e12a5,
-        0x5f37dd43,0x5231912b,0x4b88730f,0x222ba3a9,0x10fa989b,
-        0x10fa989b,0x266d0563,0x366a23af,0x3a396f37,0x3a396f37,
+        0x6a552833,0x1e5367a7,0x1b5a1cd9,0x22a4482b,0x0869e1d1,
+        0x554389ed,0x2578e3b3,0x490569b1,0x490569b1,0x3fda5cad,
+        0x48a04ed9,0x3eb532e3,0x28a272e3,0x67768ecf,0x45f77839,
+        0x1f7f9b69,0x68244db3,0x333e12a5,0x333e12a5,0x5f37dd43,
+        0x5231912b,0x512ee699,0x57b03177,0x4b88730f,0x222ba3a9,
+        0x10fa989b,0x10fa989b,0x76788595,0x1694f703,0x266d0563,
+        0x366a23af,0x56871e01,0x56871e01,0x6001429b,0x7bc28a63,
+        0x3a396f37,0x3a396f37
     };
     int k = 0;
     int numrev = 0;
-    for (i=0 ; i < 10; i++)
+    int r, ri, rj, tmp;
+    for (i=0 ; i < tlen; i++)
     {
-        for (j=i ; j < 10; j++)
+        for (j=i ; j < tlen; j++)
         {
-            lenref = strlen(input_data[i]);
-            lenalt = strlen(input_data[j]);
-            h = encode_refalt(input_data[i], lenref, input_data[j], lenalt);
-            //fprintf(stderr, "0x%08" PRIx32 ",", h);
-            if (h != expected_data[k])
+            ri = i;
+            rj = j;
+            for (r=0 ; r < 2; r++)
             {
-                fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[i], input_data[j]);
-                ++errors;
+                lenref = strlen(input_data[ri]);
+                lenalt = strlen(input_data[rj]);
+                h = encode_refalt(input_data[ri], lenref, input_data[rj], lenalt);
+                //fprintf(stderr, "0x%08" PRIx32 ",", h);
+                if (h != expected_data[k])
+                {
+                    fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[ri], input_data[rj]);
+                    ++errors;
+                }
+                ref[0] = '\0';
+                alt[0] = '\0';
+                sizeref = 0;
+                sizealt = 0;
+                len = decode_refalt(h, ref, &sizeref, alt, &sizealt);
+                if (len > 0)
+                {
+                    numrev++;
+                    if (sizeref != lenref)
+                    {
+                        fprintf(stderr, "%s : expecting ref size %lu, got %lu\n", __func__, lenref, sizeref);
+                        ++errors;
+                    }
+                    if (sizealt != lenalt)
+                    {
+                        fprintf(stderr, "%s : expecting alt size %lu, got %lu\n", __func__, lenalt, sizealt);
+                        ++errors;
+                    }
+                    if (strcasecmp(input_data[ri], ref) != 0)
+                    {
+                        fprintf(stderr, "%s : REF expecting %s, got %s\n", __func__, input_data[ri], ref);
+                        ++errors;
+                    }
+                    if (strcasecmp(input_data[rj], alt) != 0)
+                    {
+                        fprintf(stderr, "%s : ALT expecting %s, got %s\n", __func__, input_data[rj], alt);
+                        ++errors;
+                    }
+                }
+                k++;
+                tmp = ri;
+                ri = rj;
+                rj = tmp;
             }
-            ref[0] = '\0';
-            alt[0] = '\0';
-            sizeref = 12;
-            sizealt = 12;
-            len = decode_refalt(h, ref, &sizeref, alt, &sizealt);
-            if (len > 0)
-            {
-                numrev++;
-                if (sizeref != lenref)
-                {
-                    fprintf(stderr, "%s : expecting ref size %lu, got %lu\n", __func__, lenref, sizeref);
-                    ++errors;
-                }
-                if (sizealt != lenalt)
-                {
-                    fprintf(stderr, "%s : expecting alt size %lu, got %lu\n", __func__, lenalt, sizealt);
-                    ++errors;
-                }
-                if (strcasecmp(input_data[i], ref) != 0)
-                {
-                    fprintf(stderr, "%s : REF expecting %s, got %s\n", __func__, input_data[i], ref);
-                    ++errors;
-                }
-                if (strcasecmp(input_data[j], alt) != 0)
-                {
-                    fprintf(stderr, "%s : ALT expecting %s, got %s\n", __func__, input_data[j], alt);
-                    ++errors;
-                }
-            }
-            k++;
-            h = encode_refalt(input_data[j], strlen(input_data[j]), input_data[i], strlen(input_data[i]));
-            //fprintf(stderr, "0x%08" PRIx32 ",", h);
-            if (h != expected_data[k])
-            {
-                fprintf(stderr, "%s : expecting %x, got %x - REF=%s - ALT=%s\n", __func__, expected_data[k], h, input_data[j], input_data[i]);
-                ++errors;
-            }
-            k++;
         }
     }
-    if (numrev != 28)
+    if (numrev != 60)
     {
-        fprintf(stderr, "%s : expecting 28 reversible REF+ALT, got instead: %d\n", __func__, numrev);
+        fprintf(stderr, "%s : expecting 60 reversible REF+ALT, got instead: %d\n", __func__, numrev);
         ++errors;
     }
     uint32_t ha = encode_refalt("AAAAAAAAAAAAAAAA", 16, "AAAAAAAAAAAAAAAA", 16);
@@ -933,7 +942,7 @@ void benchmark_encode_refalt_hash()
 
 void benchmark_decode_refalt()
 {
-    char ref[6], alt[6];
+    char ref[11], alt[11];
     size_t sizeref, sizealt;
     uint64_t tstart, tend;
     int i;
@@ -941,10 +950,10 @@ void benchmark_decode_refalt()
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        decode_refalt(0x08440000, ref, &sizeref, alt, &sizealt);
+        decode_refalt(0x0d436362, ref, &sizeref, alt, &sizealt);
     }
     tend = get_time();
-    fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
+    fprintf(stdout, " * %s : %lu ns/op (%s - %s)\n", __func__, (tend - tstart)/size, ref, alt);
 }
 
 int test_encode_variantkey()

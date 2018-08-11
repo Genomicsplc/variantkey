@@ -36,17 +36,17 @@
 #define ESID_SHIFT    32 //!< Number used to translate ASCII character values
 #define ESIDSHIFT_POS 60 //!< Encoded string ID LEN LSB position from LSB [ ----0000 00111111 22222233 33334444 44555555 66666677 77778888 88999999 ]
 
-static inline int esid_encode_char(int c)
+static inline uint64_t esid_encode_char(int c)
 {
     if (c < '!')
     {
-        return ('_' - ESID_SHIFT);
+        return (uint64_t)('_' - ESID_SHIFT);
     }
     if (c > '_')
     {
-        return (c - ('a' - 'A' + ESID_SHIFT));
+        return (uint64_t)(c - ('a' - 'A' + ESID_SHIFT));
     }
-    return (c - ESID_SHIFT);
+    return (uint64_t)(c - ESID_SHIFT);
 }
 
 uint64_t encode_string_id(const char *str, size_t size, size_t start)
@@ -56,15 +56,40 @@ uint64_t encode_string_id(const char *str, size_t size, size_t start)
     {
         size = ESIDSHIFT_MAXLEN;
     }
-    uint64_t c;
     uint64_t h = 0;
-    uint8_t bitpos = ESIDSHIFT_POS;
     str += start;
-    while (size--)
+    const char *pos = (str + size - 1);
+    switch (size)
     {
-        bitpos -= 6;
-        c = (uint64_t)esid_encode_char(*str++);
-        h |= (c << bitpos);
+    case 10:
+        h ^= esid_encode_char(*pos--);
+    // fall through
+    case 9:
+        h ^= esid_encode_char(*pos--) << 6;
+    // fall through
+    case 8:
+        h ^= esid_encode_char(*pos--) << 12;
+    // fall through
+    case 7:
+        h ^= esid_encode_char(*pos--) << 18;
+    // fall through
+    case 6:
+        h ^= esid_encode_char(*pos--) << 24;
+    // fall through
+    case 5:
+        h ^= esid_encode_char(*pos--) << 30;
+    // fall through
+    case 4:
+        h ^= esid_encode_char(*pos--) << 36;
+    // fall through
+    case 3:
+        h ^= esid_encode_char(*pos--) << 42;
+    // fall through
+    case 2:
+        h ^= esid_encode_char(*pos--) << 48;
+    // fall through
+    case 1:
+        h ^= esid_encode_char(*pos) << 54;
     }
     return h;
 }
@@ -115,7 +140,7 @@ uint64_t hash_string_id(const char *str, size_t size)
     {
         h = muxhash64(*pos++, h);
     }
-    const uint8_t* tail = (const uint8_t*)pos;
+    const uint8_t *tail = (const uint8_t *)pos;
     uint64_t v = 0;
     switch (size & 7)
     {

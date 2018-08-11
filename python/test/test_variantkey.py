@@ -577,6 +577,8 @@ variantsTestData = [
     (b"MT", 16518, b"T", b"C", 0xc800204308e80000, b"c800204308e80000", 0x19, 0x00004086, 0x08e80000),
     (b"MT", 16527, b"C", b"T", 0xc800204788b80000, b"c800204788b80000", 0x19, 0x0000408f, 0x08b80000),
     (b"mt", 16528, b"t", b"c", 0xc800204808e80000, b"c800204808e80000", 0x19, 0x00004090, 0x08e80000),
+    (b"MT", 19870, b"T", b"ACGTACGTAC", 0xc80026cf0d636362, b"c80026cf0d636362", 0x19, 0x00004d9e, 0x0d636362),
+    (b"MT", 19871, b"ACGTACGTAC", b"T", 0xc80026cfd08d8d8e, b"c80026cfd08d8d8e", 0x19, 0x00004d9f, 0x508d8d8e),
 ]
 
 
@@ -632,52 +634,54 @@ class TestFunctions(TestCase):
         self.assertEqual(variantkey.encode_refalt(b"ACGTACGT", b"GTACGTAC"), variantkey.encode_refalt("ACGTACGT", "GTACGTAC"))
 
     def test_encode_refalt(self):
-        input_data = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTacgtACGT"]
+        input_data = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTACGTAC", b"ACGTacgtACGT"]
         expected_data = [
             0x08800000, 0x08800000, 0x08880000, 0x08a00000, 0x2b524725,
             0x13ace339, 0x09160000, 0x10d80000, 0x09830000, 0x188c0000,
             0x0a836000, 0x288d8000, 0x0b036200, 0x308d8800, 0x0b836300,
-            0x388d8c00, 0x0c036360, 0x408d8d80, 0x3f0ad81b, 0x519ec623,
-            0x08a80000, 0x08a80000, 0x51fde969, 0x5a3ad561, 0x09360000,
-            0x10da0000, 0x09a30000, 0x188c8000, 0x0aa36000, 0x288d8800,
-            0x0b236200, 0x308d8a00, 0x0ba36300, 0x388d8c80, 0x0c236360,
-            0x408d8da0, 0x535d6025, 0x50fd215f, 0x756046af, 0x756046af,
-            0x39e18639, 0x699d04d1, 0x2e4f3f0b, 0x3bc2ca01, 0x688d4593,
-            0x4b35f78d, 0x3c371093, 0x6ad462d3, 0x56f03e05, 0x709febcd,
-            0x10529813, 0x64690b25, 0x2ed058cb, 0x77413a59, 0x115d8000,
-            0x115d8000, 0x11d8c000, 0x190d6000, 0x12d8d800, 0x290d9600,
-            0x1358d880, 0x310d8d80, 0x13d8d8c0, 0x390d8d60, 0x1458d8d8,
-            0x410d8dd8, 0x650dd623, 0x5869066f, 0x198c3000, 0x198c3000,
-            0x1a8c3600, 0x298d8300, 0x1b0c3620, 0x318d88c0, 0x1b8c3630,
-            0x398d8c30, 0x1c0c3636, 0x418d8d8c, 0x5461bb97, 0x121cc5b3,
+            0x388d8c00, 0x0c036360, 0x408d8d80, 0x0d036362, 0x508d8d88,
+            0x3f0ad81b, 0x519ec623, 0x08a80000, 0x08a80000, 0x51fde969,
+            0x5a3ad561, 0x09360000, 0x10da0000, 0x09a30000, 0x188c8000,
+            0x0aa36000, 0x288d8800, 0x0b236200, 0x308d8a00, 0x0ba36300,
+            0x388d8c80, 0x0c236360, 0x408d8da0, 0x0d236362, 0x508d8d8a,
+            0x535d6025, 0x50fd215f, 0x756046af, 0x756046af, 0x39e18639,
+            0x699d04d1, 0x2e4f3f0b, 0x3bc2ca01, 0x688d4593, 0x4b35f78d,
+            0x3c371093, 0x6ad462d3, 0x56f03e05, 0x709febcd, 0x10529813,
+            0x64690b25, 0x62a17681, 0x46f770b7, 0x2ed058cb, 0x77413a59,
+            0x115d8000, 0x115d8000, 0x11d8c000, 0x190d6000, 0x12d8d800,
+            0x290d9600, 0x1358d880, 0x310d8d80, 0x13d8d8c0, 0x390d8d60,
+            0x1458d8d8, 0x410d8dd8, 0x25eff603, 0x69e4072b, 0x650dd623,
+            0x5869066f, 0x198c3000, 0x198c3000, 0x1a8c3600, 0x298d8300,
+            0x1b0c3620, 0x318d88c0, 0x1b8c3630, 0x398d8c30, 0x1c0c3636,
+            0x418d8d8c, 0x0b6df65d, 0x7087bc41, 0x5461bb97, 0x121cc5b3,
             0x2a8d8360, 0x2a8d8360, 0x2b0d8362, 0x328d88d8, 0x2b21970d,
-            0x6a552833, 0x1e5367a7, 0x1b5a1cd9, 0x554389ed, 0x2578e3b3,
-            0x490569b1, 0x490569b1, 0x3fda5cad, 0x48a04ed9, 0x3eb532e3,
-            0x28a272e3, 0x1f7f9b69, 0x68244db3, 0x333e12a5, 0x333e12a5,
-            0x5f37dd43, 0x5231912b, 0x4b88730f, 0x222ba3a9, 0x10fa989b,
-            0x10fa989b, 0x266d0563, 0x366a23af, 0x3a396f37, 0x3a396f37,
+            0x6a552833, 0x1e5367a7, 0x1b5a1cd9, 0x22a4482b, 0x0869e1d1,
+            0x554389ed, 0x2578e3b3, 0x490569b1, 0x490569b1, 0x3fda5cad,
+            0x48a04ed9, 0x3eb532e3, 0x28a272e3, 0x67768ecf, 0x45f77839,
+            0x1f7f9b69, 0x68244db3, 0x333e12a5, 0x333e12a5, 0x5f37dd43,
+            0x5231912b, 0x512ee699, 0x57b03177, 0x4b88730f, 0x222ba3a9,
+            0x10fa989b, 0x10fa989b, 0x76788595, 0x1694f703, 0x266d0563,
+            0x366a23af, 0x56871e01, 0x56871e01, 0x6001429b, 0x7bc28a63,
+            0x3a396f37, 0x3a396f37,
         ]
         k = 0
-        for i in range(0, 10):
-            for j in range(i, 10):
-                h = variantkey.encode_refalt(input_data[i], input_data[j])
-                self.assertEqual(h, expected_data[k])
-                ref, alt, sizeref, sizealt = variantkey.decode_refalt(h)
-                if sizealt > 0:
-                    self.assertEqual(ref, input_data[i].upper())
-                    self.assertEqual(alt, input_data[j].upper())
-                    self.assertEqual(sizeref, len(input_data[i]))
-                    self.assertEqual(sizealt, len(input_data[j]))
-                k += 1
-                h = variantkey.encode_refalt(input_data[j], input_data[i])
-                self.assertEqual(h, expected_data[k])
-                ref, alt, sizeref, sizealt = variantkey.decode_refalt(h)
-                if sizealt > 0:
-                    self.assertEqual(ref, input_data[j].upper())
-                    self.assertEqual(alt, input_data[i].upper())
-                    self.assertEqual(sizeref, len(input_data[j]))
-                    self.assertEqual(sizealt, len(input_data[i]))
-                k += 1
+        for i in range(0, 11):
+            for j in range(i, 11):
+                ri = i
+                rj = j
+                for r in range(0, 2):
+                    h = variantkey.encode_refalt(input_data[ri], input_data[rj])
+                    self.assertEqual(h, expected_data[k])
+                    ref, alt, sizeref, sizealt = variantkey.decode_refalt(h)
+                    if sizealt > 0:
+                        self.assertEqual(ref, input_data[ri].upper())
+                        self.assertEqual(alt, input_data[rj].upper())
+                        self.assertEqual(sizeref, len(input_data[ri]))
+                        self.assertEqual(sizealt, len(input_data[rj]))
+                    k += 1
+                    tmp = ri
+                    ri = rj
+                    rj = tmp
 
     def test_encode_variantkey(self):
         for _, _, _, _, vk, _, vkchrom, vkpos, vkrefalt in variantsTestData:

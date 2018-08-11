@@ -590,6 +590,8 @@ var variantsTestData = []TVariantData{
 	{"MT", 16518, "T", "C", 0xc800204308e80000, "c800204308e80000", 0x19, 0x00004086, 0x08e80000},
 	{"MT", 16527, "C", "T", 0xc800204788b80000, "c800204788b80000", 0x19, 0x0000408f, 0x08b80000},
 	{"mt", 16528, "t", "c", 0xc800204808e80000, "c800204808e80000", 0x19, 0x00004090, 0x08e80000},
+	{"MT", 19870, "T", "ACGTACGTAC", 0xc80026cf0d636362, "c80026cf0d636362", 0x19, 0x00004d9e, 0x0d636362},
+	{"MT", 19871, "ACGTACGTAC", "T", 0xc80026cfd08d8d8e, "c80026cfd08d8d8e", 0x19, 0x00004d9f, 0x508d8d8e},
 }
 
 func TestEncodeChrom(t *testing.T) {
@@ -685,67 +687,75 @@ func BenchmarkDecodeChrom(b *testing.B) {
 
 func TestEncodeRefAlt(t *testing.T) {
 	var lenref, lenalt uint8
-	cdata := []string{"A", "C", "N", "GT", "ACG", "ACGTa", "ACGTac", "ACGTacg", "ACGTacgt", "ACGTacgtACGT"}
+	cdata := []string{"A", "C", "N", "GT", "ACG", "ACGTa", "ACGTac", "ACGTacg", "ACGTacgt", "ACGTACGTAC", "ACGTacgtACGT"}
 	exp := []uint32{
 		0x08800000, 0x08800000, 0x08880000, 0x08a00000, 0x2b524725,
 		0x13ace339, 0x09160000, 0x10d80000, 0x09830000, 0x188c0000,
 		0x0a836000, 0x288d8000, 0x0b036200, 0x308d8800, 0x0b836300,
-		0x388d8c00, 0x0c036360, 0x408d8d80, 0x3f0ad81b, 0x519ec623,
-		0x08a80000, 0x08a80000, 0x51fde969, 0x5a3ad561, 0x09360000,
-		0x10da0000, 0x09a30000, 0x188c8000, 0x0aa36000, 0x288d8800,
-		0x0b236200, 0x308d8a00, 0x0ba36300, 0x388d8c80, 0x0c236360,
-		0x408d8da0, 0x535d6025, 0x50fd215f, 0x756046af, 0x756046af,
-		0x39e18639, 0x699d04d1, 0x2e4f3f0b, 0x3bc2ca01, 0x688d4593,
-		0x4b35f78d, 0x3c371093, 0x6ad462d3, 0x56f03e05, 0x709febcd,
-		0x10529813, 0x64690b25, 0x2ed058cb, 0x77413a59, 0x115d8000,
-		0x115d8000, 0x11d8c000, 0x190d6000, 0x12d8d800, 0x290d9600,
-		0x1358d880, 0x310d8d80, 0x13d8d8c0, 0x390d8d60, 0x1458d8d8,
-		0x410d8dd8, 0x650dd623, 0x5869066f, 0x198c3000, 0x198c3000,
-		0x1a8c3600, 0x298d8300, 0x1b0c3620, 0x318d88c0, 0x1b8c3630,
-		0x398d8c30, 0x1c0c3636, 0x418d8d8c, 0x5461bb97, 0x121cc5b3,
+		0x388d8c00, 0x0c036360, 0x408d8d80, 0x0d036362, 0x508d8d88,
+		0x3f0ad81b, 0x519ec623, 0x08a80000, 0x08a80000, 0x51fde969,
+		0x5a3ad561, 0x09360000, 0x10da0000, 0x09a30000, 0x188c8000,
+		0x0aa36000, 0x288d8800, 0x0b236200, 0x308d8a00, 0x0ba36300,
+		0x388d8c80, 0x0c236360, 0x408d8da0, 0x0d236362, 0x508d8d8a,
+		0x535d6025, 0x50fd215f, 0x756046af, 0x756046af, 0x39e18639,
+		0x699d04d1, 0x2e4f3f0b, 0x3bc2ca01, 0x688d4593, 0x4b35f78d,
+		0x3c371093, 0x6ad462d3, 0x56f03e05, 0x709febcd, 0x10529813,
+		0x64690b25, 0x62a17681, 0x46f770b7, 0x2ed058cb, 0x77413a59,
+		0x115d8000, 0x115d8000, 0x11d8c000, 0x190d6000, 0x12d8d800,
+		0x290d9600, 0x1358d880, 0x310d8d80, 0x13d8d8c0, 0x390d8d60,
+		0x1458d8d8, 0x410d8dd8, 0x25eff603, 0x69e4072b, 0x650dd623,
+		0x5869066f, 0x198c3000, 0x198c3000, 0x1a8c3600, 0x298d8300,
+		0x1b0c3620, 0x318d88c0, 0x1b8c3630, 0x398d8c30, 0x1c0c3636,
+		0x418d8d8c, 0x0b6df65d, 0x7087bc41, 0x5461bb97, 0x121cc5b3,
 		0x2a8d8360, 0x2a8d8360, 0x2b0d8362, 0x328d88d8, 0x2b21970d,
-		0x6a552833, 0x1e5367a7, 0x1b5a1cd9, 0x554389ed, 0x2578e3b3,
-		0x490569b1, 0x490569b1, 0x3fda5cad, 0x48a04ed9, 0x3eb532e3,
-		0x28a272e3, 0x1f7f9b69, 0x68244db3, 0x333e12a5, 0x333e12a5,
-		0x5f37dd43, 0x5231912b, 0x4b88730f, 0x222ba3a9, 0x10fa989b,
-		0x10fa989b, 0x266d0563, 0x366a23af, 0x3a396f37, 0x3a396f37,
+		0x6a552833, 0x1e5367a7, 0x1b5a1cd9, 0x22a4482b, 0x0869e1d1,
+		0x554389ed, 0x2578e3b3, 0x490569b1, 0x490569b1, 0x3fda5cad,
+		0x48a04ed9, 0x3eb532e3, 0x28a272e3, 0x67768ecf, 0x45f77839,
+		0x1f7f9b69, 0x68244db3, 0x333e12a5, 0x333e12a5, 0x5f37dd43,
+		0x5231912b, 0x512ee699, 0x57b03177, 0x4b88730f, 0x222ba3a9,
+		0x10fa989b, 0x10fa989b, 0x76788595, 0x1694f703, 0x266d0563,
+		0x366a23af, 0x56871e01, 0x56871e01, 0x6001429b, 0x7bc28a63,
+		0x3a396f37, 0x3a396f37,
 	}
 	k := 0
 	numrev := 0
-	for i := 0; i < 10; i++ {
-		for j := i; j < 10; j++ {
-			lenref = uint8(len(cdata[i]))
-			lenalt = uint8(len(cdata[j]))
-			h := EncodeRefAlt(cdata[i], cdata[j])
-			if h != exp[k] {
-				t.Errorf("expecting %x, got %#v - REF=%#v - ALT=%#v", exp[k], h, cdata[i], cdata[j])
+	var ri, rj, tmp int
+	for i := 0; i < 11; i++ {
+		for j := i; j < 11; j++ {
+			ri = i
+			rj = j
+			for r := 0; r < 2; r++ {
+				lenref = uint8(len(cdata[ri]))
+				lenalt = uint8(len(cdata[rj]))
+				h := EncodeRefAlt(cdata[ri], cdata[rj])
+				if h != exp[k] {
+					t.Errorf("expecting %x, got %#v - REF=%#v - ALT=%#v", exp[k], h, cdata[ri], cdata[rj])
+				}
+				ref, alt, sizeref, sizealt, len := DecodeRefAlt(h)
+				if len > 0 {
+					numrev++
+					if sizeref != lenref {
+						t.Errorf("LEN REF expecting %#v, got %#v", lenref, sizeref)
+					}
+					if sizealt != lenalt {
+						t.Errorf("LEN ALT expecting %#v, got %#v", lenalt, sizealt)
+					}
+					if ref != strings.ToUpper(cdata[ri]) {
+						t.Errorf("REF expecting %#v, got %#v", cdata[ri], ref)
+					}
+					if alt != strings.ToUpper(cdata[rj]) {
+						t.Errorf("ALT expecting '%#v', got '%#v'", cdata[rj], alt)
+					}
+				}
+				k++
+				tmp = ri
+				ri = rj
+				rj = tmp
 			}
-			ref, alt, sizeref, sizealt, len := DecodeRefAlt(h)
-			if len > 0 {
-				numrev++
-				if sizeref != lenref {
-					t.Errorf("LEN REF expecting %#v, got %#v", lenref, sizeref)
-				}
-				if sizealt != lenalt {
-					t.Errorf("LEN ALT expecting %#v, got %#v", lenalt, sizealt)
-				}
-				if ref != strings.ToUpper(cdata[i]) {
-					t.Errorf("REF expecting %#v, got %#v", cdata[i], ref)
-				}
-				if alt != strings.ToUpper(cdata[j]) {
-					t.Errorf("ALT expecting '%#v', got '%#v'", cdata[j], alt)
-				}
-			}
-			k++
-			h = EncodeRefAlt(cdata[j], cdata[i])
-			if h != exp[k] {
-				t.Errorf("expecting %x, got %#v - REF=%#v - ALT=%#v\n", exp[k], h, cdata[i], cdata[j])
-			}
-			k++
 		}
 	}
-	if numrev != 28 {
-		t.Errorf("Expecting 28 reversible encodings, got: %#v\n", numrev)
+	if numrev != 60 {
+		t.Errorf("Expecting 60 reversible encodings, got: %#v\n", numrev)
 	}
 	ha := EncodeRefAlt("AAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAA")
 	hb := EncodeRefAlt("AAAAAAAAAAAAAAAA", "AAAAAAAAAAAAAAAB")

@@ -101,7 +101,6 @@ static inline uint32_t encode_base(const unsigned char c)
 {
     /*
       Encode base:
-
       A > 0
       C > 1
       G > 2
@@ -134,7 +133,7 @@ static inline int encode_allele(uint32_t *h, uint8_t *bitpos, const char *str, s
             return -1;
         }
         *bitpos -= 2;
-        *h |= (v << *bitpos); // A will be coded as 1
+        *h |= (v << *bitpos);
     }
     return 0;
 }
@@ -164,7 +163,7 @@ static inline uint32_t muxhash(uint32_t k, uint32_t h)
     return ((h * 5) + 0xe6546b64);
 }
 
-static inline int encode_packchar(int c)
+static inline uint32_t encode_packchar(int c)
 {
     if (c < 'A')
     {
@@ -172,24 +171,45 @@ static inline int encode_packchar(int c)
     }
     if (c >= 'a')
     {
-        return (c - 'a' + 1);
+        return (uint32_t)(c - 'a' + 1);
     }
-    return (c - 'A' + 1);
+    return (uint32_t)(c - 'A' + 1);
 }
 
 // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit) [ 01111122 22233333 44444555 55666660 ]
-static inline uint32_t pack_chars(const char *str, size_t size)
+static inline uint32_t pack_chars_tail(const char *str, size_t size)
 {
-    uint32_t c;
     uint32_t h = 0;
-    uint8_t bitpos = VKSHIFT_POS;
-    while (size--)
+    const char *pos = (str + size - 1);
+    switch (size)
     {
-        bitpos -= 5;
-        c = (uint32_t)encode_packchar(*str++);
-        h |= (c << bitpos);
+    case 5:
+        h ^= encode_packchar(*pos--) << 6;
+    // fall through
+    case 4:
+        h ^= encode_packchar(*pos--) << 11;
+    // fall through
+    case 3:
+        h ^= encode_packchar(*pos--) << 16;
+    // fall through
+    case 2:
+        h ^= encode_packchar(*pos--) << 21;
+    // fall through
+    case 1:
+        h ^= encode_packchar(*pos) << 26;
     }
     return h;
+}
+
+static inline uint32_t pack_chars(const char *str)
+{
+    const char *pos = (str + 5);
+    return (encode_packchar(*pos) << 1)
+           ^ (encode_packchar(*(pos-1)) << 6)
+           ^ (encode_packchar(*(pos-2)) << 11)
+           ^ (encode_packchar(*(pos-3)) << 16)
+           ^ (encode_packchar(*(pos-4)) << 21)
+           ^ (encode_packchar(*(pos-5)) << 26);
 }
 
 // Return a 32 bit hash of a nucleotide string
@@ -199,13 +219,13 @@ static inline uint32_t hash32(const char *str, size_t size)
     size_t len = 6;
     while (size >= len)
     {
-        h = muxhash(pack_chars(str, len), h);
-        size -= len;
+        h = muxhash(pack_chars(str), h);
         str += len;
+        size -= len;
     }
     if (size > 0)
     {
-        h = muxhash(pack_chars(str, size), h);
+        h = muxhash(pack_chars_tail(str, size), h);
     }
     return h;
 }
@@ -246,20 +266,73 @@ static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref
 {
     *sizeref = (size_t)((code & 0x78000000) >> 27); // [01111000 00000000 00000000 00000000]
     *sizealt = (size_t)((code & 0x07800000) >> 23); // [00000111 10000000 00000000 00000000]
-    uint8_t bitpos = 23;
-    size_t i = 0;
-    for(i = 0; i < *sizeref; i++)
+    switch (*sizeref)
     {
-        bitpos -= 2;
-        ref[i] = decode_base(code, bitpos);
+    case 10:
+        ref[9] = decode_base(code, 3);
+    // fall through
+    case 9:
+        ref[8] = decode_base(code, 5);
+    // fall through
+    case 8:
+        ref[7] = decode_base(code, 7);
+    // fall through
+    case 7:
+        ref[6] = decode_base(code, 9);
+    // fall through
+    case 6:
+        ref[5] = decode_base(code, 11);
+    // fall through
+    case 5:
+        ref[4] = decode_base(code, 13);
+    // fall through
+    case 4:
+        ref[3] = decode_base(code, 15);
+    // fall through
+    case 3:
+        ref[2] = decode_base(code, 17);
+    // fall through
+    case 2:
+        ref[1] = decode_base(code, 19);
+    // fall through
+    case 1:
+        ref[0] = decode_base(code, 21);
     }
-    ref[i] = 0;
-    for(i = 0; i < *sizealt; i++)
+    ref[*sizeref] = 0;
+    uint8_t bitpos = (23 - ((*sizeref) << 1));
+    switch (*sizealt)
     {
-        bitpos -= 2;
-        alt[i] = decode_base(code, bitpos);
+    case 10:
+        alt[9] = decode_base(code, bitpos - 20);
+    // fall through
+    case 9:
+        alt[8] = decode_base(code, bitpos - 18);
+    // fall through
+    case 8:
+        alt[7] = decode_base(code, bitpos - 16);
+    // fall through
+    case 7:
+        alt[6] = decode_base(code, bitpos - 14);
+    // fall through
+    case 6:
+        alt[5] = decode_base(code, bitpos - 12);
+    // fall through
+    case 5:
+        alt[4] = decode_base(code, bitpos - 10);
+    // fall through
+    case 4:
+        alt[3] = decode_base(code, bitpos - 8);
+    // fall through
+    case 3:
+        alt[2] = decode_base(code, bitpos - 6);
+    // fall through
+    case 2:
+        alt[1] = decode_base(code, bitpos - 4);
+    // fall through
+    case 1:
+        alt[0] = decode_base(code, bitpos - 2);
     }
-    alt[i] = 0;
+    alt[*sizealt] = 0;
     return (*sizeref + *sizealt);
 }
 

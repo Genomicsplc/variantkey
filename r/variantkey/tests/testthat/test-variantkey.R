@@ -574,7 +574,9 @@ x <- rbind(
     list("MT", "MT", 25, 16511, 149422080, "T", "C", "T", "C", "c800203f88e80000"),
     list("MT", "MT", 25, 16518, 149422080, "T", "C", "T", "C", "c800204308e80000"),
     list("MT", "MT", 25, 16527, 146276352, "C", "T", "C", "T", "c800204788b80000"),
-    list("mt", "MT", 25, 16528, 149422080, "t", "c", "T", "C", "c800204808e80000")
+    list("mt", "MT", 25, 16528, 149422080, "t", "c", "T", "C", "c800204808e80000"),
+    list("MT", "MT", 25, 19870, 224617314, "T", "ACGTACGTAC", "T", "ACGTACGTAC", "c80026cf0d636362"),
+    list("MT", "MT", 25, 19871, 1351454094, "ACGTACGTAC", "T", "ACGTACGTAC", "T", "c80026cfd08d8d8e")
 )
 colnames(x) <- list("chrom", "nchrom", "kchrom", "pos", "refalt", "ref", "alt", "rref", "ralt", "vk")
 
