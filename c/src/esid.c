@@ -140,7 +140,7 @@ uint64_t hash_string_id(const char *str, size_t size)
     {
         h = muxhash64(*pos++, h);
     }
-    const uint8_t* tail = (const uint8_t*)pos;
+    const uint8_t *tail = (const uint8_t *)pos;
     uint64_t v = 0;
     switch (size & 7)
     {
