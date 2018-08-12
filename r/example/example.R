@@ -396,9 +396,9 @@ print(x)
 
 x <- EncodeStringID("A0A022YWF9", 0)
 print(x)
-# [1] "0850850492e77999"
+# [1] "a850850492e77999"
 
-x <- DecodeStringID("0850850492e77999")
+x <- DecodeStringID("a850850492e77999")
 print(x)
 # [1] "A0A022YWF9"
 

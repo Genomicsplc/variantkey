@@ -59,7 +59,7 @@ int test_hex_uint64_t()
     int errors = 0;
     char s[17] = "";
     hex_uint64_t(0x1234567890abcdef, s);
-    if (strcmp(s, "1234567890abcdef"))
+    if (strcmp(s, "1234567890abcdef") != 0)
     {
         fprintf(stderr, "%s : Unexpected variantkey: expected %s, got %s\n", __func__, "1234567890abcdef", s);
         ++errors;

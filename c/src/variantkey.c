@@ -184,19 +184,19 @@ static inline uint32_t pack_chars_tail(const char *str, size_t size)
     switch (size)
     {
     case 5:
-        h ^= encode_packchar(*pos--) << 6;
+        h ^= encode_packchar(*pos--) << (1 + (5 * 1));
     // fall through
     case 4:
-        h ^= encode_packchar(*pos--) << 11;
+        h ^= encode_packchar(*pos--) << (1 + (5 * 2));
     // fall through
     case 3:
-        h ^= encode_packchar(*pos--) << 16;
+        h ^= encode_packchar(*pos--) << (1 + (5 * 3));
     // fall through
     case 2:
-        h ^= encode_packchar(*pos--) << 21;
+        h ^= encode_packchar(*pos--) << (1 + (5 * 4));
     // fall through
     case 1:
-        h ^= encode_packchar(*pos) << 26;
+        h ^= encode_packchar(*pos) << (1 + (5 * 5));
     }
     return h;
 }
@@ -204,12 +204,12 @@ static inline uint32_t pack_chars_tail(const char *str, size_t size)
 static inline uint32_t pack_chars(const char *str)
 {
     const char *pos = (str + 5);
-    return (encode_packchar(*pos) << 1)
-           ^ (encode_packchar(*(pos-1)) << 6)
-           ^ (encode_packchar(*(pos-2)) << 11)
-           ^ (encode_packchar(*(pos-3)) << 16)
-           ^ (encode_packchar(*(pos-4)) << 21)
-           ^ (encode_packchar(*(pos-5)) << 26);
+    return ((encode_packchar(*pos) << 1)
+            ^ (encode_packchar(*(pos-1)) << (1 + (5 * 1)))
+            ^ (encode_packchar(*(pos-2)) << (1 + (5 * 2)))
+            ^ (encode_packchar(*(pos-3)) << (1 + (5 * 3)))
+            ^ (encode_packchar(*(pos-4)) << (1 + (5 * 4)))
+            ^ (encode_packchar(*(pos-5)) << (1 + (5 * 5))));
 }
 
 // Return a 32 bit hash of a nucleotide string
@@ -269,68 +269,68 @@ static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref
     switch (*sizeref)
     {
     case 10:
-        ref[9] = decode_base(code, 3);
+        ref[9] = decode_base(code, (3 + (2 * 0)));
     // fall through
     case 9:
-        ref[8] = decode_base(code, 5);
+        ref[8] = decode_base(code, (3 + (2 * 1)));
     // fall through
     case 8:
-        ref[7] = decode_base(code, 7);
+        ref[7] = decode_base(code, (3 + (2 * 2)));
     // fall through
     case 7:
-        ref[6] = decode_base(code, 9);
+        ref[6] = decode_base(code, (3 + (2 * 3)));
     // fall through
     case 6:
-        ref[5] = decode_base(code, 11);
+        ref[5] = decode_base(code, (3 + (2 * 4)));
     // fall through
     case 5:
-        ref[4] = decode_base(code, 13);
+        ref[4] = decode_base(code, (3 + (2 * 5)));
     // fall through
     case 4:
-        ref[3] = decode_base(code, 15);
+        ref[3] = decode_base(code, (3 + (2 * 6)));
     // fall through
     case 3:
-        ref[2] = decode_base(code, 17);
+        ref[2] = decode_base(code, (3 + (2 * 7)));
     // fall through
     case 2:
-        ref[1] = decode_base(code, 19);
+        ref[1] = decode_base(code, (3 + (2 * 8)));
     // fall through
     case 1:
-        ref[0] = decode_base(code, 21);
+        ref[0] = decode_base(code, (3 + (2 * 9)));
     }
     ref[*sizeref] = 0;
     uint8_t bitpos = (23 - ((*sizeref) << 1));
     switch (*sizealt)
     {
     case 10:
-        alt[9] = decode_base(code, bitpos - 20);
+        alt[9] = decode_base(code, bitpos - (2 * 10));
     // fall through
     case 9:
-        alt[8] = decode_base(code, bitpos - 18);
+        alt[8] = decode_base(code, bitpos - (2 * 9));
     // fall through
     case 8:
-        alt[7] = decode_base(code, bitpos - 16);
+        alt[7] = decode_base(code, bitpos - (2 * 8));
     // fall through
     case 7:
-        alt[6] = decode_base(code, bitpos - 14);
+        alt[6] = decode_base(code, bitpos - (2 * 7));
     // fall through
     case 6:
-        alt[5] = decode_base(code, bitpos - 12);
+        alt[5] = decode_base(code, bitpos - (2 * 6));
     // fall through
     case 5:
-        alt[4] = decode_base(code, bitpos - 10);
+        alt[4] = decode_base(code, bitpos - (2 * 5));
     // fall through
     case 4:
-        alt[3] = decode_base(code, bitpos - 8);
+        alt[3] = decode_base(code, bitpos - (2 * 4));
     // fall through
     case 3:
-        alt[2] = decode_base(code, bitpos - 6);
+        alt[2] = decode_base(code, bitpos - (2 * 3));
     // fall through
     case 2:
-        alt[1] = decode_base(code, bitpos - 4);
+        alt[1] = decode_base(code, bitpos - (2 * 2));
     // fall through
     case 1:
-        alt[0] = decode_base(code, bitpos - 2);
+        alt[0] = decode_base(code, bitpos - (2 * 1));
     }
     alt[*sizealt] = 0;
     return (*sizeref + *sizealt);

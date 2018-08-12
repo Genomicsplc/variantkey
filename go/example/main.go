@@ -246,9 +246,9 @@ func main() {
 	// ---------
 
 	fmt.Println(vk.EncodeStringID("A0A022YWF9", 0))
-	// 599125005131282841
+	// 12128340051199752601
 
-	fmt.Println(vk.DecodeStringID(0x0850850492e77999))
+	fmt.Println(vk.DecodeStringID(0xa850850492e77999))
 	// A0A022YWF9
 
 	fmt.Println(vk.HashStringID("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))

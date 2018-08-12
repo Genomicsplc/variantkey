@@ -26,52 +26,52 @@ test_that("GetGenorefSeq", {
 
 test_that("CheckReference", {
     x <- rbind(
-        list(1, 0, "A", 1, 0),
-        list(1, 25, "Z", 1, 0),
-        list(25, 0, "A", 1, 0),
-        list(25, 1, "B", 1, 0),
-        list(2, 0, "ABCDEFGHIJKLmnopqrstuvwxy", 25, 0),
-        list(1, 26, "ZABC", 4, -2),
-        list(1, 0, "ABCDEFGHIJKLmnopqrstuvwxyJ", 26, -1),
-        list(14, 2, "ZZZ", 3, -1),
-        list(1, 0, "N", 1, 1),
-        list(10, 13, "A", 1, 1),
-        list(1, 3, "B", 1, 1),
-        list(1, 1, "C", 1, 1),
-        list(1, 0, "D", 1, 1),
-        list(1, 3, "A", 1, 1),
-        list(1, 0, "H", 1, 1),
-        list(1, 7, "A", 1, 1),
-        list(1, 0, "V", 1, 1),
-        list(1, 21, "A", 1, 1),
-        list(1, 0, "W", 1, 1),
-        list(1, 19, "W", 1, 1),
-        list(1, 22, "A", 1, 1),
-        list(1, 22, "T", 1, 1),
-        list(1, 2, "S", 1, 1),
-        list(1, 6, "S", 1, 1),
-        list(1, 18, "C", 1, 1),
-        list(1, 18, "G", 1, 1),
-        list(1, 0, "M", 1, 1),
-        list(1, 2, "M", 1, 1),
-        list(1, 12, "A", 1, 1),
-        list(1, 12, "C", 1, 1),
-        list(1, 6, "K", 1, 1),
-        list(1, 19, "K", 1, 1),
-        list(1, 10, "G", 1, 1),
-        list(1, 10, "T", 1, 1),
-        list(1, 0, "R", 1, 1),
-        list(1, 6, "R", 1, 1),
-        list(1, 17, "A", 1, 1),
-        list(1, 17, "G", 1, 1),
-        list(1, 2, "Y", 1, 1),
-        list(1, 19, "Y", 1, 1),
-        list(1, 24, "C", 1, 1),
-        list(1, 24, "T", 1, 1)
+        list( 0, 1,   0,  1, "A"                         ),
+        list( 0, 1,  25,  1, "Z"                         ),
+        list( 0, 25,  0,  1, "A"                         ),
+        list( 0, 25,  1,  1, "B"                         ),
+        list( 0, 2,   0, 25, "ABCDEFGHIJKLmnopqrstuvwxy" ),
+        list(-2, 1,  26,  4, "ZABC"                      ),
+        list(-1, 1,   0, 26, "ABCDEFGHIJKLmnopqrstuvwxyJ"),
+        list(-1, 14,  2,  3, "ZZZ"                       ),
+        list( 1, 1,   0,  1, "N"                         ),
+        list( 1, 10, 13,  1, "A"                         ),
+        list( 1, 1,   3,  1, "B"                         ),
+        list( 1, 1,   1,  1, "C"                         ),
+        list( 1, 1,   0,  1, "D"                         ),
+        list( 1, 1,   3,  1, "A"                         ),
+        list( 1, 1,   0,  1, "H"                         ),
+        list( 1, 1,   7,  1, "A"                         ),
+        list( 1, 1,   0,  1, "V"                         ),
+        list( 1, 1,  21,  1, "A"                         ),
+        list( 1, 1,   0,  1, "W"                         ),
+        list( 1, 1,  19,  1, "W"                         ),
+        list( 1, 1,  22,  1, "A"                         ),
+        list( 1, 1,  22,  1, "T"                         ),
+        list( 1, 1,   2,  1, "S"                         ),
+        list( 1, 1,   6,  1, "S"                         ),
+        list( 1, 1,  18,  1, "C"                         ),
+        list( 1, 1,  18,  1, "G"                         ),
+        list( 1, 1,   0,  1, "M"                         ),
+        list( 1, 1,   2,  1, "M"                         ),
+        list( 1, 1,  12,  1, "A"                         ),
+        list( 1, 1,  12,  1, "C"                         ),
+        list( 1, 1,   6,  1, "K"                         ),
+        list( 1, 1,  19,  1, "K"                         ),
+        list( 1, 1,  10,  1, "G"                         ),
+        list( 1, 1,  10,  1, "T"                         ),
+        list( 1, 1,   0,  1, "R"                         ),
+        list( 1, 1,   6,  1, "R"                         ),
+        list( 1, 1,  17,  1, "A"                         ),
+        list( 1, 1,  17,  1, "G"                         ),
+        list( 1, 1,   2,  1, "Y"                         ),
+        list( 1, 1,  19,  1, "Y"                         ),
+        list( 1, 1,  24,  1, "C"                         ),
+        list( 1, 1,  24,  1, "T"                         )
     )
-    colnames(x) <- list("chrom", "pos", "ref", "sizeref", "code")
+    colnames(x) <- list("exp", "chrom", "pos", "sizeref", "ref")
     res <- mapply(CheckReference, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"code"])))
+    expect_that(res, equals(unlist(x[,"exp"])))
 })
 
 test_that("FlipAllele", {
@@ -81,20 +81,20 @@ test_that("FlipAllele", {
 
 test_that("NormalizeVariant", {
     x <- rbind(
-        list(1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2),         # invalid position
-        list(1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1),           # invalid reference
-        list(1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 4),            # flip
-        list(1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0),            # OK
-        list(13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32),      # left trim
-        list(13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48),      # left trim + right trim
-        list(1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48), # left trim + right trim
-        list(1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0),              # OK
-        list(1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8),            # left extend
-        list(1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0),        # OK
-        list(1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 2),            # swap
-        list(1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6)             # swap + flip
+        list(-2, 1, 26, 26, 1, 1, 1, 1, "A",  "C",  "A",      "C"     ),  # invalid position
+        list(-1, 1,  0,  0, 1, 1, 1, 1, "J",  "C",  "J",      "C"     ),  # invalid reference
+        list( 4, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "T",      "G"     ),  # flip
+        list( 0, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "A",      "C"     ),  # OK
+        list(32, 13, 2,  3, 3, 2, 2, 1, "DE", "D",  "CDE",    "CD"    ),  # left trim
+        list(48, 13, 2,  3, 3, 3, 1, 1, "D",  "F",  "CDE",    "CFE"   ),  # left trim + right trim
+        list(48, 1,  0,  2, 6, 6, 1, 1, "C",  "K",  "aBCDEF", "aBKDEF"),  # left trim + right trim
+        list( 0, 1,  0,  0, 1, 0, 1, 0, "A",  "",   "A",      ""      ),  # OK
+        list( 8, 1,  3,  2, 1, 0, 2, 1, "CD", "C",  "D",      ""      ),  # left extend
+        list( 0, 1, 24, 24, 1, 2, 1, 2, "Y",  "CK", "Y",      "CK"    ),  # OK
+        list( 2, 1,  0,  0, 1, 1, 1, 1, "A",  "G",  "G",      "A"     ),  # swap
+        list( 6, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "G",      "T"     )   # swap + flip
     )
-    colnames(x) <- list("chrom", "pos", "ref", "sizeref", "alt", "sizealt", "epos", "eref", "esizeref", "ealt", "esizealt", "ecode")
+    colnames(x) <- list("ecode", "chrom", "pos", "epos", "sizeref", "sizealt", "esizeref", "esizealt", "eref", "ealt", "ref", "alt")
     res <- mapply(NormalizeVariant, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"ecode"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"epos"])))
