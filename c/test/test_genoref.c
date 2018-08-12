@@ -215,56 +215,56 @@ int test_check_reference(const unsigned char *src, uint32_t idx[])
     int i;
     typedef struct test_ref_t
     {
-        uint8_t chrom;
-        uint32_t pos;
+        int        exp;
+        uint8_t    chrom;
+        uint32_t   pos;
+        size_t     sizeref;
         const char *ref;
-        size_t sizeref;
-        int exp;
     } test_ref_t;
     static test_ref_t test_ref[42] =
     {
-        {1, 0, "A", 1, 0},
-        {1, 25, "Z", 1, 0},
-        {25, 0, "A", 1, 0},
-        {25, 1, "B", 1, 0},
-        {2, 0, "ABCDEFGHIJKLmnopqrstuvwxy", 25, 0},
-        {1, 26, "ZABC", 4, -2},
-        {1, 0, "ABCDEFGHIJKLmnopqrstuvwxyJ", 26, -1},
-        {14, 2, "ZZZ", 3, -1},
-        {1, 0, "N", 1, 1},
-        {10, 13, "A", 1, 1},
-        {1, 3, "B", 1, 1},
-        {1, 1, "C", 1, 1},
-        {1, 0, "D", 1, 1},
-        {1, 3, "A", 1, 1},
-        {1, 0, "H", 1, 1},
-        {1, 7, "A", 1, 1},
-        {1, 0, "V", 1, 1},
-        {1, 21, "A", 1, 1},
-        {1, 0, "W", 1, 1},
-        {1, 19, "W", 1, 1},
-        {1, 22, "A", 1, 1},
-        {1, 22, "T", 1, 1},
-        {1, 2, "S", 1, 1},
-        {1, 6, "S", 1, 1},
-        {1, 18, "C", 1, 1},
-        {1, 18, "G", 1, 1},
-        {1, 0, "M", 1, 1},
-        {1, 2, "M", 1, 1},
-        {1, 12, "A", 1, 1},
-        {1, 12, "C", 1, 1},
-        {1, 6, "K", 1, 1},
-        {1, 19, "K", 1, 1},
-        {1, 10, "G", 1, 1},
-        {1, 10, "T", 1, 1},
-        {1, 0, "R", 1, 1},
-        {1, 6, "R", 1, 1},
-        {1, 17, "A", 1, 1},
-        {1, 17, "G", 1, 1},
-        {1, 2, "Y", 1, 1},
-        {1, 19, "Y", 1, 1},
-        {1, 24, "C", 1, 1},
-        {1, 24, "T", 1, 1},
+        { 0, 1,   0,  1, "A"                         },
+        { 0, 1,  25,  1, "Z"                         },
+        { 0, 25,  0,  1, "A"                         },
+        { 0, 25,  1,  1, "B"                         },
+        { 0, 2,   0, 25, "ABCDEFGHIJKLmnopqrstuvwxy" },
+        {-2, 1,  26,  4, "ZABC"                      },
+        {-1, 1,   0, 26, "ABCDEFGHIJKLmnopqrstuvwxyJ"},
+        {-1, 14,  2,  3, "ZZZ"                       },
+        { 1, 1,   0,  1, "N"                         },
+        { 1, 10, 13,  1, "A"                         },
+        { 1, 1,   3,  1, "B"                         },
+        { 1, 1,   1,  1, "C"                         },
+        { 1, 1,   0,  1, "D"                         },
+        { 1, 1,   3,  1, "A"                         },
+        { 1, 1,   0,  1, "H"                         },
+        { 1, 1,   7,  1, "A"                         },
+        { 1, 1,   0,  1, "V"                         },
+        { 1, 1,  21,  1, "A"                         },
+        { 1, 1,   0,  1, "W"                         },
+        { 1, 1,  19,  1, "W"                         },
+        { 1, 1,  22,  1, "A"                         },
+        { 1, 1,  22,  1, "T"                         },
+        { 1, 1,   2,  1, "S"                         },
+        { 1, 1,   6,  1, "S"                         },
+        { 1, 1,  18,  1, "C"                         },
+        { 1, 1,  18,  1, "G"                         },
+        { 1, 1,   0,  1, "M"                         },
+        { 1, 1,   2,  1, "M"                         },
+        { 1, 1,  12,  1, "A"                         },
+        { 1, 1,  12,  1, "C"                         },
+        { 1, 1,   6,  1, "K"                         },
+        { 1, 1,  19,  1, "K"                         },
+        { 1, 1,  10,  1, "G"                         },
+        { 1, 1,  10,  1, "T"                         },
+        { 1, 1,   0,  1, "R"                         },
+        { 1, 1,   6,  1, "R"                         },
+        { 1, 1,  17,  1, "A"                         },
+        { 1, 1,  17,  1, "G"                         },
+        { 1, 1,   2,  1, "Y"                         },
+        { 1, 1,  19,  1, "Y"                         },
+        { 1, 1,  24,  1, "C"                         },
+        { 1, 1,  24,  1, "T"                         },
     };
     for (i = 0; i < 42; i++)
     {
@@ -314,33 +314,33 @@ int test_normalize_variant(const unsigned char *src, uint32_t idx[])
     int i;
     typedef struct test_norm_t
     {
-        uint8_t chrom;
-        uint32_t pos;
-        char ref[256];
-        size_t sizeref;
-        char alt[256];
-        size_t sizealt;
-        uint32_t exp_pos;
+        int        exp;
+        uint8_t    chrom;
+        uint32_t   pos;
+        uint32_t   exp_pos;
+        size_t     sizeref;
+        size_t     sizealt;
+        size_t     exp_sizeref;
+        size_t     exp_sizealt;
         const char *exp_ref;
-        size_t exp_sizeref;
         const char *exp_alt;
-        size_t exp_sizealt;
-        int exp;
+        char       ref[256];
+        char       alt[256];
     } test_norm_t;
     static test_norm_t test_norm[12] =
     {
-        {1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2},         // invalid position
-        {1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1},           // invalid reference
-        {1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 4},            // flip
-        {1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0},            // OK
-        {13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32},      // left trim
-        {13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48},      // left trim + right trim
-        {1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48}, // left trim + right trim
-        {1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0},              // OK
-        {1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8},            // left extend
-        {1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0},        // OK
-        {1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 2},            // swap
-        {1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6},            // swap + flip
+        {-2, 1, 26, 26, 1, 1, 1, 1, "A",  "C",  "A",      "C"     },  // invalid position
+        {-1, 1,  0,  0, 1, 1, 1, 1, "J",  "C",  "J",      "C"     },  // invalid reference
+        { 4, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "T",      "G"     },  // flip
+        { 0, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "A",      "C"     },  // OK
+        {32, 13, 2,  3, 3, 2, 2, 1, "DE", "D",  "CDE",    "CD"    },  // left trim
+        {48, 13, 2,  3, 3, 3, 1, 1, "D",  "F",  "CDE",    "CFE"   },  // left trim + right trim
+        {48, 1,  0,  2, 6, 6, 1, 1, "C",  "K",  "aBCDEF", "aBKDEF"},  // left trim + right trim
+        { 0, 1,  0,  0, 1, 0, 1, 0, "A",  "",   "A",      ""      },  // OK
+        { 8, 1,  3,  2, 1, 0, 2, 1, "CD", "C",  "D",      ""      },  // left extend
+        { 0, 1, 24, 24, 1, 2, 1, 2, "Y",  "CK", "Y",      "CK"    },  // OK
+        { 2, 1,  0,  0, 1, 1, 1, 1, "A",  "G",  "G",      "A"     },  // swap
+        { 6, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "G",      "T"     },  // swap + flip
     };
     for (i = 0; i < 12; i++)
     {

@@ -72,7 +72,7 @@ size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64
 {
     if ((vk & 0x1) == 0) // check last bit for reversible encoding
     {
-        return (size_t)((vk & 0x0000000078000000) >> 27); // [00000000 00000000 00000000 00000000 01111000 00000000 00000000 00000000]
+        return ((vk & 0x0000000078000000) >> 27); // [00000000 00000000 00000000 00000000 01111000 00000000 00000000 00000000]
     }
     uint64_t first = 0;
     uint64_t max = last;
@@ -81,7 +81,7 @@ size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64
     {
         return 0; // not found
     }
-    return (size_t) bytes_to_uint8_t(src, bytes_to_uint64_t(src, get_address(KEYBLKLEN, ADDRBLKPOS, found)));
+    return (size_t)bytes_to_uint8_t(src, bytes_to_uint64_t(src, get_address(KEYBLKLEN, ADDRBLKPOS, found)));
 }
 
 uint32_t get_variantkey_endpos(const unsigned char *src, uint64_t last, uint64_t vk)

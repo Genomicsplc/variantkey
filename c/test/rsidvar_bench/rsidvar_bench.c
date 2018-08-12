@@ -64,7 +64,7 @@ int benchmark_find_rv_variantkey_by_rsid()
 
     uint32_t i;
 
-    FILE *f = fopen(filename, "w");
+    FILE *f = fopen(filename, "we");
     if (f == NULL)
     {
         fprintf(stderr, " * %s Unable to open %s file in writing mode.\n", __func__, filename);
@@ -83,7 +83,7 @@ int benchmark_find_rv_variantkey_by_rsid()
 
     mmfile_t rv = {0};
     mmap_binfile(filename, &rv);
-    uint64_t nitems = (uint64_t)(rv.size / BINBLKLEN);
+    uint64_t nitems = (rv.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
         fprintf(stderr, " * %s Expecting rsvk_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, nitems);
@@ -125,7 +125,7 @@ int benchmark_find_vr_rsid_by_variantkey()
 
     uint64_t i;
 
-    FILE *f = fopen(filename, "w");
+    FILE *f = fopen(filename, "we");
     if (f == NULL)
     {
         fprintf(stderr, " * %s Unable to open %s file in writing mode.\n", __func__, filename);
@@ -144,7 +144,7 @@ int benchmark_find_vr_rsid_by_variantkey()
 
     mmfile_t vr = {0};
     mmap_binfile(filename, &vr);
-    uint64_t nitems = (uint64_t)(vr.size / BINBLKLEN);
+    uint64_t nitems = (vr.size / BINBLKLEN);
     if (nitems != TEST_DATA_SIZE)
     {
         fprintf(stderr, " * %s Expecting vkrs_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, nitems);

@@ -50,19 +50,19 @@
 
 typedef struct test_data_t
 {
-    uint64_t vk;
+    uint64_t   vk;
     const char chrom[3];
-    uint32_t pos;
-    uint64_t len;
-    size_t sizeref;
-    size_t sizealt;
-    uint64_t chrom_startpos;
-    uint64_t chrom_endpos;
+    uint32_t   pos;
+    uint64_t   len;
+    size_t     sizeref;
+    size_t     sizealt;
+    uint64_t   chrom_startpos;
+    uint64_t   chrom_endpos;
     const char ref[256];
     const char alt[256];
 } test_data_t;
 
-static test_data_t test_data[TEST_DATA_SIZE] =
+static const test_data_t test_data[TEST_DATA_SIZE] =
 {
     {0x0800c35093ace339,  "1", 100001, 0x00000004, 0x01, 0x01, 0x00000000100186a1, 0x00000000100186a2, "N", "A"},
     {0x1000c3517f91cdb1,  "2", 100002, 0x0000000e, 0x0b, 0x01, 0x00000000200186a2, 0x00000000200186ad, "AAGAAAGAAAG", "A"},

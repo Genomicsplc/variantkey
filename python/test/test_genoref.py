@@ -44,51 +44,52 @@ class TestFunctions(TestCase):
             self.assertNotEqual(0, ref)
 
     def test_check_reference(self):
+        # exp, chrom, pos, sizeref, ref
         tdata = [
-            (1, 0, "A", 1, 0),
-            (1, 25, "Z", 1, 0),
-            (25, 0, "A", 1, 0),
-            (25, 1, "B", 1, 0),
-            (2, 0, "ABCDEFGHIJKLmnopqrstuvwxy", 25, 0),
-            (1, 26, "ZABC", 4, -2),
-            (1, 0, "ABCDEFGHIJKLmnopqrstuvwxyJ", 26, -1),
-            (14, 2, "ZZZ", 3, -1),
-            (1, 0, "N", 1, 1),
-            (10, 13, "A", 1, 1),
-            (1, 3, "B", 1, 1),
-            (1, 1, "C", 1, 1),
-            (1, 0, "D", 1, 1),
-            (1, 3, "A", 1, 1),
-            (1, 0, "H", 1, 1),
-            (1, 7, "A", 1, 1),
-            (1, 0, "V", 1, 1),
-            (1, 21, "A", 1, 1),
-            (1, 0, "W", 1, 1),
-            (1, 19, "W", 1, 1),
-            (1, 22, "A", 1, 1),
-            (1, 22, "T", 1, 1),
-            (1, 2, "S", 1, 1),
-            (1, 6, "S", 1, 1),
-            (1, 18, "C", 1, 1),
-            (1, 18, "G", 1, 1),
-            (1, 0, "M", 1, 1),
-            (1, 2, "M", 1, 1),
-            (1, 12, "A", 1, 1),
-            (1, 12, "C", 1, 1),
-            (1, 6, "K", 1, 1),
-            (1, 19, "K", 1, 1),
-            (1, 10, "G", 1, 1),
-            (1, 10, "T", 1, 1),
-            (1, 0, "R", 1, 1),
-            (1, 6, "R", 1, 1),
-            (1, 17, "A", 1, 1),
-            (1, 17, "G", 1, 1),
-            (1, 2, "Y", 1, 1),
-            (1, 19, "Y", 1, 1),
-            (1, 24, "C", 1, 1),
-            (1, 24, "T", 1, 1),
+            (0, 1,   0,  1, b"A"),
+            (0, 1,  25,  1, b"Z"),
+            (0, 25,  0,  1, b"A"),
+            (0, 25,  1,  1, b"B"),
+            (0, 2,   0, 25, b"ABCDEFGHIJKLmnopqrstuvwxy"),
+            (-2, 1,  26,  4, b"ZABC"),
+            (-1, 1,   0, 26, b"ABCDEFGHIJKLmnopqrstuvwxyJ"),
+            (-1, 14,  2,  3, b"ZZZ"),
+            (1, 1,   0,  1, b"N"),
+            (1, 10, 13,  1, b"A"),
+            (1, 1,   3,  1, b"B"),
+            (1, 1,   1,  1, b"C"),
+            (1, 1,   0,  1, b"D"),
+            (1, 1,   3,  1, b"A"),
+            (1, 1,   0,  1, b"H"),
+            (1, 1,   7,  1, b"A"),
+            (1, 1,   0,  1, b"V"),
+            (1, 1,  21,  1, b"A"),
+            (1, 1,   0,  1, b"W"),
+            (1, 1,  19,  1, b"W"),
+            (1, 1,  22,  1, b"A"),
+            (1, 1,  22,  1, b"T"),
+            (1, 1,   2,  1, b"S"),
+            (1, 1,   6,  1, b"S"),
+            (1, 1,  18,  1, b"C"),
+            (1, 1,  18,  1, b"G"),
+            (1, 1,   0,  1, b"M"),
+            (1, 1,   2,  1, b"M"),
+            (1, 1,  12,  1, b"A"),
+            (1, 1,  12,  1, b"C"),
+            (1, 1,   6,  1, b"K"),
+            (1, 1,  19,  1, b"K"),
+            (1, 1,  10,  1, b"G"),
+            (1, 1,  10,  1, b"T"),
+            (1, 1,   0,  1, b"R"),
+            (1, 1,   6,  1, b"R"),
+            (1, 1,  17,  1, b"A"),
+            (1, 1,  17,  1, b"G"),
+            (1, 1,   2,  1, b"Y"),
+            (1, 1,  19,  1, b"Y"),
+            (1, 1,  24,  1, b"C"),
+            (1, 1,  24,  1, b"T"),
         ]
-        for chrom, pos, ref, sizeref, exp in tdata:
+        for exp, chrom, pos, sizeref, ref in tdata:
             ret = bs.check_reference(mfsrc, idx, chrom, pos, ref)
             self.assertEqual(exp, ret)
 
@@ -99,21 +100,22 @@ class TestFunctions(TestCase):
             self.assertEqual(expected, ret)
 
         def test_normalize_variant(self):
+            # ecode, chrom, pos, epos, sizeref, sizealt, esizeref, esizealt, eref, ealt, ref, alt
             tdata = [
-                (1, 26, "A", 1, "C", 1, 26, "A", 1, "C", 1, -2),         # invalid position
-                (1, 0, "J", 1, "C", 1, 0, "J", 1, "C", 1, -1),           # invalid reference
-                (1, 0, "T", 1, "G", 1, 0, "A", 1, "C", 1, 4),            # flip
-                (1, 0, "A", 1, "C", 1, 0, "A", 1, "C", 1, 0),            # OK
-                (13, 2, "CDE", 3, "CD", 2, 3, "DE", 2, "D", 1, 32),      # left trim
-                (13, 2, "CDE", 3, "CFE", 3, 3, "D", 1, "F", 1, 48),      # left trim + right trim
-                (1, 0, "aBCDEF", 6, "aBKDEF", 6, 2, "C", 1, "K", 1, 48),  # left trim + right trim
-                (1, 0, "A", 1, "", 0, 0, "A", 1, "", 0, 0),              # OK
-                (1, 3, "D", 1, "", 0, 2, "CD", 2, "C", 1, 8),            # left extend
-                (1, 24, "Y", 1, "CK", 2, 24, "Y", 1, "CK", 2, 0),        # OK
-                (1, 0, "G", 1, "A", 1, 0, "A", 1, "G", 1, 2),            # swap
-                (1, 0, "G", 1, "T", 1, 0, "A", 1, "C", 1, 6),            # swap + flip
+                (-2, 1, 26, 26, 1, 1, 1, 1, b"A",   b"C",  b"A",      b"C"),      # invalid position
+                (-1, 1,  0,  0, 1, 1, 1, 1, b"J",   b"C",  b"J",      b"C"),      # invalid reference
+                (4, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"T",      b"G"),      # flip
+                (0, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"A",      b"C"),      # OK
+                (32, 13, 2,  3, 3, 2, 2, 1, b"DE",  b"D",  b"CDE",    b"CD"),     # left trim
+                (48, 13, 2,  3, 3, 3, 1, 1, b"D",   b"F",  b"CDE",    b"CFE"),    # left trim + right trim
+                (48, 1,  0,  2, 6, 6, 1, 1, b"C",   b"K",  b"aBCDEF", b"aBKDEF"),  # left trim + right trim
+                (0, 1,  0,  0, 1, 0, 1, 0,  b"A",   b"",   b"A",      b""),       # OK
+                (8, 1,  3,  2, 1, 0, 2, 1,  b"CD",  b"C",  b"D",      b""),       # left extend
+                (0, 1, 24, 24, 1, 2, 1, 2,  b"Y",   b"CK", b"Y",      b"CK"),     # OK
+                (2, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"G",  b"G",      b"A"),      # swap
+                (6, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"G",      b"T"),      # swap + flip
             ]
-            for chrom, pos, ref, sizeref, alt, sizealt, epos, eref, esizeref, ealt, esizealt, ecode in tdata:
+            for ecode, chrom, pos, epos, sizeref, sizealt, esizeref, esizealt, eref, ealt, ref, alt in tdata:
                 ncode, npos, nref, nalt, nsizeref, nsizealt = bs.normalize_variant(mfsrc, idx, chrom, pos, ref, alt)
                 self.assertEqual(ecode, ncode)
                 self.assertEqual(epos, npos)

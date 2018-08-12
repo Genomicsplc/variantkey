@@ -50,7 +50,7 @@ typedef struct t_test_uint8_t
     uint64_t blkpos;
     uint64_t first;
     uint64_t last;
-    uint8_t search;
+    uint8_t  search;
     uint64_t foundFirst;
     uint64_t foundFFirst;
     uint64_t foundFLast;
@@ -59,7 +59,7 @@ typedef struct t_test_uint8_t
     uint64_t foundLLast;
 } t_test_uint8_t;
 
-static t_test_uint8_t test_data_uint8_t[TEST_DATA_SIZE] =
+static const t_test_uint8_t test_data_uint8_t[TEST_DATA_SIZE] =
 {
     {6, 0, 99,  0x27, 0, 0, 1, 18, 19, 18},
     {6, 0, 99,  0x33, 87, 87, 86, 99, 100, 99},
@@ -76,7 +76,7 @@ static t_test_uint8_t test_data_uint8_t[TEST_DATA_SIZE] =
     {6, 0, 99,  0x2A, 57, 57, 56, 61, 62, 61},
 };
 
-static t_test_uint8_t test_data_sub_uint8_t[TEST_DATA_SIZE] =
+static const t_test_uint8_t test_data_sub_uint8_t[TEST_DATA_SIZE] =
 {
     {6, 0, 99, 0x4, 0, 0, 1, 18, 19, 18},
     {6, 0, 99, 0x6, 80, 80, 79, 99, 100, 99},
@@ -107,7 +107,7 @@ typedef struct t_test_uint16_t
     uint64_t foundLLast;
 } t_test_uint16_t;
 
-static t_test_uint16_t test_data_uint16_t[TEST_DATA_SIZE] =
+static const t_test_uint16_t test_data_uint16_t[TEST_DATA_SIZE] =
 {
     {6, 0, 99,  0x2722, 0, 0, 1, 0, 1, 0},
     {6, 0, 99,  0x33f5, 99, 99, 98, 99, 100, 99},
@@ -124,7 +124,7 @@ static t_test_uint16_t test_data_uint16_t[TEST_DATA_SIZE] =
     {6, 0, 99,  0x28ff, 100, 45, 44, 100, 45, 44},
 };
 
-static t_test_uint16_t test_data_sub_uint16_t[TEST_DATA_SIZE] =
+static const t_test_uint16_t test_data_sub_uint16_t[TEST_DATA_SIZE] =
 {
     {6, 0, 99, 0x4e4, 0, 0, 1, 0, 1, 0},
     {6, 0, 99, 0x67e, 99, 99, 98, 99, 100, 99},
@@ -155,7 +155,7 @@ typedef struct t_test_uint32_t
     uint64_t foundLLast;
 } t_test_uint32_t;
 
-static t_test_uint32_t test_data_uint32_t[TEST_DATA_SIZE] =
+static const t_test_uint32_t test_data_uint32_t[TEST_DATA_SIZE] =
 {
     {4, 0, 99,  0x00002722, 0, 0, 1, 0, 1, 0},
     {4, 0, 99,  0x000033f5, 99, 99, 98, 99, 100, 99},
@@ -172,7 +172,7 @@ static t_test_uint32_t test_data_uint32_t[TEST_DATA_SIZE] =
     {4, 0, 99,  0x000028ff, 100, 45, 44, 100, 45, 44},
 };
 
-static t_test_uint32_t test_data_sub_uint32_t[TEST_DATA_SIZE] =
+static const t_test_uint32_t test_data_sub_uint32_t[TEST_DATA_SIZE] =
 {
     {4, 0, 99, 0x4e4, 0, 0, 1, 0, 1, 0},
     {4, 0, 99, 0x67e, 99, 99, 98, 99, 100, 99},
@@ -203,7 +203,7 @@ typedef struct t_test_uint64_t
     uint64_t foundLLast;
 } t_test_uint64_t;
 
-static t_test_uint64_t test_data_uint64_t[TEST_DATA_SIZE] =
+static const t_test_uint64_t test_data_uint64_t[TEST_DATA_SIZE] =
 {
     {4, 0, 99,  0x000027225fb6e591, 0, 0, 1, 0, 1, 0},
     {4, 0, 99,  0x000033f522a78fd9, 99, 99, 98, 99, 100, 99},
@@ -220,7 +220,7 @@ static t_test_uint64_t test_data_uint64_t[TEST_DATA_SIZE] =
     {4, 0, 99,  0x000028fca24c9149, 100, 45, 44, 100, 45, 44},
 };
 
-static t_test_uint64_t test_data_sub_uint64_t[TEST_DATA_SIZE] =
+static const t_test_uint64_t test_data_sub_uint64_t[TEST_DATA_SIZE] =
 {
     {4, 0, 99, 0x4e44bf6dcb2, 0, 0, 1, 0, 1, 0},
     {4, 0, 99, 0x67ea454f1fb, 99, 99, 98, 99, 100, 99},
@@ -554,7 +554,7 @@ int main()
         return 1;
     }
 
-    nitems = (uint64_t)(mf.size / blklen);
+    nitems = (mf.size / blklen);
     if (nitems != 100)
     {
         fprintf(stderr, "Expecting 100 items, got instead: %" PRIu64 "\n", nitems);

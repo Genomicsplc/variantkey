@@ -267,9 +267,9 @@ print(vk.variantkey_to_regionkey(None, 0, 0x2800000210920000))
 # ---------
 
 print(vk.encode_string_id("A0A022YWF9", 0))
-# 599125005131282841
+# 12128340051199752601
 
-print(vk.decode_string_id(0x0850850492e77999))
+print(vk.decode_string_id(0xa850850492e77999))
 (b'A0A022YWF9', 10)
 
 print(vk.hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))

@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help testcpp test tidy tidy5 build package_vk version doc format clean
+.PHONY: help testcpp test tidy build package_vk version doc format clean
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -87,10 +87,7 @@ endif
 
 # use clang-tidy
 tidy:
-	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open' -header-filter=.* -p . src/*.c vk/*.c
-
-tidy5:
-	clang-tidy-5.0 -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open' -header-filter=.* -p . src/*.c vk/*.c
+	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open,-hicpp-no-assembler,-clang-analyzer-alpha.security.ArrayBoundV2' -header-filter=.* -p . src/*.c vk/*.c test/*.c test/rsidvar_bench/*.c
 
 # Build the library
 build:

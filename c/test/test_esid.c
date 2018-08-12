@@ -56,55 +56,55 @@ uint64_t get_time()
 
 typedef struct esid_data_t
 {
-    const char str[37];
     size_t size;
     size_t start;
-    uint64_t esid;
-    const char estr[11];
     size_t esize;
+    uint64_t esid;
     uint64_t hsid;
+    const char estr[11];
+    const char str[37];
 } esid_data_t;
 
 static const int k_esid_data_size = 36;
 
-static esid_data_t esid_data[] =
+static const esid_data_t esid_data[] =
 {
-    {"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36,  0, 0x0411493515597619, "0123456789",  10, 0xb3a5fdb8808cb7dc},
-    {"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36,  1, 0x04524d45565d8661, "123456789A",  10, 0xb3a5fdb8808cb7dc},
-    {"0223456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36, 10, 0x08628e49669e8a6a, "ABCDEFGHIJ",  10, 0xd93e382010f46f32},
-    {"0133456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36, 25, 0x0c31cb3d35db7e39, "PQRSTUVWXY",  10, 0xbfc379f4a71cb3be},
-    {"1123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36, 26, 0x0c72cf4d76df8e7a, "QRSTUVWXYZ",  10, 0xdba299d06b54215d},
-    {"0123456789ABCDEFGHIJKLMNOPQRSTUVWXY[", 36, 35, 0x0ec0000000000000, "[",            1, 0x996dcdc8ef7c89c1},
-    {"012345",                                6,  0, 0x0411493515000000, "012345",       6, 0xa81279395d9c891e},
-    {"012345",                                6,  1, 0x04524d4540000000, "12345",        5, 0xa81279395d9c891e},
-    {"012345",                                6,  3, 0x04d4540000000000, "345",          3, 0xa81279395d9c891e},
-    {"012345",                                6,  5, 0x0540000000000000, "5",            1, 0xa81279395d9c891e},
-    {" !\"#$%&'()",                          10,  0, 0x0fc1083105187209, "_!\"#$%&'()", 10, 0x838c148028a06998},
-    {"*+,-./0123",                           10,  0, 0x028b30d38f411493, "*+,-./0123",  10, 0x96e42cf7aefeccf0},
-    {"456789:;<=",                           10,  0, 0x051559761969b71d, "456789:;<=",  10, 0xb391c7f288e446ee},
-    {">?@ABCDEFG",                           10,  0, 0x079f8218a39259a7, ">?@ABCDEFG",  10, 0xcc0de20381405e0a},
-    {"HIJKLMNOPQ",                           10,  0, 0x0a29aabb2dbafc31, "HIJKLMNOPQ",  10, 0xbbfc630eacb6c552},
-    {"RSTUVWXYZ[",                           10,  0, 0x0cb3d35db7e39ebb, "RSTUVWXYZ[",  10, 0x803eda0a1781a117},
-    {"\\]^_`abcde",                          10,  0, 0x0f3dfbf8218a3925, "\\]^_@ABCDE", 10, 0x878ef2947ee3cc2b},
-    {"fghijklmno",                           10,  0, 0x09a7a29aabb2dbaf, "FGHIJKLMNO",  10, 0xbaadaef07826969b},
-    {"pqrstuvwxy",                           10,  0, 0x0c31cb3d35db7e39, "PQRSTUVWXY",  10, 0xd3da4d5e28be3590},
-    {"z{|}~\t",                               6,  0, 0x0ebbf3dfbf000000, "Z[\\]^_",      6, 0xeadc752a50c5b850},
-    {"123456781234567",                      15,  0, 0x04524d45565d8452, "1234567812",  10, 0x9af6ee553ba41827},
-    {"12345678123456",                       14,  0, 0x04524d45565d8452, "1234567812",  10, 0xc94e10e9fe153fd2},
-    {"1234567812345",                        13,  0, 0x04524d45565d8452, "1234567812",  10, 0x9b56411c7abdefe6},
-    {"123456781234",                         12,  0, 0x04524d45565d8452, "1234567812",  10, 0xcbec35944ff1c863},
-    {"12345678123",                          11,  0, 0x04524d45565d8452, "1234567812",  10, 0x929920298cf56b9b},
-    {"1234567812",                           10,  0, 0x04524d45565d8452, "1234567812",  10, 0xbdf006d50a33ad90},
-    {"123456781",                             9,  0, 0x04524d45565d8440, "123456781",    9, 0xde094182e93557ae},
-    {"12345678",                              8,  0, 0x04524d45565d8000, "12345678",     8, 0xccbc926a73ece95c},
-    {"1234567",                               7,  0, 0x04524d45565c0000, "1234567",      7, 0xd18b960e2f99c279},
-    {"123456",                                6,  0, 0x04524d4556000000, "123456",       6, 0x811c9c02fcc22096},
-    {"12345",                                 5,  0, 0x04524d4540000000, "12345",        5, 0xd863467dedd1cab1},
-    {"1234",                                  4,  0, 0x04524d4000000000, "1234",         4, 0xbef404ecb71e4cd9},
-    {"123",                                   3,  0, 0x04524c0000000000, "123",          3, 0xfad470644116fa54},
-    {"12",                                    2,  0, 0x0452000000000000, "12",           2, 0xd94ae1e7173e781d},
-    {"1",                                     1,  0, 0x0440000000000000, "1",            1, 0xfc73100baa96ad81},
-    {"",                                      0,  0, 0x0000000000000000, "",             0, 0x8000000000000000},
+    {36,  0, 10, 0xa411493515597619, 0xb3a5fdb8808cb7dc, "0123456789", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+    {36,  1, 10, 0xa4524d45565d8661, 0xb3a5fdb8808cb7dc, "123456789A", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+    {36, 10, 10, 0xa8628e49669e8a6a, 0xd93e382010f46f32, "ABCDEFGHIJ", "0223456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+    {36, 25, 10, 0xac31cb3d35db7e39, 0xbfc379f4a71cb3be, "PQRSTUVWXY", "0133456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+    {36, 26, 10, 0xac72cf4d76df8e7a, 0xdba299d06b54215d, "QRSTUVWXYZ", "1123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"},
+    {36, 35,  1, 0x1ec0000000000000, 0x996dcdc8ef7c89c1, "[",          "0123456789ABCDEFGHIJKLMNOPQRSTUVWXY["},
+    { 6,  0,  6, 0x6411493515000000, 0xa81279395d9c891e, "012345",     "012345"                              },
+    { 6,  1,  5, 0x54524d4540000000, 0xa81279395d9c891e, "12345",      "012345"                              },
+    { 6,  3,  3, 0x34d4540000000000, 0xa81279395d9c891e, "345",        "012345"                              },
+    { 6,  5,  1, 0x1540000000000000, 0xa81279395d9c891e, "5",          "012345"                              },
+    {10,  0, 10, 0xafc1083105187209, 0x838c148028a06998, "_!\"#$%&'()"," !\"#$%&'()"                         },
+    {10,  0, 10, 0xa28b30d38f411493, 0x96e42cf7aefeccf0, "*+,-./0123", "*+,-./0123"                          },
+    {10,  0, 10, 0xa51559761969b71d, 0xb391c7f288e446ee, "456789:;<=", "456789:;<="                          },
+    {10,  0, 10, 0xa79f8218a39259a7, 0xcc0de20381405e0a, ">?@ABCDEFG", ">?@ABCDEFG"                          },
+    {10,  0, 10, 0xaa29aabb2dbafc31, 0xbbfc630eacb6c552, "HIJKLMNOPQ", "HIJKLMNOPQ"                          },
+    {10,  0, 10, 0xacb3d35db7e39ebb, 0x803eda0a1781a117, "RSTUVWXYZ[", "RSTUVWXYZ["                          },
+    {10,  0, 10, 0xaf3dfbf8218a3925, 0x878ef2947ee3cc2b, "\\]^_@ABCDE","\\]^_`abcde"                         },
+    {10,  0, 10, 0xa9a7a29aabb2dbaf, 0xbaadaef07826969b, "FGHIJKLMNO", "fghijklmno"                          },
+    {10,  0, 10, 0xac31cb3d35db7e39, 0xd3da4d5e28be3590, "PQRSTUVWXY", "pqrstuvwxy"                          },
+    { 6,  0,  6, 0x6ebbf3dfbf000000, 0xeadc752a50c5b850, "Z[\\]^_",    "z{|}~\t"                             },
+    {15,  0, 10, 0xa4524d45565d8452, 0x9af6ee553ba41827, "1234567812", "123456781234567"                     },
+    {14,  0, 10, 0xa4524d45565d8452, 0xc94e10e9fe153fd2, "1234567812", "12345678123456"                      },
+    {13,  0, 10, 0xa4524d45565d8452, 0x9b56411c7abdefe6, "1234567812", "1234567812345"                       },
+    {12,  0, 10, 0xa4524d45565d8452, 0xcbec35944ff1c863, "1234567812", "123456781234"                        },
+    {11,  0, 10, 0xa4524d45565d8452, 0x929920298cf56b9b, "1234567812", "12345678123"                         },
+    {10,  0, 10, 0xa4524d45565d8452, 0xbdf006d50a33ad90, "1234567812", "1234567812"                          },
+    { 9,  0,  9, 0x94524d45565d8440, 0xde094182e93557ae, "123456781",  "123456781"                           },
+    { 8,  0,  8, 0x84524d45565d8000, 0xccbc926a73ece95c, "12345678",   "12345678"                            },
+    { 7,  0,  7, 0x74524d45565c0000, 0xd18b960e2f99c279, "1234567",    "1234567"                             },
+    { 6,  0,  6, 0x64524d4556000000, 0x811c9c02fcc22096, "123456",     "123456"                              },
+    { 5,  0,  5, 0x54524d4540000000, 0xd863467dedd1cab1, "12345",      "12345"                               },
+    { 4,  0,  4, 0x44524d4000000000, 0xbef404ecb71e4cd9, "1234",       "1234"                                },
+    { 3,  0,  3, 0x34524c0000000000, 0xfad470644116fa54, "123",        "123"                                 },
+    { 2,  0,  2, 0x2452000000000000, 0xd94ae1e7173e781d, "12",         "12"                                  },
+    { 1,  0,  1, 0x1440000000000000, 0xfc73100baa96ad81, "1",          "1"                                   },
+    { 0,  0,  0, 0x0000000000000000, 0x8000000000000000, "",           ""                                    },
 };
 
 int test_encode_string_id()
@@ -178,20 +178,15 @@ void benchmark_decode_string_id()
     fprintf(stdout, " * %s : %lu ns/op (%lu)\n", __func__, (tend - tstart)/size, len);
 }
 
-int test_decode_string_id_hash()
+int test_decode_string_id_error()
 {
-    int i;
     int errors = 0;
     char esid[11];
-    size_t size;
-    for (i=0 ; i < k_esid_data_size; i++)
+    size_t size = decode_string_id(0xffffffffffffffff, esid);
+    if (size != 0)
     {
-        size = decode_string_id(esid_data[i].hsid, esid);
-        if (size != 0)
-        {
-            fprintf(stderr, "%s (%d): Expected size 0, got %lu\n", __func__, i, size);
-            ++errors;
-        }
+        fprintf(stderr, "%s : Expected size 0, got %lu\n", __func__, size);
+        ++errors;
     }
     return errors;
 }
@@ -234,7 +229,7 @@ int main()
 
     errors += test_encode_string_id();
     errors += test_decode_string_id();
-    errors += test_decode_string_id_hash();
+    errors += test_decode_string_id_error();
     errors += test_hash_string_id();
 
     benchmark_encode_string_id();

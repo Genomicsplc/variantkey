@@ -34,7 +34,8 @@
 #include "esid.h"
 
 #define ESID_SHIFT    32 //!< Number used to translate ASCII character values
-#define ESIDSHIFT_POS 60 //!< Encoded string ID LEN LSB position from LSB [ ----0000 00111111 22222233 33334444 44555555 66666677 77778888 88999999 ]
+#define ESID_SHIFTPOS 60 //!< Encoded string ID LEN LSB position from LSB [ ----0000 00111111 22222233 33334444 44555555 66666677 77778888 88999999 ]
+#define ESID_CHARBIT  6  //!< Number of bit used to encode a char
 
 static inline uint64_t esid_encode_char(int c)
 {
@@ -56,67 +57,89 @@ uint64_t encode_string_id(const char *str, size_t size, size_t start)
     {
         size = ESIDSHIFT_MAXLEN;
     }
-    uint64_t h = 0;
     str += start;
     const char *pos = (str + size - 1);
+    uint64_t h = (size << ESID_SHIFTPOS);
     switch (size)
     {
     case 10:
-        h ^= esid_encode_char(*pos--);
+        h |= esid_encode_char(*pos--);
     // fall through
     case 9:
-        h ^= esid_encode_char(*pos--) << 6;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 1);
     // fall through
     case 8:
-        h ^= esid_encode_char(*pos--) << 12;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 2);
     // fall through
     case 7:
-        h ^= esid_encode_char(*pos--) << 18;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 3);
     // fall through
     case 6:
-        h ^= esid_encode_char(*pos--) << 24;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 4);
     // fall through
     case 5:
-        h ^= esid_encode_char(*pos--) << 30;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 5);
     // fall through
     case 4:
-        h ^= esid_encode_char(*pos--) << 36;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 6);
     // fall through
     case 3:
-        h ^= esid_encode_char(*pos--) << 42;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 7);
     // fall through
     case 2:
-        h ^= esid_encode_char(*pos--) << 48;
+        h |= esid_encode_char(*pos--) << (ESID_CHARBIT * 8);
     // fall through
     case 1:
-        h ^= esid_encode_char(*pos) << 54;
+        h |= esid_encode_char(*pos) << (ESID_CHARBIT * 9);
     }
     return h;
 }
 
+static inline unsigned char esid_decode_char(uint64_t esid, size_t pos)
+{
+    return (unsigned char)(((esid >> pos) & 0x3f) + ESID_SHIFT); // 0x3f hex = 63 dec = 00111111 bin
+}
+
 size_t decode_string_id(uint64_t esid, char *str)
 {
-    if (esid >> 63)
+    size_t size = (esid >> ESID_SHIFTPOS);
+    if (size > 10)
     {
-        str[0] = 0;
-        return 0; // hash encoding
+        size = 0;
     }
-    size_t size = 0;
-    uint8_t bitpos = ESIDSHIFT_POS;
-    size_t i = 0;
-    char code;
-    for(i = 0; i < ESIDSHIFT_MAXLEN; i++)
+    switch (size)
     {
-        bitpos -= 6;
-        code = ((esid >> bitpos) & 0x3f);
-        if (code == 0)
-        {
-            break;
-        }
-        str[i] = (code + ESID_SHIFT); // 0x3f is the 6 bit mask [00111111]
-        size++;
+    case 10:
+        str[9] = esid_decode_char(esid, 0);
+    // fall through
+    case 9:
+        str[8] = esid_decode_char(esid, (ESID_CHARBIT * 1));
+    // fall through
+    case 8:
+        str[7] = esid_decode_char(esid, (ESID_CHARBIT * 2));
+    // fall through
+    case 7:
+        str[6] = esid_decode_char(esid, (ESID_CHARBIT * 3));
+    // fall through
+    case 6:
+        str[5] = esid_decode_char(esid, (ESID_CHARBIT * 4));
+    // fall through
+    case 5:
+        str[4] = esid_decode_char(esid, (ESID_CHARBIT * 5));
+    // fall through
+    case 4:
+        str[3] = esid_decode_char(esid, (ESID_CHARBIT * 6));
+    // fall through
+    case 3:
+        str[2] = esid_decode_char(esid, (ESID_CHARBIT * 7));
+    // fall through
+    case 2:
+        str[1] = esid_decode_char(esid, (ESID_CHARBIT * 8));
+    // fall through
+    case 1:
+        str[0] = esid_decode_char(esid, (ESID_CHARBIT * 9));
     }
-    str[i] = 0;
+    str[size] = 0;
     return size;
 }
 
@@ -145,22 +168,22 @@ uint64_t hash_string_id(const char *str, size_t size)
     switch (size & 7)
     {
     case 7:
-        v ^= (uint64_t)tail[6] << 48;
+        v ^= (uint64_t)tail[6] << (8 * 6);
     // fall through
     case 6:
-        v ^= (uint64_t)tail[5] << 40;
+        v ^= (uint64_t)tail[5] << (8 * 5);
     // fall through
     case 5:
-        v ^= (uint64_t)tail[4] << 32;
+        v ^= (uint64_t)tail[4] << (8 * 4);
     // fall through
     case 4:
-        v ^= (uint64_t)tail[3] << 24;
+        v ^= (uint64_t)tail[3] << (8 * 3);
     // fall through
     case 3:
-        v ^= (uint64_t)tail[2] << 16;
+        v ^= (uint64_t)tail[2] << (8 * 2);
     // fall through
     case 2:
-        v ^= (uint64_t)tail[1] << 8;
+        v ^= (uint64_t)tail[1] << (8 * 1);
     // fall through
     case 1:
         v ^= (uint64_t)tail[0];

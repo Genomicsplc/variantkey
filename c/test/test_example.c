@@ -206,7 +206,7 @@ int main()
         fprintf(stderr, "Error loading rsvk.10.bin\n");
         return 1;
     }
-    uint64_t nitems = (uint64_t)(rv.size / BINBLKLEN);
+    uint64_t nitems = (rv.size / BINBLKLEN);
 
     vk = get_rv_variantkey(rv.src, 3);
     fprintf(stdout, "%" PRIu64 "\n", vk);
@@ -241,7 +241,7 @@ int main()
         fprintf(stderr, "Error loading rsvk.m.10.bin\n");
         return 1;
     }
-    nitems = (uint64_t)(rv.size / BINBLKLEN);
+    nitems = (rv.size / BINBLKLEN);
 
     first = 0;
     vk = find_rv_variantkey_by_rsid(rvm.src, &first, nitems, 0x00000003);
@@ -273,7 +273,7 @@ int main()
         fprintf(stderr, "Error loading vkrs.10.bin\n");
         return 1;
     }
-    nitems = (uint64_t)(vr.size / BINBLKLEN);
+    nitems = (vr.size / BINBLKLEN);
 
     uint32_t rsid = get_vr_rsid(vr.src, 3);
     fprintf(stdout, "%" PRIu32 "\n", rsid);
@@ -392,10 +392,10 @@ int main()
 
     uint64_t esid = encode_string_id("A0A022YWF9", 10, 0);
     fprintf(stdout, "%016" PRIx64 "\n", esid);
-    // 0850850492e77999
+    // a850850492e77999
 
     char strid[11];
-    size_t stridlen = decode_string_id(0x0850850492e77999, strid);
+    size_t stridlen = decode_string_id(0xa850850492e77999, strid);
     fprintf(stdout, "%s %lu\n", strid, stridlen);
     // A0A022YWF9 10
 

@@ -24,20 +24,20 @@ regionsTestData = [
     (b"MT", 1009, 2009,  0, 25, 0, 0xc80001f880003ec8, b"c80001f880003ec8", 0x00000001900003f1, 0x00000001900007d9),
 ]
 
-# a_chrom, a_startpos, a_endpos, a_rk, a_vk, b_chrom, b_startpos, b_endpos, b_rk, res
+# res, a_chrom, b_chrom, a_startpos, b_startpos, a_endpos, b_endpos, a_rk, a_vk, b_rk
 overlapTestData = [
-    (1, 5,  7, 0x0800000280000038, 0x0800000290920000,  2, 5, 7, 0x1000000280000038, 0),   # different chromosome
-    (1, 0,  2, 0x0800000000000010, 0x0800000010920000,  1, 3, 7, 0x0800000180000038, 0),   # -[-]|---|----
-    (2, 1,  3, 0x1000000080000018, 0x1000000090920000,  2, 3, 7, 0x1000000180000038, 0),   # --[-]---|----
-    (3, 2,  4, 0x1800000100000020, 0x1800000110920000,  3, 3, 7, 0x1800000180000038, 1),   # ---[|]--|----
-    (4, 3,  5, 0x2000000180000028, 0x2000000190920000,  4, 3, 7, 0x2000000180000038, 1),   # ----[-]-|----
-    (5, 4,  6, 0x2800000200000030, 0x2800000210920000,  5, 3, 7, 0x2800000180000038, 1),   # ----|[-]|----
-    (6, 5,  7, 0x3000000280000038, 0x3000000290920000,  6, 3, 7, 0x3000000180000038, 1),   # ----|-[ ]----
-    (10, 6,  8, 0x5000000300000040, 0x5000000310920000, 10, 3, 7, 0x5000000180000038, 1),  # ----|--[|]---
-    (22, 7,  9, 0xb000000380000048, 0xb000000390920000, 22, 3, 7, 0xb000000180000038, 0),  # ----|---[-]--
-    (23, 8, 10, 0xb800000400000050, 0xb800000410920000, 23, 3, 7, 0xb800000180000038, 0),  # ----|---|[-]-
-    (24, 2,  8, 0xc000000100000040, 0xc000000130911200, 24, 3, 7, 0xc000000180000038, 1),  # ---[|---|]---
-    (25, 3,  7, 0xc800000180000038, 0xc8000001a0912000, 25, 3, 7, 0xc800000180000038, 1),  # ----[---]----
+    (0,  1,  2, 5, 5,  7, 7, 0x0800000280000038, 0x0800000290920000, 0x1000000280000038),  # different chromosome
+    (0,  1,  1, 0, 3,  2, 7, 0x0800000000000010, 0x0800000010920000, 0x0800000180000038),  # -[-]|---|----
+    (0,  2,  2, 1, 3,  3, 7, 0x1000000080000018, 0x1000000090920000, 0x1000000180000038),  # --[-]---|----
+    (1,  3,  3, 2, 3,  4, 7, 0x1800000100000020, 0x1800000110920000, 0x1800000180000038),  # ---[|]--|----
+    (1,  4,  4, 3, 3,  5, 7, 0x2000000180000028, 0x2000000190920000, 0x2000000180000038),  # ----[-]-|----
+    (1,  5,  5, 4, 3,  6, 7, 0x2800000200000030, 0x2800000210920000, 0x2800000180000038),  # ----|[-]|----
+    (1,  6,  6, 5, 3,  7, 7, 0x3000000280000038, 0x3000000290920000, 0x3000000180000038),  # ----|-[ ]----
+    (1, 10, 10, 6, 3,  8, 7, 0x5000000300000040, 0x5000000310920000, 0x5000000180000038),  # ----|--[|]---
+    (0, 22, 22, 7, 3,  9, 7, 0xb000000380000048, 0xb000000390920000, 0xb000000180000038),  # ----|---[-]--
+    (0, 23, 23, 8, 3, 10, 7, 0xb800000400000050, 0xb800000410920000, 0xb800000180000038),  # ----|---|[-]-
+    (1, 24, 24, 2, 3,  8, 7, 0xc000000100000040, 0xc000000130911200, 0xc000000180000038),  # ---[|---|]---
+    (1, 25, 25, 3, 3,  7, 7, 0xc800000180000038, 0xc8000001a0912000, 0xc800000180000038),  # ----[---]----
 ]
 
 
@@ -120,27 +120,27 @@ class TestFunctions(TestCase):
             self.assertEqual(h, chrom_endpos)
 
     def test_are_overlapping_regions(self):
-        for a_chrom, a_startpos, a_endpos, a_rk, a_vk, b_chrom, b_startpos, b_endpos, b_rk, res in overlapTestData:
+        for res, a_chrom, b_chrom, a_startpos, b_startpos, a_endpos, b_endpos, _, _, _ in overlapTestData:
             h = variantkey.are_overlapping_regions(a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos)
             self.assertEqual(h, res)
 
     def test_are_overlapping_region_regionkey(self):
-        for a_chrom, a_startpos, a_endpos, a_rk, _, _, _, _, b_rk, res in overlapTestData:
+        for res, a_chrom, _, a_startpos, _, a_endpos, _, _, _, b_rk in overlapTestData:
             h = variantkey.are_overlapping_region_regionkey(a_chrom, a_startpos, a_endpos, b_rk)
             self.assertEqual(h, res)
 
     def test_are_overlapping_regionkeys(self):
-        for _, _, _, a_rk, _, _, _, _, b_rk, res in overlapTestData:
+        for res, _, _, _, _, _, _, a_rk, _, b_rk in overlapTestData:
             h = variantkey.are_overlapping_regionkeys(a_rk, b_rk)
             self.assertEqual(h, res)
 
     def test_are_overlapping_variantkey_regionkey(self):
-        for _, _, _, _, a_vk, _, _, _, b_rk, res in overlapTestData:
+        for res, _, _, _, _, _, _, _, a_vk, b_rk in overlapTestData:
             h = variantkey.are_overlapping_variantkey_regionkey(None, 0, a_vk, b_rk)
             self.assertEqual(h, res)
 
     def test_variantkey_to_regionkey(self):
-        for _, _, _, a_rk, a_vk, _, _, _, _, _ in overlapTestData:
+        for res, a_chrom, b_chrom, a_startpos, b_startpos, a_endpos, b_endpos, a_rk, a_vk, b_rk in overlapTestData:
             h = variantkey.variantkey_to_regionkey(None, 0, a_vk)
             self.assertEqual(h, a_rk)
 
