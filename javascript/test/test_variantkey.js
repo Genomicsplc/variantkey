@@ -1,6 +1,6 @@
 /** VariantKey Javascript Library Test
  * 
- * variantkey.js
+ * test_variantkey.js
  * 
  * @category   Tools
  * @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
@@ -2320,24 +2320,6 @@ var test_data = [
     }, "c800204808e80000", 0x19, 0x00004090, 0x08e80000],
 ];
 
-function test_azToUpper() {
-    var errors = 0;
-    var i, c;
-    for (i = 97; i <= 122; i++) {
-        c = azToUpper(i);
-        if (c != (i - 32)) {
-            console.error("Wrong uppercase value for ", i, " - expecting ", (i - 32), " got ", c);
-            ++errors;
-        }
-    }
-    c = azToUpper(96);
-    if (c != 96) {
-        console.error("Wrong uppercase value - expecting 96, got ", c);
-        ++errors;
-    }
-    return errors;
-}
-
 function test_encodeChrom() {
     var errors = 0;
     var i, j, chrom;
@@ -2938,7 +2920,6 @@ function test_parseHex() {
 
 var errors = 0;
 
-errors += test_azToUpper();
 errors += test_encodeChrom();
 errors += test_decodeChrom();
 errors += test_encodeRefAlt();
