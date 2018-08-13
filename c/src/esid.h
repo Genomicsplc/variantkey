@@ -46,7 +46,7 @@ extern "C" {
 
 #include <inttypes.h>
 
-#define ESIDSHIFT_MAXLEN 10 //!< Maximum number of characters that can be encoded 
+#define ESID_MAXLEN 10 //!< Maximum number of characters that can be encoded 
 
 /**
  * Encode maximum 10 characters of a string into a 64 bit unsigned integer.

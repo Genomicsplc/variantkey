@@ -53,9 +53,9 @@ static inline uint64_t esid_encode_char(int c)
 uint64_t encode_string_id(const char *str, size_t size, size_t start)
 {
     size -= start;
-    if (size > ESIDSHIFT_MAXLEN)
+    if (size > ESID_MAXLEN)
     {
-        size = ESIDSHIFT_MAXLEN;
+        size = ESID_MAXLEN;
     }
     str += start;
     const char *pos = (str + size - 1);
@@ -103,7 +103,7 @@ static inline unsigned char esid_decode_char(uint64_t esid, size_t pos)
 size_t decode_string_id(uint64_t esid, char *str)
 {
     size_t size = (esid >> ESID_SHIFTPOS);
-    if (size > 10)
+    if (size > ESID_MAXLEN)
     {
         size = 0;
     }

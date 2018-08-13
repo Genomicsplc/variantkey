@@ -1,6 +1,6 @@
 /** VariantKey Javascript Library Test
  * 
- * regionkey.js
+ * test_regionkey.js
  * 
  * @category   Tools
  * @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
