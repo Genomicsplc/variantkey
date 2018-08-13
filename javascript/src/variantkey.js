@@ -140,21 +140,6 @@ function azToUpper(c) {
     return c;
 }
 
-function packChars(str, size, offset) {
-    var h = 0 >>> 0;
-    var bitpos = (31 >>> 0);
-    var c;
-    for (var i = offset; i < (size + offset); i++) {
-        c = azToUpper(str.charCodeAt(i)) >>> 0;
-        if (c == 42) { // '*' = 42
-            c = 91; // ('Z' + 1) = '[' = 91
-        }
-        bitpos -= 5;
-        h |= (((c - 64) << bitpos) >>> 0); // A will be coded as 1 ('A' - 1 = 64)
-    }
-    return h >>> 0;
-}
-
 // Mix two 32 bit hash numbers using the MurmurHash3 algorithm
 function muxHash(k, h) {
     k = ((((k & 0xffff) * 0xcc9e2d51) + ((((k >>> 16) * 0xcc9e2d51) & 0xffff) << 16))) & 0xffffffff;
@@ -167,20 +152,59 @@ function muxHash(k, h) {
     return h >>> 0;
 }
 
+function encodePackChar(c) {
+    if (c < 65) {
+        return (27 >>> 0);
+    }
+    if (c >= 97) {
+        return ((c - 96) >>> 0);
+    }
+    return ((c - 64) >>> 0);
+}
+
+function packCharsTail(str, size, offset) {
+    var h = (0 >>> 0);
+    offset += (size - 1);
+    switch (size) {
+        case 5:
+            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 1));
+            // fall through
+        case 4:
+            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 2));
+            // fall through
+        case 3:
+            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 3));
+            // fall through
+        case 2:
+            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 4));
+            // fall through
+        case 1:
+            h ^= encodePackChar(str.charCodeAt(offset)) << (1 + (5 * 5));
+    }
+    return h;
+}
+
+function packChars(str, offset) {
+    return ((encodePackChar(str.charCodeAt(offset + 5)) << 1) ^
+        (encodePackChar(str.charCodeAt(offset + 4)) << (1 + (5 * 1))) ^
+        (encodePackChar(str.charCodeAt(offset + 3)) << (1 + (5 * 2))) ^
+        (encodePackChar(str.charCodeAt(offset + 2)) << (1 + (5 * 3))) ^
+        (encodePackChar(str.charCodeAt(offset + 1)) << (1 + (5 * 4))) ^
+        (encodePackChar(str.charCodeAt(offset)) << (1 + (5 * 5))));
+}
+
 // Return a 32 bit hash of a nucleotide string
 function hash32(str, size) {
     var h = 0;
     var len = 6;
     var offset = 0;
-    while (size > 0) {
-        if (size < len) {
-            len = size;
-        }
-        //[01111122 22233333 44444555 55666660]
-        // pack blocks of 6 characters in 32 bit (6 x 5 bit + 2 spare bit)
-        h = muxHash(packChars(str, len, offset), h);
+    while (size >= len) {
+        h = muxHash(packChars(str, offset), h);
         size -= len;
         offset += len;
+    }
+    if (size > 0) {
+        h = muxHash(packCharsTail(str, size, offset), h);
     }
     return h;
 }
