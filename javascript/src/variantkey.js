@@ -167,30 +167,30 @@ function packCharsTail(str, size, offset) {
     offset += (size - 1);
     switch (size) {
         case 5:
-            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 1));
+            h ^= encodePackChar(str.charCodeAt(offset--)) << 6;
             // fall through
         case 4:
-            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 2));
+            h ^= encodePackChar(str.charCodeAt(offset--)) << 11;
             // fall through
         case 3:
-            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 3));
+            h ^= encodePackChar(str.charCodeAt(offset--)) << 16;
             // fall through
         case 2:
-            h ^= encodePackChar(str.charCodeAt(offset--)) << (1 + (5 * 4));
+            h ^= encodePackChar(str.charCodeAt(offset--)) << 21;
             // fall through
         case 1:
-            h ^= encodePackChar(str.charCodeAt(offset)) << (1 + (5 * 5));
+            h ^= encodePackChar(str.charCodeAt(offset)) << 26;
     }
     return h;
 }
 
 function packChars(str, offset) {
     return ((encodePackChar(str.charCodeAt(offset + 5)) << 1) ^
-        (encodePackChar(str.charCodeAt(offset + 4)) << (1 + (5 * 1))) ^
-        (encodePackChar(str.charCodeAt(offset + 3)) << (1 + (5 * 2))) ^
-        (encodePackChar(str.charCodeAt(offset + 2)) << (1 + (5 * 3))) ^
-        (encodePackChar(str.charCodeAt(offset + 1)) << (1 + (5 * 4))) ^
-        (encodePackChar(str.charCodeAt(offset)) << (1 + (5 * 5))));
+        (encodePackChar(str.charCodeAt(offset + 4)) << 6) ^
+        (encodePackChar(str.charCodeAt(offset + 3)) << 11) ^
+        (encodePackChar(str.charCodeAt(offset + 2)) << 16) ^
+        (encodePackChar(str.charCodeAt(offset + 1)) << 21) ^
+        (encodePackChar(str.charCodeAt(offset)) << 26));
 }
 
 // Return a 32 bit hash of a nucleotide string
