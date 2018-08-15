@@ -22,6 +22,9 @@ include ../conda/channels.mk
 # Conda environment
 CONDA_ENV=../../env-${PROJECT}
 
+# Current directory
+CURRENTDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
 # --- MAKE TARGETS ---
 
 # Display general help about this command
@@ -47,7 +50,7 @@ version:
 # Build a minified version of the library
 build: version
 	../conda/setup-conda.sh
-	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --no-remove-work-dir --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/python
+	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/python
 
 # Format the source code
 format:

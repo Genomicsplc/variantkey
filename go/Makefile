@@ -32,7 +32,7 @@ RELEASE=$(shell cat ../RELEASE)
 PKGNAME=${VENDOR}-${PROJECT}
 
 # Current directory
-CURRENTDIR=$(shell pwd)
+CURRENTDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
 # GO lang path
 ifneq ($(GOPATH),)

@@ -34,6 +34,9 @@ include ../conda/channels.mk
 # Conda environment
 CONDA_ENV=../../env-${PROJECT}
 
+# Current directory
+CURRENTDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
 # --- MAKE TARGETS ---
 
 # Display general help about this command
@@ -112,7 +115,7 @@ build:
 package_vk: version
 	cd target/build/vk && make -j package
 	../conda/setup-conda.sh
-	${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/c.vk
+	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/c.vk
 
 # Set the version from VERSION file
 version:
