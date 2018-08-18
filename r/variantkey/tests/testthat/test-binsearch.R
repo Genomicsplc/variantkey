@@ -10,7 +10,7 @@ library(variantkey)
 
 test_that("MmapBinfile", {
     mm <<- MmapBinfile("../../../../c/test/data/test_data.bin")
-    expect_that(mm$SIZE, equals(2000))
+    expect_that(mm$SIZE, equals(4016))
 })
 
 test_that("MunmapBinfile", {

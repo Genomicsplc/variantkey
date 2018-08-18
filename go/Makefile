@@ -99,7 +99,7 @@ test:
 	-memprofile=target/report/mem.out \
 	-mutexprofile=target/report/mutex.out \
 	-coverprofile=target/report/coverage.out \
-	-v ./src | \
+	./src | \
 	tee >(PATH=$(GOPATH)/bin:$(PATH) go-junit-report > target/test/report.xml); \
 	test $${PIPESTATUS[0]} -eq 0
 

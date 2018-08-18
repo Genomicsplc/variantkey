@@ -74,7 +74,7 @@ void load_genoref_index(const unsigned char *src, uint32_t idx[])
     int i;
     for (i = 1; i <= 26; i++)
     {
-        idx[i] = bytes_to_uint32_t(src, ((uint64_t)(i - 1) * 4));
+        idx[i] = bytes_be_to_uint32_t(src, ((uint64_t)(i - 1) * 4));
     }
 }
 
