@@ -43,13 +43,12 @@ define_bytes_to(le, uint64_t)
 #define define_find_first(O, T) \
 uint64_t find_first_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
-    uint64_t i, middle, found = (*last + 1); \
+    uint64_t middle, found = (*last + 1); \
     T x; \
     while (*first <= *last) \
     { \
-        middle = (*first + ((*last - *first) >> 1)); \
-        i = get_address(blklen, blkpos, middle); \
-        x = bytes_##O##_to_##T(src, i); \
+        middle = get_middle_point(*first, *last); \
+        x = bytes_##O##_to_##T(src, get_address(blklen, blkpos, middle)); \
         if (x == search) \
         { \
             if (middle == 0) { \
@@ -89,13 +88,12 @@ define_find_first(le, uint64_t)
 #define define_find_last(O, T) \
 uint64_t find_last_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
-    uint64_t i, middle, found = (*last + 1); \
+    uint64_t middle, found = (*last + 1); \
     T x; \
     while (*first <= *last) \
     { \
-        middle = (*first + ((*last - *first) >> 1)); \
-        i = get_address(blklen, blkpos, middle); \
-        x = bytes_##O##_to_##T(src, i); \
+        middle = get_middle_point(*first, *last); \
+        x = bytes_##O##_to_##T(src, get_address(blklen, blkpos, middle)); \
         if (x == search) \
         { \
             found = middle; \
@@ -130,21 +128,30 @@ define_find_last(le, uint16_t)
 define_find_last(le, uint32_t)
 define_find_last(le, uint64_t)
 
+#define define_get_bitmask(T) \
+static inline T get_bitmask_##T(uint8_t mbit, uint8_t bitstart) \
+{ \
+    T bitmask = ((T)1 << (mbit - bitstart)); \
+    return (bitmask ^ (bitmask - 1)); \
+}
+
+define_get_bitmask(uint8_t)
+define_get_bitmask(uint16_t)
+define_get_bitmask(uint32_t)
+define_get_bitmask(uint64_t)
 
 #define define_find_first_sub(O, T) \
 uint64_t find_first_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
-    uint64_t i, middle, found = (*last + 1); \
-    uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
-    T bitmask = ((T)1 << (mbit - bitstart)); \
-    bitmask ^= (bitmask - 1); \
-    uint8_t rshift = (mbit - bitend); \
+    uint64_t middle, found = (*last + 1); \
+    static const uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
+    const T bitmask = get_bitmask_##T(mbit, bitstart); \
+    const uint8_t rshift = (mbit - bitend); \
     T x; \
     while (*first <= *last) \
     { \
-        middle = (*first + ((*last - *first) >> 1)); \
-        i = get_address(blklen, blkpos, middle); \
-        x = ((bytes_##O##_to_##T(src, i) & bitmask) >> rshift); \
+        middle = get_middle_point(*first, *last); \
+        x = ((bytes_##O##_to_##T(src, get_address(blklen, blkpos, middle)) & bitmask) >> rshift); \
         if (x == search) \
         { \
             if (middle == 0) { \
@@ -184,17 +191,15 @@ define_find_first_sub(le, uint64_t)
 #define define_find_last_sub(O, T) \
 uint64_t find_last_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
-    uint64_t i, middle, found = (*last + 1); \
-    uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
-    T bitmask = ((T)1 << (mbit - bitstart)); \
-    bitmask ^= (bitmask - 1); \
-    uint8_t rshift = (mbit - bitend); \
+    uint64_t middle, found = (*last + 1); \
+    static const uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
+    const T bitmask = get_bitmask_##T(mbit, bitstart); \
+    const uint8_t rshift = (mbit - bitend); \
     T x; \
     while (*first <= *last) \
     { \
-        middle = (*first + ((*last - *first) >> 1)); \
-        i = get_address(blklen, blkpos, middle); \
-        x = ((bytes_##O##_to_##T(src, i) & bitmask) >> rshift); \
+        middle = get_middle_point(*first, *last); \
+        x = ((bytes_##O##_to_##T(src, get_address(blklen, blkpos, middle)) & bitmask) >> rshift); \
         if (x == search) \
         { \
             found = middle; \
@@ -258,10 +263,9 @@ bool has_next_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t 
         return 0; \
     } \
     (*pos)++; \
-    uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
-    T bitmask = ((T)1 << (mbit - bitstart)); \
-    bitmask ^= (bitmask - 1); \
-    uint8_t rshift = (mbit - bitend); \
+    static const uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
+    const T bitmask = get_bitmask_##T(mbit, bitstart); \
+    const uint8_t rshift = (mbit - bitend); \
     T x = ((bytes_##O##_to_##T(src, get_address(blklen, blkpos, *pos)) & bitmask) >> rshift); \
     return (x == search); \
 }
@@ -301,10 +305,9 @@ bool has_prev_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t 
     if (*pos <= first) { \
         return 0; \
     } \
-    uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
-    T bitmask = ((T)1 << (mbit - bitstart)); \
-    bitmask ^= (bitmask - 1); \
-    uint8_t rshift = (mbit - bitend); \
+    static const uint8_t mbit = ((uint8_t)(sizeof(T) * 8) - 1); \
+    const T bitmask = get_bitmask_##T(mbit, bitstart); \
+    const uint8_t rshift = (mbit - bitend); \
     (*pos)--; \
     T x = ((bytes_##O##_to_##T(src, get_address(blklen, blkpos, *pos)) & bitmask) >> rshift); \
     return (x == search); \

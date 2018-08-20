@@ -22,9 +22,9 @@
  * @file binsearch.h
  * @brief Functions to search values in binary files made of constant-length items.
  *
- * The functions provided here allows to search big-endian
- * unsigned integers in a binary file made of adjacent
- * constant-length binary blocks sorted in ascending order.
+ * The functions provided here allows to search unsigned integers
+ * in a binary file made of adjacent constant-length binary blocks
+ * sorted in ascending order.
  *
  * For example, the first 4 bytes of each 8-bytes blocks below
  * represent a uint32 in big-endian. The integers are sorted in
@@ -43,6 +43,9 @@
  *   - xxd -p binaryfile.bin > hexfile.txt
  *   - xxd -r -p hexfile.txt > binaryfile.bin
  *
+ * NOTE:
+ *   - The "_be_" or "BE" functions refer to source files sorted in Big-Endian.
+ *   - The "_le_" or "LE" functions refer to source files sorted in Little-Endian.
  */
 
 #ifndef BINSEARCH_H
@@ -193,9 +196,19 @@ extern "C" {
  * @param blkpos    Indicates the position of the value to search inside a binary block.
  * @param item      Item number to search.
  *
- * Return First byte position of the specified item number.
+ * @return First byte position of the specified item number.
  */
 #define get_address(blklen, blkpos, item) (((blklen) * (item)) + (blkpos))
+
+/**
+ * Returns the middle point between two values.
+ *
+ * @param first    First point (smaller point).
+ * @param last     Last point (bigger point).
+ *
+ * @return Middle point.
+ */
+#define get_middle_point(first, last) ((first) + (((last) - (first)) >> 1))
 
 /**
  * Struct containing the memory mapped file info.
