@@ -34,4 +34,4 @@ if [ ! -d "${PROJECT_ENV}" ]; then
 fi
 
 set +u
-"${PROJECT_ENV}/bin/conda" install -y conda-build pyyaml
+"${PROJECT_ENV}/bin/conda" install -y conda-build conda-verify pyyaml
