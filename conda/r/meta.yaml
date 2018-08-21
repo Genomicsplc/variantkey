@@ -29,6 +29,7 @@ requirements:
 
 test:
   requires:
+    - {{ compiler('c') }}
     - r-base
     - r-testthat
   imports:
