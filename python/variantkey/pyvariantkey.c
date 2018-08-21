@@ -30,7 +30,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#define PY_SSIZE_T_CLEAN  /* Make "s#" use Py_ssize_t rather than int. */
+#define MODULE_NAME "variantkey"
+#define PY_SSIZE_T_CLEAN  //!< Make "s#" use Py_ssize_t rather than int.
 
 #include <Python.h>
 #include "../../c/src/binsearch.h"
@@ -2185,6 +2186,8 @@ static PyMethodDef PyVariantKeyMethods[] =
     {NULL, NULL, 0, NULL}
 };
 
+static const char modulename[] = MODULE_NAME;
+
 struct module_state
 {
     PyObject *error;
@@ -2198,7 +2201,6 @@ static struct module_state _state;
 #endif
 
 #if PY_MAJOR_VERSION >= 3
-
 static int myextension_traverse(PyObject *m, visitproc visit, void *arg)
 {
     Py_VISIT(GETSTATE(m)->error);
@@ -2214,7 +2216,7 @@ static int myextension_clear(PyObject *m)
 static struct PyModuleDef moduledef =
 {
     PyModuleDef_HEAD_INIT,
-    "variantkey",
+    modulename,
     NULL,
     sizeof(struct module_state),
     PyVariantKeyMethods,
@@ -2227,32 +2229,29 @@ static struct PyModuleDef moduledef =
 #define INITERROR return NULL
 
 PyObject* PyInit_variantkey(void)
-
 #else
 #define INITERROR return
 
-void
-initvariantkey(void)
+void initvariantkey(void)
 #endif
 {
 #if PY_MAJOR_VERSION >= 3
     PyObject *module = PyModule_Create(&moduledef);
 #else
-    PyObject *module = Py_InitModule("variantkey", PyVariantKeyMethods);
+    PyObject *module = Py_InitModule(modulename, PyVariantKeyMethods);
 #endif
     struct module_state *st = NULL;
-
     if (module == NULL)
+    {
         INITERROR;
+    }
     st = GETSTATE(module);
-
-    st->error = PyErr_NewException("variantkey.Error", NULL, NULL);
+    st->error = PyErr_NewException(MODULE_NAME ".Error", NULL, NULL);
     if (st->error == NULL)
     {
         Py_DECREF(module);
         INITERROR;
     }
-
 #if PY_MAJOR_VERSION >= 3
     return module;
 #endif
