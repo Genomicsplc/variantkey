@@ -2016,13 +2016,25 @@ static PyObject* py_encode_string_id(PyObject *Py_UNUSED(ignored), PyObject *arg
     return Py_BuildValue("K", h);
 }
 
+static PyObject* py_encode_string_num_id(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    const char *str;
+    Py_ssize_t size;
+    char sep;
+    static char *kwlist[] = {"str", "sep", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#c", kwlist, &str, &size, &sep))
+        return NULL;
+    uint64_t h = encode_string_num_id(str, (size_t)size, sep);
+    return Py_BuildValue("K", h);
+}
+
 static PyObject* py_decode_string_id(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t esid;
     static char *kwlist[] = {"esid", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &esid))
         return NULL;
-    char str[11] = "";
+    char str[23] = "";
     size_t len = decode_string_id(esid, str);
     PyObject *result;
     result = PyTuple_New(2);
@@ -2180,6 +2192,7 @@ static PyMethodDef PyVariantKeyMethods[] =
 
     // ESID
     {"encode_string_id", (PyCFunction)py_encode_string_id, METH_VARARGS|METH_KEYWORDS, ENCODESTRINGID_DOCSTRING},
+    {"encode_string_num_id", (PyCFunction)py_encode_string_num_id, METH_VARARGS|METH_KEYWORDS, ENCODESTRINGNUMID_DOCSTRING},
     {"decode_string_id", (PyCFunction)py_decode_string_id, METH_VARARGS|METH_KEYWORDS, DECODESTRINGID_DOCSTRING},
     {"hash_string_id", (PyCFunction)py_hash_string_id, METH_VARARGS|METH_KEYWORDS, HASHSTRINGID_DOCSTRING},
 

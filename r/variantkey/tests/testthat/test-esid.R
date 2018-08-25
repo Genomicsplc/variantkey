@@ -48,9 +48,78 @@ x <- rbind(
 )
 colnames(x) <- list("size", "start", "esize", "esid", "hsid", "estr", "str")
 
+y <- rbind(
+    list( 1,  1, "1680000000000000", ":",                     ":"),
+    list( 1,  1, "1840000000000000", "A",                     "A"),
+    list( 2,  2, "285a000000000000", "A:",                    "A:"),
+    list( 2,  2, "2691000000000000", ":1",                    ":1"),
+    list( 2,  2, "2862000000000000", "AB",                    "Ab"),
+    list( 3,  3, "3862680000000000", "AB:",                   "Ab:"),
+    list( 3,  3, "38628c0000000000", "ABC",                   "AbC"),
+    list( 4,  4, "48628da000000000", "ABC:",                  "AbC:"),
+    list( 4,  4, "48628e4000000000", "ABCD",                  "AbCd"),
+    list( 5,  5, "58628e4680000000", "ABCD:",                 "AbCd:"),
+    list( 5,  5, "58628e4940000000", "ABCDE",                 "AbCdE"),
+    list( 6,  6, "68628e495a000000", "ABCDE:",                "AbCdE:"),
+    list( 6,  6, "68628e4966000000", "ABCDEF",                "AbCdEf"),
+    list( 7,  7, "78628e4966680000", "ABCDEF:",               "AbCdEf:"),
+    list( 7,  7, "78628e49669c0000", "ABCDEFG",               "AbCdEfG"),
+    list( 8,  8, "88628e49669da000", "ABCDEFG:",              "AbCdEfG:"),
+    list( 8,  8, "88628e49669e8000", "ABCDEFGH",              "AbCdEfGh"),
+    list( 9,  9, "98628e49669e8680", "ABCDEFGH:",             "AbCdEfGh:"),
+    list( 5,  5, "58628da400000000", "ABC:0",                 "AbC:0"),
+    list( 5,  5, "58628da440000000", "ABC:1",                 "AbC:1"),
+    list(12, 12, "d8628c0000bc614e", "ABC:12345678",          "AbC:12345678"),
+    list(13, 13, "d8628c0008bc614e", "ABC:012345678",         "AbC:012345678"),
+    list(14, 14, "d8628c0010bc614e", "ABC:0012345678",        "AbC:0012345678"),
+    list(15, 15, "d8628c0018bc614e", "ABC:00012345678",       "AbC:00012345678"),
+    list(16, 16, "d8628c0020bc614e", "ABC:000012345678",      "AbC:000012345678"),
+    list(17, 17, "d8628c0028bc614e", "ABC:0000012345678",     "AbC:0000012345678"),
+    list(18, 18, "d8628c0030bc614e", "ABC:00000012345678",    "AbC:00000012345678"),
+    list(19, 19, "d8628c0038bc614e", "ABC:000000012345678",   "AbC:000000012345678"),
+    list(20, 19, "d8628c0038bc614e", "ABC:000000012345678",   "AbC:0000000012345678"),
+    list(21, 19, "d8628c0038bc614e", "ABC:000000012345678",   "AbC:00000000012345678"),
+    list(22, 19, "d8628c0038bc614e", "ABC:000000012345678",   "AbC:000000000012345678"),
+    list(23, 19, "d8628c0038bc614e", "ABC:000000012345678",   "AbC:0000000000012345678"),
+    list( 7,  7, "78628e495a400000", "ABCDE:0",               "AbCdE:0"),
+    list( 7,  7, "78628e495a440000", "ABCDE:1",               "AbCdE:1"),
+    list(14, 14, "f8628e4940bc614e", "ABCDE:12345678",        "AbCdE:12345678"),
+    list(15, 15, "f8628e4948bc614e", "ABCDE:012345678",       "AbCdE:012345678"),
+    list(16, 16, "f8628e4950bc614e", "ABCDE:0012345678",      "AbCdE:0012345678"),
+    list(17, 17, "f8628e4958bc614e", "ABCDE:00012345678",     "AbCdE:00012345678"),
+    list(18, 18, "f8628e4960bc614e", "ABCDE:000012345678",    "AbCdE:000012345678"),
+    list(19, 19, "f8628e4968bc614e", "ABCDE:0000012345678",   "AbCdE:0000012345678"),
+    list(20, 20, "f8628e4970bc614e", "ABCDE:00000012345678",  "AbCdE:00000012345678"),
+    list(21, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdE:000000012345678"),
+    list(22, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdE:0000000012345678"),
+    list(23, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdE:00000000012345678"),
+    list(24, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdE:000000000012345678"),
+    list(25, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdE:0000000000012345678"),
+    list( 9,  9, "98628e49669da400", "ABCDEFG:0",             "AbCdEfG:0"),
+    list( 9,  9, "98628e49669da440", "ABCDEFG:1",             "AbCdEfG:1"),
+    list(16, 14, "f8628e4940bc614e", "ABCDE:12345678",        "AbCdEfG:12345678"),
+    list(17, 15, "f8628e4948bc614e", "ABCDE:012345678",       "AbCdEfG:012345678"),
+    list(18, 16, "f8628e4950bc614e", "ABCDE:0012345678",      "AbCdEfG:0012345678"),
+    list(19, 17, "f8628e4958bc614e", "ABCDE:00012345678",     "AbCdEfG:00012345678"),
+    list(20, 18, "f8628e4960bc614e", "ABCDE:000012345678",    "AbCdEfG:000012345678"),
+    list(21, 19, "f8628e4968bc614e", "ABCDE:0000012345678",   "AbCdEfG:0000012345678"),
+    list(22, 20, "f8628e4970bc614e", "ABCDE:00000012345678",  "AbCdEfG:00000012345678"),
+    list(23, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdEfG:000000012345678"),
+    list(24, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdEfG:0000000012345678"),
+    list(25, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdEfG:00000000012345678"),
+    list(26, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdEfG:000000000012345678"),
+    list(27, 21, "f8628e4978bc614e", "ABCDE:000000012345678", "AbCdEfG:0000000000012345678")
+)
+colnames(y) <- list("size", "esize", "esid", "estr", "str")
+
 test_that("EncodeStringID", {
     res <- mapply(EncodeStringID, unlist(x[,"str"]), unlist(x[,"start"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"esid"])))
+})
+
+test_that("EncodeStringNumID", {
+    res <- mapply(EncodeStringNumID, unlist(y[,"str"]), MoreArgs = list(sep = 58), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(y[,"esid"])))
 })
 
 test_that("DecodeStringID", {
@@ -58,9 +127,9 @@ test_that("DecodeStringID", {
     expect_that(res, equals(unlist(x[,"estr"])))
 })
 
-test_that("DecodeStringIDError", {
-    res <- DecodeStringID("ffffffffffffffff")
-    expect_that(res, equals(""))
+test_that("DecodeStringNumID", {
+    res <- mapply(DecodeStringID, unlist(y[,"esid"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    expect_that(res, equals(unlist(y[,"estr"])))
 })
 
 test_that("HashStringID", {

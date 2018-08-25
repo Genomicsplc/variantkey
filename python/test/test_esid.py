@@ -50,6 +50,70 @@ esidTestData = [
     (0,  0,  0, 0x0000000000000000, 0x8000000000000000, b"",           b""),
 ]
 
+# size, esize, esid, estr, istr
+esidNumTestData = [
+    (1,  1, 0x1680000000000000, b":",                     b":"),
+    (1,  1, 0x1840000000000000, b"A",                     b"A"),
+    (2,  2, 0x285a000000000000, b"A:",                    b"A:"),
+    (2,  2, 0x2691000000000000, b":1",                    b":1"),
+    (2,  2, 0x2862000000000000, b"AB",                    b"Ab"),
+    (3,  3, 0x3862680000000000, b"AB:",                   b"Ab:"),
+    (3,  3, 0x38628c0000000000, b"ABC",                   b"AbC"),
+    (4,  4, 0x48628da000000000, b"ABC:",                  b"AbC:"),
+    (4,  4, 0x48628e4000000000, b"ABCD",                  b"AbCd"),
+    (5,  5, 0x58628e4680000000, b"ABCD:",                 b"AbCd:"),
+    (5,  5, 0x58628e4940000000, b"ABCDE",                 b"AbCdE"),
+    (6,  6, 0x68628e495a000000, b"ABCDE:",                b"AbCdE:"),
+    (6,  6, 0x68628e4966000000, b"ABCDEF",                b"AbCdEf"),
+    (7,  7, 0x78628e4966680000, b"ABCDEF:",               b"AbCdEf:"),
+    (7,  7, 0x78628e49669c0000, b"ABCDEFG",               b"AbCdEfG"),
+    (8,  8, 0x88628e49669da000, b"ABCDEFG:",              b"AbCdEfG:"),
+    (8,  8, 0x88628e49669e8000, b"ABCDEFGH",              b"AbCdEfGh"),
+    (9,  9, 0x98628e49669e8680, b"ABCDEFGH:",             b"AbCdEfGh:"),
+    (5,  5, 0x58628da400000000, b"ABC:0",                 b"AbC:0"),
+    (5,  5, 0x58628da440000000, b"ABC:1",                 b"AbC:1"),
+    (12, 12, 0xd8628c0000bc614e, b"ABC:12345678",          b"AbC:12345678"),
+    (13, 13, 0xd8628c0008bc614e, b"ABC:012345678",         b"AbC:012345678"),
+    (14, 14, 0xd8628c0010bc614e, b"ABC:0012345678",        b"AbC:0012345678"),
+    (15, 15, 0xd8628c0018bc614e, b"ABC:00012345678",       b"AbC:00012345678"),
+    (16, 16, 0xd8628c0020bc614e, b"ABC:000012345678",      b"AbC:000012345678"),
+    (17, 17, 0xd8628c0028bc614e, b"ABC:0000012345678",     b"AbC:0000012345678"),
+    (18, 18, 0xd8628c0030bc614e, b"ABC:00000012345678",    b"AbC:00000012345678"),
+    (19, 19, 0xd8628c0038bc614e, b"ABC:000000012345678",   b"AbC:000000012345678"),
+    (20, 19, 0xd8628c0038bc614e, b"ABC:000000012345678",   b"AbC:0000000012345678"),
+    (21, 19, 0xd8628c0038bc614e, b"ABC:000000012345678",   b"AbC:00000000012345678"),
+    (22, 19, 0xd8628c0038bc614e, b"ABC:000000012345678",   b"AbC:000000000012345678"),
+    (23, 19, 0xd8628c0038bc614e, b"ABC:000000012345678",   b"AbC:0000000000012345678"),
+    (7,  7, 0x78628e495a400000, b"ABCDE:0",               b"AbCdE:0"),
+    (7,  7, 0x78628e495a440000, b"ABCDE:1",               b"AbCdE:1"),
+    (14, 14, 0xf8628e4940bc614e, b"ABCDE:12345678",        b"AbCdE:12345678"),
+    (15, 15, 0xf8628e4948bc614e, b"ABCDE:012345678",       b"AbCdE:012345678"),
+    (16, 16, 0xf8628e4950bc614e, b"ABCDE:0012345678",      b"AbCdE:0012345678"),
+    (17, 17, 0xf8628e4958bc614e, b"ABCDE:00012345678",     b"AbCdE:00012345678"),
+    (18, 18, 0xf8628e4960bc614e, b"ABCDE:000012345678",    b"AbCdE:000012345678"),
+    (19, 19, 0xf8628e4968bc614e, b"ABCDE:0000012345678",   b"AbCdE:0000012345678"),
+    (20, 20, 0xf8628e4970bc614e, b"ABCDE:00000012345678",  b"AbCdE:00000012345678"),
+    (21, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdE:000000012345678"),
+    (22, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdE:0000000012345678"),
+    (23, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdE:00000000012345678"),
+    (24, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdE:000000000012345678"),
+    (25, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdE:0000000000012345678"),
+    (9,  9, 0x98628e49669da400, b"ABCDEFG:0",             b"AbCdEfG:0"),
+    (9,  9, 0x98628e49669da440, b"ABCDEFG:1",             b"AbCdEfG:1"),
+    (16, 14, 0xf8628e4940bc614e, b"ABCDE:12345678",        b"AbCdEfG:12345678"),
+    (17, 15, 0xf8628e4948bc614e, b"ABCDE:012345678",       b"AbCdEfG:012345678"),
+    (18, 16, 0xf8628e4950bc614e, b"ABCDE:0012345678",      b"AbCdEfG:0012345678"),
+    (19, 17, 0xf8628e4958bc614e, b"ABCDE:00012345678",     b"AbCdEfG:00012345678"),
+    (20, 18, 0xf8628e4960bc614e, b"ABCDE:000012345678",    b"AbCdEfG:000012345678"),
+    (21, 19, 0xf8628e4968bc614e, b"ABCDE:0000012345678",   b"AbCdEfG:0000012345678"),
+    (22, 20, 0xf8628e4970bc614e, b"ABCDE:00000012345678",  b"AbCdEfG:00000012345678"),
+    (23, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdEfG:000000012345678"),
+    (24, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdEfG:0000000012345678"),
+    (25, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdEfG:00000000012345678"),
+    (26, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdEfG:000000000012345678"),
+    (27, 21, 0xf8628e4978bc614e, b"ABCDE:000000012345678", b"AbCdEfG:0000000000012345678"),
+]
+
 
 class TestFunctions(TestCase):
 
@@ -58,16 +122,22 @@ class TestFunctions(TestCase):
             h = variantkey.encode_string_id(istr, start)
             self.assertEqual(h, esid)
 
+    def test_encode_string_num_id(self):
+        for _, _, esid, _, istr in esidNumTestData:
+            h = variantkey.encode_string_num_id(istr, b':')
+            self.assertEqual(h, esid)
+
     def test_decode_string_id(self):
         for _, _, esize, esid, _, estr, _ in esidTestData:
             h = variantkey.decode_string_id(esid)
             self.assertEqual(h[0], estr)
             self.assertEqual(h[1], esize)
 
-    def test_decode_string_id_error(self):
-        h = variantkey.decode_string_id(0xffffffffffffffff)
-        self.assertEqual(h[0], b"")
-        self.assertEqual(h[1], 0)
+    def test_decode_string_num_id(self):
+        for _, esize, esid, estr, _ in esidNumTestData:
+            h = variantkey.decode_string_id(esid)
+            self.assertEqual(h[0], estr)
+            self.assertEqual(h[1], esize)
 
     def test_hash_string_id(self):
         for _, _, _, _, hsid, _, istr in esidTestData:
@@ -80,8 +150,14 @@ class TestBenchmark(object):
     def test_encode_string_id_benchmark(self, benchmark):
         benchmark(variantkey.encode_string_id, "ABC0123456", 0)
 
+    def test_encode_string_num_id_benchmark(self, benchmark):
+        benchmark(variantkey.encode_string_num_id, b"AbCDE:000012345", b':')
+
     def test_decode_string_id_benchmark(self, benchmark):
         benchmark(variantkey.decode_string_id, 0x08628e49669e8a6a)
+
+    def test_decode_string_num_id_benchmark(self, benchmark):
+        benchmark(variantkey.decode_string_id, 0xf8628e4978bc614e)
 
     def test_hash_string_id_benchmark(self, benchmark):
         benchmark(variantkey.hash_string_id, "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")

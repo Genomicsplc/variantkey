@@ -167,6 +167,7 @@ static PyObject *py_variantkey_to_regionkey(PyObject *self, PyObject *args, PyOb
 
 // ESID
 static PyObject *py_encode_string_id(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_encode_string_num_id(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_decode_string_id(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_hash_string_id(PyObject *self, PyObject *args, PyObject *keywds);
 
@@ -1996,10 +1997,24 @@ PyMODINIT_FUNC initvariantkey(void);
 "----------\n"\
 "str : str or bytes\n"\
 "    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.\n"\
-"size : int\n"\
-"    Length of the string, excluding the terminating null byte.\n"\
 "start : int\n"\
 "    First character to encode, starting from 0. To encode the last 10 characters, set this value at (size - 10).\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    Encoded string ID."
+
+#define ENCODESTRINGNUMID_DOCSTRING "Encode a string composed by a character section followed by a separator\n"\
+"character and a numerical section into a 64 bit unsigned integer. For example: ABCDE:0001234.\n"\
+"Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.\n"\
+"If the string is 10 character or less, then the encode_string_id() is used.\n"\
+"Parameters\n"\
+"----------\n"\
+"str : str or bytes\n"\
+"    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.\n"\
+"sep : str or byte\n"\
+"    Separator character between string and number.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\

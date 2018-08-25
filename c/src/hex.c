@@ -31,7 +31,6 @@
 // THE SOFTWARE.
 
 #include <stdio.h>
-#include <string.h>
 #include "hex.h"
 
 size_t hex_uint64_t(uint64_t n, char *str)

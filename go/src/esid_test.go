@@ -58,6 +58,77 @@ var esidTestData = []TEsidData{
 	{0, 0, 0, 0x0000000000000000, 0x8000000000000000, "", ""},
 }
 
+type TEsidNumData struct {
+	size  uint32
+	esize uint32
+	esid  uint64
+	estr  string
+	str   string
+}
+
+var esidNumTestData = []TEsidNumData{
+	{1, 1, 0x1680000000000000, ":", ":"},
+	{1, 1, 0x1840000000000000, "A", "A"},
+	{2, 2, 0x285a000000000000, "A:", "A:"},
+	{2, 2, 0x2691000000000000, ":1", ":1"},
+	{2, 2, 0x2862000000000000, "AB", "Ab"},
+	{3, 3, 0x3862680000000000, "AB:", "Ab:"},
+	{3, 3, 0x38628c0000000000, "ABC", "AbC"},
+	{4, 4, 0x48628da000000000, "ABC:", "AbC:"},
+	{4, 4, 0x48628e4000000000, "ABCD", "AbCd"},
+	{5, 5, 0x58628e4680000000, "ABCD:", "AbCd:"},
+	{5, 5, 0x58628e4940000000, "ABCDE", "AbCdE"},
+	{6, 6, 0x68628e495a000000, "ABCDE:", "AbCdE:"},
+	{6, 6, 0x68628e4966000000, "ABCDEF", "AbCdEf"},
+	{7, 7, 0x78628e4966680000, "ABCDEF:", "AbCdEf:"},
+	{7, 7, 0x78628e49669c0000, "ABCDEFG", "AbCdEfG"},
+	{8, 8, 0x88628e49669da000, "ABCDEFG:", "AbCdEfG:"},
+	{8, 8, 0x88628e49669e8000, "ABCDEFGH", "AbCdEfGh"},
+	{9, 9, 0x98628e49669e8680, "ABCDEFGH:", "AbCdEfGh:"},
+	{5, 5, 0x58628da400000000, "ABC:0", "AbC:0"},
+	{5, 5, 0x58628da440000000, "ABC:1", "AbC:1"},
+	{12, 12, 0xd8628c0000bc614e, "ABC:12345678", "AbC:12345678"},
+	{13, 13, 0xd8628c0008bc614e, "ABC:012345678", "AbC:012345678"},
+	{14, 14, 0xd8628c0010bc614e, "ABC:0012345678", "AbC:0012345678"},
+	{15, 15, 0xd8628c0018bc614e, "ABC:00012345678", "AbC:00012345678"},
+	{16, 16, 0xd8628c0020bc614e, "ABC:000012345678", "AbC:000012345678"},
+	{17, 17, 0xd8628c0028bc614e, "ABC:0000012345678", "AbC:0000012345678"},
+	{18, 18, 0xd8628c0030bc614e, "ABC:00000012345678", "AbC:00000012345678"},
+	{19, 19, 0xd8628c0038bc614e, "ABC:000000012345678", "AbC:000000012345678"},
+	{20, 19, 0xd8628c0038bc614e, "ABC:000000012345678", "AbC:0000000012345678"},
+	{21, 19, 0xd8628c0038bc614e, "ABC:000000012345678", "AbC:00000000012345678"},
+	{22, 19, 0xd8628c0038bc614e, "ABC:000000012345678", "AbC:000000000012345678"},
+	{23, 19, 0xd8628c0038bc614e, "ABC:000000012345678", "AbC:0000000000012345678"},
+	{7, 7, 0x78628e495a400000, "ABCDE:0", "AbCdE:0"},
+	{7, 7, 0x78628e495a440000, "ABCDE:1", "AbCdE:1"},
+	{14, 14, 0xf8628e4940bc614e, "ABCDE:12345678", "AbCdE:12345678"},
+	{15, 15, 0xf8628e4948bc614e, "ABCDE:012345678", "AbCdE:012345678"},
+	{16, 16, 0xf8628e4950bc614e, "ABCDE:0012345678", "AbCdE:0012345678"},
+	{17, 17, 0xf8628e4958bc614e, "ABCDE:00012345678", "AbCdE:00012345678"},
+	{18, 18, 0xf8628e4960bc614e, "ABCDE:000012345678", "AbCdE:000012345678"},
+	{19, 19, 0xf8628e4968bc614e, "ABCDE:0000012345678", "AbCdE:0000012345678"},
+	{20, 20, 0xf8628e4970bc614e, "ABCDE:00000012345678", "AbCdE:00000012345678"},
+	{21, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:000000012345678"},
+	{22, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:0000000012345678"},
+	{23, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:00000000012345678"},
+	{24, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:000000000012345678"},
+	{25, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:0000000000012345678"},
+	{9, 9, 0x98628e49669da400, "ABCDEFG:0", "AbCdEfG:0"},
+	{9, 9, 0x98628e49669da440, "ABCDEFG:1", "AbCdEfG:1"},
+	{16, 14, 0xf8628e4940bc614e, "ABCDE:12345678", "AbCdEfG:12345678"},
+	{17, 15, 0xf8628e4948bc614e, "ABCDE:012345678", "AbCdEfG:012345678"},
+	{18, 16, 0xf8628e4950bc614e, "ABCDE:0012345678", "AbCdEfG:0012345678"},
+	{19, 17, 0xf8628e4958bc614e, "ABCDE:00012345678", "AbCdEfG:00012345678"},
+	{20, 18, 0xf8628e4960bc614e, "ABCDE:000012345678", "AbCdEfG:000012345678"},
+	{21, 19, 0xf8628e4968bc614e, "ABCDE:0000012345678", "AbCdEfG:0000012345678"},
+	{22, 20, 0xf8628e4970bc614e, "ABCDE:00000012345678", "AbCdEfG:00000012345678"},
+	{23, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:000000012345678"},
+	{24, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:0000000012345678"},
+	{25, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:00000000012345678"},
+	{26, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:000000000012345678"},
+	{27, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:0000000000012345678"},
+}
+
 func TestEncodeStringID(t *testing.T) {
 	for _, v := range esidTestData {
 		v := v
@@ -75,6 +146,26 @@ func BenchmarkEncodeStringID(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		EncodeStringID("ABC0123456", 0)
+	}
+}
+
+func TestEncodeStringNumID(t *testing.T) {
+	for _, v := range esidNumTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			esid := EncodeStringNumID(v.str, ':')
+			if esid != v.esid {
+				t.Errorf("The code value is different, expected %#v got %#v", v.esid, esid)
+			}
+		})
+	}
+}
+
+func BenchmarkEncodeStringNumID(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		EncodeStringNumID("AbCDE:000012345", ':')
 	}
 }
 
@@ -98,10 +189,23 @@ func BenchmarkDecodeStringID(b *testing.B) {
 	}
 }
 
-func TestDecodeStringIDError(t *testing.T) {
-	estr := DecodeStringID(0xffffffffffffffff)
-	if estr != "" {
-		t.Errorf("The code value is different, expected empty string got %#v", estr)
+func TestDecodeStringNumID(t *testing.T) {
+	for _, v := range esidNumTestData {
+		v := v
+		t.Run("", func(t *testing.T) {
+			t.Parallel()
+			estr := DecodeStringID(v.esid)
+			if estr != v.estr {
+				t.Errorf("The code value is different, expected %#v got %#v", v.estr, estr)
+			}
+		})
+	}
+}
+
+func BenchmarkDecodeStringNumID(b *testing.B) {
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		DecodeStringID(0xf8628e4978bc614e)
 	}
 }
 

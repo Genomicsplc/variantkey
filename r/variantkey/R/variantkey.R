@@ -575,6 +575,18 @@ EncodeStringID <- function(str, start) {
     return(.Call("R_encode_string_id", str, start))
 }
 
+#' Encode a string composed by a character section followed by a separator character and a numerical section
+#' into a 64 bit unsigned integer. For example: "ABCDE:0001234"
+#' Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.
+#' If the string is 10 character or less, then the EncodeStringID() is used.
+#' @param str    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.
+#' @param sep    Separator character between string and number.
+#' @useDynLib   variantkey R_encode_string_num_id
+#' @export
+EncodeStringNumID <- function(str, sep) {
+    return(.Call("R_encode_string_num_id", str, sep))
+}
+
 #' Decode the encoded string ID.
 #' This function is the reverse of encode_string_id.
 #' The string is always returned in uppercase mode.

@@ -445,6 +445,10 @@ function esidEncodeChar(c) {
     return ((c - 32) >>> 0);
 }
 
+function esidDecodeChar(esid, pos) {
+    return String.fromCharCode(((esid >>> pos) & 63) + 32); // 63 dec = 00111111 bin
+}
+
 function encodeStringID(str, start) {
     var size = str.length - start;
     if (size > 10) {
@@ -490,15 +494,48 @@ function encodeStringID(str, start) {
     };
 }
 
-function esidDecodeChar(esid, pos) {
-    return String.fromCharCode(((esid >>> pos) & 63) + 32); // 63 dec = 00111111 bin
+function encodeStringNumID(str, sep) {
+    var size = str.length;
+    if (size <= 10) {
+        return encodeStringID(str, 0);
+    }
+    var hi = (0 >>> 0);
+    var lo = (0 >>> 0);
+    var num = (0 >>> 0);
+    var nchr = (0 >>> 0);
+    var npad = (0 >>> 0);
+    var bitpos = 30;
+    var c;
+    var i = 0;
+    while (size--) {
+        c = str.charCodeAt(i++);
+        if (c == sep) {
+            break;
+        }
+        if (nchr < 5) {
+            bitpos -= 6;
+            hi |= (esidEncodeChar(c) << bitpos);
+            nchr++;
+        }
+    }
+    lo |= ((hi & 3) << 30) >>> 0;
+    hi = ((hi >>> 2) | (((nchr + 10) >>> 0) << 28)) >>> 0;
+    while (((c = str.charCodeAt(i++)) == 48) && (npad < 7) && (size--)) {
+        npad++;
+    }
+    lo |= (npad << 27) >>> 0;
+    while ((c >= 48) && (c <= 57) && (size--)) {
+        num = ((num * 10) + (c - 48)) >>> 0;
+        c = str.charCodeAt(i++);
+    }
+    lo |= (num & 0x7FFFFFF);
+    return {
+        "hi": hi,
+        "lo": lo,
+    };
 }
 
-function decodeStringID(esid) {
-    var size = (esid.hi >>> 28);
-    if (size > 10) {
-        size = 0;
-    }
+function esdiDecodeStringID(size, esid) {
     var hi = ((esid.hi << 2) | (esid.lo >>> 30)) >>> 0;
     var str = ['', '', '', '', '', '', '', '', '', ''];
     switch (size) {
@@ -533,6 +570,25 @@ function decodeStringID(esid) {
             str[0] = esidDecodeChar(hi, 24);
     }
     return str.join('');
+}
+
+function decodeStringNumID(size, esid) {
+    var str = esdiDecodeStringID(size, esid);
+    var npad = (esid.lo >>> 27) & 7;
+    var numstr = '';
+    var num = (esid.lo & 0x7FFFFFF);
+    if (num > 0) {
+        numstr = num.toString();
+    }
+    return str + ':' + '0'.repeat(npad) + numstr;
+}
+
+function decodeStringID(esid) {
+    var size = (esid.hi >>> 28);
+    if (size > 10) {
+        return decodeStringNumID((size - 10), esid);
+    }
+    return esdiDecodeStringID(size, esid);
 }
 
 if (typeof(module) !== 'undefined') {
@@ -571,6 +627,7 @@ if (typeof(module) !== 'undefined') {
         areOverlappingVariantKeyRegionKey: areOverlappingVariantKeyRegionKey,
         variantKeyToRegionKey: variantKeyToRegionKey,
         encodeStringID: encodeStringID,
+        encodeStringNumID: encodeStringNumID,
         decodeStringID: decodeStringID,
     }
 }

@@ -1316,9 +1316,19 @@ func EncodeStringID(s string, start uint32) uint64 {
 	return uint64(C.encode_string_id((*C.char)(ps), C.size_t(len(s)), C.size_t(start)))
 }
 
+// EncodeStringNumID cncode a string composed by a character section followed by a separator character and a
+// numerical section into a 64 bit unsigned integer. For example: "ABCDE:0001234".
+// Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.
+// If the string is 10 character or less, then the encode_string_id() is used.
+func EncodeStringNumID(s string, sep byte) uint64 {
+	bs := StringToNTBytes(s)
+	ps := unsafe.Pointer(&bs[0]) // #nosec
+	return uint64(C.encode_string_num_id((*C.char)(ps), C.size_t(len(s)), C.char(sep)))
+}
+
 // DecodeStringID decode the encoded string ID.
 func DecodeStringID(esid uint64) string {
-	cstr := C.malloc(11)
+	cstr := C.malloc(23)
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
 	len := C.decode_string_id(C.uint64_t(esid), (*C.char)(cstr))
 	return C.GoStringN((*C.char)(cstr), C.int(len))

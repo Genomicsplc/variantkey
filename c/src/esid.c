@@ -36,6 +36,8 @@
 #define ESID_SHIFT    32 //!< Number used to translate ASCII character values
 #define ESID_SHIFTPOS 60 //!< Encoded string ID LEN LSB position from LSB [ ----0000 00111111 22222233 33334444 44555555 66666677 77778888 88999999 ]
 #define ESID_CHARBIT  6  //!< Number of bit used to encode a char
+#define ESID_NUMPOS   27 //!< Number of bit used to encode a number in the srting_num encoding
+#define ESID_MAXPAD   7  //!< Max number of padding zero digits
 
 static inline uint64_t esid_encode_char(int c)
 {
@@ -48,6 +50,11 @@ static inline uint64_t esid_encode_char(int c)
         return (uint64_t)(c - ('a' - 'A' + ESID_SHIFT));
     }
     return (uint64_t)(c - ESID_SHIFT);
+}
+
+static inline unsigned char esid_decode_char(uint64_t esid, size_t pos)
+{
+    return (unsigned char)(((esid >> pos) & 0x3f) + ESID_SHIFT); // 0x3f hex = 63 dec = 00111111 bin
 }
 
 uint64_t encode_string_id(const char *str, size_t size, size_t start)
@@ -95,18 +102,47 @@ uint64_t encode_string_id(const char *str, size_t size, size_t start)
     return h;
 }
 
-static inline unsigned char esid_decode_char(uint64_t esid, size_t pos)
+uint64_t encode_string_num_id(const char *str, size_t size, char sep)
 {
-    return (unsigned char)(((esid >> pos) & 0x3f) + ESID_SHIFT); // 0x3f hex = 63 dec = 00111111 bin
+    if (size <= ESID_MAXLEN)
+    {
+        return encode_string_id(str, size, 0);
+    }
+    uint64_t h = 0;
+    uint32_t num = 0;
+    uint8_t nchr = 0, npad = 0;
+    uint8_t bitpos = ESID_SHIFTPOS;
+    int c;
+    while ((c = *str++) && (size--))
+    {
+        if (c == sep)
+        {
+            break;
+        }
+        if (nchr < 5)
+        {
+            bitpos -= ESID_CHARBIT;
+            h |= (esid_encode_char(c) << bitpos);
+            nchr++;
+        }
+    }
+    h |= ((uint64_t)(nchr + ESID_MAXLEN) << ESID_SHIFTPOS); // 4 bit for string length
+    while (((c = *str++) == '0') && (npad < ESID_MAXPAD) && (size--))
+    {
+        npad++;
+    }
+    h |= (npad << ESID_NUMPOS); // 3 bit for 0 padding length
+    while ((c >= '0') && (c <= '9') && (size--))
+    {
+        num = ((num * 10) + (c - '0'));
+        c = *str++;
+    }
+    h |= ((uint64_t)num & 0x7FFFFFF); // 27 bit for number
+    return h;
 }
 
-size_t decode_string_id(uint64_t esid, char *str)
+static inline size_t esid_decode_string_id(size_t size, uint64_t esid, char *str)
 {
-    size_t size = (esid >> ESID_SHIFTPOS);
-    if (size > ESID_MAXLEN)
-    {
-        size = 0;
-    }
     switch (size)
     {
     case 10:
@@ -141,6 +177,35 @@ size_t decode_string_id(uint64_t esid, char *str)
     }
     str[size] = 0;
     return size;
+}
+
+static inline size_t esid_decode_string_num_id(size_t size, uint64_t esid, char *str)
+{
+    size = esid_decode_string_id(size, esid, str);
+    str[size++] = ':';
+    uint8_t npad = (uint8_t)((esid >> ESID_NUMPOS) & ESID_MAXPAD);
+    while (npad--)
+    {
+        str[size++] = '0';
+    }
+    uint64_t num = (esid & 0x7FFFFFF);
+    if (num > 0)
+    {
+        char *ptr = (str + size);
+        size += sprintf(ptr, "%" PRIu64, num);
+    }
+    str[size] = 0;
+    return size;
+}
+
+size_t decode_string_id(uint64_t esid, char *str)
+{
+    size_t size = (esid >> ESID_SHIFTPOS);
+    if (size > ESID_MAXLEN)
+    {
+        return esid_decode_string_num_id((size - ESID_MAXLEN), esid, str);
+    }
+    return esid_decode_string_id(size, esid, str);
 }
 
 // Mix two 64 bit hash numbers using a MurmurHash3-like algorithm

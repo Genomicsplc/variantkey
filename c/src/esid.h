@@ -61,6 +61,20 @@ extern "C" {
 uint64_t encode_string_id(const char *str, size_t size, size_t start);
 
 /**
+ * Encode a string composed by a character section followed by a separator character and a numerical section
+ * into a 64 bit unsigned integer. For example: "ABCDE:0001234".
+ * Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.
+ * If the string is 10 character or less, then the encode_string_id() is used.
+ *
+ * @param str    The string to encode. Support ASCII characters from '!' to 'z'.
+ * @param size   Length of the string, excluding the terminating null byte.
+ * @param sep    Separator character between string and number.
+ *
+ * @return Encoded string ID.
+ */
+uint64_t encode_string_num_id(const char *str, size_t size, char sep);
+
+/**
  * Decode the encoded string ID.
  * This function is the reverse of encode_string_id.
  * The string is always returned in uppercase mode.

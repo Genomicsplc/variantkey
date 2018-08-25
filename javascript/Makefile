@@ -27,6 +27,8 @@ all: clean format test build
 # Run the unit tests
 test:
 	cd test && node test_variantkey.js '../src/variantkey.js'
+	cd test && node test_regionkey.js '../src/variantkey.js'
+	cd test && node test_esid.js '../src/variantkey.js'
 
 # Build a minified version of the library
 build:

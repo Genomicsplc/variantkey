@@ -107,6 +107,81 @@ static const esid_data_t esid_data[] =
     { 0,  0,  0, 0x0000000000000000, 0x8000000000000000, "",           ""                                    },
 };
 
+typedef struct esid_num_data_t
+{
+    size_t size;
+    size_t esize;
+    uint64_t esid;
+    const char estr[30];
+    const char str[30];
+} esid_num_data_t;
+
+static const int k_esid_num_data_size = 60;
+
+static const esid_num_data_t esid_num_data[] =
+{
+    { 1,  1, 0x1680000000000000, ":",                     ":"},
+    { 1,  1, 0x1840000000000000, "A",                     "A"},
+    { 2,  2, 0x285a000000000000, "A:",                    "A:"},
+    { 2,  2, 0x2691000000000000, ":1",                    ":1"},
+    { 2,  2, 0x2862000000000000, "AB",                    "Ab"},
+    { 3,  3, 0x3862680000000000, "AB:",                   "Ab:"},
+    { 3,  3, 0x38628c0000000000, "ABC",                   "AbC"},
+    { 4,  4, 0x48628da000000000, "ABC:",                  "AbC:"},
+    { 4,  4, 0x48628e4000000000, "ABCD",                  "AbCd"},
+    { 5,  5, 0x58628e4680000000, "ABCD:",                 "AbCd:"},
+    { 5,  5, 0x58628e4940000000, "ABCDE",                 "AbCdE"},
+    { 6,  6, 0x68628e495a000000, "ABCDE:",                "AbCdE:"},
+    { 6,  6, 0x68628e4966000000, "ABCDEF",                "AbCdEf"},
+    { 7,  7, 0x78628e4966680000, "ABCDEF:",               "AbCdEf:"},
+    { 7,  7, 0x78628e49669c0000, "ABCDEFG",               "AbCdEfG"},
+    { 8,  8, 0x88628e49669da000, "ABCDEFG:",              "AbCdEfG:"},
+    { 8,  8, 0x88628e49669e8000, "ABCDEFGH",              "AbCdEfGh"},
+    { 9,  9, 0x98628e49669e8680, "ABCDEFGH:",             "AbCdEfGh:"},
+    { 5,  5, 0x58628da400000000, "ABC:0",                 "AbC:0"},
+    { 5,  5, 0x58628da440000000, "ABC:1",                 "AbC:1"},
+    {12, 12, 0xd8628c0000bc614e, "ABC:12345678",          "AbC:12345678"},
+    {13, 13, 0xd8628c0008bc614e, "ABC:012345678",         "AbC:012345678"},
+    {14, 14, 0xd8628c0010bc614e, "ABC:0012345678",        "AbC:0012345678"},
+    {15, 15, 0xd8628c0018bc614e, "ABC:00012345678",       "AbC:00012345678"},
+    {16, 16, 0xd8628c0020bc614e, "ABC:000012345678",      "AbC:000012345678"},
+    {17, 17, 0xd8628c0028bc614e, "ABC:0000012345678",     "AbC:0000012345678"},
+    {18, 18, 0xd8628c0030bc614e, "ABC:00000012345678",    "AbC:00000012345678"},
+    {19, 19, 0xd8628c0038bc614e, "ABC:000000012345678",   "AbC:000000012345678"},
+    {20, 19, 0xd8628c0038bc614e, "ABC:000000012345678",   "AbC:0000000012345678"},
+    {21, 19, 0xd8628c0038bc614e, "ABC:000000012345678",   "AbC:00000000012345678"},
+    {22, 19, 0xd8628c0038bc614e, "ABC:000000012345678",   "AbC:000000000012345678"},
+    {23, 19, 0xd8628c0038bc614e, "ABC:000000012345678",   "AbC:0000000000012345678"},
+    { 7,  7, 0x78628e495a400000, "ABCDE:0",               "AbCdE:0"},
+    { 7,  7, 0x78628e495a440000, "ABCDE:1",               "AbCdE:1"},
+    {14, 14, 0xf8628e4940bc614e, "ABCDE:12345678",        "AbCdE:12345678"},
+    {15, 15, 0xf8628e4948bc614e, "ABCDE:012345678",       "AbCdE:012345678"},
+    {16, 16, 0xf8628e4950bc614e, "ABCDE:0012345678",      "AbCdE:0012345678"},
+    {17, 17, 0xf8628e4958bc614e, "ABCDE:00012345678",     "AbCdE:00012345678"},
+    {18, 18, 0xf8628e4960bc614e, "ABCDE:000012345678",    "AbCdE:000012345678"},
+    {19, 19, 0xf8628e4968bc614e, "ABCDE:0000012345678",   "AbCdE:0000012345678"},
+    {20, 20, 0xf8628e4970bc614e, "ABCDE:00000012345678",  "AbCdE:00000012345678"},
+    {21, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:000000012345678"},
+    {22, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:0000000012345678"},
+    {23, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:00000000012345678"},
+    {24, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:000000000012345678"},
+    {25, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdE:0000000000012345678"},
+    { 9,  9, 0x98628e49669da400, "ABCDEFG:0",             "AbCdEfG:0"},
+    { 9,  9, 0x98628e49669da440, "ABCDEFG:1",             "AbCdEfG:1"},
+    {16, 14, 0xf8628e4940bc614e, "ABCDE:12345678",        "AbCdEfG:12345678"},
+    {17, 15, 0xf8628e4948bc614e, "ABCDE:012345678",       "AbCdEfG:012345678"},
+    {18, 16, 0xf8628e4950bc614e, "ABCDE:0012345678",      "AbCdEfG:0012345678"},
+    {19, 17, 0xf8628e4958bc614e, "ABCDE:00012345678",     "AbCdEfG:00012345678"},
+    {20, 18, 0xf8628e4960bc614e, "ABCDE:000012345678",    "AbCdEfG:000012345678"},
+    {21, 19, 0xf8628e4968bc614e, "ABCDE:0000012345678",   "AbCdEfG:0000012345678"},
+    {22, 20, 0xf8628e4970bc614e, "ABCDE:00000012345678",  "AbCdEfG:00000012345678"},
+    {23, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:000000012345678"},
+    {24, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:0000000012345678"},
+    {25, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:00000000012345678"},
+    {26, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:000000000012345678"},
+    {27, 21, 0xf8628e4978bc614e, "ABCDE:000000012345678", "AbCdEfG:0000000000012345678"},
+};
+
 int test_encode_string_id()
 {
     int i;
@@ -134,6 +209,38 @@ void benchmark_encode_string_id()
     for (i=0 ; i < size; i++)
     {
         esid = encode_string_id("ABC0123456", 10, 0);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op (%" PRIx64 ")\n", __func__, (tend - tstart)/size, esid);
+}
+
+int test_encode_string_num_id()
+{
+    int i;
+    int errors = 0;
+    uint64_t esid;
+    for (i=0 ; i < k_esid_num_data_size; i++)
+    {
+        esid = encode_string_num_id(esid_num_data[i].str, esid_num_data[i].size, ':');
+        if (esid != esid_num_data[i].esid)
+        {
+            fprintf(stderr, "%s (%d): Expected 0x%016" PRIx64 ", got 0x%016" PRIx64 "\n", __func__, i, esid_num_data[i].esid, esid);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
+void benchmark_encode_string_num_id()
+{
+    uint64_t esid;
+    uint64_t tstart, tend;
+    int i;
+    int size = 1000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        esid = encode_string_num_id("AbCDE:000012345", 15, ':');
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op (%" PRIx64 ")\n", __func__, (tend - tstart)/size, esid);
@@ -178,17 +285,43 @@ void benchmark_decode_string_id()
     fprintf(stdout, " * %s : %lu ns/op (%lu)\n", __func__, (tend - tstart)/size, len);
 }
 
-int test_decode_string_id_error()
+int test_decode_string_num_id()
 {
+    int i;
     int errors = 0;
-    char esid[11];
-    size_t size = decode_string_id(0xffffffffffffffff, esid);
-    if (size != 0)
+    char esid[30];
+    size_t size;
+    for (i=0 ; i < k_esid_num_data_size; i++)
     {
-        fprintf(stderr, "%s : Expected size 0, got %lu\n", __func__, size);
-        ++errors;
+        size = decode_string_id(esid_num_data[i].esid, esid);
+        if (strcmp(esid, esid_num_data[i].estr) != 0)
+        {
+            fprintf(stderr, "%s (%d): Expected %s, got %s\n", __func__, i, esid_num_data[i].estr, esid);
+            ++errors;
+        }
+        if (size != esid_num_data[i].esize)
+        {
+            fprintf(stderr, "%s (%d): Expected size %lu, got %lu\n", __func__, i, esid_num_data[i].esize, size);
+            ++errors;
+        }
     }
     return errors;
+}
+
+void benchmark_decode_string_num_id()
+{
+    char esid[30] = "";
+    size_t len;
+    uint64_t tstart, tend;
+    int i;
+    int size = 1000;
+    tstart = get_time();
+    for (i=0 ; i < size; i++)
+    {
+        len = decode_string_id(0xf8628e4978bc614e, esid);
+    }
+    tend = get_time();
+    fprintf(stdout, " * %s : %lu ns/op (%lu)\n", __func__, (tend - tstart)/size, len);
 }
 
 int test_hash_string_id()
@@ -229,11 +362,14 @@ int main()
 
     errors += test_encode_string_id();
     errors += test_decode_string_id();
-    errors += test_decode_string_id_error();
+    errors += test_encode_string_num_id();
+    errors += test_decode_string_num_id();
     errors += test_hash_string_id();
 
     benchmark_encode_string_id();
+    benchmark_encode_string_num_id();
     benchmark_decode_string_id();
+    benchmark_decode_string_num_id();
     benchmark_hash_string_id();
 
     return errors;

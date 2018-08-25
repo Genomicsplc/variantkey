@@ -33,6 +33,7 @@
 
 const {
     encodeStringID,
+    encodeStringNumID,
     decodeStringID,
 } = require(process.argv[2]);
 
@@ -78,10 +79,76 @@ var test_data = [
     [ 0,  0,  0, {"hi": 0x00000000, "lo": 0x00000000}, {"hi": 0x80000000, "lo": 0x00000000}, "",           ""                                    ],
 ];
 
+var k_test_num_size = 60;
+// 0     1      2     3     4
+// size, esize, esid, estr, str
+var test_num_data = [
+    [ 1,  1, {"hi": 0x16800000, "lo": 0x00000000}, ":",                     ":"],
+    [ 1,  1, {"hi": 0x18400000, "lo": 0x00000000}, "A",                     "A"],
+    [ 2,  2, {"hi": 0x285a0000, "lo": 0x00000000}, "A:",                    "A:"],
+    [ 2,  2, {"hi": 0x26910000, "lo": 0x00000000}, ":1",                    ":1"],
+    [ 2,  2, {"hi": 0x28620000, "lo": 0x00000000}, "AB",                    "Ab"],
+    [ 3,  3, {"hi": 0x38626800, "lo": 0x00000000}, "AB:",                   "Ab:"],
+    [ 3,  3, {"hi": 0x38628c00, "lo": 0x00000000}, "ABC",                   "AbC"],
+    [ 4,  4, {"hi": 0x48628da0, "lo": 0x00000000}, "ABC:",                  "AbC:"],
+    [ 4,  4, {"hi": 0x48628e40, "lo": 0x00000000}, "ABCD",                  "AbCd"],
+    [ 5,  5, {"hi": 0x58628e46, "lo": 0x80000000}, "ABCD:",                 "AbCd:"],
+    [ 5,  5, {"hi": 0x58628e49, "lo": 0x40000000}, "ABCDE",                 "AbCdE"],
+    [ 6,  6, {"hi": 0x68628e49, "lo": 0x5a000000}, "ABCDE:",                "AbCdE:"],
+    [ 6,  6, {"hi": 0x68628e49, "lo": 0x66000000}, "ABCDEF",                "AbCdEf"],
+    [ 7,  7, {"hi": 0x78628e49, "lo": 0x66680000}, "ABCDEF:",               "AbCdEf:"],
+    [ 7,  7, {"hi": 0x78628e49, "lo": 0x669c0000}, "ABCDEFG",               "AbCdEfG"],
+    [ 8,  8, {"hi": 0x88628e49, "lo": 0x669da000}, "ABCDEFG:",              "AbCdEfG:"],
+    [ 8,  8, {"hi": 0x88628e49, "lo": 0x669e8000}, "ABCDEFGH",              "AbCdEfGh"],
+    [ 9,  9, {"hi": 0x98628e49, "lo": 0x669e8680}, "ABCDEFGH:",             "AbCdEfGh:"],
+    [ 5,  5, {"hi": 0x58628da4, "lo": 0x00000000}, "ABC:0",                 "AbC:0"],
+    [ 5,  5, {"hi": 0x58628da4, "lo": 0x40000000}, "ABC:1",                 "AbC:1"],
+    [12, 12, {"hi": 0xd8628c00, "lo": 0x00bc614e}, "ABC:12345678",          "AbC:12345678"],
+    [13, 13, {"hi": 0xd8628c00, "lo": 0x08bc614e}, "ABC:012345678",         "AbC:012345678"],
+    [14, 14, {"hi": 0xd8628c00, "lo": 0x10bc614e}, "ABC:0012345678",        "AbC:0012345678"],
+    [15, 15, {"hi": 0xd8628c00, "lo": 0x18bc614e}, "ABC:00012345678",       "AbC:00012345678"],
+    [16, 16, {"hi": 0xd8628c00, "lo": 0x20bc614e}, "ABC:000012345678",      "AbC:000012345678"],
+    [17, 17, {"hi": 0xd8628c00, "lo": 0x28bc614e}, "ABC:0000012345678",     "AbC:0000012345678"],
+    [18, 18, {"hi": 0xd8628c00, "lo": 0x30bc614e}, "ABC:00000012345678",    "AbC:00000012345678"],
+    [19, 19, {"hi": 0xd8628c00, "lo": 0x38bc614e}, "ABC:000000012345678",   "AbC:000000012345678"],
+    [20, 19, {"hi": 0xd8628c00, "lo": 0x38bc614e}, "ABC:000000012345678",   "AbC:0000000012345678"],
+    [21, 19, {"hi": 0xd8628c00, "lo": 0x38bc614e}, "ABC:000000012345678",   "AbC:00000000012345678"],
+    [22, 19, {"hi": 0xd8628c00, "lo": 0x38bc614e}, "ABC:000000012345678",   "AbC:000000000012345678"],
+    [23, 19, {"hi": 0xd8628c00, "lo": 0x38bc614e}, "ABC:000000012345678",   "AbC:0000000000012345678"],
+    [ 7,  7, {"hi": 0x78628e49, "lo": 0x5a400000}, "ABCDE:0",               "AbCdE:0"],
+    [ 7,  7, {"hi": 0x78628e49, "lo": 0x5a440000}, "ABCDE:1",               "AbCdE:1"],
+    [14, 14, {"hi": 0xf8628e49, "lo": 0x40bc614e}, "ABCDE:12345678",        "AbCdE:12345678"],
+    [15, 15, {"hi": 0xf8628e49, "lo": 0x48bc614e}, "ABCDE:012345678",       "AbCdE:012345678"],
+    [16, 16, {"hi": 0xf8628e49, "lo": 0x50bc614e}, "ABCDE:0012345678",      "AbCdE:0012345678"],
+    [17, 17, {"hi": 0xf8628e49, "lo": 0x58bc614e}, "ABCDE:00012345678",     "AbCdE:00012345678"],
+    [18, 18, {"hi": 0xf8628e49, "lo": 0x60bc614e}, "ABCDE:000012345678",    "AbCdE:000012345678"],
+    [19, 19, {"hi": 0xf8628e49, "lo": 0x68bc614e}, "ABCDE:0000012345678",   "AbCdE:0000012345678"],
+    [20, 20, {"hi": 0xf8628e49, "lo": 0x70bc614e}, "ABCDE:00000012345678",  "AbCdE:00000012345678"],
+    [21, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdE:000000012345678"],
+    [22, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdE:0000000012345678"],
+    [23, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdE:00000000012345678"],
+    [24, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdE:000000000012345678"],
+    [25, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdE:0000000000012345678"],
+    [ 9,  9, {"hi": 0x98628e49, "lo": 0x669da400}, "ABCDEFG:0",             "AbCdEfG:0"],
+    [ 9,  9, {"hi": 0x98628e49, "lo": 0x669da440}, "ABCDEFG:1",             "AbCdEfG:1"],
+    [16, 14, {"hi": 0xf8628e49, "lo": 0x40bc614e}, "ABCDE:12345678",        "AbCdEfG:12345678"],
+    [17, 15, {"hi": 0xf8628e49, "lo": 0x48bc614e}, "ABCDE:012345678",       "AbCdEfG:012345678"],
+    [18, 16, {"hi": 0xf8628e49, "lo": 0x50bc614e}, "ABCDE:0012345678",      "AbCdEfG:0012345678"],
+    [19, 17, {"hi": 0xf8628e49, "lo": 0x58bc614e}, "ABCDE:00012345678",     "AbCdEfG:00012345678"],
+    [20, 18, {"hi": 0xf8628e49, "lo": 0x60bc614e}, "ABCDE:000012345678",    "AbCdEfG:000012345678"],
+    [21, 19, {"hi": 0xf8628e49, "lo": 0x68bc614e}, "ABCDE:0000012345678",   "AbCdEfG:0000012345678"],
+    [22, 20, {"hi": 0xf8628e49, "lo": 0x70bc614e}, "ABCDE:00000012345678",  "AbCdEfG:00000012345678"],
+    [23, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdEfG:000000012345678"],
+    [24, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdEfG:0000000012345678"],
+    [25, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdEfG:00000000012345678"],
+    [26, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdEfG:000000000012345678"],
+    [27, 21, {"hi": 0xf8628e49, "lo": 0x78bc614e}, "ABCDE:000000012345678", "AbCdEfG:0000000000012345678"],
+];
+
 function test_encodeStringID() {
     var errors = 0;
     var i;
-    var rk;
+    var h;
     for (i = 0; i < k_test_size; i++) {
         h = encodeStringID(test_data[i][6], test_data[i][1]);
         if ((h.hi != test_data[i][3].hi) || (h.lo != test_data[i][3].lo)) {
@@ -92,10 +159,24 @@ function test_encodeStringID() {
     return errors;
 }
 
+function test_encodeStringNumID() {
+    var errors = 0;
+    var i;
+    var h;
+    for (i = 0; i < k_test_num_size; i++) {
+        h = encodeStringNumID(test_num_data[i][4], 58);
+        if ((h.hi != test_num_data[i][2].hi) || (h.lo != test_num_data[i][2].lo)) {
+            console.error("(", i, "): Unexpected ESID: expected ", test_num_data[i][2], ", got ", h);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 function test_decodeStringID() {
     var errors = 0;
     var i;
-    var rk;
+    var h;
     for (i = 0; i < k_test_size; i++) {
         h = decodeStringID(test_data[i][3]);
         if (h != test_data[i][5]) {
@@ -106,10 +187,26 @@ function test_decodeStringID() {
     return errors;
 }
 
+function test_decodeStringNumID() {
+    var errors = 0;
+    var i;
+    var h;
+    for (i = 0; i < k_test_num_size; i++) {
+        h = decodeStringID(test_num_data[i][2]);
+        if (h != test_num_data[i][3]) {
+            console.error("(", i, "): Unexpected decoded ESID: expected ", test_num_data[i][3], ", got ", h);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 var errors = 0;
 
 errors += test_encodeStringID();
+errors += test_encodeStringNumID();
 errors += test_decodeStringID();
+errors += test_decodeStringNumID();
 
 if (errors > 0) {
     console.log("FAILED: " + errors);

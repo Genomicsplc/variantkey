@@ -639,10 +639,19 @@ SEXP R_encode_string_id(SEXP str, SEXP start)
     return Rf_mkString(hex);
 }
 
+SEXP R_encode_string_num_id(SEXP str, SEXP sep)
+{
+    const char *chr = CHAR(STRING_ELT(str, 0));
+    uint64_t esid = encode_string_num_id(chr, strlen(chr), asInteger(sep));
+    char hex[17];
+    hex_uint64_t(esid, hex);
+    return Rf_mkString(hex);
+}
+
 SEXP R_decode_string_id(SEXP esid)
 {
     uint64_t code = parse_hex_uint64_t(CHAR(STRING_ELT(esid, 0)));
-    char str[11] = "";
+    char str[23] = "";
     decode_string_id(code, str);
     return Rf_mkString(str);
 }
