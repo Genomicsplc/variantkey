@@ -685,7 +685,7 @@ class TestFunctions(TestCase):
 
     def test_find_first_be_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE8:
-            rp, rf, rl = bs.find_first_be_uint8(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_be_uint8(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -695,13 +695,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_be_uint8(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_be_uint8(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_be_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE16:
-            rp, rf, rl = bs.find_first_be_uint16(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_be_uint16(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -711,13 +711,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_be_uint16(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_be_uint16(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_be_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE32:
-            rp, rf, rl = bs.find_first_be_uint32(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_be_uint32(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -727,13 +727,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_be_uint32(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_be_uint32(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_be_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE64:
-            rp, rf, rl = bs.find_first_be_uint64(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_be_uint64(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -743,13 +743,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_be_uint64(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_be_uint64(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_be_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE8:
-            rp, rf, rl = bs.find_last_be_uint8(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_be_uint8(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -759,13 +759,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_be_uint8(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_be_uint8(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_be_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE16:
-            rp, rf, rl = bs.find_last_be_uint16(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_be_uint16(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -775,13 +775,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_be_uint16(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_be_uint16(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_be_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE32:
-            rp, rf, rl = bs.find_last_be_uint32(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_be_uint32(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -791,13 +791,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_be_uint32(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_be_uint32(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_be_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataBE64:
-            rp, rf, rl = bs.find_last_be_uint64(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_be_uint64(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -807,14 +807,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_be_uint64(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_be_uint64(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_be_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE8:
-            rp, rf, rl = bs.find_first_sub_be_uint8(
-                src, 16, blkpos, 0, 7, first, last, search)
+            rp, rf, rl = bs.find_first_sub_be_uint8(src, 0, 16, blkpos, 0, 7, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -824,14 +823,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_be_uint8(src, 16, blkpos, 0, 7, pos, last, search)
+                    ret, pos = bs.has_next_sub_be_uint8(src, 0, 16, blkpos, 0, 7, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_be_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE16:
-            rp, rf, rl = bs.find_first_sub_be_uint16(
-                src, 16, blkpos, 0, 15, first, last, search)
+            rp, rf, rl = bs.find_first_sub_be_uint16(src, 0, 16, blkpos, 0, 15, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -841,14 +839,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_be_uint16(src, 16, blkpos, 0, 15, pos, last, search)
+                    ret, pos = bs.has_next_sub_be_uint16(src, 0, 16, blkpos, 0, 15, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_be_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE32:
-            rp, rf, rl = bs.find_first_sub_be_uint32(
-                src, 16, blkpos, 8, 23, first, last, search)
+            rp, rf, rl = bs.find_first_sub_be_uint32(src, 0, 16, blkpos, 8, 23, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -858,14 +855,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_be_uint32(src, 16, blkpos, 8, 23, pos, last, search)
+                    ret, pos = bs.has_next_sub_be_uint32(src, 0, 16, blkpos, 8, 23, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_be_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE64:
-            rp, rf, rl = bs.find_first_sub_be_uint64(
-                src, 16, blkpos, 16, 47, first, last, search)
+            rp, rf, rl = bs.find_first_sub_be_uint64(src, 0, 16, blkpos, 16, 47, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -875,14 +871,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_be_uint64(src, 16, blkpos, 16, 47, pos, last, search)
+                    ret, pos = bs.has_next_sub_be_uint64(src, 0, 16, blkpos, 16, 47, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_be_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE8:
-            rp, rf, rl = bs.find_last_sub_be_uint8(
-                src, 16, blkpos, 0, 7, first, last, search)
+            rp, rf, rl = bs.find_last_sub_be_uint8(src, 0, 16, blkpos, 0, 7, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -892,14 +887,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_be_uint8(src, 16, blkpos, 0, 7, first, pos, search)
+                    ret, pos = bs.has_prev_sub_be_uint8(src, 0, 16, blkpos, 0, 7, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_be_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE16:
-            rp, rf, rl = bs.find_last_sub_be_uint16(
-                src, 16, blkpos, 0, 15, first, last, search)
+            rp, rf, rl = bs.find_last_sub_be_uint16(src, 0, 16, blkpos, 0, 15, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -909,14 +903,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_be_uint16(src, 16, blkpos, 0, 15, first, pos, search)
+                    ret, pos = bs.has_prev_sub_be_uint16(src, 0, 16, blkpos, 0, 15, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_be_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE32:
-            rp, rf, rl = bs.find_last_sub_be_uint32(
-                src, 16, blkpos, 8, 23, first, last, search)
+            rp, rf, rl = bs.find_last_sub_be_uint32(src, 0, 16, blkpos, 8, 23, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -926,14 +919,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_be_uint32(src, 16, blkpos, 8, 23, first, pos, search)
+                    ret, pos = bs.has_prev_sub_be_uint32(src, 0, 16, blkpos, 8, 23, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_be_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubBE64:
-            rp, rf, rl = bs.find_last_sub_be_uint64(
-                src, 16, blkpos, 16, 47, first, last, search)
+            rp, rf, rl = bs.find_last_sub_be_uint64(src, 0, 16, blkpos, 16, 47, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -943,13 +935,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_be_uint64(src, 16, blkpos, 16, 47, first, pos, search)
+                    ret, pos = bs.has_prev_sub_be_uint64(src, 0, 16, blkpos, 16, 47, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_le_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE8:
-            rp, rf, rl = bs.find_first_le_uint8(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_le_uint8(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -959,13 +951,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_le_uint8(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_le_uint8(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_le_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE16:
-            rp, rf, rl = bs.find_first_le_uint16(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_le_uint16(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -975,13 +967,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_le_uint16(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_le_uint16(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_le_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE32:
-            rp, rf, rl = bs.find_first_le_uint32(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_le_uint32(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -991,13 +983,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_le_uint32(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_le_uint32(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_le_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE64:
-            rp, rf, rl = bs.find_first_le_uint64(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_first_le_uint64(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -1007,13 +999,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_le_uint64(src, 16, blkpos, pos, last, search)
+                    ret, pos = bs.has_next_le_uint64(src, 0, 16, blkpos, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_le_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE8:
-            rp, rf, rl = bs.find_last_le_uint8(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_le_uint8(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1023,13 +1015,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_le_uint8(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_le_uint8(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_le_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE16:
-            rp, rf, rl = bs.find_last_le_uint16(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_le_uint16(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1039,13 +1031,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_le_uint16(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_le_uint16(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_le_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE32:
-            rp, rf, rl = bs.find_last_le_uint32(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_le_uint32(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1055,13 +1047,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_le_uint32(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_le_uint32(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_le_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataLE64:
-            rp, rf, rl = bs.find_last_le_uint64(src, 16, blkpos, first, last, search)
+            rp, rf, rl = bs.find_last_le_uint64(src, 0, 16, blkpos, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1071,14 +1063,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_le_uint64(src, 16, blkpos, first, pos, search)
+                    ret, pos = bs.has_prev_le_uint64(src, 0, 16, blkpos, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_le_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE8:
-            rp, rf, rl = bs.find_first_sub_le_uint8(
-                src, 16, blkpos, 0, 7, first, last, search)
+            rp, rf, rl = bs.find_first_sub_le_uint8(src, 0, 16, blkpos, 0, 7, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -1088,14 +1079,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_le_uint8(src, 16, blkpos, 0, 7, pos, last, search)
+                    ret, pos = bs.has_next_sub_le_uint8(src, 0, 16, blkpos, 0, 7, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_le_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE16:
-            rp, rf, rl = bs.find_first_sub_le_uint16(
-                src, 16, blkpos, 0, 15, first, last, search)
+            rp, rf, rl = bs.find_first_sub_le_uint16(src, 0, 16, blkpos, 0, 15, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -1105,14 +1095,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_le_uint16(src, 16, blkpos, 0, 15, pos, last, search)
+                    ret, pos = bs.has_next_sub_le_uint16(src, 0, 16, blkpos, 0, 15, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_le_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE32:
-            rp, rf, rl = bs.find_first_sub_le_uint32(
-                src, 16, blkpos, 8, 23, first, last, search)
+            rp, rf, rl = bs.find_first_sub_le_uint32(src, 0, 16, blkpos, 8, 23, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -1122,14 +1111,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_le_uint32(src, 16, blkpos, 8, 23, pos, last, search)
+                    ret, pos = bs.has_next_sub_le_uint32(src, 0, 16, blkpos, 8, 23, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_first_sub_le_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE64:
-            rp, rf, rl = bs.find_first_sub_le_uint64(
-                src, 16, blkpos, 16, 47, first, last, search)
+            rp, rf, rl = bs.find_first_sub_le_uint64(src, 0, 16, blkpos, 16, 47, first, last, search)
             self.assertEqual(rp, fF)
             self.assertEqual(rf, fFF)
             self.assertEqual(rl, fFL)
@@ -1139,14 +1127,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_next_sub_le_uint64(src, 16, blkpos, 16, 47, pos, last, search)
+                    ret, pos = bs.has_next_sub_le_uint64(src, 0, 16, blkpos, 16, 47, pos, last, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_le_uint8(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE8:
-            rp, rf, rl = bs.find_last_sub_le_uint8(
-                src, 16, blkpos, 0, 7, first, last, search)
+            rp, rf, rl = bs.find_last_sub_le_uint8(src, 0, 16, blkpos, 0, 7, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1156,14 +1143,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_le_uint8(src, 16, blkpos, 0, 7, first, pos, search)
+                    ret, pos = bs.has_prev_sub_le_uint8(src, 0, 16, blkpos, 0, 7, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_le_uint16(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE16:
-            rp, rf, rl = bs.find_last_sub_le_uint16(
-                src, 16, blkpos, 0, 15, first, last, search)
+            rp, rf, rl = bs.find_last_sub_le_uint16(src, 0, 16, blkpos, 0, 15, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1173,14 +1159,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_le_uint16(src, 16, blkpos, 0, 15, first, pos, search)
+                    ret, pos = bs.has_prev_sub_le_uint16(src, 0, 16, blkpos, 0, 15, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_le_uint32(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE32:
-            rp, rf, rl = bs.find_last_sub_le_uint32(
-                src, 16, blkpos, 8, 23, first, last, search)
+            rp, rf, rl = bs.find_last_sub_le_uint32(src, 0, 16, blkpos, 8, 23, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1190,14 +1175,13 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_le_uint32(src, 16, blkpos, 8, 23, first, pos, search)
+                    ret, pos = bs.has_prev_sub_le_uint32(src, 0, 16, blkpos, 8, 23, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
     def test_find_last_sub_le_uint64(self):
         for blkpos, first, last, search, fF, fFF, fFL, fL, fLF, fLL in testDataSubLE64:
-            rp, rf, rl = bs.find_last_sub_le_uint64(
-                src, 16, blkpos, 16, 47, first, last, search)
+            rp, rf, rl = bs.find_last_sub_le_uint64(src, 0, 16, blkpos, 16, 47, first, last, search)
             self.assertEqual(rp, fL)
             self.assertEqual(rf, fLF)
             self.assertEqual(rl, fLL)
@@ -1207,7 +1191,7 @@ class TestFunctions(TestCase):
                 ret = True
                 counter = 0
                 while ret:
-                    ret, pos = bs.has_prev_sub_le_uint64(src, 16, blkpos, 16, 47, first, pos, search)
+                    ret, pos = bs.has_prev_sub_le_uint64(src, 0, 16, blkpos, 16, 47, first, pos, search)
                     counter = counter + 1
                 self.assertEqual(counter, numitems)
 
@@ -1232,7 +1216,7 @@ class TestBenchmark(object):
     def test_find_first_be_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_be_uint8,
-            args=[src, 16, 0, 0, 250, 0x2f],
+            args=[src, 0, 16, 0, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1240,7 +1224,7 @@ class TestBenchmark(object):
     def test_find_first_be_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_be_uint16,
-            args=[src, 16, 0, 0, 250, 0x2f30],
+            args=[src, 0, 16, 0, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1248,7 +1232,7 @@ class TestBenchmark(object):
     def test_find_first_be_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_be_uint32,
-            args=[src, 16, 0, 0, 250, 0x2f303132],
+            args=[src, 0, 16, 0, 0, 250, 0x2f303132],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1256,7 +1240,7 @@ class TestBenchmark(object):
     def test_find_first_be_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_be_uint64,
-            args=[src, 16, 0, 0, 250, 0x2f30313233343536],
+            args=[src, 0, 16, 0, 0, 250, 0x2f30313233343536],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1264,7 +1248,7 @@ class TestBenchmark(object):
     def test_find_last_be_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_be_uint8,
-            args=[src, 16, 0, 0, 250, 0x2f],
+            args=[src, 0, 16, 0, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1272,7 +1256,7 @@ class TestBenchmark(object):
     def test_find_last_be_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_be_uint16,
-            args=[src, 16, 0, 0, 250, 0x2f30],
+            args=[src, 0, 16, 0, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1280,7 +1264,7 @@ class TestBenchmark(object):
     def test_find_last_be_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_be_uint32,
-            args=[src, 16, 0, 0, 250, 0x2f303132],
+            args=[src, 0, 16, 0, 0, 250, 0x2f303132],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1288,7 +1272,7 @@ class TestBenchmark(object):
     def test_find_last_be_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_be_uint64,
-            args=[src, 16, 0, 0, 250, 0x2f30313233343536],
+            args=[src, 0, 16, 0, 0, 250, 0x2f30313233343536],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1296,7 +1280,7 @@ class TestBenchmark(object):
     def test_find_first_sub_be_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_be_uint8,
-            args=[src, 16, 0, 0, 7, 0, 250, 0x2f],
+            args=[src, 0, 16, 0, 0, 7, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1304,7 +1288,7 @@ class TestBenchmark(object):
     def test_find_first_sub_be_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_be_uint16,
-            args=[src, 16, 0, 0, 15, 0, 250, 0x2f30],
+            args=[src, 0, 16, 0, 0, 15, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1312,7 +1296,7 @@ class TestBenchmark(object):
     def test_find_first_sub_be_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_be_uint32,
-            args=[src, 16, 0, 8, 23, 0, 250, 0x00003031],
+            args=[src, 0, 16, 0, 8, 23, 0, 250, 0x00003031],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1320,7 +1304,7 @@ class TestBenchmark(object):
     def test_find_first_sub_be_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_be_uint64,
-            args=[src, 16, 0, 16, 47, 0, 250, 0x0000000031323334],
+            args=[src, 0, 16, 0, 16, 47, 0, 250, 0x0000000031323334],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1328,7 +1312,7 @@ class TestBenchmark(object):
     def test_find_last_sub_be_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_be_uint8,
-            args=[src, 16, 0, 0, 7, 0, 250, 0x2f],
+            args=[src, 0, 16, 0, 0, 7, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1336,7 +1320,7 @@ class TestBenchmark(object):
     def test_find_last_sub_be_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_be_uint16,
-            args=[src, 16, 0, 0, 15, 0, 250, 0x2f30],
+            args=[src, 0, 16, 0, 0, 15, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1344,7 +1328,7 @@ class TestBenchmark(object):
     def test_find_last_sub_be_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_be_uint32,
-            args=[src, 16, 0, 8, 23, 0, 250, 0x00003031],
+            args=[src, 0, 16, 0, 8, 23, 0, 250, 0x00003031],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1352,7 +1336,7 @@ class TestBenchmark(object):
     def test_find_last_sub_be_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_be_uint64,
-            args=[src, 16, 0, 16, 47, 0, 250, 0x0000000031323334],
+            args=[src, 0, 16, 0, 16, 47, 0, 250, 0x0000000031323334],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1360,7 +1344,7 @@ class TestBenchmark(object):
     def test_find_first_le_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_le_uint8,
-            args=[src, 16, 15, 0, 250, 0x2f],
+            args=[src, 0, 16, 15, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1368,7 +1352,7 @@ class TestBenchmark(object):
     def test_find_first_le_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_le_uint16,
-            args=[src, 16, 14, 0, 250, 0x2f30],
+            args=[src, 0, 16, 14, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1376,7 +1360,7 @@ class TestBenchmark(object):
     def test_find_first_le_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_le_uint32,
-            args=[src, 16, 12, 0, 250, 0x2f303132],
+            args=[src, 0, 16, 12, 0, 250, 0x2f303132],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1384,7 +1368,7 @@ class TestBenchmark(object):
     def test_find_first_le_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_le_uint64,
-            args=[src, 16, 8, 0, 250, 0x2f30313233343536],
+            args=[src, 0, 16, 8, 0, 250, 0x2f30313233343536],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1392,7 +1376,7 @@ class TestBenchmark(object):
     def test_find_last_le_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_le_uint8,
-            args=[src, 16, 15, 0, 250, 0x2f],
+            args=[src, 0, 16, 15, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1400,7 +1384,7 @@ class TestBenchmark(object):
     def test_find_last_le_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_le_uint16,
-            args=[src, 16, 14, 0, 250, 0x2f30],
+            args=[src, 0, 16, 14, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1408,7 +1392,7 @@ class TestBenchmark(object):
     def test_find_last_le_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_le_uint32,
-            args=[src, 16, 12, 0, 250, 0x2f303132],
+            args=[src, 0, 16, 12, 0, 250, 0x2f303132],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1416,7 +1400,7 @@ class TestBenchmark(object):
     def test_find_last_le_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_le_uint64,
-            args=[src, 16, 8, 0, 250, 0x2f30313233343536],
+            args=[src, 0, 16, 8, 0, 250, 0x2f30313233343536],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1424,7 +1408,7 @@ class TestBenchmark(object):
     def test_find_first_sub_le_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_le_uint8,
-            args=[src, 16, 15, 0, 7, 0, 250, 0x2f],
+            args=[src, 0, 16, 15, 0, 7, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1432,7 +1416,7 @@ class TestBenchmark(object):
     def test_find_first_sub_le_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_le_uint16,
-            args=[src, 16, 14, 0, 15, 0, 250, 0x2f30],
+            args=[src, 0, 16, 14, 0, 15, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1440,7 +1424,7 @@ class TestBenchmark(object):
     def test_find_first_sub_le_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_le_uint32,
-            args=[src, 16, 12, 8, 23, 0, 250, 0x00003031],
+            args=[src, 0, 16, 12, 8, 23, 0, 250, 0x00003031],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1448,7 +1432,7 @@ class TestBenchmark(object):
     def test_find_first_sub_le_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_first_sub_le_uint64,
-            args=[src, 16, 8, 16, 47, 0, 250, 0x0000000031323334],
+            args=[src, 0, 16, 8, 16, 47, 0, 250, 0x0000000031323334],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1456,7 +1440,7 @@ class TestBenchmark(object):
     def test_find_last_sub_le_uint8_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_le_uint8,
-            args=[src, 16, 15, 0, 7, 0, 250, 0x2f],
+            args=[src, 0, 16, 15, 0, 7, 0, 250, 0x2f],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1464,7 +1448,7 @@ class TestBenchmark(object):
     def test_find_last_sub_le_uint16_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_le_uint16,
-            args=[src, 16, 14, 0, 15, 0, 250, 0x2f30],
+            args=[src, 0, 16, 14, 0, 15, 0, 250, 0x2f30],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1472,7 +1456,7 @@ class TestBenchmark(object):
     def test_find_last_sub_le_uint32_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_le_uint32,
-            args=[src, 16, 12, 8, 23, 0, 250, 0x00003031],
+            args=[src, 0, 16, 12, 8, 23, 0, 250, 0x00003031],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -1480,7 +1464,7 @@ class TestBenchmark(object):
     def test_find_last_sub_le_uint64_benchmark(self, benchmark):
         benchmark.pedantic(
             bs.find_last_sub_le_uint64,
-            args=[src, 16, 8, 16, 47, 0, 250, 0x0000000031323334],
+            args=[src, 0, 16, 8, 16, 47, 0, 250, 0x0000000031323334],
             setup=setup,
             iterations=1,
             rounds=10000)

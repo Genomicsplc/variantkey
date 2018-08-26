@@ -10,7 +10,7 @@ package variantkey
 import "testing"
 import "os"
 
-var mf, rv, rvm, vr, vknr, gref TMMFile
+var mf, cmf, rv, rvm, vr, vknr, gref TMMFile
 var retCode int
 
 func closeTMMFile(mmf TMMFile) {
@@ -30,6 +30,12 @@ func TestMain(m *testing.M) {
 		os.Exit(1)
 	}
 	defer closeTMMFile(mf)
+
+	cmf, err = MmapBinFile("../../c/test/data/test_data_col.bin")
+	if err != nil {
+		os.Exit(1)
+	}
+	defer closeTMMFile(cmf)
 
 	rv, err = MmapBinFile("../../c/test/data/rsvk.10.bin")
 	if err != nil {
@@ -65,4 +71,37 @@ func TestMain(m *testing.M) {
 	retCode += m.Run()
 
 	os.Exit(retCode)
+}
+
+func TestClose(t *testing.T) {
+	lmf, err := MmapBinFile("../../c/test/data/test_data.bin")
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+	err = lmf.Close()
+	if err != nil {
+		t.Errorf("Unexpected error: %v", err)
+	}
+}
+
+func TestCloseError(t *testing.T) {
+	lmf := TMMFile{}
+	err := lmf.Close()
+	if err == nil {
+		t.Errorf("An error was expected")
+	}
+}
+
+func TestMmapBinFileError(t *testing.T) {
+	_, err := MmapBinFile("error")
+	if err == nil {
+		t.Errorf("An error was expected")
+	}
+}
+
+func TestGetAddress(t *testing.T) {
+	h := GetAddress(3, 5, 7)
+	if h != 26 {
+		t.Errorf("Expected 26, got %d", h)
+	}
 }

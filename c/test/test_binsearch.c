@@ -751,6 +751,36 @@ static t_test_uint64_t test_data_sub_le_uint64_t[] =
     {  8, 150, 250, 0x0000000072737475, 251, 150, 149, 251, 150, 149},
 };
 
+#define define_test_bytes_to(O, T) \
+int test_bytes_to_##O##_##T(mmfile_t mf, uint64_t blklen) \
+{ \
+    int errors = 0; \
+    int i; \
+    T h; \
+    for (i=0 ; i < TEST_DATA_SIZE; i++) \
+    { \
+        if (test_data_##O##_##T[i].foundFirst < test_data_##O##_##T[i].last) \
+        { \
+            h = bytes_##O##_to_##T(mf.src, get_address(blklen, test_data_##O##_##T[i].blkpos, test_data_##O##_##T[i].foundFirst)); \
+            if (h != test_data_##O##_##T[i].search) \
+            { \
+                fprintf(stderr, "%s (%d) Expected %" PRIx64 ", got %" PRIx64 "\n", __func__, i, (uint64_t)test_data_##O##_##T[i].search, (uint64_t)h); \
+                ++errors; \
+            } \
+        } \
+    } \
+    return errors; \
+}
+
+define_test_bytes_to(be, uint8_t)
+define_test_bytes_to(be, uint16_t)
+define_test_bytes_to(be, uint32_t)
+define_test_bytes_to(be, uint64_t)
+define_test_bytes_to(le, uint8_t)
+define_test_bytes_to(le, uint16_t)
+define_test_bytes_to(le, uint32_t)
+define_test_bytes_to(le, uint64_t)
+
 #define define_test_find_first(O, T) \
 int test_find_first_##O##_##T(mmfile_t mf, uint64_t blklen) \
 { \
@@ -1122,6 +1152,15 @@ int main()
         fprintf(stderr, "Expecting 251 items, got instead: %" PRIu64 "\n", nitems);
         return 1;
     }
+
+    errors += test_bytes_to_be_uint8_t(mf, blklen);
+    errors += test_bytes_to_le_uint8_t(mf, blklen);
+    errors += test_bytes_to_be_uint16_t(mf, blklen);
+    errors += test_bytes_to_le_uint16_t(mf, blklen);
+    errors += test_bytes_to_be_uint32_t(mf, blklen);
+    errors += test_bytes_to_le_uint32_t(mf, blklen);
+    errors += test_bytes_to_be_uint64_t(mf, blklen);
+    errors += test_bytes_to_le_uint64_t(mf, blklen);
 
     errors += test_find_first_be_uint8_t(mf, blklen);
     errors += test_find_last_be_uint8_t(mf, blklen);

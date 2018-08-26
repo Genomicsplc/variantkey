@@ -834,13 +834,6 @@ var testDataLESub64 = []struct {
 	{8, 150, 250, 0x0000000072737475, 251, 150, 149, 251, 150, 149},
 }
 
-func TestGetAddress(t *testing.T) {
-	h := GetAddress(3, 5, 7)
-	if h != 26 {
-		t.Errorf("Expected 26, got %d", h)
-	}
-}
-
 // ----------
 
 func TestFindFirstBEUint8(t *testing.T) {
@@ -848,7 +841,7 @@ func TestFindFirstBEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstBEUint8(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstBEUint8(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -864,7 +857,7 @@ func TestFindFirstBEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextBEUint8(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextBEUint8(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -878,7 +871,7 @@ func TestFindFirstBEUint8(t *testing.T) {
 func BenchmarkFindFirstBEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstBEUint8(16, testDataBE8[4].blkpos, testDataBE8[4].first, testDataBE8[4].last, testDataBE8[4].search)
+		mf.FindFirstBEUint8(0, 16, testDataBE8[4].blkpos, testDataBE8[4].first, testDataBE8[4].last, testDataBE8[4].search)
 	}
 }
 
@@ -887,7 +880,7 @@ func TestFindFirstSubBEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubBEUint8(16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubBEUint8(0, 16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -903,7 +896,7 @@ func TestFindFirstSubBEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubBEUint8(16, tt.blkpos, 0, 7, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubBEUint8(0, 16, tt.blkpos, 0, 7, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -917,7 +910,7 @@ func TestFindFirstSubBEUint8(t *testing.T) {
 func BenchmarkFindFirstSubBEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubBEUint8(16, testDataBESub8[4].blkpos, 0, 7, testDataBESub8[4].first, testDataBESub8[4].last, testDataBESub8[4].search)
+		mf.FindFirstSubBEUint8(0, 16, testDataBESub8[4].blkpos, 0, 7, testDataBESub8[4].first, testDataBESub8[4].last, testDataBESub8[4].search)
 	}
 }
 
@@ -926,7 +919,7 @@ func TestFindLastBEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastBEUint8(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastBEUint8(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -942,7 +935,7 @@ func TestFindLastBEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevBEUint8(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevBEUint8(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -956,7 +949,7 @@ func TestFindLastBEUint8(t *testing.T) {
 func BenchmarkFindLastBEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastBEUint8(16, testDataBE8[4].blkpos, testDataBE8[4].first, testDataBE8[4].last, testDataBE8[4].search)
+		mf.FindLastBEUint8(0, 16, testDataBE8[4].blkpos, testDataBE8[4].first, testDataBE8[4].last, testDataBE8[4].search)
 	}
 }
 
@@ -965,7 +958,7 @@ func TestFindLastSubBEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubBEUint8(16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubBEUint8(0, 16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -981,7 +974,7 @@ func TestFindLastSubBEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubBEUint8(16, tt.blkpos, 0, 7, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubBEUint8(0, 16, tt.blkpos, 0, 7, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -995,7 +988,7 @@ func TestFindLastSubBEUint8(t *testing.T) {
 func BenchmarkFindLastSubBEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubBEUint8(16, testDataBESub8[4].blkpos, 0, 7, testDataBESub8[4].first, testDataBESub8[4].last, testDataBESub8[4].search)
+		mf.FindLastSubBEUint8(0, 16, testDataBESub8[4].blkpos, 0, 7, testDataBESub8[4].first, testDataBESub8[4].last, testDataBESub8[4].search)
 	}
 }
 
@@ -1004,7 +997,7 @@ func TestFindFirstLEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstLEUint8(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstLEUint8(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1020,7 +1013,7 @@ func TestFindFirstLEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextLEUint8(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextLEUint8(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1034,7 +1027,7 @@ func TestFindFirstLEUint8(t *testing.T) {
 func BenchmarkFindFirstLEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstLEUint8(16, testDataLE8[4].blkpos, testDataLE8[4].first, testDataLE8[4].last, testDataLE8[4].search)
+		mf.FindFirstLEUint8(0, 16, testDataLE8[4].blkpos, testDataLE8[4].first, testDataLE8[4].last, testDataLE8[4].search)
 	}
 }
 
@@ -1043,7 +1036,7 @@ func TestFindFirstSubLEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubLEUint8(16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubLEUint8(0, 16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1059,7 +1052,7 @@ func TestFindFirstSubLEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubLEUint8(16, tt.blkpos, 0, 7, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubLEUint8(0, 16, tt.blkpos, 0, 7, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1073,7 +1066,7 @@ func TestFindFirstSubLEUint8(t *testing.T) {
 func BenchmarkFindFirstSubLEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubLEUint8(16, testDataLESub8[4].blkpos, 0, 7, testDataLESub8[4].first, testDataLESub8[4].last, testDataLESub8[4].search)
+		mf.FindFirstSubLEUint8(0, 16, testDataLESub8[4].blkpos, 0, 7, testDataLESub8[4].first, testDataLESub8[4].last, testDataLESub8[4].search)
 	}
 }
 
@@ -1082,7 +1075,7 @@ func TestFindLastLEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastLEUint8(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastLEUint8(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1098,7 +1091,7 @@ func TestFindLastLEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevLEUint8(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevLEUint8(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1112,7 +1105,7 @@ func TestFindLastLEUint8(t *testing.T) {
 func BenchmarkFindLastLEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastLEUint8(16, testDataLE8[4].blkpos, testDataLE8[4].first, testDataLE8[4].last, testDataLE8[4].search)
+		mf.FindLastLEUint8(0, 16, testDataLE8[4].blkpos, testDataLE8[4].first, testDataLE8[4].last, testDataLE8[4].search)
 	}
 }
 
@@ -1121,7 +1114,7 @@ func TestFindLastSubLEUint8(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubLEUint8(16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubLEUint8(0, 16, tt.blkpos, 0, 7, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1137,7 +1130,7 @@ func TestFindLastSubLEUint8(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubLEUint8(16, tt.blkpos, 0, 7, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubLEUint8(0, 16, tt.blkpos, 0, 7, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1151,7 +1144,7 @@ func TestFindLastSubLEUint8(t *testing.T) {
 func BenchmarkFindLastSubLEUint8(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubLEUint8(16, testDataLESub8[4].blkpos, 0, 7, testDataLESub8[4].first, testDataLESub8[4].last, testDataLESub8[4].search)
+		mf.FindLastSubLEUint8(0, 16, testDataLESub8[4].blkpos, 0, 7, testDataLESub8[4].first, testDataLESub8[4].last, testDataLESub8[4].search)
 	}
 }
 
@@ -1162,7 +1155,7 @@ func TestFindFirstBEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstBEUint16(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstBEUint16(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1178,7 +1171,7 @@ func TestFindFirstBEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextBEUint16(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextBEUint16(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1192,7 +1185,7 @@ func TestFindFirstBEUint16(t *testing.T) {
 func BenchmarkFindFirstBEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstBEUint16(16, testDataBE16[4].blkpos, testDataBE16[4].first, testDataBE16[4].last, testDataBE16[4].search)
+		mf.FindFirstBEUint16(0, 16, testDataBE16[4].blkpos, testDataBE16[4].first, testDataBE16[4].last, testDataBE16[4].search)
 	}
 }
 
@@ -1201,7 +1194,7 @@ func TestFindFirstSubBEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubBEUint16(16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubBEUint16(0, 16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1217,7 +1210,7 @@ func TestFindFirstSubBEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubBEUint16(16, tt.blkpos, 0, 15, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubBEUint16(0, 16, tt.blkpos, 0, 15, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1231,7 +1224,7 @@ func TestFindFirstSubBEUint16(t *testing.T) {
 func BenchmarkFindFirstSubBEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubBEUint16(16, testDataBESub16[4].blkpos, 0, 15, testDataBESub16[4].first, testDataBESub16[4].last, testDataBESub16[4].search)
+		mf.FindFirstSubBEUint16(0, 16, testDataBESub16[4].blkpos, 0, 15, testDataBESub16[4].first, testDataBESub16[4].last, testDataBESub16[4].search)
 	}
 }
 
@@ -1240,7 +1233,7 @@ func TestFindLastBEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastBEUint16(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastBEUint16(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1256,7 +1249,7 @@ func TestFindLastBEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevBEUint16(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevBEUint16(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1270,7 +1263,7 @@ func TestFindLastBEUint16(t *testing.T) {
 func BenchmarkFindLastBEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastBEUint16(16, testDataBE16[4].blkpos, testDataBE16[4].first, testDataBE16[4].last, testDataBE16[4].search)
+		mf.FindLastBEUint16(0, 16, testDataBE16[4].blkpos, testDataBE16[4].first, testDataBE16[4].last, testDataBE16[4].search)
 	}
 }
 
@@ -1279,7 +1272,7 @@ func TestFindLastSubBEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubBEUint16(16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubBEUint16(0, 16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1295,7 +1288,7 @@ func TestFindLastSubBEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubBEUint16(16, tt.blkpos, 0, 15, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubBEUint16(0, 16, tt.blkpos, 0, 15, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1309,7 +1302,7 @@ func TestFindLastSubBEUint16(t *testing.T) {
 func BenchmarkFindLastSubBEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubBEUint16(16, testDataBESub16[4].blkpos, 0, 15, testDataBESub16[4].first, testDataBESub16[4].last, testDataBESub16[4].search)
+		mf.FindLastSubBEUint16(0, 16, testDataBESub16[4].blkpos, 0, 15, testDataBESub16[4].first, testDataBESub16[4].last, testDataBESub16[4].search)
 	}
 }
 
@@ -1318,7 +1311,7 @@ func TestFindFirstLEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstLEUint16(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstLEUint16(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1334,7 +1327,7 @@ func TestFindFirstLEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextLEUint16(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextLEUint16(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1348,7 +1341,7 @@ func TestFindFirstLEUint16(t *testing.T) {
 func BenchmarkFindFirstLEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstLEUint16(16, testDataLE16[4].blkpos, testDataLE16[4].first, testDataLE16[4].last, testDataLE16[4].search)
+		mf.FindFirstLEUint16(0, 16, testDataLE16[4].blkpos, testDataLE16[4].first, testDataLE16[4].last, testDataLE16[4].search)
 	}
 }
 
@@ -1357,7 +1350,7 @@ func TestFindFirstSubLEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubLEUint16(16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubLEUint16(0, 16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1373,7 +1366,7 @@ func TestFindFirstSubLEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubLEUint16(16, tt.blkpos, 0, 15, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubLEUint16(0, 16, tt.blkpos, 0, 15, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1387,7 +1380,7 @@ func TestFindFirstSubLEUint16(t *testing.T) {
 func BenchmarkFindFirstSubLEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubLEUint16(16, testDataLESub16[4].blkpos, 0, 15, testDataLESub16[4].first, testDataLESub16[4].last, testDataLESub16[4].search)
+		mf.FindFirstSubLEUint16(0, 16, testDataLESub16[4].blkpos, 0, 15, testDataLESub16[4].first, testDataLESub16[4].last, testDataLESub16[4].search)
 	}
 }
 
@@ -1396,7 +1389,7 @@ func TestFindLastLEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastLEUint16(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastLEUint16(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1412,7 +1405,7 @@ func TestFindLastLEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevLEUint16(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevLEUint16(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1426,7 +1419,7 @@ func TestFindLastLEUint16(t *testing.T) {
 func BenchmarkFindLastLEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastLEUint16(16, testDataLE16[4].blkpos, testDataLE16[4].first, testDataLE16[4].last, testDataLE16[4].search)
+		mf.FindLastLEUint16(0, 16, testDataLE16[4].blkpos, testDataLE16[4].first, testDataLE16[4].last, testDataLE16[4].search)
 	}
 }
 
@@ -1435,7 +1428,7 @@ func TestFindLastSubLEUint16(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubLEUint16(16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubLEUint16(0, 16, tt.blkpos, 0, 15, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1451,7 +1444,7 @@ func TestFindLastSubLEUint16(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubLEUint16(16, tt.blkpos, 0, 15, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubLEUint16(0, 16, tt.blkpos, 0, 15, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1465,7 +1458,7 @@ func TestFindLastSubLEUint16(t *testing.T) {
 func BenchmarkFindLastSubLEUint16(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubLEUint16(16, testDataLESub16[4].blkpos, 0, 15, testDataLESub16[4].first, testDataLESub16[4].last, testDataLESub16[4].search)
+		mf.FindLastSubLEUint16(0, 16, testDataLESub16[4].blkpos, 0, 15, testDataLESub16[4].first, testDataLESub16[4].last, testDataLESub16[4].search)
 	}
 }
 
@@ -1476,7 +1469,7 @@ func TestFindFirstBEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstBEUint32(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstBEUint32(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1492,7 +1485,7 @@ func TestFindFirstBEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextBEUint32(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextBEUint32(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1506,7 +1499,7 @@ func TestFindFirstBEUint32(t *testing.T) {
 func BenchmarkFindFirstBEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstBEUint32(16, testDataBE32[4].blkpos, testDataBE32[4].first, testDataBE32[4].last, testDataBE32[4].search)
+		mf.FindFirstBEUint32(0, 16, testDataBE32[4].blkpos, testDataBE32[4].first, testDataBE32[4].last, testDataBE32[4].search)
 	}
 }
 
@@ -1515,7 +1508,7 @@ func TestFindFirstSubBEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubBEUint32(16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubBEUint32(0, 16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1531,7 +1524,7 @@ func TestFindFirstSubBEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubBEUint32(16, tt.blkpos, 8, 23, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubBEUint32(0, 16, tt.blkpos, 8, 23, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1545,7 +1538,7 @@ func TestFindFirstSubBEUint32(t *testing.T) {
 func BenchmarkFindFirstSubBEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubBEUint32(16, testDataBESub32[4].blkpos, 8, 23, testDataBESub32[4].first, testDataBESub32[4].last, testDataBESub32[4].search)
+		mf.FindFirstSubBEUint32(0, 16, testDataBESub32[4].blkpos, 8, 23, testDataBESub32[4].first, testDataBESub32[4].last, testDataBESub32[4].search)
 	}
 }
 
@@ -1554,7 +1547,7 @@ func TestFindLastBEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastBEUint32(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastBEUint32(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1570,7 +1563,7 @@ func TestFindLastBEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevBEUint32(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevBEUint32(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1584,7 +1577,7 @@ func TestFindLastBEUint32(t *testing.T) {
 func BenchmarkFindLastBEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastBEUint32(16, testDataBE32[4].blkpos, testDataBE32[4].first, testDataBE32[4].last, testDataBE32[4].search)
+		mf.FindLastBEUint32(0, 16, testDataBE32[4].blkpos, testDataBE32[4].first, testDataBE32[4].last, testDataBE32[4].search)
 	}
 }
 
@@ -1593,7 +1586,7 @@ func TestFindLastSubBEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubBEUint32(16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubBEUint32(0, 16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1609,7 +1602,7 @@ func TestFindLastSubBEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubBEUint32(16, tt.blkpos, 8, 23, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubBEUint32(0, 16, tt.blkpos, 8, 23, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1623,7 +1616,7 @@ func TestFindLastSubBEUint32(t *testing.T) {
 func BenchmarkFindLastSubBEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubBEUint32(16, testDataBESub32[4].blkpos, 8, 23, testDataBESub32[4].first, testDataBESub32[4].last, testDataBESub32[4].search)
+		mf.FindLastSubBEUint32(0, 16, testDataBESub32[4].blkpos, 8, 23, testDataBESub32[4].first, testDataBESub32[4].last, testDataBESub32[4].search)
 	}
 }
 
@@ -1632,7 +1625,7 @@ func TestFindFirstLEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstLEUint32(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstLEUint32(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1648,7 +1641,7 @@ func TestFindFirstLEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextLEUint32(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextLEUint32(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1662,7 +1655,7 @@ func TestFindFirstLEUint32(t *testing.T) {
 func BenchmarkFindFirstLEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstLEUint32(16, testDataLE32[4].blkpos, testDataLE32[4].first, testDataLE32[4].last, testDataLE32[4].search)
+		mf.FindFirstLEUint32(0, 16, testDataLE32[4].blkpos, testDataLE32[4].first, testDataLE32[4].last, testDataLE32[4].search)
 	}
 }
 
@@ -1671,7 +1664,7 @@ func TestFindFirstSubLEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubLEUint32(16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubLEUint32(0, 16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1687,7 +1680,7 @@ func TestFindFirstSubLEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubLEUint32(16, tt.blkpos, 8, 23, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubLEUint32(0, 16, tt.blkpos, 8, 23, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1701,7 +1694,7 @@ func TestFindFirstSubLEUint32(t *testing.T) {
 func BenchmarkFindFirstSubLEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubLEUint32(16, testDataLESub32[4].blkpos, 8, 23, testDataLESub32[4].first, testDataLESub32[4].last, testDataLESub32[4].search)
+		mf.FindFirstSubLEUint32(0, 16, testDataLESub32[4].blkpos, 8, 23, testDataLESub32[4].first, testDataLESub32[4].last, testDataLESub32[4].search)
 	}
 }
 
@@ -1710,7 +1703,7 @@ func TestFindLastLEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastLEUint32(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastLEUint32(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1726,7 +1719,7 @@ func TestFindLastLEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevLEUint32(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevLEUint32(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1740,7 +1733,7 @@ func TestFindLastLEUint32(t *testing.T) {
 func BenchmarkFindLastLEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastLEUint32(16, testDataLE32[4].blkpos, testDataLE32[4].first, testDataLE32[4].last, testDataLE32[4].search)
+		mf.FindLastLEUint32(0, 16, testDataLE32[4].blkpos, testDataLE32[4].first, testDataLE32[4].last, testDataLE32[4].search)
 	}
 }
 
@@ -1749,7 +1742,7 @@ func TestFindLastSubLEUint32(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubLEUint32(16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubLEUint32(0, 16, tt.blkpos, 8, 23, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1765,7 +1758,7 @@ func TestFindLastSubLEUint32(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubLEUint32(16, tt.blkpos, 8, 23, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubLEUint32(0, 16, tt.blkpos, 8, 23, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1779,7 +1772,7 @@ func TestFindLastSubLEUint32(t *testing.T) {
 func BenchmarkFindLastSubLEUint32(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubLEUint32(16, testDataLESub32[4].blkpos, 8, 23, testDataLESub32[4].first, testDataLESub32[4].last, testDataLESub32[4].search)
+		mf.FindLastSubLEUint32(0, 16, testDataLESub32[4].blkpos, 8, 23, testDataLESub32[4].first, testDataLESub32[4].last, testDataLESub32[4].search)
 	}
 }
 
@@ -1790,7 +1783,7 @@ func TestFindFirstBEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstBEUint64(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstBEUint64(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1806,7 +1799,7 @@ func TestFindFirstBEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextBEUint64(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextBEUint64(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1820,7 +1813,7 @@ func TestFindFirstBEUint64(t *testing.T) {
 func BenchmarkFindFirstBEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstBEUint64(16, testDataBE64[4].blkpos, testDataBE64[4].first, testDataBE64[4].last, testDataBE64[4].search)
+		mf.FindFirstBEUint64(0, 16, testDataBE64[4].blkpos, testDataBE64[4].first, testDataBE64[4].last, testDataBE64[4].search)
 	}
 }
 
@@ -1829,7 +1822,7 @@ func TestFindFirstSubBEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubBEUint64(16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubBEUint64(0, 16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1845,7 +1838,7 @@ func TestFindFirstSubBEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubBEUint64(16, tt.blkpos, 16, 47, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubBEUint64(0, 16, tt.blkpos, 16, 47, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1859,7 +1852,7 @@ func TestFindFirstSubBEUint64(t *testing.T) {
 func BenchmarkFindFirstSubBEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubBEUint64(16, testDataBESub64[4].blkpos, 16, 47, testDataBESub64[4].first, testDataBESub64[4].last, testDataBESub64[4].search)
+		mf.FindFirstSubBEUint64(0, 16, testDataBESub64[4].blkpos, 16, 47, testDataBESub64[4].first, testDataBESub64[4].last, testDataBESub64[4].search)
 	}
 }
 
@@ -1868,7 +1861,7 @@ func TestFindLastBEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastBEUint64(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastBEUint64(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1884,7 +1877,7 @@ func TestFindLastBEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevBEUint64(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevBEUint64(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1898,7 +1891,7 @@ func TestFindLastBEUint64(t *testing.T) {
 func BenchmarkFindLastBEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastBEUint64(16, testDataBE64[4].blkpos, testDataBE64[4].first, testDataBE64[4].last, testDataBE64[4].search)
+		mf.FindLastBEUint64(0, 16, testDataBE64[4].blkpos, testDataBE64[4].first, testDataBE64[4].last, testDataBE64[4].search)
 	}
 }
 
@@ -1907,7 +1900,7 @@ func TestFindLastSubBEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubBEUint64(16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubBEUint64(0, 16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -1923,7 +1916,7 @@ func TestFindLastSubBEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubBEUint64(16, tt.blkpos, 16, 47, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubBEUint64(0, 16, tt.blkpos, 16, 47, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1937,7 +1930,7 @@ func TestFindLastSubBEUint64(t *testing.T) {
 func BenchmarkFindLastSubBEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubBEUint64(16, testDataBESub64[4].blkpos, 16, 47, testDataBESub64[4].first, testDataBESub64[4].last, testDataBESub64[4].search)
+		mf.FindLastSubBEUint64(0, 16, testDataBESub64[4].blkpos, 16, 47, testDataBESub64[4].first, testDataBESub64[4].last, testDataBESub64[4].search)
 	}
 }
 
@@ -1946,7 +1939,7 @@ func TestFindFirstLEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstLEUint64(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstLEUint64(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -1962,7 +1955,7 @@ func TestFindFirstLEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextLEUint64(16, tt.blkpos, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextLEUint64(0, 16, tt.blkpos, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -1976,7 +1969,7 @@ func TestFindFirstLEUint64(t *testing.T) {
 func BenchmarkFindFirstLEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstLEUint64(16, testDataLE64[4].blkpos, testDataLE64[4].first, testDataLE64[4].last, testDataLE64[4].search)
+		mf.FindFirstLEUint64(0, 16, testDataLE64[4].blkpos, testDataLE64[4].first, testDataLE64[4].last, testDataLE64[4].search)
 	}
 }
 
@@ -1985,7 +1978,7 @@ func TestFindFirstSubLEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindFirstSubLEUint64(16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindFirstSubLEUint64(0, 16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
 			if h != tt.foundFirst {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundFirst, h)
 			}
@@ -2001,7 +1994,7 @@ func TestFindFirstSubLEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasNextSubLEUint64(16, tt.blkpos, 16, 47, pos, tt.last, tt.search)
+					ret, pos = mf.HasNextSubLEUint64(0, 16, tt.blkpos, 16, 47, pos, tt.last, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -2015,7 +2008,7 @@ func TestFindFirstSubLEUint64(t *testing.T) {
 func BenchmarkFindFirstSubLEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindFirstSubLEUint64(16, testDataLESub64[4].blkpos, 16, 47, testDataLESub64[4].first, testDataLESub64[4].last, testDataLESub64[4].search)
+		mf.FindFirstSubLEUint64(0, 16, testDataLESub64[4].blkpos, 16, 47, testDataLESub64[4].first, testDataLESub64[4].last, testDataLESub64[4].search)
 	}
 }
 
@@ -2024,7 +2017,7 @@ func TestFindLastLEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastLEUint64(16, tt.blkpos, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastLEUint64(0, 16, tt.blkpos, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -2040,7 +2033,7 @@ func TestFindLastLEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevLEUint64(16, tt.blkpos, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevLEUint64(0, 16, tt.blkpos, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -2054,7 +2047,7 @@ func TestFindLastLEUint64(t *testing.T) {
 func BenchmarkFindLastLEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastLEUint64(16, testDataLE64[4].blkpos, testDataLE64[4].first, testDataLE64[4].last, testDataLE64[4].search)
+		mf.FindLastLEUint64(0, 16, testDataLE64[4].blkpos, testDataLE64[4].first, testDataLE64[4].last, testDataLE64[4].search)
 	}
 }
 
@@ -2063,7 +2056,7 @@ func TestFindLastSubLEUint64(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			h, f, l := mf.FindLastSubLEUint64(16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
+			h, f, l := mf.FindLastSubLEUint64(0, 16, tt.blkpos, 16, 47, tt.first, tt.last, tt.search)
 			if h != tt.foundLast {
 				t.Errorf("Expected found 0x%x, got 0x%x", tt.foundLast, h)
 			}
@@ -2079,7 +2072,7 @@ func TestFindLastSubLEUint64(t *testing.T) {
 				ret := true
 				var counter uint64
 				for ret {
-					ret, pos = mf.HasPrevSubLEUint64(16, tt.blkpos, 16, 47, tt.first, pos, tt.search)
+					ret, pos = mf.HasPrevSubLEUint64(0, 16, tt.blkpos, 16, 47, tt.first, pos, tt.search)
 					counter++
 				}
 				if counter != numitems {
@@ -2093,34 +2086,6 @@ func TestFindLastSubLEUint64(t *testing.T) {
 func BenchmarkFindLastSubLEUint64(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		mf.FindLastSubLEUint64(16, testDataLESub64[4].blkpos, 16, 47, testDataLESub64[4].first, testDataLESub64[4].last, testDataLESub64[4].search)
-	}
-}
-
-// ----------
-
-func TestClose(t *testing.T) {
-	lmf, err := MmapBinFile("../../c/test/data/test_data.bin")
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-	err = lmf.Close()
-	if err != nil {
-		t.Errorf("Unexpected error: %v", err)
-	}
-}
-
-func TestCloseError(t *testing.T) {
-	lmf := TMMFile{}
-	err := lmf.Close()
-	if err == nil {
-		t.Errorf("An error was expected")
-	}
-}
-
-func TestMmapBinFileError(t *testing.T) {
-	_, err := MmapBinFile("error")
-	if err == nil {
-		t.Errorf("An error was expected")
+		mf.FindLastSubLEUint64(0, 16, testDataLESub64[4].blkpos, 16, 47, testDataLESub64[4].first, testDataLESub64[4].last, testDataLESub64[4].search)
 	}
 }
