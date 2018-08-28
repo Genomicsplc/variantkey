@@ -25,6 +25,7 @@
     * [VariantKey Properties](#vkproperties)
 * [VariantKey Input values](#vkinput)
 * **[RegionKey](#regionkey)**
+* [Encoding String IDs](#esid)
 * [Binary file formats for lookup tables](#binaryfiles)
 * [C Library](#clib)
 * [GO Library](#golib)
@@ -440,6 +441,18 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 * The last bit of RegionKey is reserved.
 
 This software library provides several functions to operate with *RegionKey* and interact with *VariantKey*.
+
+
+<a name="esid"></a>
+## Encoding String IDs
+
+This library contains extra functions to encode some string IDs to 64 bit unsigned integers:
+
+* The `encode_string_id` function encodes maximum 10 ASCII characters (from '!' to 'z') of a string into a 64 bit unsigned integer. The encoded value can be reversed into a "normalized" version of the original 10 character string using the `decode_string_id` function. The decoded string only support uppercase characters.
+
+* The `encode_string_num_id` function encodes string composed by a character section followed by a separator character and a numerical section into a 64 bit unsigned integer. For example: "ABCDE:0001234". This function encodes up to 5 characters in uppercase, a number up to 2<sup>27</sup>, and up to 7 zero padding digits in a 64 bit unsigned integer. The encoded value can be reversed into a "normalized" version of the original 10 character string using the `decode_string_id` function.
+
+* The `hash_string_id` function creates a 64 bit unsigned integer hash of the input string.
 
 
 <a name="binaryfiles"></a>
