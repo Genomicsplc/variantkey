@@ -23,7 +23,6 @@ class RunTests(Command):
         """Run all tests!"""
         errno = call([
             'py.test',
-            '--verbose',
         ])
         raise SystemExit(errno)
 
