@@ -52,9 +52,9 @@ static inline uint64_t esid_encode_char(int c)
     return (uint64_t)(c - ESID_SHIFT);
 }
 
-static inline unsigned char esid_decode_char(uint64_t esid, size_t pos)
+static inline uint8_t esid_decode_char(uint64_t esid, size_t pos)
 {
-    return (unsigned char)(((esid >> pos) & 0x3f) + ESID_SHIFT); // 0x3f hex = 63 dec = 00111111 bin
+    return (uint8_t)(((esid >> pos) & 0x3f) + ESID_SHIFT); // 0x3f hex = 63 dec = 00111111 bin
 }
 
 uint64_t encode_string_id(const char *str, size_t size, size_t start)

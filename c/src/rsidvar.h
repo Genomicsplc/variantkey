@@ -84,7 +84,7 @@ extern "C" {
  *
  * @return RS ID
  */
-uint32_t get_vr_rsid(const unsigned char *src, uint64_t item);
+uint32_t get_vr_rsid(const uint8_t *src, uint64_t item);
 
 /**
  * Returns the VariantKey at the specified position in the RV file.
@@ -94,7 +94,7 @@ uint32_t get_vr_rsid(const unsigned char *src, uint64_t item);
  *
  * @return variant key data
  */
-uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item);
+uint64_t get_rv_variantkey(const uint8_t *src, uint64_t item);
 
 /**
  * Search for the specified rsID and returns the first occurrence of VariantKey in the RV file.
@@ -107,7 +107,7 @@ uint64_t get_rv_variantkey(const unsigned char *src, uint64_t item);
  *
  * @return VariantKey data or zero data if not found
  */
-uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, uint64_t last, uint32_t rsid);
+uint64_t find_rv_variantkey_by_rsid(const uint8_t *src, uint64_t *first, uint64_t last, uint32_t rsid);
 
 /**
  * Get the next VariantKey for the specified rsID in the RV file.
@@ -121,7 +121,7 @@ uint64_t find_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *first, u
  *
  * @return VariantKey data or zero data if not found
  */
-uint64_t get_next_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *pos, uint64_t last, uint32_t rsid);
+uint64_t get_next_rv_variantkey_by_rsid(const uint8_t *src, uint64_t *pos, uint64_t last, uint32_t rsid);
 
 /**
  * Search for the specified VariantKey and returns the first occurrence of rsID in the VR file.
@@ -134,7 +134,7 @@ uint64_t get_next_rv_variantkey_by_rsid(const unsigned char *src, uint64_t *pos,
  *
  * @return rsID or 0 if not found
  */
-uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, uint64_t last, uint64_t vk);
+uint32_t find_vr_rsid_by_variantkey(const uint8_t *src, uint64_t *first, uint64_t last, uint64_t vk);
 
 /**
  * Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
@@ -148,7 +148,7 @@ uint32_t find_vr_rsid_by_variantkey(const unsigned char *src, uint64_t *first, u
  *
  * @return rsID
  */
-uint32_t find_vr_chrompos_range(const unsigned char *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
+uint32_t find_vr_chrompos_range(const uint8_t *src, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
 
 #ifdef __cplusplus
 }

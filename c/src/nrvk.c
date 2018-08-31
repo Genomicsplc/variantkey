@@ -37,7 +37,7 @@
 #define KEYBLKLEN 16 //!< Length in bytes of a binary block containing VARIANTKEY + OFFSET ADDRESS
 #define ADDRBLKPOS 8 //!< Position of the OFFSET ADDRESS in bytes in the binary block
 
-size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+size_t find_ref_alt_by_variantkey(const uint8_t *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     uint64_t first = 0;
     uint64_t max = last;
@@ -56,7 +56,7 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
     return (*sizeref + *sizealt);
 }
 
-size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev)
+size_t reverse_variantkey(const uint8_t *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev)
 {
     decode_chrom(extract_variantkey_chrom(vk), rev->chrom);
     rev->pos = extract_variantkey_pos(vk);
@@ -68,7 +68,7 @@ size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, 
     return len;
 }
 
-size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64_t vk)
+size_t get_variantkey_ref_length(const uint8_t *src, uint64_t last, uint64_t vk)
 {
     if ((vk & 0x1) == 0) // check last bit for reversible encoding
     {
@@ -84,7 +84,7 @@ size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64
     return (size_t)bytes_be_to_uint8_t(src, bytes_be_to_uint64_t(src, get_address(KEYBLKLEN, ADDRBLKPOS, found)));
 }
 
-uint32_t get_variantkey_endpos(const unsigned char *src, uint64_t last, uint64_t vk)
+uint32_t get_variantkey_endpos(const uint8_t *src, uint64_t last, uint64_t vk)
 {
     return (extract_variantkey_pos(vk) + (uint32_t)get_variantkey_ref_length(src, last, vk));
 }
@@ -94,12 +94,12 @@ uint64_t get_variantkey_chrom_startpos(uint64_t vk)
     return (vk >> VKSHIFT_POS);
 }
 
-uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, uint64_t vk)
+uint64_t get_variantkey_chrom_endpos(const uint8_t *src, uint64_t last, uint64_t vk)
 {
     return (((vk & VKMASK_CHROM) >> VKSHIFT_POS) | (uint64_t)get_variantkey_endpos(src, last, vk));
 }
 
-size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile)
+size_t vknr_bin_to_tsv(const uint8_t *src, uint64_t last, const char *tsvfile)
 {
     FILE * fp;
     uint64_t vk, pos, offset;

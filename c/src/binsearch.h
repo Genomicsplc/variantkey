@@ -226,7 +226,7 @@ extern "C" {
  */
 typedef struct mmfile_t
 {
-    unsigned char *src; //!< Pointer to the memory map.
+    uint8_t *src; //!< Pointer to the memory map.
     int fd;             //!< File descriptor.
     uint64_t size;      //!< File size in bytes.
     uint64_t last;      //!< Index of the last element (if set as last 4 bytes) or it can be used as index size.
@@ -245,7 +245,7 @@ typedef struct mmfile_t
 @param i        Start position.
 @return Converted number
 */ \
-T bytes_##O##_to_##T(const unsigned char *src, uint64_t i);
+T bytes_##O##_to_##T(const uint8_t *src, uint64_t i);
 
 define_declare_bytes_to(be, uint8_t)
 define_declare_bytes_to(be, uint16_t)
@@ -267,7 +267,7 @@ define_declare_bytes_to(le, uint64_t)
 @param offset   Start position.
 @return Pointer
 */ \
-const T *get_src_offset_##T(const unsigned char *src, uint64_t offset);
+const T *get_src_offset_##T(const uint8_t *src, uint64_t offset);
 
 define_declare_get_src_offset(uint8_t)
 define_declare_get_src_offset(uint16_t)
@@ -293,7 +293,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t find_first_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
 
 define_declare_find_first(be, uint8_t)
 define_declare_find_first(be, uint16_t)
@@ -325,7 +325,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t find_first_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
+uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
 define_declare_find_first_sub(be, uint8_t)
 define_declare_find_first_sub(be, uint16_t)
@@ -355,7 +355,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t find_last_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
 
 define_declare_find_last(be, uint8_t)
 define_declare_find_last(be, uint16_t)
@@ -387,7 +387,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t find_last_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
+uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
 
 define_declare_find_last_sub(be, uint8_t)
 define_declare_find_last_sub(be, uint16_t)
@@ -418,7 +418,7 @@ The item returned by find_first_##T should be set as the "pos" parameter in this
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_next_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search);
+bool has_next_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search);
 
 define_declare_has_next(be, uint8_t)
 define_declare_has_next(be, uint16_t)
@@ -451,7 +451,7 @@ The item returned by find_first_sub_##T should be set as the "pos" parameter in 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_next_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search);
+bool has_next_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search);
 
 define_declare_has_next_sub(be, uint8_t)
 define_declare_has_next_sub(be, uint16_t)
@@ -482,7 +482,7 @@ The item returned by find_last_##T should be set as the "pos" parameter in this 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_prev_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search);
+bool has_prev_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search);
 
 define_declare_has_prev(be, uint8_t)
 define_declare_has_prev(be, uint16_t)
@@ -515,7 +515,7 @@ The item returned by find_last_sub_##T should be set as the "pos" parameter in t
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_prev_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search);
+bool has_prev_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search);
 
 define_declare_has_prev_sub(be, uint8_t)
 define_declare_has_prev_sub(be, uint16_t)

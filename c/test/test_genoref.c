@@ -160,7 +160,7 @@ int test_swap_alleles()
     return errors;
 }
 
-int test_get_genoref_seq(const unsigned char *src, uint32_t idx[])
+int test_get_genoref_seq(const uint8_t *src, uint32_t idx[])
 {
     int errors = 0;
     char ref, exp;
@@ -190,7 +190,7 @@ int test_get_genoref_seq(const unsigned char *src, uint32_t idx[])
     return errors;
 }
 
-void benchmark_get_genoref_seq(const unsigned char *src, uint32_t idx[])
+void benchmark_get_genoref_seq(const uint8_t *src, uint32_t idx[])
 {
     uint8_t chrom;
     uint64_t tstart, tend;
@@ -208,7 +208,7 @@ void benchmark_get_genoref_seq(const unsigned char *src, uint32_t idx[])
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*25));
 }
 
-int test_check_reference(const unsigned char *src, uint32_t idx[])
+int test_check_reference(const uint8_t *src, uint32_t idx[])
 {
     int errors = 0;
     int ret;
@@ -307,7 +307,7 @@ void benchmark_flip_allele()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*25));
 }
 
-int test_normalize_variant(const unsigned char *src, uint32_t idx[])
+int test_normalize_variant(const uint8_t *src, uint32_t idx[])
 {
     int errors = 0;
     int ret;

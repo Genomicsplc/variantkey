@@ -126,12 +126,12 @@ uint8_t are_overlapping_regionkeys(uint64_t rka, uint64_t rkb)
     return (uint8_t)((extract_regionkey_chrom(rka) == extract_regionkey_chrom(rkb)) && (extract_regionkey_startpos(rka) < extract_regionkey_endpos(rkb)) && (extract_regionkey_endpos(rka) > extract_regionkey_startpos(rkb)));
 }
 
-uint8_t are_overlapping_variantkey_regionkey(const unsigned char *src, uint64_t last, uint64_t vk, uint64_t rk)
+uint8_t are_overlapping_variantkey_regionkey(const uint8_t *src, uint64_t last, uint64_t vk, uint64_t rk)
 {
     return (uint8_t)((extract_variantkey_chrom(vk) == extract_regionkey_chrom(rk)) && (extract_variantkey_pos(vk) < extract_regionkey_endpos(rk)) && (get_variantkey_endpos(src, last, vk) > extract_regionkey_startpos(rk)));
 }
 
-uint64_t variantkey_to_regionkey(const unsigned char *src, uint64_t last, uint64_t vk)
+uint64_t variantkey_to_regionkey(const uint8_t *src, uint64_t last, uint64_t vk)
 {
     return ((vk & VKMASK_CHROMPOS) | ((uint64_t)get_variantkey_endpos(src, last, vk) << RKSHIFT_ENDPOS));
 }

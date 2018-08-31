@@ -25,7 +25,7 @@
 #include <sys/stat.h>
 
 #define define_bytes_to(O, T) \
-T bytes_##O##_to_##T(const unsigned char *src, uint64_t i) \
+T bytes_##O##_to_##T(const uint8_t *src, uint64_t i) \
 { \
     return order_##O##_##T(*((const T *)(src + i))); \
 }
@@ -40,7 +40,7 @@ define_bytes_to(le, uint32_t)
 define_bytes_to(le, uint64_t)
 
 #define define_get_src_offset(T) \
-const T *get_src_offset_##T(const unsigned char *src, uint64_t offset) \
+const T *get_src_offset_##T(const uint8_t *src, uint64_t offset) \
 { \
     return get_src_offset(T, src, offset); \
 }
@@ -156,7 +156,7 @@ define_get_src_offset(uint64_t)
     return (((*(src + *pos) >> rshift) & bitmask) == search);
 
 #define define_find_first(O, T) \
-uint64_t find_first_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 GET_ITEM_TASK(O, T) \
@@ -174,7 +174,7 @@ define_find_first(le, uint32_t)
 define_find_first(le, uint64_t)
 
 #define define_find_first_sub(O, T) \
-uint64_t find_first_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
 SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
@@ -193,7 +193,7 @@ define_find_first_sub(le, uint32_t)
 define_find_first_sub(le, uint64_t)
 
 #define define_find_last(O, T) \
-uint64_t find_last_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 GET_ITEM_TASK(O, T) \
@@ -211,7 +211,7 @@ define_find_last(le, uint32_t)
 define_find_last(le, uint64_t)
 
 #define define_find_last_sub(O, T) \
-uint64_t find_last_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
 SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
@@ -230,7 +230,7 @@ define_find_last_sub(le, uint32_t)
 define_find_last_sub(le, uint64_t)
 
 #define define_has_next(O, T) \
-bool has_next_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
+bool has_next_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
 { \
 HAS_NEXT_START_BLOCK \
 HAS_END_BLOCK(O, T) \
@@ -246,7 +246,7 @@ define_has_next(le, uint32_t)
 define_has_next(le, uint64_t)
 
 #define define_has_next_sub(O, T) \
-bool has_next_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+bool has_next_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
 { \
 HAS_NEXT_START_BLOCK \
 SUB_ITEM_VARS(T) \
@@ -263,7 +263,7 @@ define_has_next_sub(le, uint32_t)
 define_has_next_sub(le, uint64_t)
 
 #define define_has_prev(O, T) \
-bool has_prev_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
+bool has_prev_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
 { \
 HAS_PREV_START_BLOCK \
 HAS_END_BLOCK(O, T) \
@@ -279,7 +279,7 @@ define_has_prev(le, uint32_t)
 define_has_prev(le, uint64_t)
 
 #define define_has_prev_sub(O, T) \
-bool has_prev_sub_##O##_##T(const unsigned char *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+bool has_prev_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
 { \
 HAS_PREV_START_BLOCK \
 SUB_ITEM_VARS(T) \
@@ -409,7 +409,7 @@ define_col_has_prev_sub(uint64_t)
 
 void mmap_binfile(const char *file, mmfile_t *mf)
 {
-    mf->src = (unsigned char*)MAP_FAILED; // NOLINT
+    mf->src = (uint8_t*)MAP_FAILED; // NOLINT
     mf->fd = -1;
     mf->size = 0;
     struct stat statbuf;
@@ -418,7 +418,7 @@ void mmap_binfile(const char *file, mmfile_t *mf)
         return;
     }
     mf->size = (uint64_t)statbuf.st_size;
-    mf->src = (unsigned char*)mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
+    mf->src = (uint8_t*)mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
     if (mf->size > 4)
     {
         mf->last = (uint64_t)bytes_be_to_uint32_t(mf->src, (mf->size - 4)) - 1;

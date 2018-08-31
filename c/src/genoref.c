@@ -61,14 +61,14 @@ static inline int aztoupper(int c)
  *
  * @return void
  */
-void prepend_char(const unsigned char pre, char *string, size_t *size)
+void prepend_char(const uint8_t pre, char *string, size_t *size)
 {
     memmove(string + 1, string, (*size + 1));
     string[0] = pre;
     (*size)++;
 }
 
-void load_genoref_index(const unsigned char *src, uint32_t idx[])
+void load_genoref_index(const uint8_t *src, uint32_t idx[])
 {
     idx[0] = 0;
     int i;
@@ -78,7 +78,7 @@ void load_genoref_index(const unsigned char *src, uint32_t idx[])
     }
 }
 
-char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos)
+char get_genoref_seq(const uint8_t *src, const uint32_t idx[], uint8_t chrom, uint32_t pos)
 {
     uint32_t offset = (idx[chrom] + pos);
     if (offset > (idx[(chrom + 1)] - 2))
@@ -88,7 +88,7 @@ char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chr
     return (char)src[offset];
 }
 
-int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
+int check_reference(const uint8_t *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
     uint32_t offset = (idx[chrom] + pos);
     if ((offset + sizeref + 1) > (idx[(chrom + 1)]))
@@ -194,7 +194,7 @@ void flip_allele(char *allele, size_t size)
     size_t i;
     for (i = 0; i < size; i++)
     {
-        allele[i] = map[((unsigned char)allele[i])];
+        allele[i] = map[((uint8_t)allele[i])];
     }
     allele[size] = 0;
 }
@@ -217,7 +217,7 @@ static inline void swap_alleles(char *first, size_t *sizefirst, char *second, si
     second[*sizesecond] = 0;
 }
 
-int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+int normalize_variant(const uint8_t *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     char left;
     char fref[ALLELE_MAXSIZE];

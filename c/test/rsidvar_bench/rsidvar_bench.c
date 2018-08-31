@@ -70,7 +70,7 @@ int benchmark_find_rv_variantkey_by_rsid()
         fprintf(stderr, " * %s Unable to open %s file in writing mode.\n", __func__, filename);
         return 1;
     }
-    unsigned char b0, b1, b2, b3, z = 0;
+    uint8_t b0, b1, b2, b3, z = 0;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         b0 = i & 0xFF;
@@ -131,7 +131,7 @@ int benchmark_find_vr_rsid_by_variantkey()
         fprintf(stderr, " * %s Unable to open %s file in writing mode.\n", __func__, filename);
         return 1;
     }
-    unsigned char b0, b1, b2, b3, z = 0;
+    uint8_t b0, b1, b2, b3, z = 0;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         b0 = i & 0xFF;

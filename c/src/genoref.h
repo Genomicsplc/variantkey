@@ -79,7 +79,7 @@ extern "C" {
  *
  * @return void
  */
-void load_genoref_index(const unsigned char *src, uint32_t idx[]);
+void load_genoref_index(const uint8_t *src, uint32_t idx[]);
 
 /**
  * Returns the genome reference nucleotide at the specified chromosome and position.
@@ -91,7 +91,7 @@ void load_genoref_index(const unsigned char *src, uint32_t idx[]);
  *
  * @return The nucleotide letter or 0 in case of invalid position.
  */
-char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos);
+char get_genoref_seq(const uint8_t *src, const uint32_t idx[], uint8_t chrom, uint32_t pos);
 
 /**
  * Check if the reference allele matches the reference genome data.
@@ -109,7 +109,7 @@ char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chr
  *       * -1 the reference allele don't match the reference genome;
  *       * -2 the reference allele is longer than the genome reference sequence.
  */
-int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
+int check_reference(const uint8_t *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
 
 /**
  * Flip the allele nucleotides (replaces each letter with its complement).
@@ -144,7 +144,7 @@ void flip_allele(char *allele, size_t size);
  *         - bit 4 (NORM_RTRIM) : Alleles have been right trimmed.
  *         - bit 5 (NORM_LTRIM) : Alleles have been left trimmed.
  */
-int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
+int normalize_variant(const uint8_t *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
 #ifdef __cplusplus
 }

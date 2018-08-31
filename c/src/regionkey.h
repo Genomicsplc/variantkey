@@ -243,7 +243,7 @@ uint8_t are_overlapping_regionkeys(uint64_t rka, uint64_t rkb);
  *
  * @return 1 if the regions overlap, 0 otherwise.
  */
-uint8_t are_overlapping_variantkey_regionkey(const unsigned char *src, uint64_t last, uint64_t vk, uint64_t rk);
+uint8_t are_overlapping_variantkey_regionkey(const uint8_t *src, uint64_t last, uint64_t vk, uint64_t rk);
 
 /** @brief Get RegionKey from VariantKey.
  *
@@ -253,7 +253,7 @@ uint8_t are_overlapping_variantkey_regionkey(const unsigned char *src, uint64_t 
  *
  * @return RegionKey.
  */
-uint64_t variantkey_to_regionkey(const unsigned char *src, uint64_t last, uint64_t vk);
+uint64_t variantkey_to_regionkey(const uint8_t *src, uint64_t last, uint64_t vk);
 
 #ifdef __cplusplus
 }

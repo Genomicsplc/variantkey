@@ -88,7 +88,7 @@ typedef struct variantkey_rev_t
  *
  * @return REF+ALT length or 0 if the VariantKey is not found.
  */
-size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
+size_t find_ref_alt_by_variantkey(const uint8_t *src, uint64_t last, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
 /**
  * Reverse a VariantKey code and returns the normalized components as variantkey_rev_t structure.
@@ -100,7 +100,7 @@ size_t find_ref_alt_by_variantkey(const unsigned char *src, uint64_t last, uint6
  *
  * @return A variantkey_rev_t structure.
  */
-size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev);
+size_t reverse_variantkey(const uint8_t *src, uint64_t last, uint64_t vk, variantkey_rev_t *rev);
 
 /**
  * Retrieve the REF length for the specified VariantKey.
@@ -111,7 +111,7 @@ size_t reverse_variantkey(const unsigned char *src, uint64_t last, uint64_t vk, 
  *
  * @return REF length or 0 if the VariantKey is not reversible and not found.
  */
-size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64_t vk);
+size_t get_variantkey_ref_length(const uint8_t *src, uint64_t last, uint64_t vk);
 
 /**
  * Get the VariantKey end position (POS + REF length).
@@ -122,7 +122,7 @@ size_t get_variantkey_ref_length(const unsigned char *src, uint64_t last, uint64
  *
  * @return Variant end position (POS + REF length).
  */
-uint32_t get_variantkey_endpos(const unsigned char *src, uint64_t last, uint64_t vk);
+uint32_t get_variantkey_endpos(const uint8_t *src, uint64_t last, uint64_t vk);
 
 /** @brief Get the CHROM + START POS encoding from VariantKey.
  *
@@ -140,7 +140,7 @@ uint64_t get_variantkey_chrom_startpos(uint64_t vk);
  *
  * @return CHROM + END POS.
  */
-uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, uint64_t vk);
+uint64_t get_variantkey_chrom_endpos(const uint8_t *src, uint64_t last, uint64_t vk);
 
 /**
  * Convert a vrnr.bin file to a simple TSV.
@@ -152,7 +152,7 @@ uint64_t get_variantkey_chrom_endpos(const unsigned char *src, uint64_t last, ui
  *
  * @return Number of written bytes or 0 in case of error.
  */
-size_t vknr_bin_to_tsv(const unsigned char *src, uint64_t last, const char *tsvfile);
+size_t vknr_bin_to_tsv(const uint8_t *src, uint64_t last, const char *tsvfile);
 
 #ifdef __cplusplus
 }
