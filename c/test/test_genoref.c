@@ -160,37 +160,37 @@ int test_swap_alleles()
     return errors;
 }
 
-int test_get_genoref_seq(const uint8_t *src, uint32_t idx[])
+int test_get_genoref_seq(mmfile_t mf)
 {
     int errors = 0;
     char ref, exp;
     uint8_t chrom;
     for (chrom = 1; chrom <= 25; chrom++)
     {
-        ref = get_genoref_seq(src, idx, chrom, 0); // first
+        ref = get_genoref_seq(mf, chrom, 0); // first
         if (ref != 'A')
         {
-            fprintf(stderr, "%s (first): Expected reference 'A', got '%c'\n", __func__, ref);
+            fprintf(stderr, "%s (%d) (first): Expected reference 'A', got '%c'\n", __func__, chrom, ref);
             ++errors;
         }
-        ref = get_genoref_seq(src, idx, chrom, (26 - chrom)); // last
+        ref = get_genoref_seq(mf, chrom, (26 - chrom)); // last
         exp = ('Z' + 1 - chrom);
         if (ref != exp)
         {
-            fprintf(stderr, "%s (last): Expected reference '%c', got '%c'\n", __func__, exp, ref);
+            fprintf(stderr, "%s (%d) (last): Expected reference '%c', got '%c'\n", __func__, chrom, exp, ref);
             ++errors;
         }
-        ref = get_genoref_seq(src, idx, chrom, (27 - chrom)); // invalid
+        ref = get_genoref_seq(mf, chrom, (27 - chrom)); // invalid
         if (ref != 0)
         {
-            fprintf(stderr, "%s (invalid): Expected reference 0, got '%c'\n", __func__, ref);
+            fprintf(stderr, "%s (%d) (invalid): Expected reference 0, got '%c'\n", __func__, chrom, ref);
             ++errors;
         }
     }
     return errors;
 }
 
-void benchmark_get_genoref_seq(const uint8_t *src, uint32_t idx[])
+void benchmark_get_genoref_seq(mmfile_t mf)
 {
     uint8_t chrom;
     uint64_t tstart, tend;
@@ -201,14 +201,14 @@ void benchmark_get_genoref_seq(const uint8_t *src, uint32_t idx[])
     {
         for (chrom = 1; chrom <= 25; chrom++)
         {
-            get_genoref_seq(src, idx, chrom, 1);
+            get_genoref_seq(mf, chrom, 1);
         }
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*25));
 }
 
-int test_check_reference(const uint8_t *src, uint32_t idx[])
+int test_check_reference(mmfile_t mf)
 {
     int errors = 0;
     int ret;
@@ -268,7 +268,7 @@ int test_check_reference(const uint8_t *src, uint32_t idx[])
     };
     for (i = 0; i < 42; i++)
     {
-        ret = check_reference(src, idx, test_ref[i].chrom, test_ref[i].pos, test_ref[i].ref, test_ref[i].sizeref);
+        ret = check_reference(mf, test_ref[i].chrom, test_ref[i].pos, test_ref[i].ref, test_ref[i].sizeref);
         if (ret != test_ref[i].exp)
         {
             fprintf(stderr, "%s (%d): Expected %d, got %d\n", __func__, i, test_ref[i].exp, ret);
@@ -307,7 +307,7 @@ void benchmark_flip_allele()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/(size*25));
 }
 
-int test_normalize_variant(const uint8_t *src, uint32_t idx[])
+int test_normalize_variant(mmfile_t mf)
 {
     int errors = 0;
     int ret;
@@ -344,7 +344,7 @@ int test_normalize_variant(const uint8_t *src, uint32_t idx[])
     };
     for (i = 0; i < 12; i++)
     {
-        ret = normalize_variant(src, idx, test_norm[i].chrom, &test_norm[i].pos, test_norm[i].ref, &test_norm[i].sizeref, test_norm[i].alt, &test_norm[i].sizealt);
+        ret = normalize_variant(mf, test_norm[i].chrom, &test_norm[i].pos, test_norm[i].ref, &test_norm[i].sizeref, test_norm[i].alt, &test_norm[i].sizealt);
         if (ret != test_norm[i].exp)
         {
             fprintf(stderr, "%s (%d): Expected return value %d, got %d\n", __func__, i, test_norm[i].exp, ret);
@@ -386,29 +386,20 @@ int main()
     int err;
 
     mmfile_t genoref = {0};
-    mmap_binfile("genoref.bin", &genoref);
-
-    uint32_t idx[27];
-    load_genoref_index(genoref.src, idx);
-
-    if ((uint64_t)idx[26] != genoref.size)
-    {
-        fprintf(stderr, "Expecting size %" PRIu64 ", got instead: %" PRIu32 "\n", genoref.size, idx[26]);
-        return 1;
-    }
+    mmap_genoref_file("genoref.bin", &genoref);
 
     errors += test_aztoupper();
     errors += test_prepend_char();
     errors += test_swap_sizes();
     errors += test_swap_alleles();
-    errors += test_get_genoref_seq(genoref.src, idx);
-    errors += test_check_reference(genoref.src, idx);
+    errors += test_get_genoref_seq(genoref);
+    errors += test_check_reference(genoref);
     errors += test_flip_allele();
-    errors += test_normalize_variant(genoref.src, idx);
+    errors += test_normalize_variant(genoref);
 
     benchmark_aztoupper();
     benchmark_prepend_char();
-    benchmark_get_genoref_seq(genoref.src, idx);
+    benchmark_get_genoref_seq(genoref);
     benchmark_flip_allele();
 
     err = munmap_binfile(genoref);

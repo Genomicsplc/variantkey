@@ -4,12 +4,12 @@
 \alias{VknrBinToTsv}
 \title{Convert a vrnr.bin file to a simple TSV.
 Return Number of written bytes or 0 in case of error.
-For the reverse operation see the resources/tools/vknr.sh script.}
+For the reverse operation see the resources/tools/nrvk.sh script.}
 \usage{
 VknrBinToTsv(src, last, tsvfile)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}
+\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).}
 
 \item{last}{Number of variants in the src file -1. Set this to 0 to skip the lookup table.}
 
@@ -18,5 +18,5 @@ VknrBinToTsv(src, last, tsvfile)
 \description{
 Convert a vrnr.bin file to a simple TSV.
 Return Number of written bytes or 0 in case of error.
-For the reverse operation see the resources/tools/vknr.sh script.
+For the reverse operation see the resources/tools/nrvk.sh script.
 }

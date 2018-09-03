@@ -108,10 +108,10 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # Load the lookup table for non-reversible variantkeys.
 # The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
 # The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-# This example uses the "c/test/data/vknr.10.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('vknr.10.bin')
+# This example uses the "c/test/data/nrvk.10.bin".
+mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('nrvk.10.bin')
 if mffd < 0:
-    assert False, "Unable to open the vknr.10.bin file"
+    assert False, "Unable to open the nrvk.10.bin file"
 
 print(vk.find_ref_alt_by_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
 # (b'ACGTACGT', b'ACGT', 8, 4, 12)

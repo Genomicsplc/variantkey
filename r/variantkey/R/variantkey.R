@@ -250,7 +250,7 @@ FindVrChromposRange <- function(src, first, last, chrom, pos_min, pos_max) {
 
 #' Retrieve the REF and ALT strings for the specified VariantKey.
 #' Return REF+ALT length or 0 if the VariantKey is not found.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last     Number of variants in the src file -1.
 #' @param vk       VariantKey to search.
 #' @useDynLib   variantkey R_find_ref_alt_by_variantkey
@@ -260,7 +260,7 @@ FindRefAltByVariantKey <- function(src, last, vk) {
 }
 
 #' Reverse a VariantKey code and returns the normalized components.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
 #' @param vk       VariantKey code.
 #' @useDynLib   variantkey R_reverse_variantkey
@@ -271,7 +271,7 @@ ReverseVariantKey <- function(src, last, vk) {
 
 #' Retrieve the REF length for the specified VariantKey.
 #' Return REF length or 0 if the VariantKey is not reversible and not found.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last     Number of variants in the src file -1.
 #' @param vk       VariantKey.
 #' @useDynLib   variantkey R_get_variantkey_ref_length
@@ -282,7 +282,7 @@ GetVariantKeyRefLength <- function(src, last, vk) {
 
 #' Get the VariantKey end position (POS + REF length).
 #' Return variant end position.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last     Number of variants in the src file -1.
 #' @param vk       VariantKey.
 #' @useDynLib   variantkey R_get_variantkey_endpos
@@ -300,7 +300,7 @@ GetVariantKeyChromStartPos <- function(vk) {
 }
 
 #' Get the CHROM + END POS encoding from VariantKey.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last     Number of variants in the src file -1.
 #' @param vk       VariantKey.
 #' @useDynLib   variantkey R_get_variantkey_chrom_endpos
@@ -311,14 +311,14 @@ GetVariantKeyChromEndPos <- function(src, last, vk) {
 
 #' Convert a vrnr.bin file to a simple TSV.
 #' Return Number of written bytes or 0 in case of error.
-#' For the reverse operation see the resources/tools/vknr.sh script.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' For the reverse operation see the resources/tools/nrvk.sh script.
+#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
 #' @param tsvfile  Output tsv file name. Note that existing files will be replaced.
-#' @useDynLib   variantkey R_vknr_bin_to_tsv
+#' @useDynLib   variantkey R_nrvk_bin_to_tsv
 #' @export
 VknrBinToTsv <- function(src, last, tsvfile) {
-    return(.Call("R_vknr_bin_to_tsv", src, last, tsvfile))
+    return(.Call("R_nrvk_bin_to_tsv", src, last, tsvfile))
 }
 
 # --- GENOREF ---
@@ -543,7 +543,7 @@ AreOverlappingRegionKeys <- function(rka, rkb) {
 
 #' Check if variantkey and regionkey are overlapping.
 #' Return 1 if the regions overlap, 0 otherwise.
-#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last  Number of variants in the src file -1.
 #' @param vk    VariantKey code.
 #' @param rk    RegionKey code.
@@ -554,7 +554,7 @@ AreOverlappingVariantKeyRegionKey <- function(src, last, vk, rk) {
 }
 
 #' Get RegionKey from VariantKey.
-#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).
+#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
 #' @param last  Number of variants in the src file -1.
 #' @param vk    VariantKey code.
 #' @useDynLib   variantkey R_variantkey_to_regionkey

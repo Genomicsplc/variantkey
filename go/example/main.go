@@ -97,31 +97,31 @@ func main() {
 	// Load the lookup table for non-reversible variantkeys.
 	// The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
 	// The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-	// This example uses the "c/test/data/vknr.10.bin".
-	vknr, err := vk.MmapBinFile("../c/test/data/vknr.10.bin")
+	// This example uses the "c/test/data/nrvk.10.bin".
+	nrvk, err := vk.MmapBinFile("../c/test/data/nrvk.10.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)
 	}
-	defer vknr.Close()
+	defer nrvk.Close()
 
-	fmt.Println(vknr.FindRefAltByVariantKey(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.FindRefAltByVariantKey(0x2000c3521f1c15ab))
 	// ACGTACGT ACGT 8 4 12
 
 	// Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-	fmt.Println(vknr.ReverseVariantKey(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.ReverseVariantKey(0x2000c3521f1c15ab))
 	// {4 100004 ACGTACGT ACGT 8 4} 12
 
-	fmt.Println(vknr.GetVariantKeyRefLength(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.GetVariantKeyRefLength(0x2000c3521f1c15ab))
 	// 8
 
-	fmt.Println(vknr.GetVariantKeyEndPos(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.GetVariantKeyEndPos(0x2000c3521f1c15ab))
 	// 100012
 
 	fmt.Println(vk.GetVariantKeyChromStartPos(0x2000c3521f1c15ab))
 	// 1073841828
 
-	fmt.Println(vknr.GetVariantKeyChromEndPos(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.GetVariantKeyChromEndPos(0x2000c3521f1c15ab))
 	// 1073841836
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -234,10 +234,10 @@ func main() {
 	fmt.Println(vk.AreOverlappingRegionKeys(0x2800000200000030, 0x2800000180000038))
 	// true
 
-	fmt.Println(vknr.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038))
+	fmt.Println(nrvk.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038))
 	// true
 
-	fmt.Println(vknr.VariantToRegionkey(0x2800000210920000))
+	fmt.Println(nrvk.VariantToRegionkey(0x2800000210920000))
 	// 2882303770107052080
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\

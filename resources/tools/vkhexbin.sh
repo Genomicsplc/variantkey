@@ -5,7 +5,7 @@
 # Process the variantKey HEX file to generate the final binary counterparts:
 # - vkrs.bin : VariantKey to rsID
 # - rsvk.bin : rsID to VariantKey
-# - vknr.bin : Non-reversible VariantKey REF+ALT map
+# - nrvk.bin : Non-reversible VariantKey REF+ALT map
 #
 # Requires:
 #  - vt
@@ -37,7 +37,7 @@ source "${SCRIPT_DIR}/vkrs.sh"
 source "${SCRIPT_DIR}/rsvk.sh"
 
 # --- NON-REVERSIBLE VARIANTKEY BINARY FILE
-source "${SCRIPT_DIR}/vknr.sh"
+source "${SCRIPT_DIR}/nrvk.sh"
 
 # --- ADD VARIANTKEY TO THE VCF FILE
 

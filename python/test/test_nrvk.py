@@ -35,17 +35,17 @@ class TestFunctions(TestCase):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../c/test/data/vknr.10.bin")
+            "/../../c/test/data/nrvk.10.bin")
         mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
         if mffd < 0:
-            assert False, "Unable to open the vknr.10.bin file"
+            assert False, "Unable to open the nrvk.10.bin file"
 
     @classmethod
     def tearDownClass(cls):
         global mfsrc, mffd, mfsize
         h = bs.munmap_binfile(mfsrc, mffd, mfsize)
         if h != 0:
-            assert False, "Error while closing the vknr.10.bin memory-mapped file"
+            assert False, "Error while closing the nrvk.10.bin memory-mapped file"
 
     def test_find_ref_alt_by_variantkey(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
@@ -95,8 +95,8 @@ class TestFunctions(TestCase):
             res = bs.get_variantkey_chrom_endpos(mfsrc, mflast, vkey)
             self.assertEqual(res, cep)
 
-    def test_vknr_bin_to_tsv(self):
-        fsize = bs.vknr_bin_to_tsv(mfsrc, mflast, "vknr.test")
+    def test_nrvk_bin_to_tsv(self):
+        fsize = bs.nrvk_bin_to_tsv(mfsrc, mflast, "nrvk.test")
         self.assertEqual(fsize, 305)
 
 
@@ -112,10 +112,10 @@ class TestBenchmark(object):
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../c/test/data/vknr.10.bin")
+            "/../../c/test/data/nrvk.10.bin")
         mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
         if mffd < 0:
-            assert False, "Unable to open the vknr.10.bin file"
+            assert False, "Unable to open the nrvk.10.bin file"
 
     def test_find_ref_alt_by_variantkey(self, benchmark):
         benchmark.pedantic(
@@ -139,4 +139,4 @@ class TestBenchmark(object):
         mffd = -1
         mfsize = 0
         if h != 0:
-            assert False, "Error while closing the vknr.10.bin memory-mapped file"
+            assert False, "Error while closing the nrvk.10.bin memory-mapped file"

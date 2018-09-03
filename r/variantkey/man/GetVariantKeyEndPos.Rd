@@ -8,7 +8,7 @@ Return variant end position.}
 GetVariantKeyEndPos(src, last, vk)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}
+\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).}
 
 \item{last}{Number of variants in the src file -1.}
 

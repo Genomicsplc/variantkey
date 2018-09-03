@@ -7,7 +7,7 @@
 ReverseVariantKey(src, last, vk)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}
+\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).}
 
 \item{last}{Number of variants in the src file -1. Set this to 0 to skip the lookup table.}
 

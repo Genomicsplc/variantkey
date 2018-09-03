@@ -140,10 +140,10 @@ MunmapBinfile(genoref$SRC, genoref$FD, genoref$SIZE)
 # Load the lookup table for non-reversible variantkeys.
 # The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
 # The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-# This example uses the "c/test/data/vknr.10.bin".
-vknr <- MmapBinfile("../c/test/data/vknr.10.bin")
+# This example uses the "c/test/data/nrvk.10.bin".
+nrvk <- MmapBinfile("../c/test/data/nrvk.10.bin")
 
-x <- FindRefAltByVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- FindRefAltByVariantKey(nrvk$SRC, nrvk$LAST, vk="2000c3521f1c15ab")
 print(x)
 # $REF
 # [1] "ACGTACGT"
@@ -161,7 +161,7 @@ print(x)
 # [1] 12
 
 # Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-x <- ReverseVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- ReverseVariantKey(nrvk$SRC, nrvk$LAST, vk="2000c3521f1c15ab")
 print(x)
 # $CHROM
 # [1] "4"
@@ -184,11 +184,11 @@ print(x)
 # $LEN
 # [1] 12
 
-x <- GetVariantKeyRefLength(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyRefLength(nrvk$SRC, nrvk$LAST, vk="2000c3521f1c15ab")
 print(x)
 # [1] 8
 
-x <- GetVariantKeyEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyEndPos(nrvk$SRC, nrvk$LAST, vk="2000c3521f1c15ab")
 print(x)
 # [1] 100012
 
@@ -196,11 +196,11 @@ x <- GetVariantKeyChromStartPos(vk="2000c3521f1c15ab")
 print(x)
 # [1] "00000000400186a4"
 
-x <- GetVariantKeyChromEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyChromEndPos(nrvk$SRC, nrvk$LAST, vk="2000c3521f1c15ab")
 print(x)
 # [1] "00000000400186ac"
 
-MunmapBinfile(vknr$SRC, vknr$FD, vknr$SIZE)
+MunmapBinfile(nrvk$SRC, nrvk$FD, nrvk$SIZE)
 # [1] 0
 
 

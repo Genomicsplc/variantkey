@@ -82,11 +82,11 @@ int benchmark_find_rv_variantkey_by_rsid()
     fclose(f);
 
     mmfile_t rv = {0};
-    mmap_binfile(filename, &rv);
-    uint64_t nitems = (rv.size / BINBLKLEN);
-    if (nitems != TEST_DATA_SIZE)
+    rsidvar_cols_t crv = {0};
+    mmap_rsvk_file(filename, &rv, &crv);
+    if (crv.nrows != TEST_DATA_SIZE)
     {
-        fprintf(stderr, " * %s Expecting rsvk_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, nitems);
+        fprintf(stderr, " * %s Expecting rsvk_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, crv.nrows);
         return 1;
     }
 
@@ -111,7 +111,7 @@ int benchmark_find_rv_variantkey_by_rsid()
         for (i=0 ; i < TEST_DATA_SIZE; i++)
         {
             first = 0;
-            sum += find_rv_variantkey_by_rsid(rv.src, &first, TEST_DATA_SIZE, i);
+            sum += find_rv_variantkey_by_rsid(crv, &first, TEST_DATA_SIZE, i);
         }
         tend = get_time();
         fprintf(stdout, "   * %s %d. sum: %" PRIu64 " -- time: %" PRIu64 " ns -- %" PRIu64 " ns/op\n", __func__, j, sum, (tend - tstart - offset), (tend - tstart - offset)/TEST_DATA_SIZE);
@@ -143,11 +143,11 @@ int benchmark_find_vr_rsid_by_variantkey()
     fclose(f);
 
     mmfile_t vr = {0};
-    mmap_binfile(filename, &vr);
-    uint64_t nitems = (vr.size / BINBLKLEN);
-    if (nitems != TEST_DATA_SIZE)
+    rsidvar_cols_t cvr = {0};
+    mmap_vkrs_file(filename, &vr, &cvr);
+    if (cvr.nrows != TEST_DATA_SIZE)
     {
-        fprintf(stderr, " * %s Expecting vkrs_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, nitems);
+        fprintf(stderr, " * %s Expecting vkrs_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, cvr.nrows);
         return 1;
     }
 
@@ -172,7 +172,7 @@ int benchmark_find_vr_rsid_by_variantkey()
         for (i=0 ; i < TEST_DATA_SIZE; i++)
         {
             first = 0;
-            sum += find_vr_rsid_by_variantkey(vr.src, &first, TEST_DATA_SIZE, i);
+            sum += find_vr_rsid_by_variantkey(cvr, &first, TEST_DATA_SIZE, i);
         }
         tend = get_time();
         fprintf(stdout, "   * %s %d. sum: %" PRIu64 " -- time: %" PRIu64 " ns -- %" PRIu64 " ns/op\n", __func__, j, sum, (tend - tstart - offset), (tend - tstart - offset)/TEST_DATA_SIZE);

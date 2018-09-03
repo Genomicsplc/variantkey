@@ -2373,7 +2373,7 @@ static PyObject* py_get_variantkey_chrom_endpos(PyObject *Py_UNUSED(ignored), Py
     return Py_BuildValue("K", h);
 }
 
-static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+static PyObject* py_nrvk_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t last;
     PyObject* mfsrc = NULL;
@@ -2382,7 +2382,7 @@ static PyObject* py_vknr_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKs", kwlist, &mfsrc, &last, &tsvfile))
         return NULL;
     const uint8_t *src = py_get_mmsrc(mfsrc);
-    size_t len = vknr_bin_to_tsv(src, last, tsvfile);
+    size_t len = nrvk_bin_to_tsv(src, last, tsvfile);
     return Py_BuildValue("K", len);
 }
 
@@ -2883,7 +2883,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"get_variantkey_endpos", (PyCFunction)py_get_variantkey_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYENDPOS_DOCSTRING},
     {"get_variantkey_chrom_startpos", (PyCFunction)py_get_variantkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMSTARTPOS_DOCSTRING},
     {"get_variantkey_chrom_endpos", (PyCFunction)py_get_variantkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMENDPOS_DOCSTRING},
-    {"vknr_bin_to_tsv", (PyCFunction)py_vknr_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
+    {"nrvk_bin_to_tsv", (PyCFunction)py_nrvk_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF
     {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX_DOCSTRING},

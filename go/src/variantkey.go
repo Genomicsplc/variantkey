@@ -1492,11 +1492,11 @@ func (mf TMMFile) GetVariantKeyChromEndPos(vk uint64) uint64 {
 	return uint64(C.get_variantkey_chrom_endpos((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
 }
 
-// VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/vknr.sh script.
+// VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/nrvk.sh script.
 func (mf TMMFile) VknrBinToTSV(tsvfile string) uint64 {
 	file := StringToNTBytes(tsvfile)
 	pfile := unsafe.Pointer(&file[0]) // #nosec
-	return uint64(C.vknr_bin_to_tsv((*C.uchar)(mf.Src), C.uint64_t(mf.Last), (*C.char)(pfile)))
+	return uint64(C.nrvk_bin_to_tsv((*C.uchar)(mf.Src), C.uint64_t(mf.Last), (*C.char)(pfile)))
 }
 
 // --- GENOREF ---

@@ -28,6 +28,7 @@ file (COPY ${TEST_BIN_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 SMOKE_TEST (test_binsearch test_binsearch.c variantkey)
 SMOKE_TEST (test_binsearch_col test_binsearch_col.c variantkey)
+SMOKE_TEST (test_binsearch_file test_binsearch_file.c variantkey)
 SMOKE_TEST (test_esid test_esid.c variantkey)
 SMOKE_TEST (test_example test_example.c variantkey)
 SMOKE_TEST (test_genoref test_genoref.c variantkey)

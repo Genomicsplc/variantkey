@@ -167,7 +167,7 @@ static PyObject *py_get_variantkey_ref_length(PyObject *self, PyObject *args, Py
 static PyObject *py_get_variantkey_endpos(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_variantkey_chrom_startpos(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_variantkey_chrom_endpos(PyObject *self, PyObject *args, PyObject *keywds);
-static PyObject *py_vknr_bin_to_tsv(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_nrvk_bin_to_tsv(PyObject *self, PyObject *args, PyObject *keywds);
 
 // GENOREF
 static PyObject *py_load_genoref_index(PyObject *self, PyObject *args, PyObject *keywds);
@@ -2352,7 +2352,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
@@ -2372,7 +2372,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1. Set this to 0 to skip the lookup table.\n"\
 "vk : int\n"\
@@ -2394,7 +2394,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
@@ -2410,7 +2410,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
@@ -2438,7 +2438,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
@@ -2450,12 +2450,12 @@ PyMODINIT_FUNC initvariantkey(void);
 "    CHROM + END POS encoding."
 
 #define PYVKNRBINTOTSV_DOCSTRING "Convert a vrnr.bin file to a simple TSV.\n"\
-"For the reverse operation see the resources/tools/vknr.sh script.\n"\
+"For the reverse operation see the resources/tools/nrvk.sh script.\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1. Set this to 0 to skip the lookup table.\n"\
 "tsvfile : int\n"\
@@ -2824,7 +2824,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\
@@ -2842,7 +2842,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).\n"\
+"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
 "last : int\n"\
 "    Number of variants in the src file -1.\n"\
 "vk : int\n"\

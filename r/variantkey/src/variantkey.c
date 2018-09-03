@@ -383,11 +383,11 @@ SEXP R_get_variantkey_chrom_endpos(SEXP src, SEXP last, SEXP vk)
     return Rf_mkString(hex);
 }
 
-SEXP R_vknr_bin_to_tsv(SEXP src, SEXP last, SEXP tsvfile)
+SEXP R_nrvk_bin_to_tsv(SEXP src, SEXP last, SEXP tsvfile)
 {
     SEXP res;
     PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = vknr_bin_to_tsv(R_ExternalPtrAddr(src), asInteger(last), CHAR(STRING_ELT(tsvfile, 0)));
+    INTEGER(res)[0] = nrvk_bin_to_tsv(R_ExternalPtrAddr(src), asInteger(last), CHAR(STRING_ELT(tsvfile, 0)));
     UNPROTECT(1);
     return res;
 }
