@@ -691,7 +691,9 @@ PyMODINIT_FUNC initvariantkey(void);
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Pointer to the memory map object."
+"    - Pointer to the memory map object.\n"\
+"    - File size."
+
 
 #define PYGETGENOREFSEQ_DOCSTRING "Returns the genome reference nucleotide at the specified chromosome and position.\n"\
 "\n"\

@@ -22,7 +22,9 @@ class TestFunctions(TestCase):
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/genoref.bin")
-        mf = bs.mmap_genoref_file(inputfile)
+        mf, mfsize = bs.mmap_genoref_file(inputfile)
+        if mfsize <= 0:
+            assert False, "Unable to open the genoref.bin file"
 
     @classmethod
     def tearDownClass(cls):
@@ -133,7 +135,9 @@ class TestBenchmark(object):
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/genoref.bin")
-        mf = bs.mmap_genoref_file(inputfile)
+        mf, mfsize = bs.mmap_genoref_file(inputfile)
+        if mfsize <= 0:
+            assert False, "Unable to open the genoref.bin file"
 
     def test_get_genoref_seq(self, benchmark):
         benchmark.pedantic(

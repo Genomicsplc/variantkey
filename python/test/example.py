@@ -75,7 +75,9 @@ print(vk.parse_variantkey_hex(b'b800181c910d8000'))
 # Load the reference genome binary file.
 # The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 # This example uses the "c/test/data/genoref.bin".
-mf = vk.mmap_genoref_file('genoref.bin')
+mf, mfsize = vk.mmap_genoref_file('genoref.bin')
+if mfsize <= 0:
+    assert False, "Unable to open the genoref.bin file"
 
 print(vk.get_genoref_seq(mf, chrom=23, pos=0))
 # b'A'

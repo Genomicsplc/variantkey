@@ -573,7 +573,10 @@ static PyObject* py_mmap_genoref_file(PyObject *Py_UNUSED(ignored), PyObject *ar
         return NULL;
     mmfile_t *mf = (mmfile_t *)PyMem_Malloc(sizeof(mmfile_t));
     mmap_genoref_file(file, mf);
-    return PyCapsule_New(mf, "mf", NULL);
+    PyObject *result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", NULL));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", mf->size));
+    return result;
 }
 
 static PyObject* py_get_genoref_seq(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
