@@ -244,6 +244,16 @@ static const mmfile_t *py_get_mmfile_mf(PyObject *mf)
     return (const mmfile_t *)PyCapsule_GetPointer(mf, "mf");
 }
 
+static void destroy_mf(PyObject *mf)
+{
+    const mmfile_t *cmf = py_get_mmfile_mf(mf);
+    if (cmf == NULL)
+    {
+        return;
+    }
+    PyMem_Free((void *)cmf);
+}
+
 static PyObject* py_munmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     PyObject* mf = NULL;
@@ -265,6 +275,16 @@ static const rsidvar_cols_t *py_get_rsidvar_mc(PyObject *mc)
         return (rsidvar_cols_t *)PyMem_Malloc(sizeof(rsidvar_cols_t));
     }
     return (const rsidvar_cols_t *)PyCapsule_GetPointer(mc, "mc");
+}
+
+static void destroy_rsidvar_mc(PyObject *mc)
+{
+    const rsidvar_cols_t *cmc = py_get_rsidvar_mc(mc);
+    if (cmc == NULL)
+    {
+        return;
+    }
+    PyMem_Free((void *)cmc);
 }
 
 static PyObject* py_mmap_rsvk_file(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
@@ -304,8 +324,8 @@ static PyObject* py_mmap_rsvk_file(PyObject *Py_UNUSED(ignored), PyObject *args,
     Py_DECREF(ctbytes);
     mmap_rsvk_file(file, mf, mc);
     PyObject *result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", NULL));
-    PyTuple_SetItem(result, 1, PyCapsule_New(mc, "mc", NULL));
+    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", destroy_mf));
+    PyTuple_SetItem(result, 1, PyCapsule_New(mc, "mc", destroy_rsidvar_mc));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", mc->nrows));
     return result;
 }
@@ -347,8 +367,8 @@ static PyObject* py_mmap_vkrs_file(PyObject *Py_UNUSED(ignored), PyObject *args,
     Py_DECREF(ctbytes);
     mmap_vkrs_file(file, mf, mc);
     PyObject *result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", NULL));
-    PyTuple_SetItem(result, 1, PyCapsule_New(mc, "mc", NULL));
+    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", destroy_mf));
+    PyTuple_SetItem(result, 1, PyCapsule_New(mc, "mc", destroy_rsidvar_mc));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", mc->nrows));
     return result;
 }
@@ -448,6 +468,16 @@ static const nrvk_cols_t *py_get_nrvk_mc(PyObject *mc)
     return (const nrvk_cols_t *)PyCapsule_GetPointer(mc, "mc");
 }
 
+static void destroy_nrvk_mc(PyObject *mc)
+{
+    const nrvk_cols_t *cmc = py_get_nrvk_mc(mc);
+    if (cmc == NULL)
+    {
+        return;
+    }
+    PyMem_Free((void *)cmc);
+}
+
 static PyObject* py_mmap_nrvk_file(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     const char *file;
@@ -458,8 +488,8 @@ static PyObject* py_mmap_nrvk_file(PyObject *Py_UNUSED(ignored), PyObject *args,
     nrvk_cols_t *mc = (nrvk_cols_t *)PyMem_Malloc(sizeof(nrvk_cols_t));
     mmap_nrvk_file(file, mf, mc);
     PyObject *result = PyTuple_New(3);
-    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", NULL));
-    PyTuple_SetItem(result, 1, PyCapsule_New(mc, "mc", NULL));
+    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", destroy_mf));
+    PyTuple_SetItem(result, 1, PyCapsule_New(mc, "mc", destroy_nrvk_mc));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", mc->nrows));
     return result;
 }
@@ -574,7 +604,7 @@ static PyObject* py_mmap_genoref_file(PyObject *Py_UNUSED(ignored), PyObject *ar
     mmfile_t *mf = (mmfile_t *)PyMem_Malloc(sizeof(mmfile_t));
     mmap_genoref_file(file, mf);
     PyObject *result = PyTuple_New(2);
-    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", NULL));
+    PyTuple_SetItem(result, 0, PyCapsule_New(mf, "mf", destroy_mf));
     PyTuple_SetItem(result, 1, Py_BuildValue("K", mf->size));
     return result;
 }
