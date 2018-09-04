@@ -2434,11 +2434,14 @@ static PyObject *py_check_reference(PyObject *Py_UNUSED(ignored), PyObject *args
 
 static PyObject *py_flip_allele(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
-    char *allele;
+    const char *callele;
     Py_ssize_t size;
     static char *kwlist[] = {"allele", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &allele, &size))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &callele, &size))
         return NULL;
+    char allele[ALLELE_MAXSIZE] = "";
+    strncpy(allele, callele, (size_t)size);
+    allele[size] = 0;
     flip_allele(allele, (size_t)size);
     return Py_BuildValue("y", allele);
 }
@@ -2450,15 +2453,21 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     PyObject* mfidx = NULL;
     uint8_t chrom;
     uint32_t pos;
-    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    const char *cref;
+    const char *calt;
     Py_ssize_t sizeref, sizealt;
     static char *kwlist[] = {"mfsrc", "mfidx", "chrom", "pos", "ref", "alt", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBIs#s#", kwlist, &mfsrc, &mfidx, &chrom, &pos, &ref, &sizeref, &alt, &sizealt))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBIs#s#", kwlist, &mfsrc, &mfidx, &chrom, &pos, &cref, &sizeref, &calt, &sizealt))
         return NULL;
     const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
     size_t stref = (size_t)sizeref;
     size_t stalt = (size_t)sizealt;
+    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    strncpy(ref, cref, stref);
+    ref[stref] = 0;
+    strncpy(alt, calt, stalt);
+    alt[stalt] = 0;
     int ret = normalize_variant(src, idx, chrom, &pos, ref, &stref, alt, &stalt);
     result = PyTuple_New(6);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", ret));
