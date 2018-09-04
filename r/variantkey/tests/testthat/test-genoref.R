@@ -11,7 +11,6 @@ library(variantkey)
 test_that("MmapBinfile", {
     genoref <<- MmapBinfile("../../../../c/test/data/genoref.bin")
     expect_that(genoref$SIZE, equals(480))
-    idx <<- LoadGenorefIndex(genoref$SRC)
 })
 
 test_that("GetGenorefSeq", {

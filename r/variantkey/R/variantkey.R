@@ -169,24 +169,6 @@ MunmapBinfile <- function(src, fd, size) {
 
 # --- RSIDVAR ---
 
-#' Returns the RSID at the specified position in the VR file.
-#' @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
-#' @param item      Binary block number.
-#' @useDynLib   variantkey R_get_vr_rsid
-#' @export
-GetVrRsid <- function(src, item) {
-    return(.Call("R_get_vr_rsid", src, item))
-}
-
-#' Returns the VariantKey at the specified position in the RV file.
-#' @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
-#' @param item      Binary block number.
-#' @useDynLib   variantkey R_get_rv_variantkey
-#' @export
-GetRvVariantKey <- function(src, item) {
-    return(.Call("R_get_rv_variantkey", src, item))
-}
-
 #' Search for the specified rsID and returns the first occurrence of VariantKey in the RV file, or zero if not found.
 #' @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
 #' @param first     First element of the range to search (min value = 0).
@@ -322,15 +304,6 @@ VknrBinToTsv <- function(src, last, tsvfile) {
 }
 
 # --- GENOREF ---
-
-#' Load the genome reference index.
-#' @param src  Address of the memory mapped input file containing the genome reference data (fasta.bin).
-#' @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements.
-#' @useDynLib   variantkey R_load_genoref_index
-#' @export
-LoadGenorefIndex <- function(src) {
-    return(.Call("R_load_genoref_index", src))
-}
 
 #' Returns the genome reference nucleotide at the specified chromosome and position, or 0 in case of invalid position.
 #' @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).

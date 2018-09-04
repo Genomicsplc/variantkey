@@ -75,12 +75,9 @@ print(vk.parse_variantkey_hex(b'b800181c910d8000'))
 # Load the reference genome binary file.
 # The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 # This example uses the "c/test/data/genoref.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('genoref.bin')
+mfsrc, mffd, mfsize, mflast = vk.mmap_genoref_file('genoref.bin')
 if mffd < 0:
     assert False, "Unable to open the genoref.bin file"
-
-# Load the file index
-mfidx = vk.load_genoref_index(mfsrc)
 
 print(vk.get_genoref_seq(mfsrc, mfidx, chrom=23, pos=0))
 # b'A'
@@ -106,7 +103,7 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # ----
 
 # Load the lookup table for non-reversible variantkeys.
-# The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
+# The input binary files can be generated from a normalized VCF file using the resources/tools/nrvk.sh script.
 # The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
 # This example uses the "c/test/data/nrvk.10.bin".
 mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('nrvk.10.bin')
@@ -144,14 +141,11 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # -------
 
 # Load the lookup table for rsID to VariantKey.
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.10.bin".
 mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('rsvk.10.bin')
 if mffd < 0:
     assert False, "Unable to open the rsvk.10.bin file"
-
-print(vk.get_rv_variantkey(mfsrc, item=3))
-# 9223656209074749440
 
 print(vk.find_rv_variantkey_by_rsid(mfsrc, 0, 9, rsid=0X00000061))
 # (9223656209074749440, 3)
@@ -164,7 +158,7 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load the lookup table for rsID to VariantKey.
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.m.10.bin".
 mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('rsvk.m.10.bin')
 if mffd < 0:
@@ -178,14 +172,11 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load the lookup table for VariantKey ro rsID
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/vkrs.sh script.
 # This example uses the "c/test/data/vkrs.10.bin".
 mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('vkrs.10.bin')
 if mffd < 0:
     assert False, "Unable to open the vkrs.10.bin file"
-
-print(vk.get_vr_rsid(mfsrc, item=3))
-# 97
 
 print(vk.find_vr_rsid_by_variantkey(mfsrc, 0, 9, vk=0X80010274003A0000))
 # (97, 3)
@@ -271,6 +262,12 @@ print(vk.encode_string_id("A0A022YWF9", 0))
 
 print(vk.decode_string_id(0xa850850492e77999))
 (b'A0A022YWF9', 10)
+
+print(vk.encode_string_num_id("ABC:0000123456", ":"))
+# 15592178792074961472
+
+print(vk.decode_string_id(0xd8628c002001e240))
+(b'ABC:0000123456', 14)
 
 print(vk.hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 # 12945031672818874332

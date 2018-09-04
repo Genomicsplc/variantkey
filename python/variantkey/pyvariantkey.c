@@ -247,20 +247,57 @@ static const uint8_t *py_get_mmsrc(PyObject *src)
     return (const uint8_t *)PyCapsule_GetPointer(src, "src");
 }
 
+
 static PyObject* py_mmap_binfile(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     PyObject *result;
     const char *file;
-    static char *kwlist[] = {"file", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s", kwlist, &file))
+    PyObject* ctbytes = NULL;
+    static char *kwlist[] = {"file", "ctbytes", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "sO", kwlist, &file, &ctbytes))
         return NULL;
     mmfile_t h;
+    ctbytes = PySequence_Fast(ctbytes, "argument must be iterable");
+    if (!ctbytes)
+    {
+        return 0;
+    }
+    h.ncols = (uint8_t)PySequence_Fast_GET_SIZE(ctbytes);
+    int i;
+    for(i = 0; i < h.ncols; i++)
+    {
+        PyObject *fitem;
+        PyObject *item = PySequence_Fast_GET_ITEM(ctbytes, i);
+        if (!item)
+        {
+            Py_DECREF(ctbytes);
+            return 0;
+        }
+        fitem = PyNumber_Long(item);
+        if (!fitem)
+        {
+            Py_DECREF(ctbytes);
+            return 0;
+        }
+        h.ctbytes[i] = (uint8_t)PyLong_AsUnsignedLong(item);
+        Py_DECREF(fitem);
+    }
+    Py_DECREF(ctbytes);
     mmap_binfile(file, &h);
-    result = PyTuple_New(4);
+    PyObject* index = PyList_New(0);
+    for (i = 0; i < h.ncols; i++)
+    {
+        PyList_Append(index, Py_BuildValue("K", h.index[i]));
+    }
+    result = PyTuple_New(8);
     PyTuple_SetItem(result, 0, PyCapsule_New((void*)h.src, "src", NULL));
     PyTuple_SetItem(result, 1, Py_BuildValue("i", h.fd));
     PyTuple_SetItem(result, 2, Py_BuildValue("K", h.size));
-    PyTuple_SetItem(result, 3, Py_BuildValue("K", h.last));
+    PyTuple_SetItem(result, 3, Py_BuildValue("K", h.doffset));
+    PyTuple_SetItem(result, 4, Py_BuildValue("K", h.dlength));
+    PyTuple_SetItem(result, 5, Py_BuildValue("K", h.nrows));
+    PyTuple_SetItem(result, 6, Py_BuildValue("B", h.ncols));
+    PyTuple_SetItem(result, 7, index);
     return result;
 }
 
@@ -2170,30 +2207,6 @@ static PyObject* py_col_has_prev_sub_uint64(PyObject *Py_UNUSED(ignored), PyObje
 
 // --- RSIDVAR ---
 
-static PyObject* py_get_vr_rsid(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
-{
-    uint64_t item;
-    PyObject* mfsrc = NULL;
-    static char *kwlist[] = {"mfsrc", "item", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OK", kwlist, &mfsrc, &item))
-        return NULL;
-    const uint8_t *src = py_get_mmsrc(mfsrc);
-    uint32_t h = get_vr_rsid(src, item);
-    return Py_BuildValue("I", h);
-}
-
-static PyObject* py_get_rv_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
-{
-    uint64_t item;
-    PyObject* mfsrc = NULL;
-    static char *kwlist[] = {"mfsrc", "item", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OK", kwlist, &mfsrc, &item))
-        return NULL;
-    const uint8_t *src = py_get_mmsrc(mfsrc);
-    uint64_t h = get_rv_variantkey(src, item);
-    return Py_BuildValue("K", h);
-}
-
 static PyObject* py_find_rv_variantkey_by_rsid(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     PyObject *result;
@@ -2388,18 +2401,6 @@ static PyObject* py_nrvk_bin_to_tsv(PyObject *Py_UNUSED(ignored), PyObject *args
 
 // --- GENOREF ---
 
-static PyObject* py_load_genoref_index(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
-{
-    PyObject* mfsrc = NULL;
-    static char *kwlist[] = {"mfsrc", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "O", kwlist, &mfsrc))
-        return NULL;
-    const uint8_t *src = py_get_mmsrc(mfsrc);
-    uint32_t *idx = (uint32_t *)malloc(27 * sizeof(uint32_t));
-    load_genoref_index(src, idx);
-    return PyCapsule_New((void*)idx, "idx", NULL);
-}
-
 static PyObject* py_get_genoref_seq(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     PyObject* mfsrc = NULL;
@@ -2434,11 +2435,14 @@ static PyObject *py_check_reference(PyObject *Py_UNUSED(ignored), PyObject *args
 
 static PyObject *py_flip_allele(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
-    char *allele;
+    const char *callele;
     Py_ssize_t size;
     static char *kwlist[] = {"allele", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &allele, &size))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#", kwlist, &callele, &size))
         return NULL;
+    char allele[ALLELE_MAXSIZE] = "";
+    strncpy(allele, callele, (size_t)size);
+    allele[size] = 0;
     flip_allele(allele, (size_t)size);
     return Py_BuildValue("y", allele);
 }
@@ -2450,15 +2454,21 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     PyObject* mfidx = NULL;
     uint8_t chrom;
     uint32_t pos;
-    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    const char *cref;
+    const char *calt;
     Py_ssize_t sizeref, sizealt;
     static char *kwlist[] = {"mfsrc", "mfidx", "chrom", "pos", "ref", "alt", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBIs#s#", kwlist, &mfsrc, &mfidx, &chrom, &pos, &ref, &sizeref, &alt, &sizealt))
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OOBIs#s#", kwlist, &mfsrc, &mfidx, &chrom, &pos, &cref, &sizeref, &calt, &sizealt))
         return NULL;
-    const uint8_t *src = py_get_mmsrc(mfsrc);
+    const unsigned char *src = py_get_mmsrc(mfsrc);
     uint32_t *idx = (uint32_t *)PyCapsule_GetPointer(mfidx, "idx");
     size_t stref = (size_t)sizeref;
     size_t stalt = (size_t)sizealt;
+    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    strncpy(ref, cref, stref);
+    ref[stref] = 0;
+    strncpy(alt, calt, stalt);
+    alt[stalt] = 0;
     int ret = normalize_variant(src, idx, chrom, &pos, ref, &stref, alt, &stalt);
     result = PyTuple_New(6);
     PyTuple_SetItem(result, 0, Py_BuildValue("i", ret));
@@ -2868,8 +2878,6 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"col_has_prev_sub_uint64", (PyCFunction)py_col_has_prev_sub_uint64, METH_VARARGS|METH_KEYWORDS, PYCOLHASPREVSUBUINT64_DOCSTRING},
 
     // RSIDVAR
-    {"get_vr_rsid", (PyCFunction)py_get_vr_rsid, METH_VARARGS|METH_KEYWORDS, PYGETVRRSID_DOCSTRING},
-    {"get_rv_variantkey", (PyCFunction)py_get_rv_variantkey, METH_VARARGS|METH_KEYWORDS, PYGETRVVARIANTKEY_DOCSTRING},
     {"find_rv_variantkey_by_rsid", (PyCFunction)py_find_rv_variantkey_by_rsid, METH_VARARGS|METH_KEYWORDS, PYFINDRVVARIANTKEYBYRSID_DOCSTRING},
     {"get_next_rv_variantkey_by_rsid", (PyCFunction)py_get_next_rv_variantkey_by_rsid, METH_VARARGS|METH_KEYWORDS, PYGETNEXTRVVARIANTKEYBYRSID_DOCSTRING},
     {"find_all_rv_variantkey_by_rsid", (PyCFunction)py_find_all_rv_variantkey_by_rsid, METH_VARARGS|METH_KEYWORDS, PYFINDALLRVVARIANTKEYBYRSID_DOCSTRING},
@@ -2886,7 +2894,6 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"nrvk_bin_to_tsv", (PyCFunction)py_nrvk_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
 
     // GENOREF
-    {"load_genoref_index", (PyCFunction)py_load_genoref_index, METH_VARARGS|METH_KEYWORDS, PYLOADGENOREFINDEX_DOCSTRING},
     {"get_genoref_seq", (PyCFunction)py_get_genoref_seq, METH_VARARGS|METH_KEYWORDS, PYGETGENOREFSEQ_DOCSTRING},
     {"check_reference", (PyCFunction)py_check_reference, METH_VARARGS|METH_KEYWORDS, PYCHECKREFERENCE_DOCSTRING},
     {"flip_allele", (PyCFunction)py_flip_allele, METH_VARARGS|METH_KEYWORDS, PYFLIPALLELE_DOCSTRING},

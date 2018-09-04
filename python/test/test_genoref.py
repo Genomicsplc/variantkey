@@ -25,7 +25,6 @@ class TestFunctions(TestCase):
         mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
         if mffd < 0:
             assert False, "Unable to open the genoref.bin file"
-        idx = bs.load_genoref_index(mfsrc)
 
     @classmethod
     def tearDownClass(cls):
@@ -141,7 +140,6 @@ class TestBenchmark(object):
         mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
         if mffd < 0:
             assert False, "Unable to open the genoref.bin file"
-        idx = bs.load_genoref_index(mfsrc)
 
     def test_get_genoref_seq(self, benchmark):
         benchmark.pedantic(

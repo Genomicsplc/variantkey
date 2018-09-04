@@ -69,12 +69,12 @@ extern "C" {
  */
 typedef struct variantkey_rev_t
 {
-    char chrom[3];  //!< Chromosome.
-    uint32_t pos;   //!< Reference position, with the first base having position 0.
+    char chrom[3];             //!< Chromosome.
+    uint32_t pos;              //!< Reference position, with the first base having position 0.
     char ref[ALLELE_MAXSIZE];  //!< Reference allele
     char alt[ALLELE_MAXSIZE];  //!< Alternate allele
-    size_t sizeref; //!< Length of reference allele
-    size_t sizealt; //!< Length of alternate allele
+    size_t sizeref;            //!< Length of reference allele
+    size_t sizealt;            //!< Length of alternate allele
 } variantkey_rev_t;
 
 /**
@@ -82,10 +82,10 @@ typedef struct variantkey_rev_t
  */
 typedef struct nrvk_cols_t
 {
-    const uint64_t *vk;               //!< Pointer to the VariantKey column.
-    const uint64_t *offset;           //!< Pointer to the Offset column.
-    const uint8_t  *data;             //!< Pointer to the Data column.
-    uint64_t nrows;             //!< Number of rows.
+    const uint64_t *vk;      //!< Pointer to the VariantKey column.
+    const uint64_t *offset;  //!< Pointer to the Offset column.
+    const uint8_t  *data;    //!< Pointer to the Data column.
+    uint64_t nrows;          //!< Number of rows.
 } nrvk_cols_t;
 
 /**

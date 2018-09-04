@@ -216,23 +216,6 @@ SEXP R_munmap_binfile(SEXP src, SEXP fd, SEXP size)
 
 // --- RSIDVAR ---
 
-SEXP R_get_vr_rsid(SEXP src, SEXP item)
-{
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = get_vr_rsid(R_ExternalPtrAddr(src), asInteger(item));
-    UNPROTECT(1);
-    return res;
-}
-
-SEXP R_get_rv_variantkey(SEXP src, SEXP item)
-{
-    uint64_t vk = get_rv_variantkey(R_ExternalPtrAddr(src), asInteger(item));
-    char hex[17];
-    variantkey_hex(vk, hex);
-    return Rf_mkString(hex);
-}
-
 SEXP R_find_rv_variantkey_by_rsid(SEXP src, SEXP first, SEXP last, SEXP rsid)
 {
     uint64_t pfirst = asInteger(first);
@@ -393,13 +376,6 @@ SEXP R_nrvk_bin_to_tsv(SEXP src, SEXP last, SEXP tsvfile)
 }
 
 // --- GENOREF ---
-
-SEXP R_load_genoref_index(SEXP src)
-{
-    uint32_t *idx = (uint32_t *)malloc(27 * sizeof(uint32_t));
-    load_genoref_index(R_ExternalPtrAddr(src), idx);
-    return R_MakeExternalPtr(idx, R_NilValue, R_NilValue);
-}
 
 SEXP R_get_genoref_seq(SEXP src, SEXP idx, SEXP chrom, SEXP pos)
 {

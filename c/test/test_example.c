@@ -392,11 +392,11 @@ int main()
 
     esid = encode_string_num_id("ABC:0000123456", 14, ':');
     fprintf(stdout, "%016" PRIx64 "\n", esid);
-    //
+    // d8628c002001e240
 
     stridlen = decode_string_id(esid, strid);
     fprintf(stdout, "%s %lu\n", strid, stridlen);
-    //
+    // ABC:0000123456 14
 
     esid = hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36);
     fprintf(stdout, "%016" PRIx64 "\n", esid);

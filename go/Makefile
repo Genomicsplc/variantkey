@@ -93,7 +93,6 @@ test:
 	go test \
 	-tags ${STATIC_TAG} \
 	-covermode=atomic \
-	-bench=. \
 	-race \
 	-cpuprofile=target/report/cpu.out \
 	-memprofile=target/report/mem.out \

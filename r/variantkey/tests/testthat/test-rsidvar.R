@@ -31,16 +31,6 @@ test_that("MmapBinfile", {
     expect_that(rsvk$SIZE, equals(120))
 })
 
-test_that("GetVrRsid", {
-    res <- mapply(GetVrRsid, item = unlist(x[,"item"]), MoreArgs = list(src = vkrs$SRC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"rsid"])))
-})
-
-test_that("GetRvVariantKey", {
-    res <- mapply(GetRvVariantKey, item = unlist(x[,"item"]), MoreArgs = list(src = rsvk$SRC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"vk"])))
-})
-
 test_that("FindRvVariantKeyByRsid", {
     res <- mapply(FindRvVariantKeyByRsid, rsid = unlist(x[,"rsid"]), MoreArgs = list(src = rsvk$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"vk"])))

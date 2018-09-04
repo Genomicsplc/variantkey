@@ -44,6 +44,7 @@ void mmap_genoref_file(const char *file, mmfile_t *mf)
         mf->index[i] = mf->index[(i - 1)];
         i--;
     }
+    mf->ncols = 27;
 }
 
 /**

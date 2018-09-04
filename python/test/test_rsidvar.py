@@ -68,16 +68,6 @@ class TestFunctions(TestCase):
         if h != 0:
             assert False, "Error while closing the vkrs.10.bin memory-mapped file"
 
-    def test_get_vr_rsid(self):
-        for item, _, _, _, rsid, _ in testData:
-            xrsid = bs.get_vr_rsid(vrsrc, item)
-            self.assertEqual(xrsid, rsid)
-
-    def test_get_rv_variantkey(self):
-        for item, _, _, _, _, vkey in testData:
-            vk = bs.get_rv_variantkey(rvsrc, item)
-            self.assertEqual(vk, vkey)
-
     def test_find_rv_variantkey_by_rsid(self):
         for item, _, _, _, rsid, vkey in testData:
             vk, first = bs.find_rv_variantkey_by_rsid(rvsrc, 0, 9, rsid)
@@ -159,22 +149,6 @@ class TestBenchmark(object):
         vrsrc, vrfd, vrsize, _ = bs.mmap_binfile(inputfile)
         if vrfd < 0 or vrsize != 120:
             assert False, "Unable to open the vkrs.10.bin file"
-
-    def test_get_vr_rsid(self, benchmark):
-        benchmark.pedantic(
-            bs.get_vr_rsid,
-            args=[vrsrc, 3],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
-
-    def test_get_rv_variantkey(self, benchmark):
-        benchmark.pedantic(
-            bs.get_rv_variantkey,
-            args=[rvsrc, 3],
-            setup=setup,
-            iterations=1,
-            rounds=10000)
 
     def test_find_rv_variantkey_by_rsid(self, benchmark):
         benchmark.pedantic(

@@ -51,6 +51,7 @@ static PyObject *py_variantkey_hex(PyObject *self, PyObject *args, PyObject *key
 static PyObject *py_parse_variantkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
 
 // BINSEARCH
+
 static PyObject *py_mmap_binfile(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_munmap_binfile(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_address(PyObject *self, PyObject *args, PyObject *keywds);
@@ -152,8 +153,6 @@ static PyObject *py_col_has_prev_sub_uint32(PyObject *self, PyObject *args, PyOb
 static PyObject *py_col_has_prev_sub_uint64(PyObject *self, PyObject *args, PyObject *keywds);
 
 // RSIDVAR
-static PyObject *py_get_vr_rsid(PyObject *self, PyObject *args, PyObject *keywds);
-static PyObject *py_get_rv_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_find_rv_variantkey_by_rsid(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_next_rv_variantkey_by_rsid(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_find_all_rv_variantkey_by_rsid(PyObject *self, PyObject *args, PyObject *keywds);
@@ -170,7 +169,6 @@ static PyObject *py_get_variantkey_chrom_endpos(PyObject *self, PyObject *args, 
 static PyObject *py_nrvk_bin_to_tsv(PyObject *self, PyObject *args, PyObject *keywds);
 
 // GENOREF
-static PyObject *py_load_genoref_index(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_genoref_seq(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_check_reference(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_flip_allele(PyObject *self, PyObject *args, PyObject *keywds);
@@ -503,6 +501,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "----------\n"\
 "file : str\n"\
 "    Path to the file to map.\n"\
+"ctbytes : int array\n"\
+"    Array containing the number of bytes for each column type (i.e. 1 for uint8, 2 for uint16, 4 for uint32, 8 for uint64).\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
@@ -510,7 +510,11 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - Pointer to the memory map.\n"\
 "    - File descriptor.\n"\
 "    - File size in bytes.\n"\
-"    - Index of the last element (if set as last 4 bytes) or it can be used as index size."
+"    - Offset to the beginning of the data block (address of the first byte of the first item in the first column).\n"\
+"    - Length in bytes of the data block.\n"\
+"    - Number of rows.\n"\
+"    - Number of columns.\n"\
+"    - List of offset positions for each column."
 
 #define PYMUNMAPBINFILE_DOCSTRING "Unmap and close the memory-mapped file.\n"\
 "\n"\
@@ -559,16 +563,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -585,16 +589,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -611,16 +615,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -637,16 +641,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -665,16 +669,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -691,16 +695,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -717,16 +721,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -743,16 +747,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -775,16 +779,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 7).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -805,16 +809,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 15).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -835,16 +839,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 31).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -865,16 +869,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -897,16 +901,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 7).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -927,16 +931,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 15).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -957,16 +961,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 31).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -987,16 +991,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1017,7 +1021,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
@@ -1042,7 +1046,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
@@ -1067,7 +1071,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
@@ -1092,7 +1096,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
@@ -1123,7 +1127,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
@@ -1152,7 +1156,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
@@ -1181,7 +1185,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
@@ -1210,7 +1214,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
@@ -1235,7 +1239,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1260,7 +1264,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1285,7 +1289,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1310,7 +1314,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "blkpos : int\n"\
 "    Indicates the position of the value to search inside a binary block.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1341,7 +1345,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1370,7 +1374,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1399,7 +1403,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1428,7 +1432,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -1453,16 +1457,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1475,16 +1479,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1497,16 +1501,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1519,16 +1523,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1543,16 +1547,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1565,16 +1569,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1587,16 +1591,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1609,16 +1613,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1637,16 +1641,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 7).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1663,16 +1667,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 15).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1689,16 +1693,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 31).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1715,16 +1719,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1743,16 +1747,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 7).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1769,16 +1773,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 15).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1795,16 +1799,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 31).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1821,16 +1825,16 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\
 "tuple :\n"\
-"    - Item number if found or (last + 1) if not found.\n"\
+"    - Item number if found or (last) if not found.\n"\
 "    - Position of the 'first' iterator.\n"\
 "    - Position of the 'last' iterator."
 
@@ -1847,7 +1851,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
@@ -1868,7 +1872,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
@@ -1889,7 +1893,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
@@ -1910,7 +1914,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
@@ -1937,7 +1941,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 8 bit number to search.\n"\
 "\n"\
@@ -1962,7 +1966,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 16 bit number to search.\n"\
 "\n"\
@@ -1987,7 +1991,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 32 bit number to search.\n"\
 "\n"\
@@ -2012,7 +2016,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nrows).\n"\
 "search : int\n"\
 "    Unsigned 64 bit number to search.\n"\
 "\n"\
@@ -2033,7 +2037,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2054,7 +2058,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2075,7 +2079,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2096,7 +2100,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "offset : int\n"\
 "    Byte offset from where the first item starts.\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2123,7 +2127,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2148,7 +2152,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2173,7 +2177,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2198,7 +2202,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "bitend : int\n"\
 "    Last bit position to consider (max 63).\n"\
 "first : int\n"\
-"    First element of the range to search (min value = 0).\n"\
+"    Element from where to start the search (min value = 0).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "search : int\n"\
@@ -2213,34 +2217,6 @@ PyMODINIT_FUNC initvariantkey(void);
 // ----------
 
 // RSIDVAR
-
-#define PYGETVRRSID_DOCSTRING "Returns the rsID at the specified position in the VR file.\n"\
-"\n"\
-"Parameters\n"\
-"----------\n"\
-"mfsrc : obj\n"\
-"    Pointer to the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).\n"\
-"item : int\n"\
-"    Binary block number.\n"\
-"\n"\
-"Returns\n"\
-"-------\n"\
-"int :\n"\
-"    rsID 32 bit number."
-
-#define PYGETRVVARIANTKEY_DOCSTRING "Returns the VariantKey at the specified position in the RV file.\n"\
-"\n"\
-"Parameters\n"\
-"----------\n"\
-"mfsrc : obj\n"\
-"    Pointer to the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).\n"\
-"item : int\n"\
-"    Binary block number.\n"\
-"\n"\
-"Returns\n"\
-"-------\n"\
-"int :\n"\
-"    VariantKey 64 bit number."
 
 #define PYFINDRVVARIANTKEYBYRSID_DOCSTRING "Search for the specified rsID and returns the first occurrence of VariantKey in the RV file.\n"\
 "\n"\
@@ -2469,18 +2445,6 @@ PyMODINIT_FUNC initvariantkey(void);
 // ----------
 
 // GENOREF
-
-#define PYLOADGENOREFINDEX_DOCSTRING "Return the index object from the genome reference memory mapped file.\n"\
-"\n"\
-"Parameters\n"\
-"----------\n"\
-"mfsrc : obj\n"\
-"    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
-"\n"\
-"Returns\n"\
-"-------\n"\
-"obj :\n"\
-"    Index of sequences offset by chromosome number (1 to 25)."
 
 #define PYGETGENOREFSEQ_DOCSTRING "Returns the genome reference nucleotide at the specified chromosome and position.\n"\
 "\n"\
