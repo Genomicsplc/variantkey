@@ -452,8 +452,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -473,8 +473,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
@@ -492,8 +492,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -510,8 +510,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the VKRS memory mapped file columns (rsvk.bin).\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -529,8 +529,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the VKRS memory mapped file columns (rsvk.bin).\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -572,10 +572,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey to search.\n"\
 "\n"\
@@ -592,10 +590,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1. Set this to 0 to skip the lookup table.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
@@ -614,10 +610,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey\n"\
 "\n"\
@@ -630,10 +624,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\
@@ -658,10 +650,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\
@@ -675,10 +665,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1. Set this to 0 to skip the lookup table.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "tsvfile : int\n"\
 "    Output file name.\n"\
 "\n"\
@@ -711,8 +699,6 @@ PyMODINIT_FUNC initvariantkey(void);
 "----------\n"\
 "mf : obj\n"\
 "    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
-"mfidx : int\n"\
-"    File index object.\n"\
 "chrom : int\n"\
 "    Encoded Chromosome number (see encode_chrom).\n"\
 "pos : int\n"\
@@ -729,8 +715,6 @@ PyMODINIT_FUNC initvariantkey(void);
 "----------\n"\
 "mf : obj\n"\
 "    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
-"mfidx : int\n"\
-"    File index object.\n"\
 "chrom :\n"\
 "    Encoded Chromosome number (see encode_chrom).\n"\
 "pos : int\n"\
@@ -769,8 +753,6 @@ PyMODINIT_FUNC initvariantkey(void);
 "----------\n"\
 "mf : obj\n"\
 "    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
-"mfidx : int\n"\
-"    Index of sequences offset by chromosome number (1 to 25).\n"\
 "chrom : int\n"\
 "    Chromosome encoded number.\n"\
 "pos : int\n"\
@@ -1046,10 +1028,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "rk : int\n"\
@@ -1064,10 +1044,8 @@ PyMODINIT_FUNC initvariantkey(void);
 "\n"\
 "Parameters\n"\
 "----------\n"\
-"mf : obj\n"\
-"    Pointer to the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).\n"\
-"last : int\n"\
-"    Number of variants in the src file -1.\n"\
+"mc : obj\n"\
+"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\
