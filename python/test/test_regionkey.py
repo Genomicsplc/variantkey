@@ -136,12 +136,12 @@ class TestFunctions(TestCase):
 
     def test_are_overlapping_variantkey_regionkey(self):
         for res, _, _, _, _, _, _, _, a_vk, b_rk in overlapTestData:
-            h = variantkey.are_overlapping_variantkey_regionkey(None, 0, a_vk, b_rk)
+            h = variantkey.are_overlapping_variantkey_regionkey(None, a_vk, b_rk)
             self.assertEqual(h, res)
 
     def test_variantkey_to_regionkey(self):
         for res, a_chrom, b_chrom, a_startpos, b_startpos, a_endpos, b_endpos, a_rk, a_vk, b_rk in overlapTestData:
-            h = variantkey.variantkey_to_regionkey(None, 0, a_vk)
+            h = variantkey.variantkey_to_regionkey(None, a_vk)
             self.assertEqual(h, a_rk)
 
 
@@ -193,7 +193,7 @@ class TestBenchmark(object):
         benchmark(variantkey.are_overlapping_regionkeys, 0x2800000200000030, 0x2800000180000038)
 
     def test_are_overlapping_variantkey_regionkey_benchmark(self, benchmark):
-        benchmark(variantkey.are_overlapping_variantkey_regionkey, None, 0, 0x2800000210920000, 0x2800000180000038)
+        benchmark(variantkey.are_overlapping_variantkey_regionkey, None, 0x2800000210920000, 0x2800000180000038)
 
     def test_variantkey_to_regionkey_benchmark(self, benchmark):
-        benchmark(variantkey.variantkey_to_regionkey, None, 0, 0x2800000210920000)
+        benchmark(variantkey.variantkey_to_regionkey, None, 0x2800000210920000)

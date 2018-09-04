@@ -32,94 +32,98 @@ class TestFunctions(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        global rvsrc, rvfd, rvsize
+        global rvmf, rvmc, rvnrows
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/rsvk.10.bin")
-        rvsrc, rvfd, rvsize, _ = bs.mmap_binfile(inputfile)
-        if rvfd < 0 or rvsize != 120:
+        rvmf, rvmc, rvnrows = bs.mmap_rsvk_file(inputfile, [4, 8])
+        if rvnrows <= 0:
             assert False, "Unable to open the rsvk.10.bin file"
-        global rvmsrc, rvmfd, rvmsize
+        global rvmmf, rvmmc, rvmnrows
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/rsvk.m.10.bin")
-        rvmsrc, rvmfd, rvmsize, _ = bs.mmap_binfile(inputfile)
-        if rvmfd < 0 or rvmsize != 120:
+        rvmmf, rvmmc, rvmnrows = bs.mmap_rsvk_file(inputfile, [])
+        if rvmnrows <= 0:
             assert False, "Unable to open the rsvk.m.10.bin file"
-        global vrsrc, vrfd, vrsize
+        global vrmf, vrmc, vrnrows
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/vkrs.10.bin")
-        vrsrc, vrfd, vrsize, _ = bs.mmap_binfile(inputfile)
-        if vrfd < 0 or vrsize != 120:
+        vrmf, vrmc, vrnrows = bs.mmap_vkrs_file(inputfile, [8, 4])
+        if vrnrows <= 0:
             assert False, "Unable to open the vkrs.10.bin file"
 
     @classmethod
     def tearDownClass(cls):
-        global rvsrc, rvfd, rvsize
-        h = bs.munmap_binfile(rvsrc, rvfd, rvsize)
+        global rvmf, rvmc, rvnrows
+        h = bs.munmap_binfile(rvmf)
         if h != 0:
             assert False, "Error while closing the rsvk.10.bin memory-mapped file"
-        global vrsrc, vrfd, vrsize
-        h = bs.munmap_binfile(vrsrc, vrfd, vrsize)
+        global rvmmf, rvmmc, rvnrows
+        h = bs.munmap_binfile(rvmmf)
+        if h != 0:
+            assert False, "Error while closing the rsvk.10.bin memory-mapped file"
+        global vrmf, vrmc, vrnrows
+        h = bs.munmap_binfile(vrmf)
         if h != 0:
             assert False, "Error while closing the vkrs.10.bin memory-mapped file"
 
     def test_find_rv_variantkey_by_rsid(self):
         for item, _, _, _, rsid, vkey in testData:
-            vk, first = bs.find_rv_variantkey_by_rsid(rvsrc, 0, 9, rsid)
+            vk, first = bs.find_rv_variantkey_by_rsid(rvmc, 0, rvnrows, rsid)
             self.assertEqual(vk, vkey)
             self.assertEqual(first, item)
 
     def test_find_rv_variantkey_by_rsid_notfound(self):
-        vk, first = bs.find_rv_variantkey_by_rsid(rvsrc, 0, 9, 0xfffffff0)
+        vk, first = bs.find_rv_variantkey_by_rsid(rvmc, 0, rvnrows, 0xfffffff0)
         self.assertEqual(vk, 0)
         self.assertEqual(first, 10)
 
     def test_get_next_rv_variantkey_by_rsid(self):
-        vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, 2, 9, 0x00000061)
+        vk, pos = bs.get_next_rv_variantkey_by_rsid(rvmc, 2, rvnrows, 0x00000061)
         self.assertEqual(vk, 0x80010274003A0000)
         self.assertEqual(pos, 3)
-        vk, pos = bs.get_next_rv_variantkey_by_rsid(rvsrc, pos, 9, 0x00000061)
+        vk, pos = bs.get_next_rv_variantkey_by_rsid(rvmc, pos, rvnrows, 0x00000061)
         self.assertEqual(vk, 0)
         self.assertEqual(pos, 4)
 
     def test_find_all_rv_variantkey_by_rsid(self):
-        vks = bs.find_all_rv_variantkey_by_rsid(rvmsrc, 0, 9, 0x00000003)
+        vks = bs.find_all_rv_variantkey_by_rsid(rvmmc, 0, rvnrows, 0x00000003)
         self.assertEqual(len(vks), 3)
         self.assertEqual(vks[0], 0x80010274003A0000)
         self.assertEqual(vks[1], 0x8001028D00138000)
         self.assertEqual(vks[2], 0x80010299007A0000)
 
     def test_find_all_rv_variantkey_by_rsid_notfound(self):
-        vks = bs.find_all_rv_variantkey_by_rsid(rvmsrc, 0, 9, 0xfffffff0)
+        vks = bs.find_all_rv_variantkey_by_rsid(rvmmc, 0, rvnrows, 0xfffffff0)
         self.assertEqual(len(vks), 0)
 
     def test_find_vr_rsid_by_variantkey(self):
         for item, _, _, _, rsid, vkey in testData:
-            rx, first = bs.find_vr_rsid_by_variantkey(vrsrc, 0, 9, vkey)
+            rx, first = bs.find_vr_rsid_by_variantkey(vrmc, 0, vrnrows, vkey)
             self.assertEqual(rx, rsid)
             self.assertEqual(first, item)
 
     def test_find_vr_rsid_by_variantkey_notfound(self):
-        rx, first = bs.find_vr_rsid_by_variantkey(vrsrc, 0, 9, 0xfffffffffffffff0)
+        rx, first = bs.find_vr_rsid_by_variantkey(vrmc, 0, vrnrows, 0xfffffffffffffff0)
         self.assertEqual(rx, 0)
         self.assertEqual(first, 10)
 
     def test_find_vr_chrompos_range(self):
-        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, testData[6][1], testData[7][2], testData[8][2])
+        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrmc, 0, vrnrows, testData[6][1], testData[7][2], testData[8][2])
         self.assertEqual(xrsid, testData[7][4])
         self.assertEqual(xfirst, 7)
         self.assertEqual(xlast, 8)
 
     def test_find_vr_chrompos_range_notfound(self):
-        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrsrc, 0, 9, 0xff, 0xffffff00, 0xfffffff0)
+        xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrmc, 0, vrnrows, 0xff, 0xffffff00, 0xfffffff0)
         self.assertEqual(xrsid, 0)
         self.assertEqual(xfirst, 10)
-        self.assertEqual(xlast, 9)
+        self.assertEqual(xlast, 10)
 
 
 class TestBenchmark(object):
@@ -127,33 +131,29 @@ class TestBenchmark(object):
     global setup
 
     def setup():
-        global rvsrc, rvfd, rvsize
-        if rvfd >= 0:
-            pass
-        bs.munmap_binfile(rvsrc, rvfd, rvsize)
+        global rvmf, rvmc, rvnrows
+        bs.munmap_binfile(rvmf)
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/rsvk.10.bin")
-        rvsrc, rvfd, rvsize, _ = bs.mmap_binfile(inputfile)
-        if rvfd < 0 or rvsize != 120:
+        rvmf, rvmc, rvnrows = bs.mmap_rsvk_file(inputfile, [4, 8])
+        if rvnrows <= 0:
             assert False, "Unable to open the rsvk.10.bin file"
-        global vrsrc, vrfd, vrsize
-        if vrfd >= 0:
-            pass
-        bs.munmap_binfile(vrsrc, vrfd, vrsize)
+        global vrmf, vrmc, vrnrows
+        bs.munmap_binfile(vrmf)
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/vkrs.10.bin")
-        vrsrc, vrfd, vrsize, _ = bs.mmap_binfile(inputfile)
-        if vrfd < 0 or vrsize != 120:
+        vrmf, vrmc, vrnrows = bs.mmap_vkrs_file(inputfile, [8, 4])
+        if vrnrows <= 0:
             assert False, "Unable to open the vkrs.10.bin file"
 
     def test_find_rv_variantkey_by_rsid(self, benchmark):
         benchmark.pedantic(
             bs.find_rv_variantkey_by_rsid,
-            args=[rvsrc, 0, 9, 0x2F81F575],
+            args=[rvmc, 0, rvnrows, 0x2F81F575],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -161,7 +161,7 @@ class TestBenchmark(object):
     def test_find_vr_rsid_by_variantkey(self, benchmark):
         benchmark.pedantic(
             bs.find_vr_rsid_by_variantkey,
-            args=[vrsrc, 0, 9, 0X160017CCA313D0E0],
+            args=[vrmc, 0, vrnrows, 0X160017CCA313D0E0],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -169,21 +169,17 @@ class TestBenchmark(object):
     def test_find_vr_chrompos_range(self, benchmark):
         benchmark.pedantic(
             bs.find_vr_chrompos_range,
-            args=[vrsrc, 0, 9, 0x19, 0x001AF8FD, 0x001C8F2A],
+            args=[vrmc, 0, vrnrows, 0x19, 0x001AF8FD, 0x001C8F2A],
             setup=setup,
             iterations=1,
             rounds=10000)
 
     def test_tearDown(self):
-        global rvsrc, rvfd, rvsize
-        h = bs.munmap_binfile(rvsrc, rvfd, rvsize)
-        rvfd = -1
-        rvsize = 0
+        global rvmf, rvmc, rvnrows
+        h = bs.munmap_binfile(rvmf)
         if h != 0:
             assert False, "Error while closing the rsvk.10.bin memory-mapped file"
-        global vrsrc, vrfd, vrsize
-        h = bs.munmap_binfile(vrsrc, vrfd, vrsize)
-        vrfd = -1
-        vrsize = 0
+        global vrmf, vrmc, vrnrows
+        h = bs.munmap_binfile(vrmf)
         if h != 0:
             assert False, "Error while closing the vkrs.10.bin memory-mapped file"
