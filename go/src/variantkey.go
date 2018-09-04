@@ -292,10 +292,9 @@ func castGoTMMFileToC(mf TMMFile) C.mmfile_t {
 	cmf.dlength = C.uint64_t(mf.DLength)
 	cmf.nrows = C.uint64_t(mf.NRows)
 	cmf.ncols = C.uint8_t(mf.NCols)
-	var i uint8
-	for i = 0; i < mf.NCols; i++ {
-		cmf.ctbytes[i] = C.uint8_t(mf.CTBytes[i])
-		cmf.index[i] = C.uint64_t(mf.Index[i])
+	if len(mf.CTBytes) > 0 {
+		cmf.ctbytes = *(*[256]C.uint8_t)(unsafe.Pointer(&mf.CTBytes[0]))
+		cmf.index = *(*[256]C.uint64_t)(unsafe.Pointer(&mf.Index[0]))
 	}
 	return cmf
 }
