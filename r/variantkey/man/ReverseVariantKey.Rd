@@ -4,12 +4,10 @@
 \alias{ReverseVariantKey}
 \title{Reverse a VariantKey code and returns the normalized components.}
 \usage{
-ReverseVariantKey(src, last, vk)
+ReverseVariantKey(mc, vk)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}
-
-\item{last}{Number of variants in the src file -1. Set this to 0 to skip the lookup table.}
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 
 \item{vk}{VariantKey code.}
 }

@@ -75,28 +75,25 @@ print(vk.parse_variantkey_hex(b'b800181c910d8000'))
 # Load the reference genome binary file.
 # The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 # This example uses the "c/test/data/genoref.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('genoref.bin')
-if mffd < 0:
+mf, mfsize = vk.mmap_genoref_file('genoref.bin')
+if mfsize <= 0:
     assert False, "Unable to open the genoref.bin file"
 
-# Load the file index
-mfidx = vk.load_genoref_index(mfsrc)
-
-print(vk.get_genoref_seq(mfsrc, mfidx, chrom=23, pos=0))
+print(vk.get_genoref_seq(mf, chrom=23, pos=0))
 # b'A'
 
-print(vk.check_reference(mfsrc, mfidx, chrom=23, pos=0, ref='A'))
+print(vk.check_reference(mf, chrom=23, pos=0, ref='A'))
 # 0
 
 print(vk.flip_allele(b'ATCGMKRYBVDHWSNatcgmkrybvdhwsn'))
 # b'TAGCKMYRVBHDWSNTAGCKMYRVBHDWSN'
 
 # Normalize a variant - this function should be used before generating a new VariantKey
-print(vk.normalize_variant(mfsrc, mfidx, chrom=13, pos=2, ref='CDE', alt='CFE'))
+print(vk.normalize_variant(mf, chrom=13, pos=2, ref='CDE', alt='CFE'))
 # (48, 3, b'D', b'F', 1, 1)
 # Return values are: code, POS, REF, ALT, REF length, ALT length
 
-vk.munmap_binfile(mfsrc, mffd, mfsize)
+vk.munmap_binfile(mf)
 
 
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -106,35 +103,35 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # ----
 
 # Load the lookup table for non-reversible variantkeys.
-# The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
+# The input binary files can be generated from a normalized VCF file using the resources/tools/nrvk.sh script.
 # The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-# This example uses the "c/test/data/vknr.10.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('vknr.10.bin')
-if mffd < 0:
-    assert False, "Unable to open the vknr.10.bin file"
+# This example uses the "c/test/data/nrvk.10.bin".
+mf, mc, nrows = vk.mmap_nrvk_file('nrvk.10.bin')
+if nrows <= 0:
+    assert False, "Unable to open the nrvk.10.bin file"
 
-print(vk.find_ref_alt_by_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+print(vk.find_ref_alt_by_variantkey(mc, vk=0x2000c3521f1c15ab))
 # (b'ACGTACGT', b'ACGT', 8, 4, 12)
 # Return values are: REF, ALT, REF length, ALT length, REF+ALT length
 
 # Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-print(vk.reverse_variantkey(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+print(vk.reverse_variantkey(mc, vk=0x2000c3521f1c15ab))
 # (b'4', 100004, b'ACGTACGT', b'ACGT', 8, 4, 12)
 # Return values are: CHROM, POS, REF, ALT, REF length, ALT length, REF+ALT length
 
-print(vk.get_variantkey_ref_length(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+print(vk.get_variantkey_ref_length(mc, vk=0x2000c3521f1c15ab))
 # 8
 
-print(vk.get_variantkey_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+print(vk.get_variantkey_endpos(mc, vk=0x2000c3521f1c15ab))
 # 100012
 
 print(vk.get_variantkey_chrom_startpos(vk=0x2000c3521f1c15ab))
 # 1073841828
 
-print(vk.get_variantkey_chrom_endpos(mfsrc, mflast, vk=0x2000c3521f1c15ab))
+print(vk.get_variantkey_chrom_endpos(mc, vk=0x2000c3521f1c15ab))
 # 1073841836
 
-vk.munmap_binfile(mfsrc, mffd, mfsize)
+vk.munmap_binfile(mf)
 
 
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -144,56 +141,50 @@ vk.munmap_binfile(mfsrc, mffd, mfsize)
 # -------
 
 # Load the lookup table for rsID to VariantKey.
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.10.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('rsvk.10.bin')
-if mffd < 0:
+mf, mc, nrows = vk.mmap_rsvk_file('rsvk.10.bin', [])
+if nrows <= 0:
     assert False, "Unable to open the rsvk.10.bin file"
 
-print(vk.get_rv_variantkey(mfsrc, item=3))
-# 9223656209074749440
-
-print(vk.find_rv_variantkey_by_rsid(mfsrc, 0, 9, rsid=0X00000061))
+print(vk.find_rv_variantkey_by_rsid(mc, 0, nrows, rsid=0X00000061))
 # (9223656209074749440, 3)
 
-print(vk.get_next_rv_variantkey_by_rsid(mfsrc, 2, 9, 0x00000061))
+print(vk.get_next_rv_variantkey_by_rsid(mc, 2, nrows, 0x00000061))
 # (9223656209074749440, 3)
 
-vk.munmap_binfile(mfsrc, mffd, mfsize)
+vk.munmap_binfile(mf)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load the lookup table for rsID to VariantKey.
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.m.10.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('rsvk.m.10.bin')
-if mffd < 0:
+mf, mc, nrows = vk.mmap_rsvk_file('rsvk.m.10.bin', [])
+if nrows <= 0:
     assert False, "Unable to open the rsvk.m.10.bin file"
 
-print(vk.find_all_rv_variantkey_by_rsid(mfsrc, 0, 9, 0x00000003))
+print(vk.find_all_rv_variantkey_by_rsid(mc, 0, nrows, 0x00000003))
 # [9223656209074749440, 9223656316446408704, 9223656367992733696]
 
-vk.munmap_binfile(mfsrc, mffd, mfsize)
+vk.munmap_binfile(mf)
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load the lookup table for VariantKey ro rsID
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/vkrs.sh script.
 # This example uses the "c/test/data/vkrs.10.bin".
-mfsrc, mffd, mfsize, mflast = vk.mmap_binfile('vkrs.10.bin')
-if mffd < 0:
+mf, mc, nrows = vk.mmap_vkrs_file('vkrs.10.bin', [])
+if nrows <= 0:
     assert False, "Unable to open the vkrs.10.bin file"
 
-print(vk.get_vr_rsid(mfsrc, item=3))
-# 97
-
-print(vk.find_vr_rsid_by_variantkey(mfsrc, 0, 9, vk=0X80010274003A0000))
+print(vk.find_vr_rsid_by_variantkey(mc, 0, nrows, vk=0X80010274003A0000))
 # (97, 3)
 
-print(vk.find_vr_chrompos_range(mfsrc, 0, 9, 0X14, 0X000256C5, 0X000256CB))
+print(vk.find_vr_chrompos_range(mc, 0, nrows, 0X14, 0X000256C5, 0X000256CB))
 # (9973, 7, 8)
 
-vk.munmap_binfile(mfsrc, mffd, mfsize)
+vk.munmap_binfile(mf)
 
 
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -253,10 +244,10 @@ print(vk.are_overlapping_region_regionkey(5, 4, 6, 0x2800000180000038))
 print(vk.are_overlapping_regionkeys(0x2800000200000030, 0x2800000180000038))
 # 1
 
-print(vk.are_overlapping_variantkey_regionkey(None, 0, 0x2800000210920000, 0x2800000180000038))
+print(vk.are_overlapping_variantkey_regionkey(None, 0x2800000210920000, 0x2800000180000038))
 # 1
 
-print(vk.variantkey_to_regionkey(None, 0, 0x2800000210920000))
+print(vk.variantkey_to_regionkey(None, 0x2800000210920000))
 # 2882303770107052080
 
 
@@ -271,6 +262,12 @@ print(vk.encode_string_id("A0A022YWF9", 0))
 
 print(vk.decode_string_id(0xa850850492e77999))
 (b'A0A022YWF9', 10)
+
+print(vk.encode_string_num_id("ABC:0000123456", ':'))
+# 15592178792074961472
+
+print(vk.decode_string_id(0xd8628c002001e240))
+(b'ABC:0000123456', 14)
 
 print(vk.hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 # 12945031672818874332

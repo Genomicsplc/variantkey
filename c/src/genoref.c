@@ -34,6 +34,19 @@
 #include <string.h>
 #include "genoref.h"
 
+void mmap_genoref_file(const char *file, mmfile_t *mf)
+{
+    mmap_binfile(file, mf);
+    mf->index[26] = mf->size;
+    int i = 25;
+    while (i > 0)
+    {
+        mf->index[i] = mf->index[(i - 1)];
+        i--;
+    }
+    mf->ncols = 27;
+}
+
 /**
  * Returns the uppercase version of the input character.
  * Note that this is safe to be used only with a-z characters.
@@ -61,37 +74,27 @@ static inline int aztoupper(int c)
  *
  * @return void
  */
-void prepend_char(const unsigned char pre, char *string, size_t *size)
+void prepend_char(const uint8_t pre, char *string, size_t *size)
 {
     memmove(string + 1, string, (*size + 1));
     string[0] = pre;
     (*size)++;
 }
 
-void load_genoref_index(const unsigned char *src, uint32_t idx[])
+char get_genoref_seq(mmfile_t mf, uint8_t chrom, uint32_t pos)
 {
-    idx[0] = 0;
-    int i;
-    for (i = 1; i <= 26; i++)
-    {
-        idx[i] = bytes_be_to_uint32_t(src, ((uint64_t)(i - 1) * 4));
-    }
-}
-
-char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos)
-{
-    uint32_t offset = (idx[chrom] + pos);
-    if (offset > (idx[(chrom + 1)] - 2))
+    uint64_t offset = (mf.index[chrom] + pos);
+    if (offset >= mf.index[(chrom + 1)])
     {
         return 0; // invalid position
     }
-    return (char)src[offset];
+    return *(mf.src + offset);
 }
 
-int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
+int check_reference(mmfile_t mf, uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
-    uint32_t offset = (idx[chrom] + pos);
-    if ((offset + sizeref + 1) > (idx[(chrom + 1)]))
+    uint64_t offset = (mf.index[chrom] + pos);
+    if ((offset + sizeref - 1) >= mf.index[(chrom + 1)])
     {
         return NORM_WRONGPOS;
     }
@@ -101,7 +104,7 @@ int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chro
     for (i = 0; i < sizeref; i++)
     {
         uref = aztoupper(ref[i]);
-        gref = src[(offset + i)];
+        gref = mf.src[(offset + i)];
         if (uref == gref)
         {
             continue;
@@ -194,7 +197,7 @@ void flip_allele(char *allele, size_t size)
     size_t i;
     for (i = 0; i < size; i++)
     {
-        allele[i] = map[((unsigned char)allele[i])];
+        allele[i] = map[((uint8_t)allele[i])];
     }
     allele[size] = 0;
 }
@@ -217,20 +220,20 @@ static inline void swap_alleles(char *first, size_t *sizefirst, char *second, si
     second[*sizesecond] = 0;
 }
 
-int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+int normalize_variant(mmfile_t mf, uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     char left;
     char fref[ALLELE_MAXSIZE];
     char falt[ALLELE_MAXSIZE];
     int status;
-    status = check_reference(src, idx, chrom, *pos, ref, *sizeref);
+    status = check_reference(mf, chrom, *pos, ref, *sizeref);
     if (status == -2)
     {
         return status; // invalid position
     }
     if (status < 0)
     {
-        status = check_reference(src, idx, chrom, *pos, alt, *sizealt);
+        status = check_reference(mf, chrom, *pos, alt, *sizealt);
         if (status >= 0)
         {
             swap_alleles(ref, sizeref, alt, sizealt);
@@ -240,7 +243,7 @@ int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t ch
         {
             strncpy(fref, ref, *sizeref);
             flip_allele(fref, *sizeref);
-            status = check_reference(src, idx, chrom, *pos, fref, *sizeref);
+            status = check_reference(mf, chrom, *pos, fref, *sizeref);
             if (status >= 0)
             {
                 strncpy(ref, fref, *sizealt);
@@ -251,7 +254,7 @@ int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t ch
             {
                 strncpy(falt, alt, *sizealt);
                 flip_allele(falt, *sizealt);
-                status = check_reference(src, idx, chrom, *pos, falt, *sizealt);
+                status = check_reference(mf, chrom, *pos, falt, *sizealt);
                 if (status >= 0)
                 {
                     strncpy(ref, falt, *sizealt);
@@ -276,7 +279,7 @@ int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t ch
         if (((*sizealt == 0) || (*sizeref == 0)) && (*pos > 0))
         {
             (*pos)--;
-            left = (char)src[(size_t)(idx[chrom] + *pos)];
+            left = (char)mf.src[(mf.index[chrom] + *pos)];
             prepend_char(left, alt, sizealt);
             prepend_char(left, ref, sizeref);
             status |= NORM_LEXT;

@@ -22,74 +22,64 @@ x <- rbind(
 )
 colnames(x) <- list("item", "chrom", "pos", "refalt", "rsid", "vk")
 
-test_that("MmapBinfile", {
-    rsvk <<- MmapBinfile("../../../../c/test/data/rsvk.10.bin")
-    expect_that(rsvk$SIZE, equals(120))
-    rsvkm <<- MmapBinfile("../../../../c/test/data/rsvk.m.10.bin")
-    expect_that(rsvkm$SIZE, equals(120))
-    vkrs <<- MmapBinfile("../../../../c/test/data/vkrs.10.bin")
-    expect_that(rsvk$SIZE, equals(120))
-})
-
-test_that("GetVrRsid", {
-    res <- mapply(GetVrRsid, item = unlist(x[,"item"]), MoreArgs = list(src = vkrs$SRC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"rsid"])))
-})
-
-test_that("GetRvVariantKey", {
-    res <- mapply(GetRvVariantKey, item = unlist(x[,"item"]), MoreArgs = list(src = rsvk$SRC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"vk"])))
+test_that("MmapRSVKFile", {
+    rsvk <<- MmapRSVKFile("../../../../c/test/data/rsvk.10.bin", as.integer(c(4, 8)))
+    expect_that(rsvk$NROWS, equals(10))
+    rsvkm <<- MmapRSVKFile("../../../../c/test/data/rsvk.m.10.bin", as.integer(c()))
+    expect_that(rsvkm$NROWS, equals(10))
+    vkrs <<- MmapVKRSFile("../../../../c/test/data/vkrs.10.bin", as.integer(c(8, 4)))
+    expect_that(vkrs$NROWS, equals(10))
 })
 
 test_that("FindRvVariantKeyByRsid", {
-    res <- mapply(FindRvVariantKeyByRsid, rsid = unlist(x[,"rsid"]), MoreArgs = list(src = rsvk$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(FindRvVariantKeyByRsid, rsid = unlist(x[,"rsid"]), MoreArgs = list(mc = rsvk$MC, first = 0, last = rsvk$NROWS), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"vk"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"item"])))
 })
 
 test_that("FindRvVariantKeyByRsidNotFound", {
-    res <- FindRvVariantKeyByRsid(rsvk$SRC, 0, 9, 0xfffffff0)
+    res <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvk$NROWS, 0xfffffff0)
     expect_that(res$VK, equals("0000000000000000"))
     expect_that(res$FIRST, equals(10))
 })
 
 test_that("GetNextRvVariantKeyByRsid", {
-    res <- GetNextRvVariantKeyByRsid(rsvk$SRC, 2, 9, 0x00000061)
+    res <- GetNextRvVariantKeyByRsid(rsvk$MC, 2, rsvk$NROWS, 0x00000061)
     expect_that(res$VK, equals("80010274003a0000"))
     expect_that(res$POS, equals(3))
-    res <- GetNextRvVariantKeyByRsid(rsvk$SRC, res$POS, 9, 0x00000061)
+    res <- GetNextRvVariantKeyByRsid(rsvk$MC, res$POS, rsvk$NROWS, 0x00000061)
     expect_that(res$VK, equals("0000000000000000"))
     expect_that(res$POS, equals(4))
 })
 
 test_that("FindVrRsidByVariantKey", {
-    res <- mapply(FindVrRsidByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = vkrs$SRC, first = 0, last = 9), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(FindVrRsidByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(mc = vkrs$MC, first = 0, last = vkrs$NROWS), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"rsid"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"item"])))
 })
 
 test_that("FindVrRsidByVariantKeyNotFound", {
-    res <- FindVrRsidByVariantKey(vkrs$SRC, 0, 9, "fffffffffffffff0")
+    res <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, "fffffffffffffff0")
     expect_that(res$RSID, equals(0))
     expect_that(res$FIRST, equals(10))
 })
 
 test_that("FindVrChromposRange", {
-    res <- FindVrChromposRange(vkrs$SRC, 0, 9, 0x14, 0x000256C5, 0x000256CB)
+    res <- FindVrChromposRange(vkrs$MC, 0, vkrs$NROWS, 0x14, 0x000256C5, 0x000256CB)
     expect_that(res$RSID, equals(0x000026F5))
     expect_that(res$FIRST, equals(7))
     expect_that(res$LAST, equals(8))
 })
 
 test_that("FindVrChromposRangeNotFound", {
-    res <- FindVrChromposRange(vkrs$SRC, 0, 9, 0xff, 0xffffff00, 0xfffffff0)
+    res <- FindVrChromposRange(vkrs$MC, 0, vkrs$NROWS, 0xff, 0xffffff00, 0xfffffff0)
     expect_that(res$RSID, equals(0))
     expect_that(res$FIRST, equals(10))
-    expect_that(res$LAST, equals(9))
+    expect_that(res$LAST, equals(10))
 })
 
 test_that("FindAllRvVariantKeyByRsid", {
-    res <- FindAllRvVariantKeyByRsid(rsvkm$SRC, 0, 9, 0x00000003)
+    res <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, 0x00000003)
     expect_that(length(res), equals(3))
     expect_that(unlist(res[1]), equals("80010274003a0000"))
     expect_that(unlist(res[2]), equals("8001028d00138000"))
@@ -97,15 +87,15 @@ test_that("FindAllRvVariantKeyByRsid", {
 })
 
 test_that("FindAllRvVariantKeyByRsidNotFound", {
-    res <- FindAllRvVariantKeyByRsid(rsvkm$SRC, 0, 9, 0xfffffff0)
+    res <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, 0xfffffff0)
     expect_that(length(res), equals(0))
 })
 
 test_that("MunmapBinfile", {
-    err <- MunmapBinfile(rsvk$SRC, rsvk$FD, rsvk$SIZE)
+    err <- MunmapBinfile(rsvk$MF)
     expect_that(err, equals(0))
-    err <- MunmapBinfile(rsvkm$SRC, rsvkm$FD, rsvkm$SIZE)
+    err <- MunmapBinfile(rsvkm$MF)
     expect_that(err, equals(0))
-    err <- MunmapBinfile(vkrs$SRC, vkrs$FD, vkrs$SIZE)
+    err <- MunmapBinfile(vkrs$MF)
     expect_that(err, equals(0))
 })

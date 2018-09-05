@@ -68,13 +68,12 @@ func main() {
 	// Load the reference genome binary file.
 	// The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 	// This example uses the "c/test/data/genoref.bin".
-	gref, err := vk.MmapBinFile("../c/test/data/genoref.bin")
+	gref, err := vk.MmapGenorefFile("../c/test/data/genoref.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
 	defer gref.Close()
-	gref.LoadGenorefIndex()
 
 	fmt.Println(gref.GetGenorefSeq(23, 0))
 	// 65
@@ -95,33 +94,33 @@ func main() {
 	// ----
 
 	// Load the lookup table for non-reversible variantkeys.
-	// The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
+	// The input binary files can be generated from a normalized VCF file using the resources/tools/nrvk.sh script.
 	// The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-	// This example uses the "c/test/data/vknr.10.bin".
-	vknr, err := vk.MmapBinFile("../c/test/data/vknr.10.bin")
+	// This example uses the "c/test/data/nrvk.10.bin".
+	nrvkmf, nrvk, err := vk.MmapNRVKFile("../c/test/data/nrvk.10.bin")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(2)
 	}
-	defer vknr.Close()
+	defer nrvkmf.Close()
 
-	fmt.Println(vknr.FindRefAltByVariantKey(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.FindRefAltByVariantKey(0x2000c3521f1c15ab))
 	// ACGTACGT ACGT 8 4 12
 
 	// Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-	fmt.Println(vknr.ReverseVariantKey(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.ReverseVariantKey(0x2000c3521f1c15ab))
 	// {4 100004 ACGTACGT ACGT 8 4} 12
 
-	fmt.Println(vknr.GetVariantKeyRefLength(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.GetVariantKeyRefLength(0x2000c3521f1c15ab))
 	// 8
 
-	fmt.Println(vknr.GetVariantKeyEndPos(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.GetVariantKeyEndPos(0x2000c3521f1c15ab))
 	// 100012
 
 	fmt.Println(vk.GetVariantKeyChromStartPos(0x2000c3521f1c15ab))
 	// 1073841828
 
-	fmt.Println(vknr.GetVariantKeyChromEndPos(0x2000c3521f1c15ab))
+	fmt.Println(nrvk.GetVariantKeyChromEndPos(0x2000c3521f1c15ab))
 	// 1073841836
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -130,17 +129,14 @@ func main() {
 	// -------
 
 	// Load the lookup table for rsID to VariantKey.
-	// The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+	// The input binary file can be generated using the resources/tools/rsvk.sh script.
 	// This example uses the "c/test/data/rsvk.10.bin".
-	rv, err := vk.MmapBinFile("../c/test/data/rsvk.10.bin")
+	rvmf, rv, err := vk.MmapRSVKFile("../c/test/data/rsvk.10.bin", []uint8{})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(3)
 	}
-	defer rv.Close()
-
-	fmt.Println(rv.GetRVVariantKey(3))
-	// 9223656209074749440
+	defer rvmf.Close()
 
 	fmt.Println(rv.FindRVVariantKeyByRsid(0, 9, 0x00000061))
 	// 9223656209074749440 3
@@ -151,14 +147,14 @@ func main() {
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Load the lookup table for rsID to VariantKey.
-	// The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+	// The input binary file can be generated using the resources/tools/rsvk.sh script.
 	// This example uses the "c/test/data/rsvk.m.10.bin".
-	rvm, err := vk.MmapBinFile("../c/test/data/rsvk.m.10.bin")
+	rvmmf, rvm, err := vk.MmapRSVKFile("../c/test/data/rsvk.m.10.bin", []uint8{})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(4)
 	}
-	defer rvm.Close()
+	defer rvmmf.Close()
 
 	fmt.Println(rvm.FindAllRVVariantKeyByRsid(0, 9, 0x00000003))
 	// [9223656209074749440 9223656316446408704 9223656367992733696]
@@ -166,17 +162,14 @@ func main() {
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 	// Load the lookup table for VariantKey ro rsID
-	// The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+	// The input binary file can be generated using the resources/tools/vkrs.sh script.
 	// This example uses the "c/test/data/vkrs.10.bin".
-	vr, err := vk.MmapBinFile("../c/test/data/vkrs.10.bin")
+	vrmf, vr, err := vk.MmapVKRSFile("../c/test/data/vkrs.10.bin", []uint8{})
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(5)
 	}
-	defer vr.Close()
-
-	fmt.Println(vr.GetVRRsid(3))
-	// 97
+	defer vrmf.Close()
 
 	fmt.Println(vr.FindVRRsidByVariantKey(0, 9, 0x80010274003A0000))
 	// 97 3
@@ -234,10 +227,10 @@ func main() {
 	fmt.Println(vk.AreOverlappingRegionKeys(0x2800000200000030, 0x2800000180000038))
 	// true
 
-	fmt.Println(vknr.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038))
+	fmt.Println(nrvk.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038))
 	// true
 
-	fmt.Println(vknr.VariantToRegionkey(0x2800000210920000))
+	fmt.Println(nrvk.VariantToRegionkey(0x2800000210920000))
 	// 2882303770107052080
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -250,6 +243,12 @@ func main() {
 
 	fmt.Println(vk.DecodeStringID(0xa850850492e77999))
 	// A0A022YWF9
+
+	fmt.Println(vk.EncodeStringNumID("ABC:0000123456", ':'))
+	// 15592178792074961472
+
+	fmt.Println(vk.DecodeStringID(0xd8628c002001e240))
+	// ABC:0000123456
 
 	fmt.Println(vk.HashStringID("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"))
 	// 12945031672818874332

@@ -3,12 +3,12 @@
 \name{FindAllRvVariantKeyByRsid}
 \alias{FindAllRvVariantKeyByRsid}
 \title{Search for the specified rsID and returns all the associated VariantKeys in the RV file.
-NOTE that the output is limited to maximum 10 results.}
+NOTE: the output is limited to maximum 10 results.}
 \usage{
-FindAllRvVariantKeyByRsid(src, first, last, rsid)
+FindAllRvVariantKeyByRsid(mc, first, last, rsid)
 }
 \arguments{
-\item{src}{Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).}
+\item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
 
 \item{first}{First element of the range to search (min value = 0).}
 
@@ -18,5 +18,5 @@ FindAllRvVariantKeyByRsid(src, first, last, rsid)
 }
 \description{
 Search for the specified rsID and returns all the associated VariantKeys in the RV file.
-NOTE that the output is limited to maximum 10 results.
+NOTE: the output is limited to maximum 10 results.
 }

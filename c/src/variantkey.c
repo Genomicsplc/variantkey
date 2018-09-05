@@ -78,7 +78,7 @@ uint8_t encode_chrom(const char *chrom, size_t size)
     }
     if ((size == 1) || ((size == 2) && ((chrom[1] == 'T') || (chrom[1] == 't'))))
     {
-        return onecharmap[((unsigned char)chrom[0])];
+        return onecharmap[((uint8_t)chrom[0])];
     }
     return 0; // NA
 }
@@ -97,7 +97,7 @@ size_t decode_chrom(uint8_t code, char *chrom)
     return sprintf(chrom, "%s", map[(code - 23)]);
 }
 
-static inline uint32_t encode_base(const unsigned char c)
+static inline uint32_t encode_base(const uint8_t c)
 {
     /*
       Encode base:

@@ -10,7 +10,10 @@ package variantkey
 import "testing"
 import "os"
 
-var mf, cmf, rv, rvm, vr, vknr, gref TMMFile
+var gref, rvmf, rvmmf, vrmf, nrvkmf TMMFile
+var rv, rvm, vr RSIDVARCols
+var nrvk NRVKCols
+
 var retCode int
 
 func closeTMMFile(mmf TMMFile) {
@@ -25,48 +28,35 @@ func TestMain(m *testing.M) {
 
 	// memory map the input files
 
-	mf, err = MmapBinFile("../../c/test/data/test_data.bin")
-	if err != nil {
-		os.Exit(1)
-	}
-	defer closeTMMFile(mf)
-
-	cmf, err = MmapBinFile("../../c/test/data/test_data_col.bin")
-	if err != nil {
-		os.Exit(1)
-	}
-	defer closeTMMFile(cmf)
-
-	rv, err = MmapBinFile("../../c/test/data/rsvk.10.bin")
+	rvmf, rv, err = MmapRSVKFile("../../c/test/data/rsvk.10.bin", []uint8{})
 	if err != nil {
 		os.Exit(2)
 	}
-	defer closeTMMFile(rv)
+	defer closeTMMFile(rvmf)
 
-	rvm, err = MmapBinFile("../../c/test/data/rsvk.m.10.bin")
+	rvmmf, rvm, err = MmapRSVKFile("../../c/test/data/rsvk.m.10.bin", []uint8{})
 	if err != nil {
 		os.Exit(2)
 	}
-	defer closeTMMFile(rvm)
+	defer closeTMMFile(rvmmf)
 
-	vr, err = MmapBinFile("../../c/test/data/vkrs.10.bin")
+	vrmf, vr, err = MmapVKRSFile("../../c/test/data/vkrs.10.bin", []uint8{})
 	if err != nil {
 		os.Exit(3)
 	}
-	defer closeTMMFile(vr)
+	defer closeTMMFile(vrmf)
 
-	vknr, err = MmapBinFile("../../c/test/data/vknr.10.bin")
+	nrvkmf, nrvk, err = MmapNRVKFile("../../c/test/data/nrvk.10.bin")
 	if err != nil {
 		os.Exit(4)
 	}
-	defer closeTMMFile(vknr)
+	defer closeTMMFile(nrvkmf)
 
-	gref, err = MmapBinFile("../../c/test/data/genoref.bin")
+	gref, err = MmapGenorefFile("../../c/test/data/genoref.bin")
 	if err != nil {
 		os.Exit(5)
 	}
 	defer closeTMMFile(gref)
-	gref.LoadGenorefIndex()
 
 	retCode += m.Run()
 
@@ -74,7 +64,7 @@ func TestMain(m *testing.M) {
 }
 
 func TestClose(t *testing.T) {
-	lmf, err := MmapBinFile("../../c/test/data/test_data.bin")
+	lmf, err := MmapGenorefFile("../../c/test/data/test_data.bin")
 	if err != nil {
 		t.Errorf("Unexpected error: %v", err)
 	}
@@ -92,16 +82,30 @@ func TestCloseError(t *testing.T) {
 	}
 }
 
-func TestMmapBinFileError(t *testing.T) {
-	_, err := MmapBinFile("error")
+func TestMmapRSVKFileError(t *testing.T) {
+	_, _, err := MmapRSVKFile("error", []uint8{1})
 	if err == nil {
 		t.Errorf("An error was expected")
 	}
 }
 
-func TestGetAddress(t *testing.T) {
-	h := GetAddress(3, 5, 7)
-	if h != 26 {
-		t.Errorf("Expected 26, got %d", h)
+func TestMmapVKRSFileError(t *testing.T) {
+	_, _, err := MmapVKRSFile("error", []uint8{1})
+	if err == nil {
+		t.Errorf("An error was expected")
+	}
+}
+
+func TestMmapNRVKFileError(t *testing.T) {
+	_, _, err := MmapNRVKFile("error")
+	if err == nil {
+		t.Errorf("An error was expected")
+	}
+}
+
+func TestMmapGenorefFileError(t *testing.T) {
+	_, err := MmapGenorefFile("error")
+	if err == nil {
+		t.Errorf("An error was expected")
 	}
 }

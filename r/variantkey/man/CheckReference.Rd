@@ -9,18 +9,16 @@ Return Positive number in case of success, negative in case of error:
   * -1 the reference allele don't match the reference genome;
   * -2 the reference allele is longer than the genome reference sequence.}
 \usage{
-CheckReference(src, idx, chrom, pos, ref)
+CheckReference(mf, chrom, pos, ref)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the genome reference data (fasta.bin).}
-
-\item{idx}{Index of sequences offset by chromosome number (1 to 25).}
-
 \item{chrom}{Encoded Chromosome number (see encode_chrom).}
 
 \item{pos}{Position. The reference position, with the first base having position 0.}
 
 \item{ref}{Reference allele. String containing a sequence of nucleotide letters.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapGenorefFile.}
 }
 \description{
 Check if the reference allele matches the reference genome data.

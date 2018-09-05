@@ -28,55 +28,13 @@ var testData = []struct {
 	{0x14, 0x000256CF, 0x55439803, 0x00019919, 0xA0012B67D5439803},
 }
 
-func TestGetVRRsid(t *testing.T) {
-	for i, tt := range testData {
-		i := i
-		tt := tt
-		t.Run("", func(t *testing.T) {
-			t.Parallel()
-			rsid := vr.GetVRRsid(uint64(i))
-			if rsid != tt.rsid {
-				t.Errorf("Expected %x, got %x", tt.rsid, rsid)
-			}
-		})
-	}
-}
-
-func BenchmarkGetVRRsid(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		vr.GetVRRsid(3)
-	}
-}
-
-func TestGetRVVariantKey(t *testing.T) {
-	for i, tt := range testData {
-		i := i
-		tt := tt
-		t.Run("", func(t *testing.T) {
-			t.Parallel()
-			vk := rv.GetRVVariantKey(uint64(i))
-			if vk != tt.vk {
-				t.Errorf("Expected VariantKey %x, got %x", tt.vk, vk)
-			}
-		})
-	}
-}
-
-func BenchmarkGetRVVariantKey(b *testing.B) {
-	b.ResetTimer()
-	for i := 0; i < b.N; i++ {
-		rv.GetRVVariantKey(3)
-	}
-}
-
 func TestFindRVVariantKeyByRsid(t *testing.T) {
 	for i, tt := range testData {
 		i := i
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			vk, first := rv.FindRVVariantKeyByRsid(0, 9, tt.rsid)
+			vk, first := rv.FindRVVariantKeyByRsid(0, rv.NRows, tt.rsid)
 			if first != uint64(i) {
 				t.Errorf("Expected first %d, got %d", i, first)
 			}
@@ -88,7 +46,7 @@ func TestFindRVVariantKeyByRsid(t *testing.T) {
 }
 
 func TestFindRVVariantKeyByRsidNotFound(t *testing.T) {
-	vk, first := rv.FindRVVariantKeyByRsid(0, 9, 0xfffffff0)
+	vk, first := rv.FindRVVariantKeyByRsid(0, rv.NRows, 0xfffffff0)
 	if first != 10 {
 		t.Errorf("Expected first 10, got %d", first)
 	}
@@ -107,14 +65,14 @@ func BenchmarkFindRVVariantKeyByRsid(b *testing.B) {
 func TestGetNextRVVariantKeyByRsid(t *testing.T) {
 	var vk uint64
 	pos := uint64(2)
-	vk, pos = rv.GetNextRVVariantKeyByRsid(pos, 9, 0x00000061)
+	vk, pos = rv.GetNextRVVariantKeyByRsid(pos, rv.NRows, 0x00000061)
 	if pos != 3 {
 		t.Errorf("(1) Expected pos 3, got %d", pos)
 	}
 	if vk != 0x80010274003A0000 {
 		t.Errorf("(1) Expected VariantKey 0x80010274003A0000, got %x", vk)
 	}
-	vk, pos = rv.GetNextRVVariantKeyByRsid(pos, 9, 0x00000061)
+	vk, pos = rv.GetNextRVVariantKeyByRsid(pos, rv.NRows, 0x00000061)
 	if pos != 4 {
 		t.Errorf("(2) Expected pos 4, got %d", pos)
 	}
@@ -124,7 +82,7 @@ func TestGetNextRVVariantKeyByRsid(t *testing.T) {
 }
 
 func TestFindAllRVVariantKeyByRsid(t *testing.T) {
-	vks := rvm.FindAllRVVariantKeyByRsid(0, 9, 0x00000003)
+	vks := rvm.FindAllRVVariantKeyByRsid(0, rvm.NRows, 0x00000003)
 	if len(vks) != 3 {
 		t.Errorf("Expected len 3, got %d", len(vks))
 	}
@@ -140,7 +98,7 @@ func TestFindAllRVVariantKeyByRsid(t *testing.T) {
 }
 
 func TestFindAllRVVariantKeyByRsidNotFound(t *testing.T) {
-	vks := rvm.FindAllRVVariantKeyByRsid(0, 9, 0x12345678)
+	vks := rvm.FindAllRVVariantKeyByRsid(0, rvm.NRows, 0x12345678)
 	if len(vks) != 0 {
 		t.Errorf("Expected len 0, got %d", len(vks))
 	}
@@ -152,7 +110,7 @@ func TestFindVRRsidByVariantKey(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			rsid, first := vr.FindVRRsidByVariantKey(0, 9, tt.vk)
+			rsid, first := vr.FindVRRsidByVariantKey(0, vr.NRows, tt.vk)
 			if rsid != tt.rsid {
 				t.Errorf("%d. Expected rsid %x, got %x", i, tt.rsid, rsid)
 			}
@@ -164,7 +122,7 @@ func TestFindVRRsidByVariantKey(t *testing.T) {
 }
 
 func TestFindVRRsidByVariantKeyNotFound(t *testing.T) {
-	rsid, first := vr.FindVRRsidByVariantKey(0, 9, 0xfffffffffffffff0)
+	rsid, first := vr.FindVRRsidByVariantKey(0, vr.NRows, 0xfffffffffffffff0)
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
@@ -176,12 +134,12 @@ func TestFindVRRsidByVariantKeyNotFound(t *testing.T) {
 func BenchmarkFindVRRsidByVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRRsidByVariantKey(0, 9, 0x160017CCA313D0E0)
+		vr.FindVRRsidByVariantKey(0, vr.NRows, 0x160017CCA313D0E0)
 	}
 }
 
 func TestFindVRChromPosRange(t *testing.T) {
-	rsid, first, last := vr.FindVRChromPosRange(0, 9, testData[6].chrom, testData[7].pos, testData[8].pos)
+	rsid, first, last := vr.FindVRChromPosRange(0, vr.NRows, testData[6].chrom, testData[7].pos, testData[8].pos)
 	if rsid != testData[7].rsid {
 		t.Errorf("Expected rsid %x, got %x", testData[7].rsid, rsid)
 	}
@@ -194,14 +152,14 @@ func TestFindVRChromPosRange(t *testing.T) {
 }
 
 func TestFindVRChromPosRangeNotFound(t *testing.T) {
-	rsid, first, last := vr.FindVRChromPosRange(0, 9, 0xff, 0xffffff00, 0xfffffff0)
+	rsid, first, last := vr.FindVRChromPosRange(0, vr.NRows, 0xff, 0xffffff00, 0xfffffff0)
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
 	if first != 10 {
 		t.Errorf("Expected first 10, got %d", first)
 	}
-	if last != 9 {
+	if last != 10 {
 		t.Errorf("Expected last 9, got %d", last)
 	}
 }
@@ -209,6 +167,6 @@ func TestFindVRChromPosRangeNotFound(t *testing.T) {
 func BenchmarkFindVRChromPosRange(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vr.FindVRChromPosRange(0, 9, 0x19, 0x001AF8FD, 0x001C8F2A)
+		vr.FindVRChromPosRange(0, vr.NRows, 0x19, 0x001AF8FD, 0x001C8F2A)
 	}
 }

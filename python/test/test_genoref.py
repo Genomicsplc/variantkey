@@ -17,30 +17,29 @@ class TestFunctions(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        global mfsrc, mffd, mfsize, mflast, idx
+        global mf
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/genoref.bin")
-        mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
-        if mffd < 0:
+        mf, mfsize = bs.mmap_genoref_file(inputfile)
+        if mfsize <= 0:
             assert False, "Unable to open the genoref.bin file"
-        idx = bs.load_genoref_index(mfsrc)
 
     @classmethod
     def tearDownClass(cls):
-        global mfsrc, mffd, mfsize
-        h = bs.munmap_binfile(mfsrc, mffd, mfsize)
+        global mf
+        h = bs.munmap_binfile(mf)
         if h != 0:
             assert False, "Error while closing the genoref.bin memory-mapped file"
 
     def test_get_genoref_seq(self):
         for chrom in range(1, 26):
-            ref = bs.get_genoref_seq(mfsrc, idx, chrom, 0)  # first
+            ref = bs.get_genoref_seq(mf, chrom, 0)  # first
             self.assertEqual(b'A', ref)
-            ref = bs.get_genoref_seq(mfsrc, idx, chrom, (26 - chrom))  # last
+            ref = bs.get_genoref_seq(mf, chrom, (26 - chrom))  # last
             self.assertEqual(chr(ord(b'Z') + 1 - chrom).encode('ascii'), ref)
-            ref = bs.get_genoref_seq(mfsrc, idx, chrom, (27 - chrom))  # invalid
+            ref = bs.get_genoref_seq(mf, chrom, (27 - chrom))  # invalid
             self.assertNotEqual(0, ref)
 
     def test_check_reference(self):
@@ -90,7 +89,7 @@ class TestFunctions(TestCase):
             (1, 1,  24,  1, b"T"),
         ]
         for exp, chrom, pos, sizeref, ref in tdata:
-            ret = bs.check_reference(mfsrc, idx, chrom, pos, ref)
+            ret = bs.check_reference(mf, chrom, pos, ref)
             self.assertEqual(exp, ret)
 
         def test_flip_allele(self):
@@ -116,7 +115,7 @@ class TestFunctions(TestCase):
                 (6, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"G",      b"T"),      # swap + flip
             ]
             for ecode, chrom, pos, epos, sizeref, sizealt, esizeref, esizealt, eref, ealt, ref, alt in tdata:
-                ncode, npos, nref, nalt, nsizeref, nsizealt = bs.normalize_variant(mfsrc, idx, chrom, pos, ref, alt)
+                ncode, npos, nref, nalt, nsizeref, nsizealt = bs.normalize_variant(mf, chrom, pos, ref, alt)
                 self.assertEqual(ecode, ncode)
                 self.assertEqual(epos, npos)
                 self.assertEqual(eref, nref)
@@ -130,31 +129,26 @@ class TestBenchmark(object):
     global setup
 
     def setup():
-        global mfsrc, mffd, mfsize, mflast, idx
-        if mffd >= 0:
-            pass
-        bs.munmap_binfile(mfsrc, mffd, mfsize)
+        global mf
+        bs.munmap_binfile(mf)
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
             "/../../c/test/data/genoref.bin")
-        mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
-        if mffd < 0:
+        mf, mfsize = bs.mmap_genoref_file(inputfile)
+        if mfsize <= 0:
             assert False, "Unable to open the genoref.bin file"
-        idx = bs.load_genoref_index(mfsrc)
 
     def test_get_genoref_seq(self, benchmark):
         benchmark.pedantic(
             bs.get_genoref_seq,
-            args=[mfsrc, idx, 13, 1],
+            args=[mf, 13, 1],
             setup=setup,
             iterations=1,
             rounds=10000)
 
     def test_tearDown(self):
-        global mfsrc, mffd, mfsize
-        h = bs.munmap_binfile(mfsrc, mffd, mfsize)
-        mffd = -1
-        mfsize = 0
+        global mf
+        h = bs.munmap_binfile(mf)
         if h != 0:
             assert False, "Error while closing the genoref.bin memory-mapped file"

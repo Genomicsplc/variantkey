@@ -84,7 +84,7 @@ uint64_t get_time()
     return (((uint64_t)t.tv_sec * 1000000000) + (uint64_t)t.tv_nsec);
 }
 
-int test_find_ref_alt_by_variantkey(mmfile_t vknr)
+int test_find_ref_alt_by_variantkey(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
@@ -92,7 +92,7 @@ int test_find_ref_alt_by_variantkey(mmfile_t vknr)
     size_t sizeref,sizealt, len;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        len = find_ref_alt_by_variantkey(vknr.src, vknr.last, test_data[i].vk, ref, &sizeref, alt, &sizealt);
+        len = find_ref_alt_by_variantkey(nvc, test_data[i].vk, ref, &sizeref, alt, &sizealt);
         if (len != (test_data[i].len - 2))
         {
             fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, test_data[i].len, len);
@@ -122,12 +122,12 @@ int test_find_ref_alt_by_variantkey(mmfile_t vknr)
     return errors;
 }
 
-int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr)
+int test_find_ref_alt_by_variantkey_notfound(nrvk_cols_t nvc)
 {
     int errors = 0;
     char ref[256], alt[256];
     size_t sizeref,sizealt, len;
-    len = find_ref_alt_by_variantkey(vknr.src, vknr.last, 0xffffffff, ref, &sizeref, alt, &sizealt);
+    len = find_ref_alt_by_variantkey(nvc, 0xffffffff, ref, &sizeref, alt, &sizealt);
     if (len != 0)
     {
         fprintf(stderr, "%s : Expected len 0, got %lu\n",  __func__, len);
@@ -136,7 +136,7 @@ int test_find_ref_alt_by_variantkey_notfound(mmfile_t vknr)
     return errors;
 }
 
-void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr)
+void benchmark_find_ref_alt_by_variantkey(nrvk_cols_t nvc)
 {
     char ref[256], alt[256];
     size_t sizeref, sizealt;
@@ -146,13 +146,13 @@ void benchmark_find_ref_alt_by_variantkey(mmfile_t vknr)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        find_ref_alt_by_variantkey(vknr.src, vknr.last, 0xb000c35b64690b25, ref, &sizeref, alt, &sizealt);
+        find_ref_alt_by_variantkey(nvc, 0xb000c35b64690b25, ref, &sizeref, alt, &sizealt);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
-int test_reverse_variantkey(mmfile_t vknr)
+int test_reverse_variantkey(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
@@ -160,7 +160,7 @@ int test_reverse_variantkey(mmfile_t vknr)
     size_t len;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        len = reverse_variantkey(vknr.src, vknr.last, test_data[i].vk, &rev);
+        len = reverse_variantkey(nvc, test_data[i].vk, &rev);
         if (len != (test_data[i].len - 2))
         {
             fprintf(stderr, "%s (%d) Expected len %lu, got %lu\n",  __func__, i, test_data[i].len, len);
@@ -200,7 +200,7 @@ int test_reverse_variantkey(mmfile_t vknr)
     return errors;
 }
 
-void benchmark_reverse_variantkey(mmfile_t vknr)
+void benchmark_reverse_variantkey(nrvk_cols_t nvc)
 {
     variantkey_rev_t rev = {0};
     uint64_t tstart, tend;
@@ -209,20 +209,20 @@ void benchmark_reverse_variantkey(mmfile_t vknr)
     tstart = get_time();
     for (i=0 ; i < size; i++)
     {
-        reverse_variantkey(vknr.src, vknr.last, 0xb000c35b64690b25, &rev);
+        reverse_variantkey(nvc, 0xb000c35b64690b25, &rev);
     }
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/size);
 }
 
-int test_get_variantkey_ref_length(mmfile_t vknr)
+int test_get_variantkey_ref_length(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
     size_t sizeref;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        sizeref = get_variantkey_ref_length(vknr.src, vknr.last, test_data[i].vk);
+        sizeref = get_variantkey_ref_length(nvc, test_data[i].vk);
         if (sizeref != test_data[i].sizeref)
         {
             fprintf(stderr, "%s (%d) Expecting REF size %lu, got %lu\n", __func__, i, test_data[i].sizeref, sizeref);
@@ -232,10 +232,10 @@ int test_get_variantkey_ref_length(mmfile_t vknr)
     return errors;
 }
 
-int test_get_variantkey_ref_length_reversible(mmfile_t vknr)
+int test_get_variantkey_ref_length_reversible(nrvk_cols_t nvc)
 {
     int errors = 0;
-    size_t sizeref = get_variantkey_ref_length(vknr.src, vknr.last, 0x1800925199160000);
+    size_t sizeref = get_variantkey_ref_length(nvc, 0x1800925199160000);
     if (sizeref != 3)
     {
         fprintf(stderr, "%s : Expected REF size 3, got %lu\n",  __func__, sizeref);
@@ -244,10 +244,10 @@ int test_get_variantkey_ref_length_reversible(mmfile_t vknr)
     return errors;
 }
 
-int test_get_variantkey_ref_length_notfound(mmfile_t vknr)
+int test_get_variantkey_ref_length_notfound(nrvk_cols_t nvc)
 {
     int errors = 0;
-    size_t sizeref = get_variantkey_ref_length(vknr.src, vknr.last, 0xffffffffffffffff);
+    size_t sizeref = get_variantkey_ref_length(nvc, 0xffffffffffffffff);
     if (sizeref != 0)
     {
         fprintf(stderr, "%s : Expected REF size 0, got %lu\n",  __func__, sizeref);
@@ -256,14 +256,14 @@ int test_get_variantkey_ref_length_notfound(mmfile_t vknr)
     return errors;
 }
 
-int test_get_variantkey_endpos(mmfile_t vknr)
+int test_get_variantkey_endpos(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
     uint32_t endpos, exp;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        endpos = get_variantkey_endpos(vknr.src, vknr.last, test_data[i].vk);
+        endpos = get_variantkey_endpos(nvc, test_data[i].vk);
         exp = test_data[i].pos + test_data[i].sizeref;
         if (endpos != exp)
         {
@@ -292,14 +292,14 @@ int test_get_variantkey_chrom_startpos()
     return errors;
 }
 
-int test_get_variantkey_chrom_endpos(mmfile_t vknr)
+int test_get_variantkey_chrom_endpos(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
     uint64_t res;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
-        res = get_variantkey_chrom_endpos(vknr.src, vknr.last, test_data[i].vk);
+        res = get_variantkey_chrom_endpos(nvc, test_data[i].vk);
         if (res != test_data[i].chrom_endpos)
         {
             fprintf(stderr, "%s (%d) Expecting CHROM + END POS %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_data[i].chrom_endpos, res);
@@ -309,10 +309,10 @@ int test_get_variantkey_chrom_endpos(mmfile_t vknr)
     return errors;
 }
 
-int test_vknr_bin_to_tsv(mmfile_t vknr)
+int test_nrvk_bin_to_tsv(nrvk_cols_t nvc)
 {
     int errors = 0;
-    size_t len = vknr_bin_to_tsv(vknr.src, vknr.last, "vknr.test");
+    size_t len = nrvk_bin_to_tsv(nvc, "nrvk.test");
     if (len != 305)
     {
         fprintf(stderr, "%s Expecting file with 305 bytes, got %lu\n", __func__, len);
@@ -321,10 +321,10 @@ int test_vknr_bin_to_tsv(mmfile_t vknr)
     return errors;
 }
 
-int test_vknr_bin_to_tsv_error(mmfile_t vknr)
+int test_nrvk_bin_to_tsv_error(nrvk_cols_t nvc)
 {
     int errors = 0;
-    size_t len = vknr_bin_to_tsv(vknr.src, vknr.last, "/WRONG/../../vknr.test");
+    size_t len = nrvk_bin_to_tsv(nvc, "/WRONG/../../nrvk.test");
     if (len != 0)
     {
         fprintf(stderr, "%s Expecting 0 bytes, got %lu\n", __func__, len);
@@ -338,34 +338,35 @@ int main()
     int errors = 0;
     int err;
 
-    mmfile_t vknr = {0};
-    mmap_binfile("vknr.10.bin", &vknr);
+    mmfile_t nrvk = {0};
+    nrvk_cols_t nvc = {0};
+    mmap_nrvk_file("nrvk.10.bin", &nrvk, &nvc);
 
-    if ((vknr.last + 1) != TEST_DATA_SIZE)
+    if (nrvk.nrows != TEST_DATA_SIZE)
     {
-        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, vknr.last + 1);
+        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nrvk.nrows);
         return 1;
     }
 
-    errors += test_find_ref_alt_by_variantkey(vknr);
-    errors += test_find_ref_alt_by_variantkey_notfound(vknr);
-    errors += test_reverse_variantkey(vknr);
-    errors += test_get_variantkey_ref_length(vknr);
-    errors += test_get_variantkey_ref_length_reversible(vknr);
-    errors += test_get_variantkey_ref_length_notfound(vknr);
-    errors += test_get_variantkey_endpos(vknr);
+    errors += test_find_ref_alt_by_variantkey(nvc);
+    errors += test_find_ref_alt_by_variantkey_notfound(nvc);
+    errors += test_reverse_variantkey(nvc);
+    errors += test_get_variantkey_ref_length(nvc);
+    errors += test_get_variantkey_ref_length_reversible(nvc);
+    errors += test_get_variantkey_ref_length_notfound(nvc);
+    errors += test_get_variantkey_endpos(nvc);
     errors += test_get_variantkey_chrom_startpos();
-    errors += test_get_variantkey_chrom_endpos(vknr);
-    errors += test_vknr_bin_to_tsv(vknr);
-    errors += test_vknr_bin_to_tsv_error(vknr);
+    errors += test_get_variantkey_chrom_endpos(nvc);
+    errors += test_nrvk_bin_to_tsv(nvc);
+    errors += test_nrvk_bin_to_tsv_error(nvc);
 
-    benchmark_find_ref_alt_by_variantkey(vknr);
-    benchmark_reverse_variantkey(vknr);
+    benchmark_find_ref_alt_by_variantkey(nvc);
+    benchmark_reverse_variantkey(nvc);
 
-    err = munmap_binfile(vknr);
+    err = munmap_binfile(nrvk);
     if (err != 0)
     {
-        fprintf(stderr, "Got %d error while unmapping the vknr file\n", err);
+        fprintf(stderr, "Got %d error while unmapping the nrvk file\n", err);
         return 1;
     }
 

@@ -24,14 +24,13 @@ class RunTests(Command):
         errno = call([
             'py.test',
             '--verbose',
-            '--benchmark-disable',
         ])
         raise SystemExit(errno)
 
 
 setup(
     name='variantkey',
-    version='2.21.1',
+    version='3.0.0',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=read('../README.md'),

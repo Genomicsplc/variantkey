@@ -91,14 +91,15 @@ print(x)
 # Load the reference genome binary file.
 # The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 # This example uses the "c/test/data/genoref.bin".
-genoref <- MmapBinfile("../c/test/data/genoref.bin")
-idx <- LoadGenorefIndex(genoref$SRC)
+genoref <- MmapGenorefFile("../c/test/data/genoref.bin")
+print(genoref$SIZE)
+# [1] 598
 
-x <- GetGenorefSeq(genoref$SRC, idx, chrom=23, pos=0)
+x <- GetGenorefSeq(genoref$MF, chrom=23, pos=0)
 print(x)
 # [1] 65
 
-x <- CheckReference(genoref$SRC, idx, chrom=23, pos=0, ref="A")
+x <- CheckReference(genoref$MF, chrom=23, pos=0, ref="A")
 print(x)
 # [1] 0
 
@@ -107,7 +108,7 @@ print(x)
 # [1] "TAGCKMYRVBHDWSNTAGCKMYRVBHDWSN"
 
 # Normalize a variant - this function should be used before generating a new VariantKey
-x <- NormalizeVariant(genoref$SRC, idx, chrom=13, pos=2, ref="CDE", alt="CFE")
+x <- NormalizeVariant(genoref$MF, chrom=13, pos=2, ref="CDE", alt="CFE")
 print(x)
 # $RET
 # [1] 48
@@ -127,7 +128,7 @@ print(x)
 # $ALT_LEN
 # [1] 1
 
-MunmapBinfile(genoref$SRC, genoref$FD, genoref$SIZE)
+MunmapBinfile(genoref$MF)
 # [1] 0
 
 
@@ -138,12 +139,14 @@ MunmapBinfile(genoref$SRC, genoref$FD, genoref$SIZE)
 # ----
 
 # Load the lookup table for non-reversible variantkeys.
-# The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
+# The input binary files can be generated from a normalized VCF file using the resources/tools/nrvk.sh script.
 # The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-# This example uses the "c/test/data/vknr.10.bin".
-vknr <- MmapBinfile("../c/test/data/vknr.10.bin")
+# This example uses the "c/test/data/nrvk.10.bin".
+nrvk <- MmapNRVKFile("../c/test/data/nrvk.10.bin")
+print(nrvk$NROWS)
+# [1] 10
 
-x <- FindRefAltByVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- FindRefAltByVariantKey(nrvk$MC, vk="2000c3521f1c15ab")
 print(x)
 # $REF
 # [1] "ACGTACGT"
@@ -161,7 +164,7 @@ print(x)
 # [1] 12
 
 # Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-x <- ReverseVariantKey(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- ReverseVariantKey(nrvk$MC, vk="2000c3521f1c15ab")
 print(x)
 # $CHROM
 # [1] "4"
@@ -184,11 +187,11 @@ print(x)
 # $LEN
 # [1] 12
 
-x <- GetVariantKeyRefLength(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyRefLength(nrvk$MC, vk="2000c3521f1c15ab")
 print(x)
 # [1] 8
 
-x <- GetVariantKeyEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyEndPos(nrvk$MC, vk="2000c3521f1c15ab")
 print(x)
 # [1] 100012
 
@@ -196,11 +199,11 @@ x <- GetVariantKeyChromStartPos(vk="2000c3521f1c15ab")
 print(x)
 # [1] "00000000400186a4"
 
-x <- GetVariantKeyChromEndPos(vknr$SRC, vknr$LAST, vk="2000c3521f1c15ab")
+x <- GetVariantKeyChromEndPos(nrvk$MC, vk="2000c3521f1c15ab")
 print(x)
 # [1] "00000000400186ac"
 
-MunmapBinfile(vknr$SRC, vknr$FD, vknr$SIZE)
+MunmapBinfile(nrvk$MF)
 # [1] 0
 
 
@@ -211,15 +214,13 @@ MunmapBinfile(vknr$SRC, vknr$FD, vknr$SIZE)
 # -------
 
 # Load the lookup table for rsID to VariantKey.
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.10.bin".
-rsvk <- MmapBinfile("../c/test/data/rsvk.10.bin")
+rsvk <- MmapRSVKFile("../c/test/data/rsvk.10.bin", as.integer(c(4, 8)))
+print(rsvk$NROWS)
+# [1] 10
 
-x <- GetRvVariantKey(rsvk$SRC, item=3)
-print(x)
-# [1] "80010274003a0000"
-
-x <- FindRvVariantKeyByRsid(rsvk$SRC, 0, 9, rsid=0x00000061)
+x <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvk$NROWS, rsid=0x00000061)
 print(x)
 # $VK
 # [1] "80010274003a0000"
@@ -227,7 +228,7 @@ print(x)
 # $FIRST
 # [1] 3
 
-x <- GetNextRvVariantKeyByRsid(rsvk$SRC, 2, 9, rsid=0x00000061)
+x <- GetNextRvVariantKeyByRsid(rsvk$MC, 2, rsvk$NROWS, rsid=0x00000061)
 print(x)
 # $VK
 # [1] "80010274003a0000"
@@ -235,17 +236,17 @@ print(x)
 # $POS
 # [1] 3
 
-MunmapBinfile(rsvk$SRC, rsvk$FD, rsvk$SIZE)
+MunmapBinfile(rsvk$MF)
 # [1] 0
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load the lookup table for rsID to VariantKey.
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.m.10.bin".
-rsvkm <- MmapBinfile("../c/test/data/rsvk.m.10.bin")
+rsvkm <- MmapRSVKFile("../c/test/data/rsvk.m.10.bin", as.integer(c()))
 
-x <- FindAllRvVariantKeyByRsid(rsvkm$SRC, 0, 9, rsid=0x00000003)
+x <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, rsid=0x00000003)
 print(x)
 # [[1]]
 # [1] "80010274003a0000"
@@ -256,21 +257,17 @@ print(x)
 # [[3]]
 # [1] "80010299007a0000"
 
-MunmapBinfile(rsvkm$SRC, rsvkm$FD, rsvkm$SIZE)
+MunmapBinfile(rsvkm$MF)
 # [1] 0
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Load the lookup table for VariantKey ro rsID
-# The input binary file can be generated using the resources/tools/vkhexbin.sh script.
+# The input binary file can be generated using the resources/tools/vkrs.sh script.
 # This example uses the "c/test/data/vkrs.10.bin".
-vkrs <- MmapBinfile("../c/test/data/vkrs.10.bin")
+vkrs <- MmapVKRSFile("../c/test/data/vkrs.10.bin", as.integer(c(8, 4)))
 
-x <- GetVrRsid(vkrs$SRC, item=3)
-print(x)
-# [1] 97
-
-x <- FindVrRsidByVariantKey(vkrs$SRC, 0, 9, vk="80010274003A0000")
+x <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, vk="80010274003A0000")
 print(x)
 # $RSID
 # [1] 97
@@ -278,7 +275,7 @@ print(x)
 # $FIRST
 # [1] 3
 
-x <- FindVrChromposRange(vkrs$SRC, 0, 9, chrom=0x14, pos_min=0x000256C5, pos_max=0x000256CB)
+x <- FindVrChromposRange(vkrs$MC, 0, vkrs$NROWS, chrom=0x14, pos_min=0x000256C5, pos_max=0x000256CB)
 print(x)
 #$RSID
 #[1] 9973
@@ -289,7 +286,7 @@ print(x)
 #$LAST
 #[1] 8
 
-MunmapBinfile(vkrs$SRC, vkrs$FD, vkrs$SIZE)
+MunmapBinfile(vkrs$MF)
 # [1] 0
 
 
@@ -379,11 +376,11 @@ x <- AreOverlappingRegionKeys("2800000200000030", "2800000180000038")
 print(x)
 # [1] 1
 
-x <- AreOverlappingVariantKeyRegionKey(NULL, 0, "2800000210920000", "2800000180000038")
+x <- AreOverlappingVariantKeyRegionKey(NULL, "2800000210920000", "2800000180000038")
 print(x)
 # [1] 1
 
-x <- VariantToRegionkey(NULL, 0, "2800000210920000")
+x <- VariantToRegionkey(NULL, "2800000210920000")
 print(x)
 # [1] "2800000200000030"
 
@@ -401,6 +398,14 @@ print(x)
 x <- DecodeStringID("a850850492e77999")
 print(x)
 # [1] "A0A022YWF9"
+
+x <- EncodeStringNumID("ABC:0000123456", 58)
+print(x)
+# [1] "d8628c002001e240"
+
+x <- DecodeStringID("d8628c002001e240")
+print(x)
+# [1] "ABC:0000123456"
 
 x <- HashStringID("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 print(x)

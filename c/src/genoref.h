@@ -39,12 +39,6 @@
  *
  * The input reference binary files can be generated from a FASTA file using the
  * `resources/tools/fastabin.sh` script.
- *
- * The input binary file has the following format:
- * The first line of the binary fasta file contains the index composed by 26 blocks of 32 bit
- * numbers, one for each of the 25 chromosomes (1 to 22, X, Y and MT), plus one to indicate the end
- * of the file. Each index number represents the file byte offset of the corresponding chromosome
- * sequence. The index is followed by 25 lines, one for each chromosome sequence.
  */
 
 #ifndef GENOREF_H
@@ -72,32 +66,30 @@ extern "C" {
 #define NORM_LTRIM  (1 << 5) //!< Normalization: Alleles have been left trimmed.
 
 /**
- * Load the genome reference index.
+ * Memory map the genoref binary file.
  *
- * @param src  Address of the memory mapped input file containing the genome reference data (fasta.bin).
- * @param idx  Index of sequences offset by chromosome number (1 to 25). The index 26 contains the file length. Requires 27 elements: uint32_t idx[27].
+ * @param file  Path to the file to map.
+ * @param mf    Structure containing the memory mapped file.
  *
- * @return void
+ * @return Returns the memory-mapped file descriptors.
  */
-void load_genoref_index(const unsigned char *src, uint32_t idx[]);
+void mmap_genoref_file(const char *file, mmfile_t *mf);
 
 /**
  * Returns the genome reference nucleotide at the specified chromosome and position.
  *
- * @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).
- * @param idx     Index of sequences offset by chromosome number (1 to 25).
+ * @param mf      Structure containing the memory mapped file.
  * @param chrom   Encoded Chromosome number (see encode_chrom).
  * @param pos     Position. The reference position, with the first base having position 0.
  *
  * @return The nucleotide letter or 0 in case of invalid position.
  */
-char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos);
+char get_genoref_seq(mmfile_t mf, uint8_t chrom, uint32_t pos);
 
 /**
  * Check if the reference allele matches the reference genome data.
  *
- * @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).
- * @param idx     Index of sequences offset by chromosome number (1 to 25).
+ * @param mf      Structure containing the memory mapped file.
  * @param chrom   Encoded Chromosome number (see encode_chrom).
  * @param pos     Position. The reference position, with the first base having position 0.
  * @param ref     Reference allele. String containing a sequence of nucleotide letters.
@@ -109,7 +101,7 @@ char get_genoref_seq(const unsigned char *src, const uint32_t idx[], uint8_t chr
  *       * -1 the reference allele don't match the reference genome;
  *       * -2 the reference allele is longer than the genome reference sequence.
  */
-int check_reference(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
+int check_reference(mmfile_t mf, uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref);
 
 /**
  * Flip the allele nucleotides (replaces each letter with its complement).
@@ -126,8 +118,7 @@ void flip_allele(char *allele, size_t size);
  * Flip alleles if required and apply the normalization algorithm described at:
  * https://genome.sph.umich.edu/wiki/Variant_Normalization
  *
- * @param src        Address of the memory mapped input file containing the genome reference data (fasta.bin).
- * @param idx        Index of sequences offset by chromosome number (1 to 25).
+ * @param mf         Structure containing the memory mapped file.
  * @param chrom      Chromosome encoded number.
  * @param pos        Position. The reference position, with the first base having position 0.
  * @param ref        Reference allele. String containing a sequence of nucleotide letters.
@@ -144,7 +135,7 @@ void flip_allele(char *allele, size_t size);
  *         - bit 4 (NORM_RTRIM) : Alleles have been right trimmed.
  *         - bit 5 (NORM_LTRIM) : Alleles have been left trimmed.
  */
-int normalize_variant(const unsigned char *src, const uint32_t idx[], uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
+int normalize_variant(mmfile_t mf, uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt);
 
 #ifdef __cplusplus
 }

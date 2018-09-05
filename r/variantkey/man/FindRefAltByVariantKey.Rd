@@ -5,12 +5,10 @@
 \title{Retrieve the REF and ALT strings for the specified VariantKey.
 Return REF+ALT length or 0 if the VariantKey is not found.}
 \usage{
-FindRefAltByVariantKey(src, last, vk)
+FindRefAltByVariantKey(mc, vk)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}
-
-\item{last}{Number of variants in the src file -1.}
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 
 \item{vk}{VariantKey to search.}
 }

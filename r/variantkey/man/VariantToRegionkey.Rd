@@ -4,12 +4,10 @@
 \alias{VariantToRegionkey}
 \title{Get RegionKey from VariantKey.}
 \usage{
-VariantToRegionkey(src, last, vk)
+VariantToRegionkey(mc, vk)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (vknr.bin).}
-
-\item{last}{Number of variants in the src file -1.}
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 
 \item{vk}{VariantKey code.}
 }

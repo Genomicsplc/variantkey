@@ -1,6 +1,4 @@
-// VariantKey
-//
-// Go wrapper for the variantkey C software library.
+// Package variantkey is a Go wrapper for the variantkey C software library.
 // 64 bit Encoding for Human Genetic Variants.
 //
 // @category   Libraries
@@ -250,1236 +248,254 @@ func ReverseVariantKey(v uint64) (chrom string, pos uint32, ref string, alt stri
 
 // TMMFile contains the memory mapped file info
 type TMMFile struct {
-	Src   unsafe.Pointer
-	Fd    int
-	Size  uint64
-	Last  uint64
-	Index []uint32
+	Src     unsafe.Pointer // Pointer to the memory map.
+	Fd      int            // File descriptor.
+	Size    uint64         // File size in bytes.
+	DOffset uint64         // Offset to the beginning of the data block (address of the first byte of the first item in the first column).
+	DLength uint64         // Length in bytes of the data block.
+	NRows   uint64         // Number of rows.
+	NCols   uint8          // Number of columns.
+	CTBytes []uint8        // Number of bytes per column type (i.e. 1 for uint8_t, 2 for uint16_t, 4 for uint32_t, 8 for uint64_t)
+	Index   []uint64       // Index of the offsets to the beginning of each column.
 }
 
-// MmapBinFile maps the specified file in memory.
-func MmapBinFile(file string) (TMMFile, error) {
-	bfile := StringToNTBytes(file)
-	p := unsafe.Pointer(&bfile[0]) // #nosec
-	var mf C.mmfile_t
-	C.mmap_binfile((*C.char)(p), &mf)
-	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
-		return TMMFile{}, fmt.Errorf("unable to map the file: %s", file)
+// castCTMMFileToGo convert C.mmfile_t to GO TMMFile.
+func castCTMMFileToGo(mf C.mmfile_t) TMMFile {
+	ncols := uint8(mf.ncols)
+	ctbytes := make([]uint8, ncols)
+	index := make([]uint64, ncols)
+	var i uint8
+	for i = 0; i < ncols; i++ {
+		ctbytes[i] = uint8(mf.ctbytes[i])
+		index[i] = uint64(mf.index[i])
 	}
-	return TMMFile{unsafe.Pointer(mf.src), int(mf.fd), uint64(mf.size), uint64(mf.last), []uint32{}}, nil // #nosec
+	return TMMFile{
+		Src:     unsafe.Pointer(mf.src), // #nosec
+		Fd:      int(mf.fd),
+		Size:    uint64(mf.size),
+		DOffset: uint64(mf.doffset),
+		DLength: uint64(mf.dlength),
+		NRows:   uint64(mf.nrows),
+		NCols:   ncols,
+		CTBytes: ctbytes,
+		Index:   index,
+	}
+}
+
+// castGoTMMFileToC convert GO TMMFile to C.mmfile_t.
+func castGoTMMFileToC(mf TMMFile) C.mmfile_t {
+	var cmf C.mmfile_t
+	cmf.src = (*C.uint8_t)(mf.Src)
+	cmf.fd = C.int(mf.Fd)
+	cmf.size = C.uint64_t(mf.Size)
+	cmf.doffset = C.uint64_t(mf.DOffset)
+	cmf.dlength = C.uint64_t(mf.DLength)
+	cmf.nrows = C.uint64_t(mf.NRows)
+	cmf.ncols = C.uint8_t(mf.NCols)
+	if len(mf.CTBytes) > 0 {
+		cmf.ctbytes = *(*[256]C.uint8_t)(unsafe.Pointer(&mf.CTBytes[0]))
+		cmf.index = *(*[256]C.uint64_t)(unsafe.Pointer(&mf.Index[0]))
+	}
+	return cmf
 }
 
 // Close Unmap and close the memory-mapped file.
 func (mf TMMFile) Close() error {
-	var tmf C.mmfile_t
-	tmf.src = (*C.uchar)(mf.Src)
-	tmf.fd = C.int(mf.Fd)
-	tmf.size = C.uint64_t(mf.Size)
-	e := int(C.munmap_binfile(tmf))
+	e := int(C.munmap_binfile(castGoTMMFileToC(mf)))
 	if e != 0 {
 		return fmt.Errorf("got %d error while unmapping the file", e)
 	}
 	return nil
 }
 
-// GetAddress returns the absolute file start position of the specified item (binary block).
-func GetAddress(blklen, blkpos, item uint64) uint64 {
-	return ((blklen * item) + blkpos)
-}
-
-// FindFirstBEUint8 search for the first occurrence of a BE 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstBEUint8(offset, blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	//ret := uint64(C.find_first_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
-	ret := uint64(C.find_first_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastBEUint8 search for the last occurrence of a BE 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastBEUint8(offset, blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstBEUint16 search for the first occurrence of a BE 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstBEUint16(offset, blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastBEUint16 search for the last occurrence of a BE 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastBEUint16(offset, blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstBEUint32 search for the first occurrence of a BE 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstBEUint32(offset, blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastBEUint32 search for the last occurrence of a BE 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastBEUint32(offset, blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstBEUint64 search for the first occurrence of a BE 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstBEUint64(offset, blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastBEUint64 search for the last occurrence of a BE 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastBEUint64(offset, blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubBEUint8 search for the first occurrence of a BE bit set contained in a 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubBEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubBEUint8 search for the last occurrence of a BE bit set contained in a 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubBEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubBEUint16 search for the first occurrence of a BE bit set contained in a 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubBEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubBEUint16 search for the last occurrence of a BE bit set contained in a 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubBEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubBEUint32 search for the first occurrence of a BE bit set contained in a 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubBEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubBEUint32 search for the last occurrence of a BE bit set contained in a 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubBEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubBEUint64 search for the first occurrence of a BE bit set contained in a 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubBEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubBEUint64 search for the last occurrence of a BE bit set contained in a 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubBEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// HasNextBEUint8 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint8 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint8 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextBEUint8(offset, blklen, blkpos, pos, last uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextBEUint16 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint16 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint16 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextBEUint16(offset, blklen, blkpos, pos, last uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextBEUint32 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint32 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint32 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextBEUint32(offset, blklen, blkpos, pos, last uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextBEUint64 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint64 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint64 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextBEUint64(offset, blklen, blkpos, pos, last uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubBEUint8 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint8 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint8 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubBEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubBEUint16 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint16 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint16 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubBEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubBEUint32 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint32 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint32 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubBEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubBEUint64 checks if the next occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstBEUint64 to get the next elements that still satisfy the search.
-// The item returned by FindFirstBEUint64 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubBEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevBEUint8 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint8 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint8 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevBEUint8(offset, blklen, blkpos, first, pos uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevBEUint16 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint16 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint16 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevBEUint16(offset, blklen, blkpos, first, pos uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevBEUint32 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint32 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint32 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevBEUint32(offset, blklen, blkpos, first, pos uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevBEUint64 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint64 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint64 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevBEUint64(offset, blklen, blkpos, first, pos uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubBEUint8 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint8 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint8 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubBEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_be_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubBEUint16 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint16 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint16 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubBEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_be_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubBEUint32 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint32 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint32 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubBEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_be_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubBEUint64 checks if the previous occurrence of a BE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastBEUint64 to get the previous elements that still satisfy the search.
-// The item returned by FindLastBEUint64 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubBEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_be_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// FindFirstLEUint8 search for the first occurrence of a LE 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstLEUint8(offset, blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastLEUint8 search for the last occurrence of a LE 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastLEUint8(offset, blklen, blkpos, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstLEUint16 search for the first occurrence of a LE 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstLEUint16(offset, blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastLEUint16 search for the last occurrence of a LE 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastLEUint16(offset, blklen, blkpos, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstLEUint32 search for the first occurrence of a LE 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstLEUint32(offset, blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastLEUint32 search for the last occurrence of a LE 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastLEUint32(offset, blklen, blkpos, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstLEUint64 search for the first occurrence of a LE 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstLEUint64(offset, blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastLEUint64 search for the last occurrence of a LE 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastLEUint64(offset, blklen, blkpos, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubLEUint8 search for the first occurrence of a LE bit set contained in a 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubLEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubLEUint8 search for the last occurrence of a LE bit set contained in a 8 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubLEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubLEUint16 search for the first occurrence of a LE bit set contained in a 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubLEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubLEUint16 search for the last occurrence of a LE bit set contained in a 16 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubLEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubLEUint32 search for the first occurrence of a LE bit set contained in a 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubLEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubLEUint32 search for the last occurrence of a LE bit set contained in a 32 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubLEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindFirstSubLEUint64 search for the first occurrence of a LE bit set contained in a 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindFirstSubLEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_first_sub_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// FindLastSubLEUint64 search for the last occurrence of a LE bit set contained in a 64 bit unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) FindLastSubLEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.find_last_sub_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// HasNextLEUint8 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint8 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint8 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextLEUint8(offset, blklen, blkpos, pos, last uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextLEUint16 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint16 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint16 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextLEUint16(offset, blklen, blkpos, pos, last uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextLEUint32 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint32 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint32 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextLEUint32(offset, blklen, blkpos, pos, last uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextLEUint64 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint64 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint64 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextLEUint64(offset, blklen, blkpos, pos, last uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), &cpos, C.uint64_t(last), C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubLEUint8 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint8 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint8 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubLEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubLEUint16 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint16 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint16 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubLEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubLEUint32 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint32 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint32 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubLEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasNextSubLEUint64 checks if the next occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindFirstLEUint64 to get the next elements that still satisfy the search.
-// The item returned by FindFirstLEUint64 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasNextSubLEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, pos, last uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_next_sub_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevLEUint8 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint8 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint8 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevLEUint8(offset, blklen, blkpos, first, pos uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevLEUint16 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint16 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint16 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevLEUint16(offset, blklen, blkpos, first, pos uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevLEUint32 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint32 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint32 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevLEUint32(offset, blklen, blkpos, first, pos uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevLEUint64 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint64 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint64 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevLEUint64(offset, blklen, blkpos, first, pos uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint64_t(first), &cpos, C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubLEUint8 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint8 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint8 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubLEUint8(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_le_uint8_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubLEUint16 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint16 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint16 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubLEUint16(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_le_uint16_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubLEUint32 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint32 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint32 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubLEUint32(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_le_uint32_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// HasPrevSubLEUint64 checks if the previous occurrence of a LE unsigned integer on a memory mapped
-// binary file containing adjacent blocks of sorted binary data still matches the search value.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after FindLastLEUint64 to get the previous elements that still satisfy the search.
-// The item returned by FindLastLEUint64 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) HasPrevSubLEUint64(offset, blklen, blkpos uint64, bitstart, bitend uint8, first, pos uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.has_prev_sub_le_uint64_t((*C.uchar)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(blklen), C.uint64_t(blkpos), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// --- COLUMN ---
-
-// ColFindFirstUint8 search for the first occurrence of a LE 8 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstUint8(offset, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastUint8 search for the last occurrence of a LE 8 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastUint8(offset, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstUint16 search for the first occurrence of a LE 16 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstUint16(offset, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastUint16 search for the last occurrence of a LE 16 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastUint16(offset, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstUint32 search for the first occurrence of a LE 32 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstUint32(offset, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastUint32 search for the last occurrence of a LE 32 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastUint32(offset, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstUint64 search for the first occurrence of a LE 64 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstUint64(offset, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastUint64 search for the last occurrence of a LE 64 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastUint64(offset, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstSubUint8 search for the first occurrence of a LE bit set contained in a 8 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstSubUint8(offset uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_sub_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastSubUint8 search for the last occurrence of a LE bit set contained in a 8 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 8 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastSubUint8(offset uint64, bitstart, bitend uint8, first, last uint64, search uint8) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_sub_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint8_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstSubUint16 search for the first occurrence of a LE bit set contained in a 16 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstSubUint16(offset uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_sub_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastSubUint16 search for the last occurrence of a LE bit set contained in a 16 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 16 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastSubUint16(offset uint64, bitstart, bitend uint8, first, last uint64, search uint16) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_sub_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint16_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstSubUint32 search for the first occurrence of a LE bit set contained in a 32 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstSubUint32(offset uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_sub_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastSubUint32 search for the last occurrence of a LE bit set contained in a 32 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 32 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastSubUint32(offset uint64, bitstart, bitend uint8, first, last uint64, search uint32) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_sub_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint32_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindFirstSubUint64 search for the first occurrence of a LE bit set contained in a 64 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindFirstSubUint64(offset uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_first_sub_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColFindLastSubUint64 search for the last occurrence of a LE bit set contained in a 64 bit unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The 64 bit values in the file must encoded in big-endian format and sorted in ascending order.
-// Return the item number if found or (last + 1) if not found, plus the first and last positions.
-func (mf TMMFile) ColFindLastSubUint64(offset uint64, bitstart, bitend uint8, first, last uint64, search uint64) (uint64, uint64, uint64) {
-	cfirst := C.uint64_t(first)
-	clast := C.uint64_t(last)
-	ret := uint64(C.col_find_last_sub_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cfirst, &clast, C.uint64_t(search)))
-	return ret, uint64(cfirst), uint64(clast)
-}
-
-// ColHasNextUint8 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint8 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint8 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextUint8(offset, pos, last uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cpos, C.uint64_t(last), C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextUint16 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint16 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint16 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextUint16(offset, pos, last uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cpos, C.uint64_t(last), C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextUint32 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint32 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint32 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextUint32(offset, pos, last uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cpos, C.uint64_t(last), C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextUint64 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint64 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint64 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextUint64(offset, pos, last uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), &cpos, C.uint64_t(last), C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextSubUint8 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint8 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint8 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextSubUint8(offset uint64, bitstart, bitend uint8, pos, last uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_sub_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextSubUint16 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint16 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint16 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextSubUint16(offset uint64, bitstart, bitend uint8, pos, last uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_sub_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextSubUint32 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint32 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint32 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextSubUint32(offset uint64, bitstart, bitend uint8, pos, last uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_sub_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasNextSubUint64 checks if the next occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindFirstUint64 to get the next elements that still satisfy the search.
-// The item returned by ColFindFirstUint64 should be set as the "pos" parameter in this function.
-// Return true if the next item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasNextSubUint64(offset uint64, bitstart, bitend uint8, pos, last uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_next_sub_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), &cpos, C.uint64_t(last), C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevUint8 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint8 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint8 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevUint8(offset, first, pos uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(first), &cpos, C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevUint16 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint16 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint16 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevUint16(offset, first, pos uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(first), &cpos, C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevUint32 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint32 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint32 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevUint32(offset, first, pos uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(first), &cpos, C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevUint64 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint64 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint64 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevUint64(offset, first, pos uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint64_t(first), &cpos, C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevSubUint8 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint8 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint8 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevSubUint8(offset uint64, bitstart, bitend uint8, first, pos uint64, search uint8) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_sub_uint8_t((*C.uint8_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint8_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevSubUint16 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint16 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint16 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevSubUint16(offset uint64, bitstart, bitend uint8, first, pos uint64, search uint16) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_sub_uint16_t((*C.uint16_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint16_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevSubUint32 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint32 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint32 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevSubUint32(offset uint64, bitstart, bitend uint8, first, pos uint64, search uint32) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_sub_uint32_t((*C.uint32_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint32_t(search)))
-	return ret, uint64(cpos)
-}
-
-// ColHasPrevSubUint64 checks if the previous occurrence of a LE unsigned integer
-// on a memory buffer containing contiguos blocks of unsigned integers of the same type.
-// The values in the file must encoded in big-endian format and sorted in ascending order.
-// This function can be used after ColFindLastUint64 to get the previous elements that still satisfy the search.
-// The item returned by ColFindLastUint64 should be set as the "pos" parameter in this function.
-// Return true if the previous item is valid, false otherwise, plus the position.
-func (mf TMMFile) ColHasPrevSubUint64(offset uint64, bitstart, bitend uint8, first, pos uint64, search uint64) (bool, uint64) {
-	cpos := C.uint64_t(pos)
-	ret := bool(C.col_has_prev_sub_uint64_t((*C.uint64_t)(unsafe.Pointer(uintptr(mf.Src)+uintptr(offset))), C.uint8_t(bitstart), C.uint8_t(bitend), C.uint64_t(first), &cpos, C.uint64_t(search)))
-	return ret, uint64(cpos)
-}
-
 // --- RSIDVAR ---
 
-// GetVRRsid returns the RSID at the specified position in the VR file.
-func (mf TMMFile) GetVRRsid(item uint64) uint32 {
-	return uint32(C.get_vr_rsid((*C.uchar)(mf.Src), C.uint64_t(item)))
+// RSIDVARCols contains the RSVK or VKRS memory mapped file column info.
+type RSIDVARCols struct {
+	Vk    unsafe.Pointer // Pointer to the VariantKey column.
+	Rs    unsafe.Pointer // Pointer to the rsID column.
+	NRows uint64         // Number of rows.
 }
 
-// GetRVVariantKey returns the VariantKey at the specified position in the RV file.
-func (mf TMMFile) GetRVVariantKey(item uint64) uint64 {
-	return uint64(C.get_rv_variantkey((*C.uchar)(mf.Src), C.uint64_t(item)))
+// castCRSIDVARColsToGo convert C.rsidvar_cols_t to GO RSIDVARCols.
+func castCRSIDVARColsToGo(crv C.rsidvar_cols_t) RSIDVARCols {
+	return RSIDVARCols{
+		Vk:    unsafe.Pointer(crv.vk), // #nosec
+		Rs:    unsafe.Pointer(crv.rs), // #nosec
+		NRows: uint64(crv.nrows),
+	}
+}
+
+// castGoRSIDVARColsToC convert GO RSIDVARCols to C.rsidvar_cols_t.
+func castGoRSIDVARColsToC(rc RSIDVARCols) C.rsidvar_cols_t {
+	var rvc C.rsidvar_cols_t
+	rvc.vk = (*C.uint64_t)(rc.Vk)
+	rvc.rs = (*C.uint32_t)(rc.Rs)
+	rvc.nrows = C.uint64_t(rc.NRows)
+	return rvc
+}
+
+// MmapVKRSFile memory map the VKRS binary file.
+func MmapVKRSFile(file string, ctbytes []uint8) (TMMFile, RSIDVARCols, error) {
+	bfile := StringToNTBytes(file)
+	flen := len(bfile)
+	var p unsafe.Pointer
+	if flen > 0 {
+		p = unsafe.Pointer(&bfile[0]) // #nosec
+	}
+	var mf C.mmfile_t
+	mf.ncols = C.uint8_t(len(ctbytes))
+	for k, v := range ctbytes {
+		mf.ctbytes[k] = C.uint8_t(v)
+	}
+	var rc C.rsidvar_cols_t
+	C.mmap_vkrs_file((*C.char)(p), &mf, &rc)
+	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
+		return TMMFile{}, RSIDVARCols{}, fmt.Errorf("unable to map the file: %s", file)
+	}
+	return castCTMMFileToGo(mf), castCRSIDVARColsToGo(rc), nil
+}
+
+// MmapRSVKFile memory map the RSVK binary file.
+func MmapRSVKFile(file string, ctbytes []uint8) (TMMFile, RSIDVARCols, error) {
+	bfile := StringToNTBytes(file)
+	flen := len(bfile)
+	var p unsafe.Pointer
+	if flen > 0 {
+		p = unsafe.Pointer(&bfile[0]) // #nosec
+	}
+	var mf C.mmfile_t
+	mf.ncols = C.uint8_t(len(ctbytes))
+	for k, v := range ctbytes {
+		mf.ctbytes[k] = C.uint8_t(v)
+	}
+	var rc C.rsidvar_cols_t
+	C.mmap_rsvk_file((*C.char)(p), &mf, &rc)
+	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
+		return TMMFile{}, RSIDVARCols{}, fmt.Errorf("unable to map the file: %s", file)
+	}
+	return castCTMMFileToGo(mf), castCRSIDVARColsToGo(rc), nil
 }
 
 // FindRVVariantKeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
-func (mf TMMFile) FindRVVariantKeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
+func (crv RSIDVARCols) FindRVVariantKeyByRsid(first, last uint64, rsid uint32) (uint64, uint64) {
 	cfirst := C.uint64_t(first)
-	vk := uint64(C.find_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
+	vk := uint64(C.find_rv_variantkey_by_rsid(castGoRSIDVARColsToC(crv), &cfirst, C.uint64_t(last), C.uint32_t(rsid)))
 	return vk, uint64(cfirst)
 }
 
 // GetNextRVVariantKeyByRsid get the next VariantKey for the specified rsID in the RV file.
 // Returns the VariantKey or 0, and the position
-func (mf TMMFile) GetNextRVVariantKeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64) {
+func (crv RSIDVARCols) GetNextRVVariantKeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64) {
 	cpos := C.uint64_t(pos)
-	vk := uint64(C.get_next_rv_variantkey_by_rsid((*C.uchar)(mf.Src), &cpos, C.uint64_t(last), C.uint32_t(rsid)))
+	vk := uint64(C.get_next_rv_variantkey_by_rsid(castGoRSIDVARColsToC(crv), &cpos, C.uint64_t(last), C.uint32_t(rsid)))
 	return vk, uint64(cpos)
 }
 
 // FindAllRVVariantKeyByRsid get all VariantKeys for the specified rsID in the RV file.
 // Returns a list of VariantKeys
-func (mf TMMFile) FindAllRVVariantKeyByRsid(first, last uint64, rsid uint32) (vks []uint64) {
-	csrc := (*C.uchar)(mf.Src)
+func (crv RSIDVARCols) FindAllRVVariantKeyByRsid(first, last uint64, rsid uint32) (vks []uint64) {
+	ccr := castGoRSIDVARColsToC(crv)
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
 	crsid := C.uint32_t(rsid)
-	vk := uint64(C.find_rv_variantkey_by_rsid(csrc, &cfirst, clast, crsid))
+	vk := uint64(C.find_rv_variantkey_by_rsid(ccr, &cfirst, clast, crsid))
 	for vk > 0 {
 		vks = append(vks, vk)
-		vk = uint64(C.get_next_rv_variantkey_by_rsid(csrc, &cfirst, clast, crsid))
+		vk = uint64(C.get_next_rv_variantkey_by_rsid(ccr, &cfirst, clast, crsid))
 	}
 	return
 }
 
 // FindVRRsidByVariantKey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
-func (mf TMMFile) FindVRRsidByVariantKey(first uint64, last uint64, vk uint64) (uint32, uint64) {
+func (crv RSIDVARCols) FindVRRsidByVariantKey(first uint64, last uint64, vk uint64) (uint32, uint64) {
 	cfirst := C.uint64_t(first)
-	rsid := uint32(C.find_vr_rsid_by_variantkey((*C.uchar)(mf.Src), &cfirst, C.uint64_t(last), C.uint64_t(vk)))
+	rsid := uint32(C.find_vr_rsid_by_variantkey(castGoRSIDVARColsToC(crv), &cfirst, C.uint64_t(last), C.uint64_t(vk)))
 	return rsid, uint64(cfirst)
 }
 
 // FindVRChromPosRange search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
-func (mf TMMFile) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, posMax uint32) (uint32, uint64, uint64) {
+func (crv RSIDVARCols) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, posMax uint32) (uint32, uint64, uint64) {
 	cfirst := C.uint64_t(first)
 	clast := C.uint64_t(last)
-	rsid := uint32(C.find_vr_chrompos_range((*C.uchar)(mf.Src), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax)))
+	rsid := uint32(C.find_vr_chrompos_range(castGoRSIDVARColsToC(crv), &cfirst, &clast, C.uint8_t(chrom), C.uint32_t(posMin), C.uint32_t(posMax)))
 	return rsid, uint64(cfirst), uint64(clast)
 }
 
 // --- NRVK ---
 
+// NRVKCols contains the NRVK memory mapped file column info.
+type NRVKCols struct {
+	Vk     unsafe.Pointer // Pointer to the VariantKey column.
+	Offset unsafe.Pointer // Pointer to the Offset column.
+	Data   unsafe.Pointer // Pointer to the Data column.
+	NRows  uint64         // Number of rows.
+}
+
+// castCNRVKColsToGo convert C.nrvk_cols_t to GO NRVKCols.
+func castCNRVKColsToGo(nr C.nrvk_cols_t) NRVKCols {
+	return NRVKCols{
+		Vk:     unsafe.Pointer(nr.vk),     // #nosec
+		Offset: unsafe.Pointer(nr.offset), // #nosec
+		Data:   unsafe.Pointer(nr.data),   // #nosec
+		NRows:  uint64(nr.nrows),
+	}
+}
+
+// castGoNRVKColsToC convert GO NRVKCols to C.nrvk_cols_t.
+func castGoNRVKColsToC(nr NRVKCols) C.nrvk_cols_t {
+	var cnr C.nrvk_cols_t
+	cnr.vk = (*C.uint64_t)(nr.Vk)
+	cnr.offset = (*C.uint64_t)(nr.Offset)
+	cnr.data = (*C.uint8_t)(nr.Data)
+	cnr.nrows = C.uint64_t(nr.NRows)
+	return cnr
+}
+
+// MmapNRVKFile memory map the NRVK binary file.
+func MmapNRVKFile(file string) (TMMFile, NRVKCols, error) {
+	bfile := StringToNTBytes(file)
+	flen := len(bfile)
+	var p unsafe.Pointer
+	if flen > 0 {
+		p = unsafe.Pointer(&bfile[0]) // #nosec
+	}
+	var mf C.mmfile_t
+	var rc C.nrvk_cols_t
+	C.mmap_nrvk_file((*C.char)(p), &mf, &rc)
+	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
+		return TMMFile{}, NRVKCols{}, fmt.Errorf("unable to map the file: %s", file)
+	}
+	return castCTMMFileToGo(mf), castCNRVKColsToGo(rc), nil
+}
+
 // FindRefAltByVariantKey retrieve the REF and ALT strings for the specified VariantKey.
-func (mf TMMFile) FindRefAltByVariantKey(vk uint64) (string, string, uint8, uint8, uint32) {
+func (nr NRVKCols) FindRefAltByVariantKey(vk uint64) (string, string, uint8, uint8, uint32) {
 	cref := C.malloc(256)
 	defer C.free(unsafe.Pointer(cref)) // #nosec
 	calt := C.malloc(256)
 	defer C.free(unsafe.Pointer(calt)) // #nosec
 	csizeref := C.size_t(0)
 	csizealt := C.size_t(0)
-	len := C.find_ref_alt_by_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), (*C.char)(cref), &csizeref, (*C.char)(calt), &csizealt)
+	len := C.find_ref_alt_by_variantkey(castGoNRVKColsToC(nr), C.uint64_t(vk), (*C.char)(cref), &csizeref, (*C.char)(calt), &csizealt)
 	return C.GoStringN((*C.char)(cref), C.int(csizeref)), C.GoStringN((*C.char)(calt), C.int(csizealt)), uint8(csizeref), uint8(csizealt), uint32(len)
 }
 
 // ReverseVariantKey reverse a VariantKey code and returns the normalized components.
-func (mf TMMFile) ReverseVariantKey(vk uint64) (TVariantKeyRev, uint32) {
+func (nr NRVKCols) ReverseVariantKey(vk uint64) (TVariantKeyRev, uint32) {
 	var rev C.variantkey_rev_t
-	len := C.reverse_variantkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), &rev)
+	len := C.reverse_variantkey(castGoNRVKColsToC(nr), C.uint64_t(vk), &rev)
 	return castCVariantKeyRev(rev), uint32(len)
 }
 
 // GetVariantKeyRefLength retrieve the REF length for the specified VariantKey.
-func (mf TMMFile) GetVariantKeyRefLength(vk uint64) uint8 {
-	return uint8(C.get_variantkey_ref_length((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+func (nr NRVKCols) GetVariantKeyRefLength(vk uint64) uint8 {
+	return uint8(C.get_variantkey_ref_length(castGoNRVKColsToC(nr), C.uint64_t(vk)))
 }
 
 // GetVariantKeyEndPos get the VariantKey end position (POS + REF length).
-func (mf TMMFile) GetVariantKeyEndPos(vk uint64) uint32 {
-	return uint32(C.get_variantkey_endpos((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+func (nr NRVKCols) GetVariantKeyEndPos(vk uint64) uint32 {
+	return uint32(C.get_variantkey_endpos(castGoNRVKColsToC(nr), C.uint64_t(vk)))
 }
 
 // GetVariantKeyChromStartPos get the CHROM + START POS encoding from VariantKey.
@@ -1488,18 +504,34 @@ func GetVariantKeyChromStartPos(vk uint64) uint64 {
 }
 
 // GetVariantKeyChromEndPos get the CHROM + END POS encoding from VariantKey.
-func (mf TMMFile) GetVariantKeyChromEndPos(vk uint64) uint64 {
-	return uint64(C.get_variantkey_chrom_endpos((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+func (nr NRVKCols) GetVariantKeyChromEndPos(vk uint64) uint64 {
+	return uint64(C.get_variantkey_chrom_endpos(castGoNRVKColsToC(nr), C.uint64_t(vk)))
 }
 
-// VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/vknr.sh script.
-func (mf TMMFile) VknrBinToTSV(tsvfile string) uint64 {
+// VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/nrvk.sh script.
+func (nr NRVKCols) VknrBinToTSV(tsvfile string) uint64 {
 	file := StringToNTBytes(tsvfile)
 	pfile := unsafe.Pointer(&file[0]) // #nosec
-	return uint64(C.vknr_bin_to_tsv((*C.uchar)(mf.Src), C.uint64_t(mf.Last), (*C.char)(pfile)))
+	return uint64(C.nrvk_bin_to_tsv(castGoNRVKColsToC(nr), (*C.char)(pfile)))
 }
 
 // --- GENOREF ---
+
+// MmapGenorefFile maps the specified fasta file in memory.
+func MmapGenorefFile(file string) (TMMFile, error) {
+	bfile := StringToNTBytes(file)
+	flen := len(bfile)
+	var p unsafe.Pointer
+	if flen > 0 {
+		p = unsafe.Pointer(&bfile[0]) // #nosec
+	}
+	var mf C.mmfile_t
+	C.mmap_genoref_file((*C.char)(p), &mf)
+	if mf.fd < 0 || mf.size == 0 || mf.src == nil {
+		return TMMFile{}, fmt.Errorf("unable to map the file: %s", file)
+	}
+	return castCTMMFileToGo(mf), nil
+}
 
 // FlipAllele flips allele nucleotides.
 func FlipAllele(allele string) string {
@@ -1510,23 +542,16 @@ func FlipAllele(allele string) string {
 	return C.GoString((*C.char)(pallele))
 }
 
-// LoadGenorefIndex returns the index from the genome reference.
-func (mf *TMMFile) LoadGenorefIndex() {
-	mf.Index = make([]uint32, 27)
-	C.load_genoref_index((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0]))) // #nosec
-}
-
 // GetGenorefSeq returns the nucleotide at the specified chromosome and position.
 func (mf TMMFile) GetGenorefSeq(chrom uint8, pos uint32) byte {
-	return byte(C.get_genoref_seq((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0])), C.uint8_t(chrom), C.uint32_t(pos))) // #nosec
+	return byte(C.get_genoref_seq(castGoTMMFileToC(mf), C.uint8_t(chrom), C.uint32_t(pos))) // #nosec
 }
 
 // CheckReference checks if the reference allele matches the reference genome data.
 func (mf TMMFile) CheckReference(chrom uint8, pos uint32, ref string) int {
 	bref := StringToNTBytes(ref)
-	sizeref := len(ref)
-	pref := unsafe.Pointer(&bref[0])                                                                                                                                      // #nosec
-	return int(C.check_reference((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0])), C.uint8_t(chrom), C.uint32_t(pos), (*C.char)(pref), C.size_t(sizeref))) // #nosec
+	pref := unsafe.Pointer(&bref[0])                                                                                            // #nosec
+	return int(C.check_reference(castGoTMMFileToC(mf), C.uint8_t(chrom), C.uint32_t(pos), (*C.char)(pref), C.size_t(len(ref)))) // #nosec
 }
 
 // NormalizeVariant flips alleles if required and apply the normalization algorithm described at: https://genome.sph.umich.edu/wiki/Variant_Normalization
@@ -1540,7 +565,7 @@ func (mf TMMFile) NormalizeVariant(chrom uint8, pos uint32, ref string, alt stri
 	cpos := C.uint32_t(pos)
 	csizeref := C.size_t(sizeref)
 	csizealt := C.size_t(sizealt)
-	code = int(C.normalize_variant((*C.uchar)(mf.Src), (*C.uint32_t)(unsafe.Pointer(&mf.Index[0])), C.uint8_t(chrom), &cpos, (*C.char)(pref), &csizeref, (*C.char)(palt), &csizealt)) // #nosec
+	code = int(C.normalize_variant(castGoTMMFileToC(mf), C.uint8_t(chrom), &cpos, (*C.char)(pref), &csizeref, (*C.char)(palt), &csizealt)) // #nosec
 	npos = uint32(cpos)
 	nref = C.GoString((*C.char)(pref))
 	nalt = C.GoString((*C.char)(palt))
@@ -1669,13 +694,13 @@ func AreOverlappingRegionKeys(rka, rkb uint64) bool {
 }
 
 // AreOverlappingVariantKeyRegionKey check if variantkey and regionkey are overlapping.
-func (mf TMMFile) AreOverlappingVariantKeyRegionKey(vk, rk uint64) bool {
-	return (uint8(C.are_overlapping_variantkey_regionkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk), C.uint64_t(rk))) != 0)
+func (nr NRVKCols) AreOverlappingVariantKeyRegionKey(vk, rk uint64) bool {
+	return (uint8(C.are_overlapping_variantkey_regionkey(castGoNRVKColsToC(nr), C.uint64_t(vk), C.uint64_t(rk))) != 0)
 }
 
 // VariantToRegionkey get RegionKey from VariantKey.
-func (mf TMMFile) VariantToRegionkey(vk uint64) uint64 {
-	return uint64(C.variantkey_to_regionkey((*C.uchar)(mf.Src), C.uint64_t(mf.Last), C.uint64_t(vk)))
+func (nr NRVKCols) VariantToRegionkey(vk uint64) uint64 {
+	return uint64(C.variantkey_to_regionkey(castGoNRVKColsToC(nr), C.uint64_t(vk)))
 }
 
 // --- ESID ---

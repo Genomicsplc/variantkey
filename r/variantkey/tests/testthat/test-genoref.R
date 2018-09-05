@@ -9,18 +9,17 @@ library(variantkey)
 # @link       https://github.com/genomicsplc/variantkey
 
 test_that("MmapBinfile", {
-    genoref <<- MmapBinfile("../../../../c/test/data/genoref.bin")
-    expect_that(genoref$SIZE, equals(480))
-    idx <<- LoadGenorefIndex(genoref$SRC)
+    genoref <<- MmapGenorefFile("../../../../c/test/data/genoref.bin")
+    expect_that(genoref$SIZE, equals(598))
 })
 
 test_that("GetGenorefSeq", {
     chrom = seq(1, 25)
-    res <- mapply(GetGenorefSeq, chrom = chrom, MoreArgs = list(src = genoref$SRC, idx = idx, pos = 0), SIMPLIFY = TRUE, USE.NAMES = FALSE) # first
+    res <- mapply(GetGenorefSeq, chrom = chrom, MoreArgs = list(mf = genoref$MF, pos = 0), SIMPLIFY = TRUE, USE.NAMES = FALSE) # first
     expect_that(res, equals(rep(utf8ToInt("A"), 25))) # always A
-    res <- mapply(GetGenorefSeq, chrom = chrom, pos = (26 - chrom), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE) # last
+    res <- mapply(GetGenorefSeq, chrom = chrom, pos = (26 - chrom), MoreArgs = list(mf = genoref$MF), SIMPLIFY = TRUE, USE.NAMES = FALSE) # last
     expect_that(res, equals(seq(utf8ToInt("Z"), utf8ToInt("B")))) # Z to A
-    res <- mapply(GetGenorefSeq, chrom = chrom, pos = (27 - chrom), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE) # invalid
+    res <- mapply(GetGenorefSeq, chrom = chrom, pos = (27 - chrom), MoreArgs = list(mf = genoref$MF), SIMPLIFY = TRUE, USE.NAMES = FALSE) # invalid
     expect_that(res, equals(rep(0, 25))) # always 0
 })
 
@@ -70,7 +69,7 @@ test_that("CheckReference", {
         list( 1, 1,  24,  1, "T"                         )
     )
     colnames(x) <- list("exp", "chrom", "pos", "sizeref", "ref")
-    res <- mapply(CheckReference, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(CheckReference, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), MoreArgs = list(mf = genoref$MF), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(x[,"exp"])))
 })
 
@@ -95,7 +94,7 @@ test_that("NormalizeVariant", {
         list( 6, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "G",      "T"     )   # swap + flip
     )
     colnames(x) <- list("ecode", "chrom", "pos", "epos", "sizeref", "sizealt", "esizeref", "esizealt", "eref", "ealt", "ref", "alt")
-    res <- mapply(NormalizeVariant, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]), MoreArgs = list(src = genoref$SRC, idx = idx), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(NormalizeVariant, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]), MoreArgs = list(mf = genoref$MF), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"ecode"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"epos"])))
     expect_that(unlist(res[3,]), equals(unlist(x[,"eref"])))
@@ -105,6 +104,6 @@ test_that("NormalizeVariant", {
 })
 
 test_that("MunmapBinfile", {
-    err <- MunmapBinfile(genoref$SRC, genoref$FD, genoref$SIZE)
+    err <- MunmapBinfile(genoref$MF)
     expect_that(err, equals(0))
 })

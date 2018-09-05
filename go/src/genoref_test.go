@@ -10,7 +10,7 @@ package variantkey
 import "testing"
 
 func TestGenorefIndex(t *testing.T) {
-	exp := []uint32{0, 105, 132, 158, 183, 207, 230, 252, 273, 293, 312, 330, 347, 363, 378, 392, 405, 417, 428, 438, 447, 455, 462, 468, 473, 477, 480}
+	exp := []uint64{248, 248, 274, 299, 323, 346, 368, 389, 409, 428, 446, 463, 479, 494, 508, 521, 533, 544, 554, 563, 571, 578, 584, 589, 593, 596, 598}
 	if len(gref.Index) != len(exp) {
 		t.Errorf("Expected size %d, got %d", len(exp), len(gref.Index))
 	}
@@ -27,16 +27,16 @@ func TestGetGenorefSeq(t *testing.T) {
 	for chrom = 1; chrom <= 25; chrom++ {
 		ref = gref.GetGenorefSeq(chrom, 0) // first
 		if ref != 'A' {
-			t.Errorf("(first): Expected reference 'A', got '%c'", ref)
+			t.Errorf("%d (first): Expected reference 'A', got '%c'", chrom, ref)
 		}
 		ref = gref.GetGenorefSeq(chrom, (26 - uint32(chrom))) // last
 		exp = byte('Z' + 1 - chrom)
 		if ref != exp {
-			t.Errorf("(last): Expected reference '%c', got '%c'", exp, ref)
+			t.Errorf("%d (last): Expected reference '%c', got '%c'", chrom, exp, ref)
 		}
 		ref = gref.GetGenorefSeq(chrom, (27 - uint32(chrom))) // invalid
 		if ref != 0 {
-			t.Errorf("(invalid): Expected reference 0, got '%c'", ref)
+			t.Errorf("%d (invalid): Expected reference 0, got '%c'", chrom, ref)
 		}
 	}
 }

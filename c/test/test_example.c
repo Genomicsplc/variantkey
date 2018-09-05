@@ -96,21 +96,18 @@ int main()
     // The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
     // This example uses the "c/test/data/genoref.bin".
     mmfile_t genoref = {0};
-    mmap_binfile("genoref.bin", &genoref);
+    mmap_genoref_file("genoref.bin", &genoref);
     if (genoref.fd < 0)
     {
         fprintf(stderr, "Error loading genoref.bin\n");
         return 1;
     }
 
-    uint32_t idx[27];
-    load_genoref_index(genoref.src, idx);
-
-    char sref = get_genoref_seq(genoref.src, idx, 23, 0);
+    char sref = get_genoref_seq(genoref, 23, 0);
     fprintf(stdout, "%c\n", sref);
     // A
 
-    int ret = check_reference(genoref.src, idx, 23, 0, "A", 1);
+    int ret = check_reference(genoref, 23, 0, "A", 1);
     fprintf(stdout, "%d\n", ret);
     // 0
 
@@ -125,7 +122,7 @@ int main()
     char nalt[256] = "CFE";
     sizeref = 3;
     sizealt = 3;
-    ret = normalize_variant(genoref.src, idx, 13, &pos, nref, &sizeref, nalt, &sizealt);
+    ret = normalize_variant(genoref, 13, &pos, nref, &sizeref, nalt, &sizealt);
     fprintf(stdout, "%d %" PRIu32 " %s %s %lu %lu\n", ret, pos, nref, nalt, sizeref, sizealt);
     // 48 3 D F 1 1
 
@@ -146,31 +143,32 @@ int main()
     // Load the lookup table for non-reversible variantkeys.
     // The input binary files can be generated from a normalized VCF file using the resources/tools/vkhexbin.sh script.
     // The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
-    // This example uses the "c/test/data/vknr.10.bin".
-    mmfile_t vknr = {0};
-    mmap_binfile("vknr.10.bin", &vknr);
-    if (vknr.fd < 0)
+    // This example uses the "c/test/data/nrvk.10.bin".
+    mmfile_t nrvk = {0};
+    nrvk_cols_t nvc = {0};
+    mmap_nrvk_file("nrvk.10.bin", &nrvk, &nvc);
+    if (nrvk.fd < 0)
     {
-        fprintf(stderr, "Error loading vknr.10.bin\n");
+        fprintf(stderr, "Error loading nrvk.10.bin\n");
         return 1;
     }
 
     char lref[256], lalt[256];
-    size_t len = find_ref_alt_by_variantkey(vknr.src, vknr.last, 0x2000c3521f1c15ab, lref, &sizeref, lalt, &sizealt);
+    size_t len = find_ref_alt_by_variantkey(nvc, 0x2000c3521f1c15ab, lref, &sizeref, lalt, &sizealt);
     fprintf(stdout, "%s %s %lu %lu %lu\n", lref, lalt, sizeref, sizealt, len);
     // ACGTACGT ACGT 8 4 12
 
     // Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
     variantkey_rev_t rev = {0};
-    len = reverse_variantkey(vknr.src, vknr.last, 0x2000c3521f1c15ab, &rev);
+    len = reverse_variantkey(nvc, 0x2000c3521f1c15ab, &rev);
     fprintf(stdout, "%s %" PRIu32 " %s %s %lu %lu %lu\n", rev.chrom, rev.pos, rev.ref, rev.alt, rev.sizeref, rev.sizealt, len);
     // 4 100004 ACGTACGT ACGT 8 4 12
 
-    len = get_variantkey_ref_length(vknr.src, vknr.last, 0x2000c3521f1c15ab);
+    len = get_variantkey_ref_length(nvc, 0x2000c3521f1c15ab);
     fprintf(stdout, "%lu\n", len);
     // 8
 
-    uint32_t endpos = get_variantkey_endpos(vknr.src, vknr.last, 0x2000c3521f1c15ab);
+    uint32_t endpos = get_variantkey_endpos(nvc, 0x2000c3521f1c15ab);
     fprintf(stdout, "%" PRIu32 "\n", endpos);
     // 100012
 
@@ -178,14 +176,14 @@ int main()
     fprintf(stdout, "%016" PRIx64 "\n", csp);
     // 00000000400186a4
 
-    uint64_t cep = get_variantkey_chrom_endpos(vknr.src, vknr.last, 0x2000c3521f1c15ab);
+    uint64_t cep = get_variantkey_chrom_endpos(nvc, 0x2000c3521f1c15ab);
     fprintf(stdout, "%016" PRIx64 "\n", cep);
     // 00000000400186ac
 
-    err = munmap_binfile(vknr);
+    err = munmap_binfile(nrvk);
     if (err != 0)
     {
-        fprintf(stderr, "Got %d error while unmapping the vknr file\n", err);
+        fprintf(stderr, "Got %d error while unmapping the nrvk file\n", err);
         return 1;
     }
 
@@ -200,25 +198,21 @@ int main()
     // The input binary file can be generated using the resources/tools/vkhexbin.sh script.
     // This example uses the "c/test/data/rsvk.10.bin".
     mmfile_t rv = {0};
-    mmap_binfile("rsvk.10.bin", &rv);
+    rsidvar_cols_t crv = {0};
+    mmap_rsvk_file("rsvk.10.bin", &rv, &crv);
     if (rv.fd < 0)
     {
         fprintf(stderr, "Error loading rsvk.10.bin\n");
         return 1;
     }
-    uint64_t nitems = (rv.size / BINBLKLEN);
-
-    vk = get_rv_variantkey(rv.src, 3);
-    fprintf(stdout, "%" PRIu64 "\n", vk);
-    // 9223656209074749440
 
     uint64_t first = 0;
-    vk = find_rv_variantkey_by_rsid(rv.src, &first, nitems, 0x00000061);
+    vk = find_rv_variantkey_by_rsid(crv, &first, crv.nrows, 0x00000061);
     fprintf(stdout, "%" PRIu64 " %" PRIu64 "\n", vk, first);
     // 9223656209074749440 3
 
     uint64_t fpos = 2;
-    vk = get_next_rv_variantkey_by_rsid(rv.src, &fpos, 9, 0x00000061);
+    vk = get_next_rv_variantkey_by_rsid(crv, &fpos, 9, 0x00000061);
     fprintf(stdout, "%" PRIu64 " %" PRIu64 "\n", vk, fpos);
     // 9223656209074749440 3
 
@@ -235,20 +229,20 @@ int main()
     // The input binary file can be generated using the resources/tools/vkhexbin.sh script.
     // This example uses the "c/test/data/rsvk.m.10.bin".
     mmfile_t rvm = {0};
-    mmap_binfile("rsvk.m.10.bin", &rvm);
+    rsidvar_cols_t crvm = {0};
+    mmap_rsvk_file("rsvk.m.10.bin", &rvm, &crvm);
     if (rvm.fd < 0)
     {
         fprintf(stderr, "Error loading rsvk.m.10.bin\n");
         return 1;
     }
-    nitems = (rv.size / BINBLKLEN);
 
     first = 0;
-    vk = find_rv_variantkey_by_rsid(rvm.src, &first, nitems, 0x00000003);
+    vk = find_rv_variantkey_by_rsid(crvm, &first, crvm.nrows, 0x00000003);
     while (vk > 0)
     {
         fprintf(stdout, "%" PRIu64 "\n", vk);
-        vk = get_next_rv_variantkey_by_rsid(rvm.src, &first, 9, 0x00000003);
+        vk = get_next_rv_variantkey_by_rsid(crvm, &first, 9, 0x00000003);
     }
     // 9223656209074749440
     // 9223656316446408704
@@ -267,26 +261,22 @@ int main()
     // The input binary file can be generated using the resources/tools/vkhexbin.sh script.
     // This example uses the "c/test/data/vkrs.10.bin".
     mmfile_t vr = {0};
-    mmap_binfile("vkrs.10.bin", &vr);
+    rsidvar_cols_t cvr = {0};
+    mmap_vkrs_file("vkrs.10.bin", &vr, &cvr);
     if (vr.fd < 0)
     {
         fprintf(stderr, "Error loading vkrs.10.bin\n");
         return 1;
     }
-    nitems = (vr.size / BINBLKLEN);
-
-    uint32_t rsid = get_vr_rsid(vr.src, 3);
-    fprintf(stdout, "%" PRIu32 "\n", rsid);
-    // 97
 
     first = 0;
-    rsid = find_vr_rsid_by_variantkey(vr.src, &first, nitems, 0x80010274003A0000);
+    uint32_t rsid = find_vr_rsid_by_variantkey(cvr, &first, cvr.nrows, 0x80010274003A0000);
     fprintf(stdout, "%" PRIu32 " %" PRIu64 "\n", rsid, first);
     // 97 3
 
     first = 0;
     uint64_t last = 9;
-    rsid = find_vr_chrompos_range(vr.src, &first, &last, 0x14, 0x000256C5, 0x000256CB);
+    rsid = find_vr_chrompos_range(cvr, &first, &last, 0x14, 0x000256C5, 0x000256CB);
     fprintf(stdout, "%" PRIu32 "%" PRIu64 "%" PRIu64 "\n", rsid, first, last);
     // 9973 7 8
 
@@ -375,11 +365,12 @@ int main()
     fprintf(stdout, "%" PRIu8 "\n", ov);
     // 1
 
-    ov = are_overlapping_variantkey_regionkey(NULL, 0, 0x2800000210920000, 0x2800000180000038);
+    nrvk_cols_t tnvc = {0};
+    ov = are_overlapping_variantkey_regionkey(tnvc, 0x2800000210920000, 0x2800000180000038);
     fprintf(stdout, "%" PRIu8 "\n", ov);
     // 1
 
-    rk = variantkey_to_regionkey(NULL, 0, 0x2800000210920000);
+    rk = variantkey_to_regionkey(tnvc, 0x2800000210920000);
     fprintf(stdout, "%016" PRIx64 "\n", rk);
     // 2800000200000030
 
@@ -394,10 +385,18 @@ int main()
     fprintf(stdout, "%016" PRIx64 "\n", esid);
     // a850850492e77999
 
-    char strid[11];
+    char strid[30];
     size_t stridlen = decode_string_id(0xa850850492e77999, strid);
     fprintf(stdout, "%s %lu\n", strid, stridlen);
     // A0A022YWF9 10
+
+    esid = encode_string_num_id("ABC:0000123456", 14, ':');
+    fprintf(stdout, "%016" PRIx64 "\n", esid);
+    // d8628c002001e240
+
+    stridlen = decode_string_id(esid, strid);
+    fprintf(stdout, "%s %lu\n", strid, stridlen);
+    // ABC:0000123456 14
 
     esid = hash_string_id("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ", 36);
     fprintf(stdout, "%016" PRIx64 "\n", esid);

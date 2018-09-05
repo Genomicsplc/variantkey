@@ -31,25 +31,25 @@ class TestFunctions(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        global mfsrc, mffd, mfsize, mflast
+        global mf, mc, nrows
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../c/test/data/vknr.10.bin")
-        mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
-        if mffd < 0:
-            assert False, "Unable to open the vknr.10.bin file"
+            "/../../c/test/data/nrvk.10.bin")
+        mf, mc, nrows = bs.mmap_nrvk_file(inputfile)
+        if nrows <= 0:
+            assert False, "Unable to open the nrvk.10.bin file"
 
     @classmethod
     def tearDownClass(cls):
-        global mfsrc, mffd, mfsize
-        h = bs.munmap_binfile(mfsrc, mffd, mfsize)
+        global mf, mc, nrows
+        h = bs.munmap_binfile(mf)
         if h != 0:
-            assert False, "Error while closing the vknr.10.bin memory-mapped file"
+            assert False, "Error while closing the nrvk.10.bin memory-mapped file"
 
     def test_find_ref_alt_by_variantkey(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
-            oref, oalt, osizeref, osizealt, oralen = bs.find_ref_alt_by_variantkey(mfsrc, mflast, vkey)
+            oref, oalt, osizeref, osizealt, oralen = bs.find_ref_alt_by_variantkey(mc, vkey)
             self.assertEqual(oref, ref)
             self.assertEqual(oalt, alt)
             self.assertEqual(osizeref, sizeref)
@@ -58,7 +58,7 @@ class TestFunctions(TestCase):
 
     def test_reverse_variantkey(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
-            ochrom, opos, oref, oalt, osizeref, osizealt, oralen = bs.reverse_variantkey(mfsrc, mflast, vkey)
+            ochrom, opos, oref, oalt, osizeref, osizealt, oralen = bs.reverse_variantkey(mc, vkey)
             self.assertEqual(ochrom, chrom)
             self.assertEqual(opos, pos)
             self.assertEqual(oref, ref)
@@ -69,20 +69,20 @@ class TestFunctions(TestCase):
 
     def test_get_variantkey_ref_length(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
-            osizeref = bs.get_variantkey_ref_length(mfsrc, mflast, vkey)
+            osizeref = bs.get_variantkey_ref_length(mc, vkey)
             self.assertEqual(osizeref, sizeref)
 
     def test_get_variantkey_ref_length_reversible(self):
-        osizeref = bs.get_variantkey_ref_length(mfsrc, mflast, 0x1800925199160000)
+        osizeref = bs.get_variantkey_ref_length(mc, 0x1800925199160000)
         self.assertEqual(osizeref, 3)
 
     def test_get_variantkey_ref_length_not_found(self):
-        osizeref = bs.get_variantkey_ref_length(mfsrc, mflast, 0xffffffffffffffff)
+        osizeref = bs.get_variantkey_ref_length(mc, 0xffffffffffffffff)
         self.assertEqual(osizeref, 0)
 
     def test_get_variantkey_endpos(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
-            endpos = bs.get_variantkey_endpos(mfsrc, mflast, vkey)
+            endpos = bs.get_variantkey_endpos(mc, vkey)
             self.assertEqual(endpos, (pos + sizeref))
 
     def test_get_variantkey_chrom_endpos(self):
@@ -92,11 +92,11 @@ class TestFunctions(TestCase):
 
     def test_get_variantkey_chrom_endpos(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
-            res = bs.get_variantkey_chrom_endpos(mfsrc, mflast, vkey)
+            res = bs.get_variantkey_chrom_endpos(mc, vkey)
             self.assertEqual(res, cep)
 
-    def test_vknr_bin_to_tsv(self):
-        fsize = bs.vknr_bin_to_tsv(mfsrc, mflast, "vknr.test")
+    def test_nrvk_bin_to_tsv(self):
+        fsize = bs.nrvk_bin_to_tsv(mc, "nrvk.test")
         self.assertEqual(fsize, 305)
 
 
@@ -105,22 +105,20 @@ class TestBenchmark(object):
     global setup
 
     def setup():
-        global mfsrc, mffd, mfsize, mflast
-        if mffd >= 0:
-            pass
-        bs.munmap_binfile(mfsrc, mffd, mfsize)
+        global mf, mc, nrows
+        bs.munmap_binfile(mf)
         inputfile = os.path.realpath(
             os.path.dirname(
                 os.path.realpath(__file__)) +
-            "/../../c/test/data/vknr.10.bin")
-        mfsrc, mffd, mfsize, mflast = bs.mmap_binfile(inputfile)
-        if mffd < 0:
-            assert False, "Unable to open the vknr.10.bin file"
+            "/../../c/test/data/nrvk.10.bin")
+        mf, mc, nrows = bs.mmap_nrvk_file(inputfile)
+        if nrows <= 0:
+            assert False, "Unable to open the nrvk.10.bin file"
 
     def test_find_ref_alt_by_variantkey(self, benchmark):
         benchmark.pedantic(
             bs.find_ref_alt_by_variantkey,
-            args=[mfsrc, mflast, 0xb000c35b64690b25],
+            args=[mc, 0xb000c35b64690b25],
             setup=setup,
             iterations=1,
             rounds=10000)
@@ -128,15 +126,15 @@ class TestBenchmark(object):
     def test_reverse_variantkey(self, benchmark):
         benchmark.pedantic(
             bs.reverse_variantkey,
-            args=[mfsrc, mflast, 0xb000c35b64690b25],
+            args=[mc, 0xb000c35b64690b25],
             setup=setup,
             iterations=1,
             rounds=10000)
 
     def test_tearDown(self):
-        global mfsrc, mffd, mfsize
-        h = bs.munmap_binfile(mfsrc, mffd, mfsize)
+        global mf
+        h = bs.munmap_binfile(mf)
         mffd = -1
         mfsize = 0
         if h != 0:
-            assert False, "Error while closing the vknr.10.bin memory-mapped file"
+            assert False, "Error while closing the nrvk.10.bin memory-mapped file"

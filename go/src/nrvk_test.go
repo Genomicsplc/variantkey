@@ -10,16 +10,16 @@ package variantkey
 import "testing"
 
 var testNonRevVKData = []struct {
-	vk             uint64
-	chrom          string
-	pos            uint32
-	len            uint32
-	sizeref        uint8
-	sizealt        uint8
-	chrom_startpos uint64
-	chrom_endpos   uint64
-	ref            string
-	alt            string
+	vk            uint64
+	chrom         string
+	pos           uint32
+	len           uint32
+	sizeRef       uint8
+	sizeAlt       uint8
+	chromStartPos uint64
+	chromEndPos   uint64
+	ref           string
+	alt           string
 }{
 	{0x0800c35093ace339, "1", 100001, 0x00000004, 0x01, 0x01, 0x00000000100186a1, 0x00000000100186a2, "N", "A"},
 	{0x1000c3517f91cdb1, "2", 100002, 0x0000000e, 0x0b, 0x01, 0x00000000200186a2, 0x00000000200186ad, "AAGAAAGAAAG", "A"},
@@ -39,18 +39,18 @@ func TestFindRefAltByVariantKey(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			ref, alt, sizeref, sizealt, len := vknr.FindRefAltByVariantKey(tt.vk)
+			ref, alt, sizeRef, sizeAlt, len := nrvk.FindRefAltByVariantKey(tt.vk)
 			if ref != tt.ref {
 				t.Errorf("%d. Expected REF %s, got %s", i, tt.ref, ref)
 			}
 			if alt != tt.alt {
 				t.Errorf("%d. Expected ALT %s, got %s", i, tt.alt, alt)
 			}
-			if sizeref != tt.sizeref {
-				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, sizeref)
+			if sizeRef != tt.sizeRef {
+				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeRef, sizeRef)
 			}
-			if sizealt != tt.sizealt {
-				t.Errorf("%d. Expected ALT size %d, got %d", i, tt.sizealt, sizealt)
+			if sizeAlt != tt.sizeAlt {
+				t.Errorf("%d. Expected ALT size %d, got %d", i, tt.sizeAlt, sizeAlt)
 			}
 			if len != (tt.len - 2) {
 				t.Errorf("%d. Expected len %d, got %d", i, (tt.len - 2), len)
@@ -62,7 +62,7 @@ func TestFindRefAltByVariantKey(t *testing.T) {
 func BenchmarkFindRefAltByVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vknr.FindRefAltByVariantKey(0xb000c35b64690b25)
+		nrvk.FindRefAltByVariantKey(0xb000c35b64690b25)
 	}
 }
 
@@ -72,7 +72,7 @@ func TestNRReverseVariantKey(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			rev, len := vknr.ReverseVariantKey(tt.vk)
+			rev, len := nrvk.ReverseVariantKey(tt.vk)
 			if rev.Chrom != tt.chrom {
 				t.Errorf("%d. Expected CHROM %s, got %s", i, tt.chrom, rev.Chrom)
 			}
@@ -85,11 +85,11 @@ func TestNRReverseVariantKey(t *testing.T) {
 			if rev.Alt != tt.alt {
 				t.Errorf("%d. Expected ALT %s, got %s", i, tt.alt, rev.Alt)
 			}
-			if rev.SizeRef != tt.sizeref {
-				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, rev.SizeRef)
+			if rev.SizeRef != tt.sizeRef {
+				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeRef, rev.SizeRef)
 			}
-			if rev.SizeAlt != tt.sizealt {
-				t.Errorf("%d. Expected ALT size %d, got %d", i, tt.sizealt, rev.SizeAlt)
+			if rev.SizeAlt != tt.sizeAlt {
+				t.Errorf("%d. Expected ALT size %d, got %d", i, tt.sizeAlt, rev.SizeAlt)
 			}
 			if len != (tt.len - 2) {
 				t.Errorf("%d. Expected len %d, got %d", i, (tt.len - 2), len)
@@ -101,7 +101,7 @@ func TestNRReverseVariantKey(t *testing.T) {
 func BenchmarkNRReverseVariantKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vknr.ReverseVariantKey(0xb000c35b64690b25)
+		nrvk.ReverseVariantKey(0xb000c35b64690b25)
 	}
 }
 
@@ -111,25 +111,25 @@ func TestGetVariantKeyRefLength(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			sizeref := vknr.GetVariantKeyRefLength(tt.vk)
-			if sizeref != tt.sizeref {
-				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeref, sizeref)
+			sizeRef := nrvk.GetVariantKeyRefLength(tt.vk)
+			if sizeRef != tt.sizeRef {
+				t.Errorf("%d. Expected REF size %d, got %d", i, tt.sizeRef, sizeRef)
 			}
 		})
 	}
 }
 
 func TestGetVariantKeyRefLengthReversible(t *testing.T) {
-	sizeref := vknr.GetVariantKeyRefLength(0x1800925199160000)
-	if sizeref != 3 {
-		t.Errorf("Expected REF size 3, got %d", sizeref)
+	sizeRef := nrvk.GetVariantKeyRefLength(0x1800925199160000)
+	if sizeRef != 3 {
+		t.Errorf("Expected REF size 3, got %d", sizeRef)
 	}
 }
 
 func TestGetVariantKeyRefLengthNotFound(t *testing.T) {
-	sizeref := vknr.GetVariantKeyRefLength(0xffffffffffffffff)
-	if sizeref != 0 {
-		t.Errorf("Expected REF size 0, got %d", sizeref)
+	sizeRef := nrvk.GetVariantKeyRefLength(0xffffffffffffffff)
+	if sizeRef != 0 {
+		t.Errorf("Expected REF size 0, got %d", sizeRef)
 	}
 }
 
@@ -139,8 +139,8 @@ func TestGetVariantKeyEndPos(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			endpos := vknr.GetVariantKeyEndPos(tt.vk)
-			exp := tt.pos + uint32(tt.sizeref)
+			endpos := nrvk.GetVariantKeyEndPos(tt.vk)
+			exp := tt.pos + uint32(tt.sizeRef)
 			if endpos != exp {
 				t.Errorf("%d. Expected END POS %d, got %d", i, exp, endpos)
 			}
@@ -155,8 +155,8 @@ func TestGetVariantKeyChromStartPos(t *testing.T) {
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
 			res := GetVariantKeyChromStartPos(tt.vk)
-			if res != tt.chrom_startpos {
-				t.Errorf("%d. Expected CHROM + START POS %d, got %d", i, tt.chrom_startpos, res)
+			if res != tt.chromStartPos {
+				t.Errorf("%d. Expected CHROM + START POS %d, got %d", i, tt.chromStartPos, res)
 			}
 		})
 	}
@@ -168,16 +168,16 @@ func TestGetVariantKeyChromEndPos(t *testing.T) {
 		tt := tt
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			res := vknr.GetVariantKeyChromEndPos(tt.vk)
-			if res != tt.chrom_endpos {
-				t.Errorf("%d. Expected CHROM + END POS %d, got %d", i, tt.chrom_endpos, res)
+			res := nrvk.GetVariantKeyChromEndPos(tt.vk)
+			if res != tt.chromEndPos {
+				t.Errorf("%d. Expected CHROM + END POS %d, got %d", i, tt.chromEndPos, res)
 			}
 		})
 	}
 }
 
 func TestVknrBinToTSV(t *testing.T) {
-	len := vknr.VknrBinToTSV("vknr.test")
+	len := nrvk.VknrBinToTSV("nrvk.test")
 	if len != 305 {
 		t.Errorf("Expected file length 305, got %d", len)
 	}

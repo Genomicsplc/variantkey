@@ -5,7 +5,7 @@
 \title{Unmap and close the memory-mapped file.
 On success, munmap() returns 0, on failure -1.}
 \usage{
-MunmapBinfile(src, fd, size)
+MunmapBinfile(mf)
 }
 \arguments{
 \item{mf}{Descriptor of memory-mapped file.}

@@ -94,6 +94,7 @@ test:
 	-tags ${STATIC_TAG} \
 	-covermode=atomic \
 	-race \
+	-bench=. \
 	-cpuprofile=target/report/cpu.out \
 	-memprofile=target/report/mem.out \
 	-mutexprofile=target/report/mutex.out \

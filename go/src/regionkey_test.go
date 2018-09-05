@@ -387,7 +387,7 @@ func TestAreOverlappingVariantKeyRegionKey(t *testing.T) {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			res := vknr.AreOverlappingVariantKeyRegionKey(v.vkA, v.rkB)
+			res := nrvk.AreOverlappingVariantKeyRegionKey(v.vkA, v.rkB)
 			if res != v.res {
 				t.Errorf("The result value is different, expected %#v got: %#v", v.res, res)
 			}
@@ -398,7 +398,7 @@ func TestAreOverlappingVariantKeyRegionKey(t *testing.T) {
 func BenchmarkAreOverlappingVariantKeyRegionKey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vknr.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038)
+		nrvk.AreOverlappingVariantKeyRegionKey(0x2800000210920000, 0x2800000180000038)
 	}
 }
 
@@ -407,7 +407,7 @@ func TestVariantToRegionkey(t *testing.T) {
 		v := v
 		t.Run("", func(t *testing.T) {
 			t.Parallel()
-			res := vknr.VariantToRegionkey(v.vkA)
+			res := nrvk.VariantToRegionkey(v.vkA)
 			if res != v.rkA {
 				t.Errorf("The result value is different, expected %#v got: %#v", v.rkA, res)
 			}
@@ -418,6 +418,6 @@ func TestVariantToRegionkey(t *testing.T) {
 func BenchmarkVariantToRegionkey(b *testing.B) {
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		vknr.VariantToRegionkey(0x2800000210920000)
+		nrvk.VariantToRegionkey(0x2800000210920000)
 	}
 }

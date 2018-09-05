@@ -20,13 +20,9 @@ When positive, each bit has a different meaning when set, has defined by the NOR
   * bit 5:
       Alleles have been left trimmed.}
 \usage{
-NormalizeVariant(src, idx, chrom, pos, ref, alt)
+NormalizeVariant(mf, chrom, pos, ref, alt)
 }
 \arguments{
-\item{src}{Address of the memory mapped input file containing the genome reference data (fasta.bin).}
-
-\item{idx}{Index of sequences offset by chromosome number (1 to 25).}
-
 \item{chrom}{Chromosome encoded number.}
 
 \item{pos}{Position. The reference position, with the first base having position 0.}
@@ -34,6 +30,8 @@ NormalizeVariant(src, idx, chrom, pos, ref, alt)
 \item{ref}{Reference allele. String containing a sequence of nucleotide letters.}
 
 \item{alt}{Alternate non-reference allele string.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapGenorefFile.}
 }
 \description{
 Normalize a variant.

@@ -490,9 +490,10 @@ int test_are_overlapping_variantkey_regionkey()
     int errors = 0;
     int i;
     uint8_t res;
+    nrvk_cols_t nvc = {0};
     for (i=0 ; i < TEST_OVERLAP_SIZE; i++)
     {
-        res = are_overlapping_variantkey_regionkey(NULL, 0, test_overlap[i].a_vk, test_overlap[i].b_rk);
+        res = are_overlapping_variantkey_regionkey(nvc, test_overlap[i].a_vk, test_overlap[i].b_rk);
         if (res != test_overlap[i].res)
         {
             fprintf(stderr, "%s (%d) Expecting %" PRIu8 ", got %" PRIu8 "\n", __func__, i, test_overlap[i].res, res);
@@ -507,9 +508,10 @@ int test_variantkey_to_regionkey()
     int errors = 0;
     int i;
     uint64_t res;
+    nrvk_cols_t nvc = {0};
     for (i=0 ; i < TEST_OVERLAP_SIZE; i++)
     {
-        res = variantkey_to_regionkey(NULL, 0, test_overlap[i].a_vk);
+        res = variantkey_to_regionkey(nvc, test_overlap[i].a_vk);
         if (res != test_overlap[i].a_rk)
         {
             fprintf(stderr, "%s (%d) Expecting %016" PRIx64 ", got %016" PRIx64 "\n", __func__, i, test_overlap[i].a_rk, res);
@@ -522,16 +524,6 @@ int test_variantkey_to_regionkey()
 int main()
 {
     int errors = 0;
-    int err;
-
-    mmfile_t vknr = {0};
-    mmap_binfile("vknr.10.bin", &vknr);
-
-    if ((vknr.last + 1) != TEST_DATA_SIZE)
-    {
-        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, vknr.last + 1);
-        return 1;
-    }
 
     errors += test_encode_region_strand();
     errors += test_decode_region_strand();
@@ -556,13 +548,6 @@ int main()
     benchmark_decode_regionkey();
     benchmark_reverse_regionkey();
     benchmark_regionkey();
-
-    err = munmap_binfile(vknr);
-    if (err != 0)
-    {
-        fprintf(stderr, "Got %d error while unmapping the vknr file\n", err);
-        return 1;
-    }
 
     return errors;
 }
