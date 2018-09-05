@@ -244,11 +244,11 @@ SEXP R_mmap_rsvk_file(SEXP file, SEXP ctbytes)
     mmfile_t *mf = (mmfile_t *)Calloc(1, mmfile_t);
     rsidvar_cols_t *mc = (rsidvar_cols_t *)Calloc(1, rsidvar_cols_t);
     mf->ncols = (uint8_t)(LENGTH(ctbytes));
-    /*int *px = INTEGER(ctbytes);
+    int *px = INTEGER(ctbytes);
     for (int i = 0; i < mf->ncols; i++)
     {
         mf->ctbytes[i] = (uint8_t)px[i];
-    }*/
+    }
     mmap_rsvk_file(CHAR(STRING_ELT(file, 0)), mf, mc);
     SEXP emf = PROTECT(R_MakeExternalPtr(mf, R_NilValue, R_NilValue));
     R_RegisterCFinalizerEx(emf, destroy_mf, TRUE);
@@ -268,11 +268,11 @@ SEXP R_mmap_vkrs_file(SEXP file, SEXP ctbytes)
     mmfile_t *mf = (mmfile_t *)Calloc(1, mmfile_t);
     rsidvar_cols_t *mc = (rsidvar_cols_t *)Calloc(1, rsidvar_cols_t);
     mf->ncols = (uint8_t)(LENGTH(ctbytes));
-    /*int *px = INTEGER(ctbytes);
+    int *px = INTEGER(ctbytes);
     for (int i = 0; i < mf->ncols; i++)
     {
         mf->ctbytes[i] = (uint8_t)px[i];
-    }*/
+    }
     mmap_vkrs_file(CHAR(STRING_ELT(file, 0)), mf, mc);
     SEXP emf = PROTECT(R_MakeExternalPtr(mf, R_NilValue, R_NilValue));
     R_RegisterCFinalizerEx(emf, destroy_mf, TRUE);

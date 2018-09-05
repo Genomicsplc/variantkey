@@ -263,7 +263,7 @@ print(vk.encode_string_id("A0A022YWF9", 0))
 print(vk.decode_string_id(0xa850850492e77999))
 (b'A0A022YWF9', 10)
 
-print(vk.encode_string_num_id("ABC:0000123456", ":"))
+print(vk.encode_string_num_id("ABC:0000123456", ':'))
 # 15592178792074961472
 
 print(vk.decode_string_id(0xd8628c002001e240))

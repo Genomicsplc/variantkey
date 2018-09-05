@@ -216,11 +216,11 @@ MunmapBinfile(nrvk$MF)
 # Load the lookup table for rsID to VariantKey.
 # The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.10.bin".
-rsvk <- MmapRSVKFile("../c/test/data/rsvk.10.bin", [4, 8])
-print(rsvknrows)
+rsvk <- MmapRSVKFile("../c/test/data/rsvk.10.bin", as.integer(c(4, 8)))
+print(rsvk$NROWS)
 # [1] 10
 
-x <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvknrows, rsid=0x00000061)
+x <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvk$NROWS, rsid=0x00000061)
 print(x)
 # $VK
 # [1] "80010274003a0000"
@@ -228,7 +228,7 @@ print(x)
 # $FIRST
 # [1] 3
 
-x <- GetNextRvVariantKeyByRsid(rsvk$MC, 2, rsvknrows, rsid=0x00000061)
+x <- GetNextRvVariantKeyByRsid(rsvk$MC, 2, rsvk$NROWS, rsid=0x00000061)
 print(x)
 # $VK
 # [1] "80010274003a0000"
@@ -244,9 +244,9 @@ MunmapBinfile(rsvk$MF)
 # Load the lookup table for rsID to VariantKey.
 # The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.m.10.bin".
-rsvkm <- MmapRSVKFile("../c/test/data/rsvk.m.10.bin", [])
+rsvkm <- MmapRSVKFile("../c/test/data/rsvk.m.10.bin", as.integer(c()))
 
-x <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkmnrows, rsid=0x00000003)
+x <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, rsid=0x00000003)
 print(x)
 # [[1]]
 # [1] "80010274003a0000"
@@ -265,9 +265,9 @@ MunmapBinfile(rsvkm$MF)
 # Load the lookup table for VariantKey ro rsID
 # The input binary file can be generated using the resources/tools/vkrs.sh script.
 # This example uses the "c/test/data/vkrs.10.bin".
-vkrs <- MmapVKRSFile("../c/test/data/vkrs.10.bin", [8, 4])
+vkrs <- MmapVKRSFile("../c/test/data/vkrs.10.bin", as.integer(c(8, 4)))
 
-x <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrsnrows, vk="80010274003A0000")
+x <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, vk="80010274003A0000")
 print(x)
 # $RSID
 # [1] 97
@@ -275,7 +275,7 @@ print(x)
 # $FIRST
 # [1] 3
 
-x <- FindVrChromposRange(vkrs$MC, 0, vkrsnrows, chrom=0x14, pos_min=0x000256C5, pos_max=0x000256CB)
+x <- FindVrChromposRange(vkrs$MC, 0, vkrs$NROWS, chrom=0x14, pos_min=0x000256C5, pos_max=0x000256CB)
 print(x)
 #$RSID
 #[1] 9973
@@ -399,7 +399,7 @@ x <- DecodeStringID("a850850492e77999")
 print(x)
 # [1] "A0A022YWF9"
 
-x <- EncodeStringNumID("ABC:0000123456", ":")
+x <- EncodeStringNumID("ABC:0000123456", 58)
 print(x)
 # [1] "d8628c002001e240"
 

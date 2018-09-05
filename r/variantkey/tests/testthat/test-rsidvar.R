@@ -23,11 +23,11 @@ x <- rbind(
 colnames(x) <- list("item", "chrom", "pos", "refalt", "rsid", "vk")
 
 test_that("MmapRSVKFile", {
-    rsvk <<- MmapRSVKFile("../../../../c/test/data/rsvk.10.bin", c(4, 8))
+    rsvk <<- MmapRSVKFile("../../../../c/test/data/rsvk.10.bin", as.integer(c(4, 8)))
     expect_that(rsvk$NROWS, equals(10))
-    rsvkm <<- MmapRSVKFile("../../../../c/test/data/rsvk.m.10.bin", c())
+    rsvkm <<- MmapRSVKFile("../../../../c/test/data/rsvk.m.10.bin", as.integer(c()))
     expect_that(rsvkm$NROWS, equals(10))
-    vkrs <<- MmapVKRSFile("../../../../c/test/data/vkrs.10.bin", c(8, 4))
+    vkrs <<- MmapVKRSFile("../../../../c/test/data/vkrs.10.bin", as.integer(c(8, 4)))
     expect_that(vkrs$NROWS, equals(10))
 })
 
