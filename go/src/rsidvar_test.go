@@ -139,7 +139,7 @@ func BenchmarkFindVRRsidByVariantKey(b *testing.B) {
 }
 
 func TestFindVRChromPosRange(t *testing.T) {
-	rsid, first, last := vr.FindVRChromPosRange(0, 9, testData[6].chrom, testData[7].pos, testData[8].pos)
+	rsid, first, last := vr.FindVRChromPosRange(0, vr.NRows, testData[6].chrom, testData[7].pos, testData[8].pos)
 	if rsid != testData[7].rsid {
 		t.Errorf("Expected rsid %x, got %x", testData[7].rsid, rsid)
 	}

@@ -23,12 +23,12 @@ x <- rbind(
 colnames(x) <- list("vk", "chrom", "pos", "ralen", "sizeref", "sizealt", "csp", "cep", "ref", "alt")
 
 test_that("MmapBinfile", {
-    nrvk <<- MmapBinfile("../../../../c/test/data/nrvk.10.bin")
-    expect_that(nrvk$SIZE, equals(299))
+    nrvk <<- MmapNRVKFile("../../../../c/test/data/nrvk.10.bin")
+    expect_that(nrvk$NROWS, equals(10))
 })
 
 test_that("FindRefAltByVariantKey", {
-    res <- mapply(FindRefAltByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = nrvk$SRC, last = nrvk$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(FindRefAltByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(mc = nrvk$MC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"ref"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"alt"])))
     expect_that(unlist(res[3,]), equals(unlist(x[,"sizeref"])))
@@ -37,7 +37,7 @@ test_that("FindRefAltByVariantKey", {
 })
 
 test_that("ReverseVariantKey", {
-    res <- mapply(ReverseVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(src = nrvk$SRC, last = nrvk$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(ReverseVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(mc = nrvk$MC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res[1,]), equals(unlist(x[,"chrom"])))
     expect_that(unlist(res[2,]), equals(unlist(x[,"pos"])))
     expect_that(unlist(res[3,]), equals(unlist(x[,"ref"])))
@@ -48,22 +48,22 @@ test_that("ReverseVariantKey", {
 })
 
 test_that("GetVariantKeyRefLength", {
-    res <- mapply(GetVariantKeyRefLength, vk = unlist(x[,"vk"]), MoreArgs = list(src = nrvk$SRC, last = nrvk$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(GetVariantKeyRefLength, vk = unlist(x[,"vk"]), MoreArgs = list(mc = nrvk$MC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"sizeref"])))
 })
 
 test_that("GetVariantKeyRefLengthReversible", {
-    res <- GetVariantKeyRefLength(nrvk$SRC, nrvk$LAST, "1800925199160000")
+    res <- GetVariantKeyRefLength(nrvk$MC, "1800925199160000")
     expect_that(res, equals(3))
 })
 
 test_that("GetVariantKeyRefLengthNotFound", {
-    res <- GetVariantKeyRefLength(nrvk$SRC, nrvk$LAST, "ffffffffffffffff")
+    res <- GetVariantKeyRefLength(nrvk$MC, "ffffffffffffffff")
     expect_that(res, equals(0))
 })
 
 test_that("GetVariantKeyEndPos", {
-    res <- mapply(GetVariantKeyEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = nrvk$SRC, last = nrvk$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(GetVariantKeyEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(mc = nrvk$MC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"pos"]) + unlist(x[,"sizeref"])))
 })
 
@@ -73,16 +73,16 @@ test_that("GetVariantKeyChromStartPos", {
 })
 
 test_that("GetVariantKeyChromEndPos", {
-    res <- mapply(GetVariantKeyChromEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(src = nrvk$SRC, last = nrvk$LAST), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(GetVariantKeyChromEndPos, vk = unlist(x[,"vk"]), MoreArgs = list(mc = nrvk$MC), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(unlist(res), equals(unlist(x[,"cep"])))
 })
 
 test_that("VknrBinToTsv", {
-    size <- VknrBinToTsv(nrvk$SRC, nrvk$LAST, "nrvk.test")
+    size <- VknrBinToTsv(nrvk$MC, "nrvk.test")
     expect_that(size, equals(305))
 })
 
 test_that("MunmapBinfile", {
-    err <- MunmapBinfile(nrvk$SRC, nrvk$FD, nrvk$SIZE)
+    err <- MunmapBinfile(nrvk$MF)
     expect_that(err, equals(0))
 })

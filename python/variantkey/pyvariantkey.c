@@ -239,7 +239,7 @@ static const mmfile_t *py_get_mmfile_mf(PyObject *mf)
 {
     if (mf == Py_None)
     {
-        return (mmfile_t *)PyMem_Malloc(sizeof(mmfile_t));
+        return (const mmfile_t *)PyMem_Malloc(sizeof(mmfile_t));
     }
     return (const mmfile_t *)PyCapsule_GetPointer(mf, "mf");
 }
@@ -272,7 +272,7 @@ static const rsidvar_cols_t *py_get_rsidvar_mc(PyObject *mc)
 {
     if (mc == Py_None)
     {
-        return (rsidvar_cols_t *)PyMem_Malloc(sizeof(rsidvar_cols_t));
+        return (const rsidvar_cols_t *)PyMem_Malloc(sizeof(rsidvar_cols_t));
     }
     return (const rsidvar_cols_t *)PyCapsule_GetPointer(mc, "mc");
 }
@@ -463,7 +463,7 @@ static const nrvk_cols_t *py_get_nrvk_mc(PyObject *mc)
 {
     if (mc == Py_None)
     {
-        return (nrvk_cols_t *)PyMem_Malloc(sizeof(nrvk_cols_t));
+        return (const nrvk_cols_t *)PyMem_Malloc(sizeof(nrvk_cols_t));
     }
     return (const nrvk_cols_t *)PyCapsule_GetPointer(mc, "mc");
 }

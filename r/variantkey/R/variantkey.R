@@ -149,74 +149,85 @@ CompareVariantKeyChromPos <- function(vka, vkb) {
 
 # --- BINSEARCH ---
 
-#' Memory map the specified file.
-#' @param file  Path to the file to map.
-#' @param mf    Structure containing the memory mapped file.
-#' @useDynLib   variantkey R_mmap_binfile
-#' @export
-MmapBinfile <- function(file) {
-    return(.Call("R_mmap_binfile", file))
-}
-
 #' Unmap and close the memory-mapped file.
 #' On success, munmap() returns 0, on failure -1.
 #' @param mf Descriptor of memory-mapped file.
 #' @useDynLib   variantkey R_munmap_binfile
 #' @export
-MunmapBinfile <- function(src, fd, size) {
-    return(.Call("R_munmap_binfile", src, fd, size))
+MunmapBinfile <- function(mf) {
+    return(.Call("R_munmap_binfile", mf))
 }
 
 # --- RSIDVAR ---
 
+#' Memory map the specified RSVK binary file (rsvk.bin).
+#' Returns the memory mapped file object, the columns object and the number of rows.
+#' @param file    Path to the file to map.
+#' @param ctbytes List containing the number of bytes for each column type (i.e. 1 for uint8, 2 for uint16, 4 for uint32, 8 for uint64)
+#' @useDynLib   variantkey R_mmap_rsvk_file
+#' @export
+MmapRSVKFile <- function(file, ctbytes) {
+    return(.Call("R_mmap_rsvk_file", file, ctbytes))
+}
+
+#' Memory map the specified VKRS binary file (vkrs.bin).
+#' Returns the memory mapped file object, the columns object and the number of rows.
+#' @param file    Path to the file to map.
+#' @param ctbytes List containing the number of bytes for each column type (i.e. 1 for uint8, 2 for uint16, 4 for uint32, 8 for uint64)
+#' @useDynLib   variantkey R_mmap_vkrs_file
+#' @export
+MmapVKRSFile <- function(file, ctbytes) {
+    return(.Call("R_mmap_vkrs_file", file, ctbytes))
+}
+
 #' Search for the specified rsID and returns the first occurrence of VariantKey in the RV file, or zero if not found.
-#' @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
+#' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
 #' @param first     First element of the range to search (min value = 0).
 #' @param last      Last element of the range to search (max value = nitems - 1).
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_rv_variantkey_by_rsid
 #' @export
-FindRvVariantKeyByRsid <- function(src, first, last, rsid) {
-    return(.Call("R_find_rv_variantkey_by_rsid", src, first, last, rsid))
+FindRvVariantKeyByRsid <- function(mc, first, last, rsid) {
+    return(.Call("R_find_rv_variantkey_by_rsid", mc, first, last, rsid))
 }
 
 #' Get the next VariantKey for the specified rsID in the RV file, or 0 if not found
 #' This function can be called in a loop to get all VariantKeys that are associated with the same rsID (if any).
-#' @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
+#' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
 #' @param pos       Current item.
 #' @param last      Last element of the range to search (max value = nitems - 1).
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_get_next_rv_variantkey_by_rsid
 #' @export
-GetNextRvVariantKeyByRsid <- function(src, pos, last, rsid) {
-    return(.Call("R_get_next_rv_variantkey_by_rsid", src, pos, last, rsid))
+GetNextRvVariantKeyByRsid <- function(mc, pos, last, rsid) {
+    return(.Call("R_get_next_rv_variantkey_by_rsid", mc, pos, last, rsid))
 }
 
 #' Search for the specified rsID and returns all the associated VariantKeys in the RV file.
-#' NOTE that the output is limited to maximum 10 results.
-#' @param src       Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).
+#' NOTE: the output is limited to maximum 10 results.
+#' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
 #' @param first     First element of the range to search (min value = 0).
 #' @param last      Last element of the range to search (max value = nitems - 1).
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_all_rv_variantkey_by_rsid
 #' @export
-FindAllRvVariantKeyByRsid <- function(src, first, last, rsid) {
-    return(.Call("R_find_all_rv_variantkey_by_rsid", src, first, last, rsid))
+FindAllRvVariantKeyByRsid <- function(mc, first, last, rsid) {
+    return(.Call("R_find_all_rv_variantkey_by_rsid", mc, first, last, rsid))
 }
 
 #' Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found
-#' @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
+#' @param mc        Memory-mapped columns object as retured by MmapVKRSfile.
 #' @param first     First element of the range to search (min value = 0).
 #' @param last      Last element of the range to search (max value = nitems - 1).
 #' @param vk        VariantKey.
 #' @useDynLib   variantkey R_find_vr_rsid_by_variantkey
 #' @export
-FindVrRsidByVariantKey <- function(src, first, last, vk) {
-    return(.Call("R_find_vr_rsid_by_variantkey", src, first, last, vk))
+FindVrRsidByVariantKey <- function(mc, first, last, vk) {
+    return(.Call("R_find_vr_rsid_by_variantkey", mc, first, last, vk))
 }
 
 #' Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
-#' @param src       Address of the memory mapped binary file containing the VariantKey to rsID lookup table (vkrs.bin).
+#' @param mc        Memory-mapped columns object as retured by MmapVKRSfile.
 #' @param first     First element of the range to search (min value = 0).
 #' @param last      Last element of the range to search (max value = nitems - 1).
 #' @param chrom     Chromosome encoded number.
@@ -224,53 +235,58 @@ FindVrRsidByVariantKey <- function(src, first, last, vk) {
 #' @param pos_max   End reference position, with the first base having position 0.
 #' @useDynLib   variantkey R_find_vr_chrompos_range
 #' @export
-FindVrChromposRange <- function(src, first, last, chrom, pos_min, pos_max) {
-    return(.Call("R_find_vr_chrompos_range", src, first, last, chrom, pos_min, pos_max))
+FindVrChromposRange <- function(mc, first, last, chrom, pos_min, pos_max) {
+    return(.Call("R_find_vr_chrompos_range", mc, first, last, chrom, pos_min, pos_max))
 }
 
 # --- NRVK ---
 
+#' Memory map the specified NRVK binary file (nrvk.bin).
+#' Returns the memory mapped file object, the columns object and the number of rows.
+#' @param file    Path to the file to map.
+#' @useDynLib   variantkey R_mmap_nrvk_file
+#' @export
+MmapNRVKFile <- function(file) {
+    return(.Call("R_mmap_nrvk_file", file))
+}
+
 #' Retrieve the REF and ALT strings for the specified VariantKey.
 #' Return REF+ALT length or 0 if the VariantKey is not found.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last     Number of variants in the src file -1.
+#' @param mc       Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk       VariantKey to search.
 #' @useDynLib   variantkey R_find_ref_alt_by_variantkey
 #' @export
-FindRefAltByVariantKey <- function(src, last, vk) {
-    return(.Call("R_find_ref_alt_by_variantkey", src, last, vk))
+FindRefAltByVariantKey <- function(mc, vk) {
+    return(.Call("R_find_ref_alt_by_variantkey", mc, vk))
 }
 
 #' Reverse a VariantKey code and returns the normalized components.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
+#' @param mc       Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk       VariantKey code.
 #' @useDynLib   variantkey R_reverse_variantkey
 #' @export
-ReverseVariantKey <- function(src, last, vk) {
-    return(.Call("R_reverse_variantkey", src, last, vk))
+ReverseVariantKey <- function(mc, vk) {
+    return(.Call("R_reverse_variantkey", mc, vk))
 }
 
 #' Retrieve the REF length for the specified VariantKey.
 #' Return REF length or 0 if the VariantKey is not reversible and not found.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last     Number of variants in the src file -1.
+#' @param mc       Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk       VariantKey.
 #' @useDynLib   variantkey R_get_variantkey_ref_length
 #' @export
-GetVariantKeyRefLength <- function(src, last, vk) {
-    return(.Call("R_get_variantkey_ref_length", src, last, vk))
+GetVariantKeyRefLength <- function(mc, vk) {
+    return(.Call("R_get_variantkey_ref_length", mc, vk))
 }
 
 #' Get the VariantKey end position (POS + REF length).
 #' Return variant end position.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last     Number of variants in the src file -1.
+#' @param mc       Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk       VariantKey.
 #' @useDynLib   variantkey R_get_variantkey_endpos
 #' @export
-GetVariantKeyEndPos <- function(src, last, vk) {
-    return(.Call("R_get_variantkey_endpos", src, last, vk))
+GetVariantKeyEndPos <- function(mc, vk) {
+    return(.Call("R_get_variantkey_endpos", mc, vk))
 }
 
 #' Get the CHROM + START POS encoding from VariantKey.
@@ -282,38 +298,44 @@ GetVariantKeyChromStartPos <- function(vk) {
 }
 
 #' Get the CHROM + END POS encoding from VariantKey.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last     Number of variants in the src file -1.
+#' @param mc       Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk       VariantKey.
 #' @useDynLib   variantkey R_get_variantkey_chrom_endpos
 #' @export
-GetVariantKeyChromEndPos <- function(src, last, vk) {
-    return(.Call("R_get_variantkey_chrom_endpos", src, last, vk))
+GetVariantKeyChromEndPos <- function(mc, vk) {
+    return(.Call("R_get_variantkey_chrom_endpos", mc, vk))
 }
 
 #' Convert a vrnr.bin file to a simple TSV.
 #' Return Number of written bytes or 0 in case of error.
 #' For the reverse operation see the resources/tools/nrvk.sh script.
-#' @param src      Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last     Number of variants in the src file -1. Set this to 0 to skip the lookup table.
+#' @param mc       Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param tsvfile  Output tsv file name. Note that existing files will be replaced.
 #' @useDynLib   variantkey R_nrvk_bin_to_tsv
 #' @export
-VknrBinToTsv <- function(src, last, tsvfile) {
-    return(.Call("R_nrvk_bin_to_tsv", src, last, tsvfile))
+VknrBinToTsv <- function(mc, tsvfile) {
+    return(.Call("R_nrvk_bin_to_tsv", mc, tsvfile))
 }
 
 # --- GENOREF ---
 
+#' Memory map the specified genome reference binary file (fasta.bin).
+#' Returns the memory mapped file object, the columns object and the number of rows.
+#' @param file    Path to the file to map.
+#' @useDynLib   variantkey R_mmap_genoref_file
+#' @export
+MmapGenorefFile <- function(file) {
+    return(.Call("R_mmap_genoref_file", file))
+}
+
 #' Returns the genome reference nucleotide at the specified chromosome and position, or 0 in case of invalid position.
-#' @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).
-#' @param idx     Index of sequences offset by chromosome number (1 to 25).
+#' @param mc      Memory-mapped columns object as retured by MmapGenorefFile.
 #' @param chrom   Encoded Chromosome number (see encode_chrom).
 #' @param pos     Position. The reference position, with the first base having position 0.
 #' @useDynLib   variantkey R_get_genoref_seq
 #' @export
-GetGenorefSeq <- function(src, idx, chrom, pos) {
-    return(.Call("R_get_genoref_seq", src, idx, chrom, pos))
+GetGenorefSeq <- function(mf, chrom, pos) {
+    return(.Call("R_get_genoref_seq", mf, chrom, pos))
 }
 
 #' Check if the reference allele matches the reference genome data.
@@ -322,15 +344,14 @@ GetGenorefSeq <- function(src, idx, chrom, pos) {
 #'   *  1 the reference allele is inconsistent with the genome reference (i.e. when contains nucleotide letters other than A, C, G and T);
 #'   * -1 the reference allele don't match the reference genome;
 #'   * -2 the reference allele is longer than the genome reference sequence.
-#' @param src     Address of the memory mapped input file containing the genome reference data (fasta.bin).
-#' @param idx     Index of sequences offset by chromosome number (1 to 25).
+#' @param mc      Memory-mapped columns object as retured by MmapGenorefFile.
 #' @param chrom   Encoded Chromosome number (see encode_chrom).
 #' @param pos     Position. The reference position, with the first base having position 0.
 #' @param ref     Reference allele. String containing a sequence of nucleotide letters.
 #' @useDynLib   variantkey R_check_reference
 #' @export
-CheckReference <- function(src, idx, chrom, pos, ref) {
-    return(.Call("R_check_reference", src, idx, chrom, pos, ref))
+CheckReference <- function(mf, chrom, pos, ref) {
+    return(.Call("R_check_reference", mf, chrom, pos, ref))
 }
 
 #' Flip the allele nucleotides (replaces each letter with its complement).
@@ -361,16 +382,15 @@ FlipAllele <- function(allele) {
 #'       Alleles have been right trimmed.
 #'   * bit 5:
 #'       Alleles have been left trimmed.
-#' @param src        Address of the memory mapped input file containing the genome reference data (fasta.bin).
-#' @param idx        Index of sequences offset by chromosome number (1 to 25).
+#' @param mc      Memory-mapped columns object as retured by MmapGenorefFile.
 #' @param chrom      Chromosome encoded number.
 #' @param pos        Position. The reference position, with the first base having position 0.
 #' @param ref        Reference allele. String containing a sequence of nucleotide letters.
 #' @param alt        Alternate non-reference allele string.
 #' @useDynLib   variantkey R_normalize_variant
 #' @export
-NormalizeVariant <- function(src, idx, chrom, pos, ref, alt) {
-    return(.Call("R_normalize_variant", src, idx, chrom, pos, ref, alt))
+NormalizeVariant <- function(mf, chrom, pos, ref, alt) {
+    return(.Call("R_normalize_variant", mf, chrom, pos, ref, alt))
 }
 
 # --- REGIONKEY ---
@@ -516,24 +536,22 @@ AreOverlappingRegionKeys <- function(rka, rkb) {
 
 #' Check if variantkey and regionkey are overlapping.
 #' Return 1 if the regions overlap, 0 otherwise.
-#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last  Number of variants in the src file -1.
+#' @param mc    Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk    VariantKey code.
 #' @param rk    RegionKey code.
 #' @useDynLib   variantkey R_are_overlapping_variantkey_regionkey
 #' @export
-AreOverlappingVariantKeyRegionKey <- function(src, last, vk, rk) {
-    return(.Call("R_are_overlapping_variantkey_regionkey", src, last, vk, rk))
+AreOverlappingVariantKeyRegionKey <- function(mc, vk, rk) {
+    return(.Call("R_are_overlapping_variantkey_regionkey", mc, vk, rk))
 }
 
 #' Get RegionKey from VariantKey.
-#' @param src   Address of the memory mapped input file containing the VariantKey to REF+ALT lookup table (nrvk.bin).
-#' @param last  Number of variants in the src file -1.
+#' @param mc    Memory-mapped columns object as retured by MmapNRVKfile.
 #' @param vk    VariantKey code.
 #' @useDynLib   variantkey R_variantkey_to_regionkey
 #' @export
-VariantToRegionkey <- function(src, last, vk) {
-    return(.Call("R_variantkey_to_regionkey", src, last, vk))
+VariantToRegionkey <- function(mc, vk) {
+    return(.Call("R_variantkey_to_regionkey", mc, vk))
 }
 
 # --- ESID ---

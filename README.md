@@ -526,7 +526,7 @@ See [Python Usage Examples](python/test/example.py).
 
 
 <a name="rlib"></a>
-## R Module (limited support)
+## R Module
 
 The R module is located in the `r` directory.
 Use the "`make r`" command to test the R wrapper and generate reports.

@@ -416,7 +416,7 @@ PyMODINIT_FUNC initvariantkey(void);
 
 // RSIDVAR
 
-#define PYMMAPRSVKFILE_DOCSTRING "Memory map the specified RSVK binary file.\n"\
+#define PYMMAPRSVKFILE_DOCSTRING "Memory map the specified RSVK binary file (rsvk.bin).\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -432,7 +432,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - Pointer to the memory mapped columns object.\n"\
 "    - Number of rows."
 
-#define PYMMAPVKRSFILE_DOCSTRING "Memory map the specified VKRS binary file.\n"\
+#define PYMMAPVKRSFILE_DOCSTRING "Memory map the specified VKRS binary file (vkrs.bin).\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -453,7 +453,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_rsvk_file().\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -474,7 +474,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_rsvk_file().\n"\
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
@@ -493,7 +493,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_rsvk_file().\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -511,7 +511,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the VKRS memory mapped file columns (rsvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_vkrs_file().\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -530,7 +530,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the VKRS memory mapped file columns (rsvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_vkrs_file().\n"\
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
@@ -553,7 +553,7 @@ PyMODINIT_FUNC initvariantkey(void);
 
 // NRVK
 
-#define PYMMAPNRVKFILE_DOCSTRING "Memory map the specified NRVK binary file.\n"\
+#define PYMMAPNRVKFILE_DOCSTRING "Memory map the specified NRVK binary file (nrvk.bin).\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -573,7 +573,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey to search.\n"\
 "\n"\
@@ -591,7 +591,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey code.\n"\
 "\n"\
@@ -611,7 +611,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey\n"\
 "\n"\
@@ -625,7 +625,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\
@@ -651,7 +651,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\
@@ -666,7 +666,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "tsvfile : int\n"\
 "    Output file name.\n"\
 "\n"\
@@ -679,7 +679,7 @@ PyMODINIT_FUNC initvariantkey(void);
 
 // GENOREF
 
-#define PYMMAPGENOREFFILE_DOCSTRING "Memory map the specified genome reference binary file.\n"\
+#define PYMMAPGENOREFFILE_DOCSTRING "Memory map the specified genome reference binary file (fasta.bin).\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -700,7 +700,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mf : obj\n"\
-"    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
+"    Memory-mapped file object as retured by mmap_genoref_file().\n"\
 "chrom : int\n"\
 "    Encoded Chromosome number (see encode_chrom).\n"\
 "pos : int\n"\
@@ -716,7 +716,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mf : obj\n"\
-"    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
+"    Memory-mapped file object as retured by mmap_genoref_file().\n"\
 "chrom :\n"\
 "    Encoded Chromosome number (see encode_chrom).\n"\
 "pos : int\n"\
@@ -754,7 +754,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mf : obj\n"\
-"    Pointer to the memory mapped input file containing the genome reference data (fasta.bin).\n"\
+"    Memory-mapped file object as retured by mmap_genoref_file().\n"\
 "chrom : int\n"\
 "    Chromosome encoded number.\n"\
 "pos : int\n"\
@@ -1031,7 +1031,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "rk : int\n"\
@@ -1047,7 +1047,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Parameters\n"\
 "----------\n"\
 "mc : obj\n"\
-"    Structure containing the pointers to the NRVK memory mapped file columns (nrvk.bin).\n"\
+"    Memory-mapped columns object as retured by mmap_nrvk_file().\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\

@@ -120,11 +120,11 @@ test_that("AreOverlappingRegionKeys", {
 })
 
 test_that("AreOverlappingVariantKeyRegionKey", {
-    res <- mapply(AreOverlappingVariantKeyRegionKey, unlist(t[,"a_vk"]), unlist(t[,"b_rk"]), MoreArgs = list(src = NULL, last = 0), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(AreOverlappingVariantKeyRegionKey, unlist(t[,"a_vk"]), unlist(t[,"b_rk"]), MoreArgs = list(mc = NULL), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(t[,"exp"])))
 })
 
 test_that("VariantToRegionkey", {
-    res <- mapply(VariantToRegionkey, unlist(t[,"a_vk"]), MoreArgs = list(src = NULL, last = 0), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- mapply(VariantToRegionkey, unlist(t[,"a_vk"]), MoreArgs = list(mc = NULL), SIMPLIFY = TRUE, USE.NAMES = FALSE)
     expect_that(res, equals(unlist(t[,"a_rk"])))
 })

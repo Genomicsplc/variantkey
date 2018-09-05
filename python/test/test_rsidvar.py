@@ -92,14 +92,14 @@ class TestFunctions(TestCase):
         self.assertEqual(pos, 4)
 
     def test_find_all_rv_variantkey_by_rsid(self):
-        vks = bs.find_all_rv_variantkey_by_rsid(rvmmc, 0, rvnrows, 0x00000003)
+        vks = bs.find_all_rv_variantkey_by_rsid(rvmmc, 0, rvmnrows, 0x00000003)
         self.assertEqual(len(vks), 3)
         self.assertEqual(vks[0], 0x80010274003A0000)
         self.assertEqual(vks[1], 0x8001028D00138000)
         self.assertEqual(vks[2], 0x80010299007A0000)
 
     def test_find_all_rv_variantkey_by_rsid_notfound(self):
-        vks = bs.find_all_rv_variantkey_by_rsid(rvmmc, 0, rvnrows, 0xfffffff0)
+        vks = bs.find_all_rv_variantkey_by_rsid(rvmmc, 0, rvmnrows, 0xfffffff0)
         self.assertEqual(len(vks), 0)
 
     def test_find_vr_rsid_by_variantkey(self):

@@ -4,10 +4,10 @@
 \alias{FindRvVariantKeyByRsid}
 \title{Search for the specified rsID and returns the first occurrence of VariantKey in the RV file, or zero if not found.}
 \usage{
-FindRvVariantKeyByRsid(src, first, last, rsid)
+FindRvVariantKeyByRsid(mc, first, last, rsid)
 }
 \arguments{
-\item{src}{Address of the memory mapped binary file containing the rsID to VariantKey lookup table (rsvk.bin).}
+\item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
 
 \item{first}{First element of the range to search (min value = 0).}
 
