@@ -30,7 +30,7 @@ class RunTests(Command):
 
 setup(
     name='variantkey',
-    version='3.0.2',
+    version='4.0.0',
     keywords=('variantkey variant key genetic genomics'),
     description="VariantKey Bindings for Python",
     long_description=read('../README.md'),
@@ -42,14 +42,6 @@ setup(
     packages=find_packages(exclude=['doc', 'test*']),
     ext_modules=[
         Extension('variantkey', [
-            '../c/src/binsearch.c',
-            '../c/src/esid.c',
-            '../c/src/genoref.c',
-            '../c/src/hex.c',
-            '../c/src/nrvk.c',
-            '../c/src/regionkey.c',
-            '../c/src/rsidvar.c',
-            '../c/src/variantkey.c',
             'variantkey/pyvariantkey.c',
         ],
         include_dirs=[
@@ -68,6 +60,8 @@ setup(
             "-Wundef",
             "-Wformat-security",
             "-Wshadow",
+            "-Wno-unused-function",
+            "-Wno-format-overflow",
             "-I../c/src",
         ])
     ],

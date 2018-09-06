@@ -53,10 +53,6 @@
 #ifndef RSIDVAR_H
 #define RSIDVAR_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "binsearch.h"
 #include "variantkey.h"
 
@@ -79,7 +75,13 @@ typedef struct rsidvar_cols_t
  *
  * @return Returns the memory-mapped file descriptors.
  */
-void mmap_vkrs_file(const char *file, mmfile_t *mf, rsidvar_cols_t *cvr);
+static void mmap_vkrs_file(const char *file, mmfile_t *mf, rsidvar_cols_t *cvr)
+{
+    mmap_binfile(file, mf);
+    cvr->vk = (const uint64_t *)(mf->src + mf->index[0]);
+    cvr->rs = (const uint32_t *)(mf->src + mf->index[1]);
+    cvr->nrows = mf->nrows;
+}
 
 /**
  * Memory map the RSVK binary file.
@@ -90,7 +92,13 @@ void mmap_vkrs_file(const char *file, mmfile_t *mf, rsidvar_cols_t *cvr);
  *
  * @return Returns the memory-mapped file descriptors.
  */
-void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t *crv);
+static void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t *crv)
+{
+    mmap_binfile(file, mf);
+    crv->rs = (const uint32_t *)(mf->src + mf->index[0]);
+    crv->vk = (const uint64_t *)(mf->src + mf->index[1]);
+    crv->nrows = mf->nrows;
+}
 
 /**
  * Search for the specified rsID and returns the first occurrence of VariantKey in the RV file.
@@ -103,7 +111,17 @@ void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t *crv);
  *
  * @return VariantKey data or zero data if not found
  */
-uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *first, uint64_t last, uint32_t rsid);
+static uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *first, uint64_t last, uint32_t rsid)
+{
+    uint64_t max = last;
+    uint64_t found = col_find_first_uint32_t(crv.rs, first, &max, rsid);
+    if (found >= last)
+    {
+        return 0;
+    }
+    *first = found;
+    return *(crv.vk + found);
+}
 
 /**
  * Get the next VariantKey for the specified rsID in the RV file.
@@ -117,7 +135,14 @@ uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *first, uint64_
  *
  * @return VariantKey data or zero data if not found
  */
-uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *pos, uint64_t last, uint32_t rsid);
+static uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *pos, uint64_t last, uint32_t rsid)
+{
+    if (col_has_next_uint32_t(crv.rs, pos, last, rsid))
+    {
+        return *(crv.vk + *pos);
+    }
+    return 0;
+}
 
 /**
  * Search for the specified VariantKey and returns the first occurrence of rsID in the VR file.
@@ -130,7 +155,17 @@ uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *pos, uint6
  *
  * @return rsID or 0 if not found
  */
-uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *first, uint64_t last, uint64_t vk);
+static uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *first, uint64_t last, uint64_t vk)
+{
+    uint64_t max = last;
+    uint64_t found = col_find_first_uint64_t(cvr.vk, first, &max, vk);
+    if (found >= last)
+    {
+        return 0; // not found
+    }
+    *first = found;
+    return *(cvr.rs + found);
+}
 
 /**
  * Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
@@ -144,10 +179,35 @@ uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *first, uint64_
  *
  * @return rsID
  */
-uint32_t find_vr_chrompos_range(rsidvar_cols_t cvr, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max);
-
-#ifdef __cplusplus
+static uint32_t find_vr_chrompos_range(rsidvar_cols_t cvr, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
+{
+    uint64_t ckey = ((uint64_t)chrom << 59);
+    uint64_t min = *first;
+    uint64_t max = *last;
+    *first = col_find_first_sub_uint64_t(cvr.vk, 0, 32, &min, &max, (ckey | ((uint64_t)pos_min << 31)) >> 31);
+    if (*first >= *last)
+    {
+        *first = min;
+    }
+    else
+    {
+        min = *first;
+    }
+    if (min >= *last)
+    {
+        return 0;
+    }
+    max = *last;
+    uint64_t end = col_find_last_sub_uint64_t(cvr.vk, 0, 32, &min, &max, (ckey | ((uint64_t)pos_max << 31)) >> 31);
+    if (end >= *last)
+    {
+        *last = max;
+    }
+    else
+    {
+        *last = end;
+    }
+    return *(cvr.rs + *first);
 }
-#endif
 
 #endif  // RSIDVAR_H

@@ -59,7 +59,7 @@ all: clean version format test tidy build doc
 
 # Test C code compatibility with C++
 testcpp:
-	find ./src -type f -name '*.c' -exec gcc -c -pedantic -Werror -Wall -Wextra -Wcast-align -Wundef -Wformat-security -std=c++14 -x c++ -o /dev/null {} \;
+	find ./src -type f -name '*.h' -exec gcc -c -pedantic -Werror -Wall -Wextra -Wcast-align -Wundef -Wformat-security -Wno-unused-function -std=c++14 -x c++ -o /dev/null {} \;
 
 # Build and run the unit tests
 test: testcpp
@@ -90,7 +90,7 @@ endif
 
 # use clang-tidy
 tidy:
-	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open,-hicpp-no-assembler,-hicpp-signed-bitwise,-clang-analyzer-alpha.security.ArrayBoundV2' -header-filter=.* -p . src/*.c vk/*.c test/*.c test/rsidvar_bench/*.c
+	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open,-hicpp-no-assembler,-hicpp-signed-bitwise,-clang-analyzer-alpha.*' -header-filter=.* -p . src/*.h vk/*.c test/*.c test/rsidvar_bench/*.c
 
 # Build the library
 build:
@@ -130,7 +130,6 @@ doc:
 # Format the source code
 format:
 	astyle --style=allman --recursive --suffix=none 'src/*.h'
-	astyle --style=allman --recursive --suffix=none 'src/*.c'
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'vk/*.c'
 

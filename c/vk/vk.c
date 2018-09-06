@@ -34,7 +34,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../src/variantkey.c"
+#include "../src/variantkey.h"
 
 #ifndef VERSION
 #define VERSION "0.0.0-0"

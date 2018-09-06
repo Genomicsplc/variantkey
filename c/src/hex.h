@@ -40,11 +40,8 @@
 #ifndef ASTRING_H
 #define ASTRING_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <inttypes.h>
+#include <stdio.h>
 
 /** @brief Returns uint64_t hexadecimal string (16 characters).
  *
@@ -56,7 +53,10 @@ extern "C" {
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t hex_uint64_t(uint64_t n, char *str);
+static inline size_t hex_uint64_t(uint64_t n, char *str)
+{
+    return sprintf(str, "%016" PRIx64, n);
+}
 
 /** @brief Parses a 16 chars hexadecimal string and returns the code.
  *
@@ -64,10 +64,32 @@ size_t hex_uint64_t(uint64_t n, char *str);
  *
  * @return uint64_t unsigned integer number.
  */
-uint64_t parse_hex_uint64_t(const char *s);
-
-#ifdef __cplusplus
+static inline uint64_t parse_hex_uint64_t(const char *s)
+{
+    uint64_t v = 0;
+    uint8_t b;
+    size_t i;
+    for (i = 0; i < 16; i++)
+    {
+        b = s[i];
+        if (b >= 'a')
+        {
+            b -= ('a' - 10); // a-f
+        }
+        else
+        {
+            if (b >= 'A')
+            {
+                b -= ('A' - 10); // A-F
+            }
+            else
+            {
+                b -= '0'; // 0-9
+            }
+        }
+        v = ((v << 4) | b);
+    }
+    return v;
 }
-#endif
 
 #endif  // ASTRING_H

@@ -43,7 +43,7 @@
 #include <strings.h>
 #include <inttypes.h>
 #include <time.h>
-#include "../src/variantkey.c"
+#include "../src/variantkey.h"
 
 static const int k_test_size = 568;
 

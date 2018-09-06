@@ -41,10 +41,7 @@
 #ifndef REGIONKEY_H
 #define REGIONKEY_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
+#include <stdio.h>
 #include "nrvk.h"
 
 #define RKMASK_CHROM     0xF800000000000000  //!< RegionKey binary mask for CHROM     [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
@@ -85,7 +82,11 @@ typedef struct regionkey_rev_t
  *
  * @return      Strand code.
  */
-uint8_t encode_region_strand(int8_t strand);
+static uint8_t encode_region_strand(int8_t strand)
+{
+    static const uint8_t map[] = {2, 0, 1, 0};
+    return map[((uint8_t)(++strand) & 3)];
+}
 
 /** @brief Decode the strand direction code (0 > 0, 1 > +1, 2 > -1).
  *
@@ -93,7 +94,11 @@ uint8_t encode_region_strand(int8_t strand);
  *
  * @return      Strand direction.
  */
-int8_t decode_region_strand(uint8_t strand);
+static int8_t decode_region_strand(uint8_t strand)
+{
+    static const int8_t map[] = {0, 1, -1, 0};
+    return map[(strand & 3)];
+}
 
 /** @brief Returns a 64 bit regionkey
  *
@@ -104,7 +109,10 @@ int8_t decode_region_strand(uint8_t strand);
  *
  * @return      RegionKey 64 bit code.
  */
-uint64_t encode_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uint8_t strand);
+static uint64_t encode_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uint8_t strand)
+{
+    return (((uint64_t)chrom << RKSHIFT_CHROM) | ((uint64_t)startpos << RKSHIFT_STARTPOS) | ((uint64_t)endpos << RKSHIFT_ENDPOS) | ((uint64_t)strand << RKSHIFT_STRAND));
+}
 
 /** @brief Extract the CHROM code from RegionKey.
  *
@@ -112,7 +120,10 @@ uint64_t encode_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uin
  *
  * @return CHROM code.
  */
-uint8_t extract_regionkey_chrom(uint64_t rk);
+static uint8_t extract_regionkey_chrom(uint64_t rk)
+{
+    return (uint8_t)((rk & RKMASK_CHROM) >> RKSHIFT_CHROM);
+}
 
 /** @brief Extract the START POS code from RegionKey.
  *
@@ -120,7 +131,10 @@ uint8_t extract_regionkey_chrom(uint64_t rk);
  *
  * @return START POS.
  */
-uint32_t extract_regionkey_startpos(uint64_t rk);
+static uint32_t extract_regionkey_startpos(uint64_t rk)
+{
+    return (uint32_t)((rk & RKMASK_STARTPOS) >> RKSHIFT_STARTPOS);
+}
 
 /** @brief Extract the END POS code from RegionKey.
  *
@@ -128,7 +142,10 @@ uint32_t extract_regionkey_startpos(uint64_t rk);
  *
  * @return END POS.
  */
-uint32_t extract_regionkey_endpos(uint64_t rk);
+static uint32_t extract_regionkey_endpos(uint64_t rk)
+{
+    return (uint32_t)((rk & RKMASK_ENDPOS) >> RKSHIFT_ENDPOS);
+}
 
 /** @brief Extract the STRAND from RegionKey.
  *
@@ -136,14 +153,23 @@ uint32_t extract_regionkey_endpos(uint64_t rk);
  *
  * @return STRAND.
  */
-uint8_t extract_regionkey_strand(uint64_t rk);
+static uint8_t extract_regionkey_strand(uint64_t rk)
+{
+    return (uint8_t)((rk & RKMASK_STRAND) >> RKSHIFT_STRAND);
+}
 
 /** @brief Decode a RegionKey code and returns the components as regionkey_t structure.
  *
  * @param code RegionKey code.
  * @param rk   Decoded regionkey structure.
  */
-void decode_regionkey(uint64_t code, regionkey_t *rk);
+static void decode_regionkey(uint64_t code, regionkey_t *rk)
+{
+    rk->chrom = extract_regionkey_chrom(code);
+    rk->startpos = extract_regionkey_startpos(code);
+    rk->endpos = extract_regionkey_endpos(code);
+    rk->strand = extract_regionkey_strand(code);
+}
 
 /**
  * Reverse a RegionKey code and returns the normalized components as regionkey_rev_t structure.
@@ -151,7 +177,13 @@ void decode_regionkey(uint64_t code, regionkey_t *rk);
  * @param rk       RegionKey code.
  * @param rev      Structure containing the return values.
  */
-void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev);
+static void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev)
+{
+    decode_chrom(extract_regionkey_chrom(rk), rev->chrom);
+    rev->startpos = extract_regionkey_startpos(rk);
+    rev->endpos = extract_regionkey_endpos(rk);
+    rev->strand = decode_region_strand(extract_regionkey_strand(rk));
+}
 
 /** @brief Returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STRAND.
  *
@@ -163,7 +195,10 @@ void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev);
  *
  * @return      RegionKey 64 bit code.
  */
-uint64_t regionkey(const char *chrom, size_t sizechrom, uint32_t startpos, uint32_t endpos, int8_t strand);
+static uint64_t regionkey(const char *chrom, size_t sizechrom, uint32_t startpos, uint32_t endpos, int8_t strand)
+{
+    return encode_regionkey(encode_chrom(chrom, sizechrom), startpos, endpos, encode_region_strand(strand));
+}
 
 /** @brief Returns RegionKey hexadecimal string (16 characters).
  *
@@ -175,7 +210,10 @@ uint64_t regionkey(const char *chrom, size_t sizechrom, uint32_t startpos, uint3
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-size_t regionkey_hex(uint64_t rk, char *str);
+static size_t regionkey_hex(uint64_t rk, char *str)
+{
+    return hex_uint64_t(rk, str);
+}
 
 /** @brief Parses a RegionKey hexadecimal string and returns the code.
  *
@@ -183,7 +221,10 @@ size_t regionkey_hex(uint64_t rk, char *str);
  *
  * @return A RegionKey code.
  */
-uint64_t parse_regionkey_hex(const char *rs);
+static uint64_t parse_regionkey_hex(const char *rs)
+{
+    return parse_hex_uint64_t(rs);
+}
 
 /** @brief Get the CHROM + START POS encoding from RegionKey.
  *
@@ -191,7 +232,10 @@ uint64_t parse_regionkey_hex(const char *rs);
  *
  * @return CHROM + START POS.
  */
-uint64_t get_regionkey_chrom_startpos(uint64_t rk);
+static uint64_t get_regionkey_chrom_startpos(uint64_t rk)
+{
+    return (rk >> RKSHIFT_STARTPOS);
+}
 
 /** @brief Get the CHROM + END POS encoding from RegionKey.
  *
@@ -199,7 +243,10 @@ uint64_t get_regionkey_chrom_startpos(uint64_t rk);
  *
  * @return CHROM + END POS.
  */
-uint64_t get_regionkey_chrom_endpos(uint64_t rk);
+static uint64_t get_regionkey_chrom_endpos(uint64_t rk)
+{
+    return (((rk & RKMASK_CHROM) >> RKSHIFT_STARTPOS) | extract_regionkey_endpos(rk));
+}
 
 /** @brief Check if two regions are overlapping.
  *
@@ -212,7 +259,10 @@ uint64_t get_regionkey_chrom_endpos(uint64_t rk);
  *
  * @return 1 if the regions overlap, 0 otherwise.
  */
-uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos);
+static uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a_endpos, uint8_t b_chrom, uint32_t b_startpos, uint32_t b_endpos)
+{
+    return (uint8_t)((a_chrom == b_chrom) && (a_startpos < b_endpos) && (a_endpos > b_startpos));
+}
 
 /** @brief Check if a region and a regionkey are overlapping.
  *
@@ -223,7 +273,10 @@ uint8_t are_overlapping_regions(uint8_t a_chrom, uint32_t a_startpos, uint32_t a
  *
  * @return 1 if the regions overlap, 0 otherwise.
  */
-uint8_t are_overlapping_region_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uint64_t rk);
+static uint8_t are_overlapping_region_regionkey(uint8_t chrom, uint32_t startpos, uint32_t endpos, uint64_t rk)
+{
+    return (uint8_t)((chrom == extract_regionkey_chrom(rk)) && (startpos < extract_regionkey_endpos(rk)) && (endpos > extract_regionkey_startpos(rk)));
+}
 
 /** @brief Check if two regionkeys are overlapping.
  *
@@ -232,7 +285,10 @@ uint8_t are_overlapping_region_regionkey(uint8_t chrom, uint32_t startpos, uint3
  *
  * @return 1 if the regions overlap, 0 otherwise.
  */
-uint8_t are_overlapping_regionkeys(uint64_t rka, uint64_t rkb);
+static uint8_t are_overlapping_regionkeys(uint64_t rka, uint64_t rkb)
+{
+    return (uint8_t)((extract_regionkey_chrom(rka) == extract_regionkey_chrom(rkb)) && (extract_regionkey_startpos(rka) < extract_regionkey_endpos(rkb)) && (extract_regionkey_endpos(rka) > extract_regionkey_startpos(rkb)));
+}
 
 /** @brief Check if variantkey and regionkey are overlapping.
  *
@@ -242,7 +298,10 @@ uint8_t are_overlapping_regionkeys(uint64_t rka, uint64_t rkb);
  *
  * @return 1 if the regions overlap, 0 otherwise.
  */
-uint8_t are_overlapping_variantkey_regionkey(nrvk_cols_t nvc, uint64_t vk, uint64_t rk);
+static uint8_t are_overlapping_variantkey_regionkey(nrvk_cols_t nvc, uint64_t vk, uint64_t rk)
+{
+    return (uint8_t)((extract_variantkey_chrom(vk) == extract_regionkey_chrom(rk)) && (extract_variantkey_pos(vk) < extract_regionkey_endpos(rk)) && (get_variantkey_endpos(nvc, vk) > extract_regionkey_startpos(rk)));
+}
 
 /** @brief Get RegionKey from VariantKey.
  *
@@ -251,10 +310,9 @@ uint8_t are_overlapping_variantkey_regionkey(nrvk_cols_t nvc, uint64_t vk, uint6
  *
  * @return RegionKey.
  */
-uint64_t variantkey_to_regionkey(nrvk_cols_t nvc, uint64_t vk);
-
-#ifdef __cplusplus
+static uint64_t variantkey_to_regionkey(nrvk_cols_t nvc, uint64_t vk)
+{
+    return ((vk & VKMASK_CHROMPOS) | ((uint64_t)get_variantkey_endpos(nvc, vk) << RKSHIFT_ENDPOS));
 }
-#endif
 
 #endif  // REGIONKEY_H
