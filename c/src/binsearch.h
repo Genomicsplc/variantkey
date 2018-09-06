@@ -251,7 +251,7 @@ typedef struct mmfile_t
 @param i        Start position.
 @return Converted number
 */ \
-static T bytes_##O##_to_##T(const uint8_t *src, uint64_t i) \
+static inline T bytes_##O##_to_##T(const uint8_t *src, uint64_t i) \
 { \
     return order_##O##_##T(*((const T *)(src + i))); \
 }
@@ -276,7 +276,7 @@ define_bytes_to(le, uint64_t)
 @param offset   Start position.
 @return Pointer
 */ \
-static const T *get_src_offset_##T(const uint8_t *src, uint64_t offset) \
+static inline const T *get_src_offset_##T(const uint8_t *src, uint64_t offset) \
 { \
     return get_src_offset(T, src, offset); \
 }
@@ -410,7 +410,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-static uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 GET_ITEM_TASK(O, T) \
@@ -448,7 +448,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-static uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
 SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
@@ -485,7 +485,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-static uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 GET_ITEM_TASK(O, T) \
@@ -523,7 +523,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-static uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
 SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
@@ -561,7 +561,7 @@ The item returned by find_first_##T should be set as the "pos" parameter in this
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool has_next_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
+static inline bool has_next_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
 { \
 HAS_NEXT_START_BLOCK \
 HAS_END_BLOCK(O, T) \
@@ -598,7 +598,7 @@ The item returned by find_first_sub_##T should be set as the "pos" parameter in 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool has_next_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+static inline bool has_next_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
 { \
 HAS_NEXT_START_BLOCK \
 SUB_ITEM_VARS(T) \
@@ -634,7 +634,7 @@ The item returned by find_last_##T should be set as the "pos" parameter in this 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool has_prev_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
+static inline bool has_prev_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
 { \
 HAS_PREV_START_BLOCK \
 HAS_END_BLOCK(O, T) \
@@ -671,7 +671,7 @@ The item returned by find_last_sub_##T should be set as the "pos" parameter in t
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool has_prev_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+static inline bool has_prev_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
 { \
 HAS_PREV_START_BLOCK \
 SUB_ITEM_VARS(T) \
@@ -705,7 +705,7 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-static uint64_t col_find_first_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t col_find_first_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 COL_GET_ITEM_TASK \
@@ -736,7 +736,7 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-static uint64_t col_find_first_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t col_find_first_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
 SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
@@ -766,7 +766,7 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-static uint64_t col_find_last_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t col_find_last_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 COL_GET_ITEM_TASK \
@@ -797,7 +797,7 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-static uint64_t col_find_last_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+static inline uint64_t col_find_last_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
 SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
@@ -828,7 +828,7 @@ The item returned by col_find_first_##T should be set as the "pos" parameter in 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool col_has_next_##T(const T *src, uint64_t *pos, uint64_t last, T search) \
+static inline bool col_has_next_##T(const T *src, uint64_t *pos, uint64_t last, T search) \
 { \
 HAS_NEXT_START_BLOCK \
 COL_HAS_END_BLOCK(T) \
@@ -858,7 +858,7 @@ The item returned by col_find_first_sub_##T should be set as the "pos" parameter
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool col_has_next_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+static inline bool col_has_next_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
 { \
 HAS_NEXT_START_BLOCK \
 SUB_ITEM_VARS(T) \
@@ -887,7 +887,7 @@ The item returned by col_find_last_##T should be set as the "pos" parameter in t
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool col_has_prev_##T(const T *src, uint64_t first, uint64_t *pos, T search) \
+static inline bool col_has_prev_##T(const T *src, uint64_t first, uint64_t *pos, T search) \
 { \
 HAS_PREV_START_BLOCK \
 COL_HAS_END_BLOCK(T) \
@@ -917,7 +917,7 @@ The item returned by col_find_last_sub_##T should be set as the "pos" parameter 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-static bool col_has_prev_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+static inline bool col_has_prev_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
 { \
 HAS_PREV_START_BLOCK \
 SUB_ITEM_VARS(T) \
@@ -931,7 +931,7 @@ define_col_has_prev_sub(uint64_t)
 
 // --- FILE ---
 
-static void parse_col_offset(mmfile_t *mf)
+static inline void parse_col_offset(mmfile_t *mf)
 {
     uint8_t i;
     uint64_t b = 0;
@@ -952,7 +952,7 @@ static void parse_col_offset(mmfile_t *mf)
     }
 }
 
-static void parse_info_binsrc(mmfile_t *mf)
+static inline void parse_info_binsrc(mmfile_t *mf)
 {
     const uint8_t *tp = (const uint8_t *)(mf->src + 8);
     mf->ncols = *tp++;
@@ -969,7 +969,7 @@ static void parse_info_binsrc(mmfile_t *mf)
     mf->dlength -= mf->doffset;
 }
 
-static void parse_info_arrow(mmfile_t *mf)
+static inline void parse_info_arrow(mmfile_t *mf)
 {
     mf->doffset = (uint64_t)(*((const uint32_t *)(mf->src + 9))) + 13; // skip metadata
     mf->doffset += (uint64_t)(*((const uint32_t *)(mf->src + mf->doffset)) + 4); // skip dictionary
@@ -981,7 +981,7 @@ static void parse_info_arrow(mmfile_t *mf)
     }
 }
 
-static void parse_info_feather(mmfile_t *mf)
+static inline void parse_info_feather(mmfile_t *mf)
 {
     mf->doffset = 8;
     mf->dlength -= mf->doffset;
@@ -1000,7 +1000,7 @@ static void parse_info_feather(mmfile_t *mf)
  *
  * @return Returns the memory-mapped file descriptors.
  */
-static void mmap_binfile(const char *file, mmfile_t *mf)
+static inline void mmap_binfile(const char *file, mmfile_t *mf)
 {
     mf->src = (uint8_t*)MAP_FAILED; // NOLINT
     mf->fd = -1;
@@ -1045,7 +1045,7 @@ static void mmap_binfile(const char *file, mmfile_t *mf)
  * @return On success, munmap() returns 0,
  *         on failure -1, and errno is set (probably to EINVAL).
  */
-static int munmap_binfile(mmfile_t mf)
+static inline int munmap_binfile(mmfile_t mf)
 {
     int err = munmap(mf.src, mf.size);
     if (err != 0)

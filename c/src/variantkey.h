@@ -82,7 +82,7 @@ typedef struct vkrange_t
  *
  * @return CHROM code
  */
-static uint8_t encode_chrom(const char *chrom, size_t size)
+static inline uint8_t encode_chrom(const char *chrom, size_t size)
 {
     // X > 23 ; Y > 24 ; M > 25
     static const uint8_t onecharmap[] =
@@ -141,7 +141,7 @@ static uint8_t encode_chrom(const char *chrom, size_t size)
  *         excluding the null-character appended at the end of the string,
  *         otherwise a negative number is returned in case of failure.
  */
-static size_t decode_chrom(uint8_t code, char *chrom)
+static inline size_t decode_chrom(uint8_t code, char *chrom)
 {
     if ((code < 1) || (code > 25))
     {
@@ -313,7 +313,7 @@ static inline uint32_t encode_refalt_hash(const char *ref, size_t sizeref, const
  *
  * @return REF+ALT code
  */
-static uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+static inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     if ((sizeref + sizealt) <= 11)
     {
@@ -419,7 +419,7 @@ static inline size_t decode_refalt_rev(uint32_t code, char *ref, size_t *sizeref
  * @return      If the code is reversible, then the total number of characters of REF+ALT is returned.
  *              Otherwise 0 is returned.
  */
-static size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+static inline size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     if (code & 0x1) // check last bit
     {
@@ -436,7 +436,7 @@ static size_t decode_refalt(uint32_t code, char *ref, size_t *sizeref, char *alt
  *
  * @return      VariantKey 64 bit code.
  */
-static uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt)
+static inline uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt)
 {
     return (((uint64_t)chrom << VKSHIFT_CHROM) | ((uint64_t)pos << VKSHIFT_POS) | (uint64_t)refalt);
 }
@@ -447,7 +447,7 @@ static uint64_t encode_variantkey(uint8_t chrom, uint32_t pos, uint32_t refalt)
  *
  * @return CHROM code.
  */
-static uint8_t extract_variantkey_chrom(uint64_t vk)
+static inline uint8_t extract_variantkey_chrom(uint64_t vk)
 {
     return (uint8_t)((vk & VKMASK_CHROM) >> VKSHIFT_CHROM);
 }
@@ -458,7 +458,7 @@ static uint8_t extract_variantkey_chrom(uint64_t vk)
  *
  * @return POS.
  */
-static uint32_t extract_variantkey_pos(uint64_t vk)
+static inline uint32_t extract_variantkey_pos(uint64_t vk)
 {
     return (uint32_t)((vk & VKMASK_POS) >> VKSHIFT_POS);
 }
@@ -469,7 +469,7 @@ static uint32_t extract_variantkey_pos(uint64_t vk)
  *
  * @return REF+ALT code.
  */
-static uint32_t extract_variantkey_refalt(uint64_t vk)
+static inline uint32_t extract_variantkey_refalt(uint64_t vk)
 {
     return (uint32_t)(vk & VKMASK_REFALT);
 }
@@ -479,7 +479,7 @@ static uint32_t extract_variantkey_refalt(uint64_t vk)
  * @param code VariantKey code.
  * @param vk   Decoded variantkey structure.
  */
-static void decode_variantkey(uint64_t code, variantkey_t *vk)
+static inline void decode_variantkey(uint64_t code, variantkey_t *vk)
 {
     vk->chrom = extract_variantkey_chrom(code);
     vk->pos = extract_variantkey_pos(code);
@@ -501,7 +501,7 @@ static void decode_variantkey(uint64_t code, variantkey_t *vk)
  *
  * @return      VariantKey 64 bit code.
  */
-static uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
+static inline uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, const char *ref, size_t sizeref, const char *alt, size_t sizealt)
 {
     return encode_variantkey(encode_chrom(chrom, sizechrom), pos, encode_refalt(ref, sizeref, alt, sizealt));
 }
@@ -513,7 +513,7 @@ static uint64_t variantkey(const char *chrom, size_t sizechrom, uint32_t pos, co
  * @param pos_max   End reference position, with the first base having position 0.
  * @param range     VariantKey range values.
  */
-static void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range)
+static inline void variantkey_range(uint8_t chrom, uint32_t pos_min, uint32_t pos_max, vkrange_t *range)
 {
     uint64_t c = ((uint64_t)chrom << VKSHIFT_CHROM);
     range->min = (c | ((uint64_t)pos_min << VKSHIFT_POS));
@@ -532,7 +532,7 @@ static inline int8_t compare_uint64_t(uint64_t a, uint64_t b)
  *
  * @return -1 if the first chromosome is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
-static int8_t compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
+static inline int8_t compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
 {
     return compare_uint64_t((vka >> VKSHIFT_CHROM), (vkb >> VKSHIFT_CHROM));
 }
@@ -544,7 +544,7 @@ static int8_t compare_variantkey_chrom(uint64_t vka, uint64_t vkb)
  *
  * @return -1 if the first CHROM+POS is smaller than the second, 0 if they are equal and 1 if the first is greater than the second.
  */
-static int8_t compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
+static inline int8_t compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
 {
     return compare_uint64_t((vka >> VKSHIFT_POS), (vkb >> VKSHIFT_POS));
 }
@@ -564,7 +564,7 @@ static int8_t compare_variantkey_chrom_pos(uint64_t vka, uint64_t vkb)
  *              If the buffer size is not sufficient, then the return value is the number of characters required for
  *              buffer string, including the terminating null byte.
  */
-static size_t variantkey_hex(uint64_t vk, char *str)
+static inline size_t variantkey_hex(uint64_t vk, char *str)
 {
     return hex_uint64_t(vk, str);
 }
@@ -575,7 +575,7 @@ static size_t variantkey_hex(uint64_t vk, char *str)
  *
  * @return A VariantKey code.
  */
-static uint64_t parse_variantkey_hex(const char *vs)
+static inline uint64_t parse_variantkey_hex(const char *vs)
 {
     return parse_hex_uint64_t(vs);
 }

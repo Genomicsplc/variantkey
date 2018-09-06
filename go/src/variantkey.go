@@ -31,7 +31,7 @@
 package variantkey
 
 /*
-#cgo CFLAGS: -O3 -pedantic -std=c99 -Wextra -Wno-strict-prototypes -Wcast-align -Wundef -Wformat-security -Wshadow -Wno-unused-function
+#cgo CFLAGS: -O3 -pedantic -std=c99 -Wextra -Wno-strict-prototypes -Wcast-align -Wundef -Wformat-security -Wshadow
 #include <stdlib.h>
 #include <inttypes.h>
 #include "../../c/src/binsearch.h"

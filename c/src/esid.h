@@ -78,7 +78,7 @@ static inline uint8_t esid_decode_char(uint64_t esid, size_t pos)
  *
  * @return Encoded string ID.
  */
-static uint64_t encode_string_id(const char *str, size_t size, size_t start)
+static inline uint64_t encode_string_id(const char *str, size_t size, size_t start)
 {
     size -= start;
     if (size > ESID_MAXLEN)
@@ -135,7 +135,7 @@ static uint64_t encode_string_id(const char *str, size_t size, size_t start)
  *
  * @return Encoded string ID.
  */
-static uint64_t encode_string_num_id(const char *str, size_t size, char sep)
+static inline uint64_t encode_string_num_id(const char *str, size_t size, char sep)
 {
     if (size <= ESID_MAXLEN)
     {
@@ -241,7 +241,7 @@ static inline size_t esid_decode_string_num_id(size_t size, uint64_t esid, char 
  *
  * @return The total number of characters excluding the null-character appended at the end of the string.
  */
-static size_t decode_string_id(uint64_t esid, char *str)
+static inline size_t decode_string_id(uint64_t esid, char *str)
 {
     size_t size = (esid >> ESID_SHIFTPOS);
     if (size > ESID_MAXLEN)
@@ -271,7 +271,7 @@ static inline uint64_t muxhash64(uint64_t k, uint64_t h)
  *
  * @return Hash string ID.
  */
-static uint64_t hash_string_id(const char *str, size_t size)
+static inline uint64_t hash_string_id(const char *str, size_t size)
 {
     const uint64_t *pos = (const uint64_t *)str; // NOTE endianness
     const uint64_t *end = pos + (size / 8);

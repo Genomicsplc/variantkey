@@ -95,7 +95,7 @@ typedef struct nrvk_cols_t
  *
  * @return Returns the memory-mapped file descriptors.
  */
-static void mmap_nrvk_file(const char *file, mmfile_t *mf, nrvk_cols_t *nvc)
+static inline void mmap_nrvk_file(const char *file, mmfile_t *mf, nrvk_cols_t *nvc)
 {
     mmap_binfile(file, mf);
     nvc->vk = (const uint64_t *)(mf->src + mf->index[0]);
@@ -104,7 +104,7 @@ static void mmap_nrvk_file(const char *file, mmfile_t *mf, nrvk_cols_t *nvc)
     nvc->nrows = mf->nrows;
 }
 
-static size_t get_nrvk_ref_alt_by_pos(nrvk_cols_t nvc, uint64_t pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+static inline size_t get_nrvk_ref_alt_by_pos(nrvk_cols_t nvc, uint64_t pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     if (pos >= nvc.nrows)
     {
@@ -134,7 +134,7 @@ static size_t get_nrvk_ref_alt_by_pos(nrvk_cols_t nvc, uint64_t pos, char *ref, 
  *
  * @return REF+ALT length or 0 if the VariantKey is not found.
  */
-static size_t find_ref_alt_by_variantkey(nrvk_cols_t nvc, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+static inline size_t find_ref_alt_by_variantkey(nrvk_cols_t nvc, uint64_t vk, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     uint64_t first = 0;
     uint64_t max = nvc.nrows;
@@ -151,7 +151,7 @@ static size_t find_ref_alt_by_variantkey(nrvk_cols_t nvc, uint64_t vk, char *ref
  *
  * @return A variantkey_rev_t structure.
  */
-static size_t reverse_variantkey(nrvk_cols_t nvc, uint64_t vk, variantkey_rev_t *rev)
+static inline size_t reverse_variantkey(nrvk_cols_t nvc, uint64_t vk, variantkey_rev_t *rev)
 {
     decode_chrom(extract_variantkey_chrom(vk), rev->chrom);
     rev->pos = extract_variantkey_pos(vk);
@@ -171,7 +171,7 @@ static size_t reverse_variantkey(nrvk_cols_t nvc, uint64_t vk, variantkey_rev_t 
  *
  * @return REF length or 0 if the VariantKey is not reversible and not found.
  */
-static size_t get_variantkey_ref_length(nrvk_cols_t nvc, uint64_t vk)
+static inline size_t get_variantkey_ref_length(nrvk_cols_t nvc, uint64_t vk)
 {
     if ((vk & 0x1) == 0) // check last bit for reversible encoding
     {
@@ -195,7 +195,7 @@ static size_t get_variantkey_ref_length(nrvk_cols_t nvc, uint64_t vk)
  *
  * @return Variant end position (POS + REF length).
  */
-static uint32_t get_variantkey_endpos(nrvk_cols_t nvc, uint64_t vk)
+static inline uint32_t get_variantkey_endpos(nrvk_cols_t nvc, uint64_t vk)
 {
     return (extract_variantkey_pos(vk) + (uint32_t)get_variantkey_ref_length(nvc, vk));
 }
@@ -206,7 +206,7 @@ static uint32_t get_variantkey_endpos(nrvk_cols_t nvc, uint64_t vk)
  *
  * @return CHROM + START POS.
  */
-static uint64_t get_variantkey_chrom_startpos(uint64_t vk)
+static inline uint64_t get_variantkey_chrom_startpos(uint64_t vk)
 {
     return (vk >> VKSHIFT_POS);
 }
@@ -218,7 +218,7 @@ static uint64_t get_variantkey_chrom_startpos(uint64_t vk)
  *
  * @return CHROM + END POS.
  */
-static uint64_t get_variantkey_chrom_endpos(nrvk_cols_t nvc, uint64_t vk)
+static inline uint64_t get_variantkey_chrom_endpos(nrvk_cols_t nvc, uint64_t vk)
 {
     return (((vk & VKMASK_CHROM) >> VKSHIFT_POS) | (uint64_t)get_variantkey_endpos(nvc, vk));
 }
@@ -232,7 +232,7 @@ static uint64_t get_variantkey_chrom_endpos(nrvk_cols_t nvc, uint64_t vk)
  *
  * @return Number of written bytes or 0 in case of error.
  */
-static size_t nrvk_bin_to_tsv(nrvk_cols_t nvc, const char *tsvfile)
+static inline size_t nrvk_bin_to_tsv(nrvk_cols_t nvc, const char *tsvfile)
 {
     FILE * fp;
     size_t sizeref, sizealt, len = 0;

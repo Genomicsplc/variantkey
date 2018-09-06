@@ -71,7 +71,7 @@
  *
  * @return Returns the memory-mapped file descriptors.
  */
-static void mmap_genoref_file(const char *file, mmfile_t *mf)
+static inline void mmap_genoref_file(const char *file, mmfile_t *mf)
 {
     mmap_binfile(file, mf);
     mf->index[26] = mf->size;
@@ -111,7 +111,7 @@ static inline int aztoupper(int c)
  *
  * @return void
  */
-static void prepend_char(const uint8_t pre, char *string, size_t *size)
+static inline void prepend_char(const uint8_t pre, char *string, size_t *size)
 {
     memmove(string + 1, string, (*size + 1));
     string[0] = pre;
@@ -127,7 +127,7 @@ static void prepend_char(const uint8_t pre, char *string, size_t *size)
  *
  * @return The nucleotide letter or 0 in case of invalid position.
  */
-static char get_genoref_seq(mmfile_t mf, uint8_t chrom, uint32_t pos)
+static inline char get_genoref_seq(mmfile_t mf, uint8_t chrom, uint32_t pos)
 {
     uint64_t offset = (mf.index[chrom] + pos);
     if (offset >= mf.index[(chrom + 1)])
@@ -152,7 +152,7 @@ static char get_genoref_seq(mmfile_t mf, uint8_t chrom, uint32_t pos)
  *       * -1 the reference allele don't match the reference genome;
  *       * -2 the reference allele is longer than the genome reference sequence.
  */
-static int check_reference(mmfile_t mf, uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
+static inline int check_reference(mmfile_t mf, uint8_t chrom, uint32_t pos, const char *ref, size_t sizeref)
 {
     uint64_t offset = (mf.index[chrom] + pos);
     if ((offset + sizeref - 1) >= mf.index[(chrom + 1)])
@@ -235,7 +235,7 @@ static int check_reference(mmfile_t mf, uint8_t chrom, uint32_t pos, const char 
  * @param allele  Allele. String containing a sequence of nucleotide letters.
  * @param size    Length of the allele string.
  */
-static void flip_allele(char *allele, size_t size)
+static inline void flip_allele(char *allele, size_t size)
 {
     /*
       Byte map for allele flipping (complement):
@@ -311,7 +311,7 @@ static inline void swap_alleles(char *first, size_t *sizefirst, char *second, si
  *         - bit 4 (NORM_RTRIM) : Alleles have been right trimmed.
  *         - bit 5 (NORM_LTRIM) : Alleles have been left trimmed.
  */
-static int normalize_variant(mmfile_t mf, uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
+static inline int normalize_variant(mmfile_t mf, uint8_t chrom, uint32_t *pos, char *ref, size_t *sizeref, char *alt, size_t *sizealt)
 {
     char left;
     char fref[ALLELE_MAXSIZE];

@@ -59,7 +59,7 @@ all: clean version format test tidy build doc
 
 # Test C code compatibility with C++
 testcpp:
-	find ./src -type f -name '*.h' -exec gcc -c -pedantic -Werror -Wall -Wextra -Wcast-align -Wundef -Wformat-security -Wno-unused-function -std=c++14 -x c++ -o /dev/null {} \;
+	find ./src -type f -name '*.h' -exec gcc -c -pedantic -Werror -Wall -Wextra -Wcast-align -Wundef -Wformat-security -std=c++14 -x c++ -o /dev/null {} \;
 
 # Build and run the unit tests
 test: testcpp

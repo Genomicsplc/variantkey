@@ -75,7 +75,7 @@ typedef struct rsidvar_cols_t
  *
  * @return Returns the memory-mapped file descriptors.
  */
-static void mmap_vkrs_file(const char *file, mmfile_t *mf, rsidvar_cols_t *cvr)
+static inline void mmap_vkrs_file(const char *file, mmfile_t *mf, rsidvar_cols_t *cvr)
 {
     mmap_binfile(file, mf);
     cvr->vk = (const uint64_t *)(mf->src + mf->index[0]);
@@ -92,7 +92,7 @@ static void mmap_vkrs_file(const char *file, mmfile_t *mf, rsidvar_cols_t *cvr)
  *
  * @return Returns the memory-mapped file descriptors.
  */
-static void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t *crv)
+static inline void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t *crv)
 {
     mmap_binfile(file, mf);
     crv->rs = (const uint32_t *)(mf->src + mf->index[0]);
@@ -111,7 +111,7 @@ static void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t *crv)
  *
  * @return VariantKey data or zero data if not found
  */
-static uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *first, uint64_t last, uint32_t rsid)
+static inline uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *first, uint64_t last, uint32_t rsid)
 {
     uint64_t max = last;
     uint64_t found = col_find_first_uint32_t(crv.rs, first, &max, rsid);
@@ -135,7 +135,7 @@ static uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *first, 
  *
  * @return VariantKey data or zero data if not found
  */
-static uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *pos, uint64_t last, uint32_t rsid)
+static inline uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *pos, uint64_t last, uint32_t rsid)
 {
     if (col_has_next_uint32_t(crv.rs, pos, last, rsid))
     {
@@ -155,7 +155,7 @@ static uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *pos
  *
  * @return rsID or 0 if not found
  */
-static uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *first, uint64_t last, uint64_t vk)
+static inline uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *first, uint64_t last, uint64_t vk)
 {
     uint64_t max = last;
     uint64_t found = col_find_first_uint64_t(cvr.vk, first, &max, vk);
@@ -179,7 +179,7 @@ static uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *first, 
  *
  * @return rsID
  */
-static uint32_t find_vr_chrompos_range(rsidvar_cols_t cvr, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
+static inline uint32_t find_vr_chrompos_range(rsidvar_cols_t cvr, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max)
 {
     uint64_t ckey = ((uint64_t)chrom << 59);
     uint64_t min = *first;
