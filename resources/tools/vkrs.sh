@@ -28,8 +28,11 @@
 #    c/test/data/vkrs.sorted.10.hex
 #    c/test/data/vkrs.unsorted.10.hex
 
+set -e -u -x -o pipefail -o errtrace
+
 : ${VKRS_INPUT_FILE:=vkrs.unsorted.hex}
 : ${VKRS_OUTPUT_FILE:=vkrs.bin}
+: ${PARALLEL:=4}
 
 # sort by VariantKey 
 LC_ALL=C sort --parallel=${PARALLEL:=4} --output=vkrs.hex ${VKRS_INPUT_FILE}
@@ -71,12 +74,12 @@ echo "0000000000000028" >> vkrs.head.hex
 printf "%016x\n" $(((${NK} * 8) + 40)) >> vkrs.head.hex
 # convert to Little-Endian
 perl -nE 'say reverse /(..)/g' vkrs.head.hex >> vkrs.hex
+rm -f  vkrs.head.hex
 
 # convert data to Little-Endian
 perl -nE 'say reverse /(..)/g' vkrs.col.hex >> vkrs.hex
+rm -f  vkrs.col.hex
 
 # convert HEX file in binary format
 xxd -r -p vkrs.hex ${VKRS_OUTPUT_FILE}
-
-# remove temporary files
-rm -f  vkrs.head.hex vkrs.col.hex vkrs.hex
+rm -f  vkrs.hex

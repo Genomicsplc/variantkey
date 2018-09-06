@@ -17,7 +17,7 @@
 #    [8-BYTE COLUMN OFFSET]+
 #    [DATA]
 
-set -e -u -x -o pipefail
+set -e -u -x -o pipefail -o errtrace
 
 : ${REFERENCE_GENOME_FASTA_FILE:?}  # Input genome reference genome FASTA file
 : ${FASTA_BINARY_FILE:=fasta.bin}   # Name of the output binary FASTA file
@@ -41,19 +41,20 @@ printf "00000000%.0s" $(seq 1 31) > fasta_linear.tmp
 echo "" >> fasta_linear.tmp
 # only keep the first 25 sequences
 head --quiet --lines 25 fasta_full_linear.tmp >> fasta_linear.tmp
+rm -f fasta_full_linear.tmp
 
 # create the index in hexadecimal format
 gawk '{printf "%016x\n", (total += length($0));}' fasta_linear.tmp > fasta_index.tmp
 # convert to Little-Endian
 perl -nE 'say reverse /(..)/g' fasta_index.tmp > fasta_index.hex
+rm -f fasta_index.tmp
 # append offsets
 tail -n 26 fasta_index.hex | head -n 25 >> fasta.header.hex
+rm -f fasta_index.hex
 
 # convert HEX file in binary format
 xxd -r -p fasta.header.hex > ${FASTA_BINARY_FILE}
 
 # merge files
 tail -n +2 fasta_linear.tmp | tr -d "\n\r" >> ${FASTA_BINARY_FILE}
-
-# remove temporary file
-rm -f fasta_index.tmp fasta_index.hex fasta_full_linear.tmp fasta_index.tmp fasta_linear.tmp
+rm -f fasta_linear.tmp

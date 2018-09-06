@@ -28,8 +28,11 @@
 #    c/test/data/rsvk.sorted.10.hex
 #    c/test/data/rsvk.unsorted.10.hex
 
+set -e -u -x -o pipefail -o errtrace
+
 : ${RSVK_INPUT_FILE:=rsvk.unsorted.hex}
 : ${RSVK_OUTPUT_FILE:=rsvk.bin}
+: ${PARALLEL:=4}
 
 # sort by rsID
 LC_ALL=C sort --parallel=${PARALLEL:=4} --output=rsvk.hex ${RSVK_INPUT_FILE}
@@ -71,12 +74,12 @@ echo "0000000000000028" >> rsvk.head.hex
 printf "%016x\n" $(((${NK} * 4) + ${PAD} + 40)) >> rsvk.head.hex
 # convert to Little-Endian
 perl -nE 'say reverse /(..)/g' rsvk.head.hex >> rsvk.hex
+rm -f  rsvk.head.hex
 
 # convert data to Little-Endian
 perl -nE 'say reverse /(..)/g' rsvk.col.hex >> rsvk.hex
+rm -f  rsvk.col.hex
 
 # convert HEX file in binary format
 xxd -r -p rsvk.hex ${RSVK_OUTPUT_FILE}
-
-# remove temporary files
-rm -f  rsvk.head.hex rsvk.col.hex rsvk.hex
+rm -f  rsvk.hex

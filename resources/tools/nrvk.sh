@@ -27,8 +27,11 @@
 #     c/test/data/nrvk.10.unsorted.tsv
 #     c/test/data/nrvk.10.bin
 
+set -e -u -x -o pipefail -o errtrace
+
 : ${NRVK_INPUT_FILE:=nrvk.unsorted.tsv}
 : ${NRVK_OUTPUT_FILE:=nrvk.bin}
+: ${PARALLEL:=4}
 
 # sort by VariantKey 
 LC_ALL=C sort --parallel=${PARALLEL:=4} --output=nrvk.sorted.tsv ${NRVK_INPUT_FILE}
@@ -54,21 +57,25 @@ OFFSET=$(((${NK} * 16) + 48))
 printf "%016x\n" ${OFFSET} >> nrvk.head.hex
 # convert to Little-Endian
 perl -nE 'say reverse /(..)/g' nrvk.head.hex >> nrvk.hex
+rm -f nrvk.head.hex
 
 # VK column
 perl -nE 'say reverse /(..)/g' nrvk.vk.hex >> nrvk.hex
+rm -f nrvk.vk.hex
 
 # offsets column
 echo -e "0" > nrvk.offset.tsv
 head -n -1 nrvk.pos.tsv >> nrvk.offset.tsv
+rm -f nrvk.pos.tsv
 gawk '{printf "%016x\n", (total += $0)}' nrvk.offset.tsv > nrvk.pos.hex
+rm -f nrvk.offset.tsv
 perl -nE 'say reverse /(..)/g' nrvk.pos.hex >> nrvk.hex
+rm -f nrvk.pos.hex
 
 # convert to binary
 xxd -r -p nrvk.hex ${NRVK_OUTPUT_FILE}
- 
+rm -f nrvk.hex
+
 # data
 gawk '{printf("%c%c%s%s",length($2),length($3),$2,$3)}' nrvk.sorted.tsv >> ${NRVK_OUTPUT_FILE}
-
-# remove temporary files
-rm -f nrvk.sorted.tsv nrvk.vk.hex nrvk.pos.tsv nrvk.head.hex nrvk.hex nrvk.offset.tsv nrvk.pos.hex
+rm -f nrvk.sorted.tsv

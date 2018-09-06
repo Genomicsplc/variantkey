@@ -18,7 +18,7 @@
 #
 # Nicola Asuni
 # ------------------------------------------------------------------------------
-set -e -u -x -o pipefail
+set -e -u -x -o pipefail -o errtrace
 
 : ${VCF_INPUT_FILE:?}   # Input VCF file
 : ${VCF_OUTPUT_NAME:?}  # Name to be used for the output VCF file (e.g. dbsnp)
@@ -30,14 +30,8 @@ SCRIPT_DIR=$(${READLINK} -f $(dirname "$0"))
 # generate VariantKey hex files
 bcftools +variantkey-hex "${VCF_INPUT_FILE}"
 
-# --- VARIANTKEY -> RSID BINARY FILE
-source "${SCRIPT_DIR}/vkrs.sh"
-
-# --- RSID -> VARIANTKEY BINARY FILE
-source "${SCRIPT_DIR}/rsvk.sh"
-
-# --- NON-REVERSIBLE VARIANTKEY BINARY FILE
-source "${SCRIPT_DIR}/nrvk.sh"
+# process files in parallel
+parallel --no-notice  --env PARALLEL ::: "${SCRIPT_DIR}/nrvk.sh" "${SCRIPT_DIR}/rsvk.sh" "${SCRIPT_DIR}/vkrs.sh"
 
 # --- ADD VARIANTKEY TO THE VCF FILE
 
