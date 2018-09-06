@@ -44,7 +44,7 @@
 #include <strings.h>
 #include <time.h>
 #include <sys/mman.h>
-#include "../src/genoref.c"
+#include "../src/genoref.h"
 
 // returns current time in nanoseconds
 uint64_t get_time()

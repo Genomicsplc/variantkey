@@ -89,7 +89,7 @@ int test_find_ref_alt_by_variantkey(nrvk_cols_t nvc)
     int errors = 0;
     int i;
     char ref[256], alt[256];
-    size_t sizeref,sizealt, len;
+    size_t sizeref = 0, sizealt = 0, len;
     for (i=0 ; i < TEST_DATA_SIZE; i++)
     {
         len = find_ref_alt_by_variantkey(nvc, test_data[i].vk, ref, &sizeref, alt, &sizealt);
@@ -126,7 +126,7 @@ int test_find_ref_alt_by_variantkey_notfound(nrvk_cols_t nvc)
 {
     int errors = 0;
     char ref[256], alt[256];
-    size_t sizeref,sizealt, len;
+    size_t sizeref, sizealt, len;
     len = find_ref_alt_by_variantkey(nvc, 0xffffffff, ref, &sizeref, alt, &sizealt);
     if (len != 0)
     {

@@ -51,12 +51,12 @@
 #ifndef BINSEARCH_H
 #define BINSEARCH_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include <inttypes.h>
+#include <fcntl.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 // Account for Endianness
 
@@ -245,40 +245,151 @@ typedef struct mmfile_t
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t.
  */
-#define define_declare_bytes_to(O, T) \
+#define define_bytes_to(O, T) \
 /** Convert bytes in "O" format to T.
 @param src      Memory mapped file address.
 @param i        Start position.
 @return Converted number
 */ \
-T bytes_##O##_to_##T(const uint8_t *src, uint64_t i);
+static T bytes_##O##_to_##T(const uint8_t *src, uint64_t i) \
+{ \
+    return order_##O##_##T(*((const T *)(src + i))); \
+}
 
-define_declare_bytes_to(be, uint8_t)
-define_declare_bytes_to(be, uint16_t)
-define_declare_bytes_to(be, uint32_t)
-define_declare_bytes_to(be, uint64_t)
-define_declare_bytes_to(le, uint8_t)
-define_declare_bytes_to(le, uint16_t)
-define_declare_bytes_to(le, uint32_t)
-define_declare_bytes_to(le, uint64_t)
+define_bytes_to(be, uint8_t)
+define_bytes_to(be, uint16_t)
+define_bytes_to(be, uint32_t)
+define_bytes_to(be, uint64_t)
+define_bytes_to(le, uint8_t)
+define_bytes_to(le, uint16_t)
+define_bytes_to(le, uint32_t)
+define_bytes_to(le, uint64_t)
 
 /**
  * Define functions to return a pointer to the offset position.
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t.
  */
-#define define_declare_get_src_offset(T) \
+#define define_get_src_offset(T) \
 /** Return a pointer to the offset position.
 @param src      Memory mapped file address.
 @param offset   Start position.
 @return Pointer
 */ \
-const T *get_src_offset_##T(const uint8_t *src, uint64_t offset);
+static const T *get_src_offset_##T(const uint8_t *src, uint64_t offset) \
+{ \
+    return get_src_offset(T, src, offset); \
+}
 
-define_declare_get_src_offset(uint8_t)
-define_declare_get_src_offset(uint16_t)
-define_declare_get_src_offset(uint32_t)
-define_declare_get_src_offset(uint64_t)
+define_get_src_offset(uint8_t)
+define_get_src_offset(uint16_t)
+define_get_src_offset(uint32_t)
+define_get_src_offset(uint64_t)
+
+#define GET_MIDDLE_BLOCK(O, T) order_##O##_##T(*(get_src_offset(T, src, get_address(blklen, blkpos, middle))))
+
+#define FIND_START_LOOP_BLOCK(T) \
+    uint64_t middle, found = *last; \
+    T x; \
+    while (*first < *last) \
+    { \
+        middle = get_middle_point(*first, *last); \
+
+#define FIND_END_LOOP_BLOCK \
+    } \
+    return found;
+
+#define SUB_ITEM_VARS(T) \
+    T bitmask = ((T)1 << (bitend - bitstart)); \
+    bitmask ^= (bitmask - 1); \
+    const uint8_t rshift = (((uint8_t)(sizeof(T) * 8) - 1) - bitend);
+
+#define GET_ITEM_TASK(O, T) \
+        x = GET_MIDDLE_BLOCK(O, T);
+
+#define COL_GET_ITEM_TASK \
+        x = *(src + middle);
+
+#define GET_SUB_ITEM_TASK(O, T) \
+        x = ((GET_MIDDLE_BLOCK(O, T) >> rshift) & bitmask);
+
+#define COL_GET_SUB_ITEM_TASK \
+        x = ((*(src + middle) >> rshift) & bitmask);
+
+#define FIND_FIRST_INNER_CHECK \
+        if (x == search) \
+        { \
+            if (middle == 0) { \
+                return middle; \
+            } \
+            found = middle; \
+            *last = middle; \
+        } \
+        else { \
+            if (x < search) { \
+                *first = (middle + 1); \
+            } \
+            else \
+            { \
+                if (middle > 0) { \
+                    *last = middle; \
+                } \
+                else \
+                { \
+                    return found; \
+                } \
+            } \
+        }
+
+#define FIND_LAST_INNER_CHECK \
+        if (x == search) \
+        { \
+            found = middle; \
+            *first = (middle + 1); \
+        } \
+        else \
+        { \
+            if (x < search) { \
+                *first = (middle + 1); \
+            } \
+            else \
+            { \
+                if (middle > 0) { \
+                    *last = middle; \
+                } \
+                else \
+                { \
+                    return found; \
+                } \
+            } \
+        }
+
+#define HAS_NEXT_START_BLOCK \
+    if (*pos >= (last - 1)) \
+    { \
+        return 0; \
+    } \
+    (*pos)++;
+
+#define HAS_PREV_START_BLOCK \
+    if (*pos <= first) { \
+        return 0; \
+    } \
+    (*pos)--;
+
+#define GET_POS_BLOCK(O, T) order_##O##_##T(*(get_src_offset(T, src, get_address(blklen, blkpos, *pos))))
+
+#define HAS_END_BLOCK(O, T) \
+    return (GET_POS_BLOCK(O, T) == search);
+
+#define COL_HAS_END_BLOCK(T) \
+    return (*(src + *pos) == search);
+
+#define HAS_SUB_END_BLOCK(O, T) \
+    return (((GET_POS_BLOCK(O, T) >> rshift) & bitmask) == search);
+
+#define COL_HAS_SUB_END_BLOCK(T) \
+    return (((*(src + *pos) >> rshift) & bitmask) == search);
 
 /**
  * Generic function to search for the first occurrence of an unsigned integer
@@ -287,7 +398,7 @@ define_declare_get_src_offset(uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t.
  */
-#define define_declare_find_first(O, T) \
+#define define_find_first(O, T) \
 /** Search for the first occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -299,16 +410,22 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+static uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+{ \
+FIND_START_LOOP_BLOCK(T) \
+GET_ITEM_TASK(O, T) \
+FIND_FIRST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_find_first(be, uint8_t)
-define_declare_find_first(be, uint16_t)
-define_declare_find_first(be, uint32_t)
-define_declare_find_first(be, uint64_t)
-define_declare_find_first(le, uint8_t)
-define_declare_find_first(le, uint16_t)
-define_declare_find_first(le, uint32_t)
-define_declare_find_first(le, uint64_t)
+define_find_first(be, uint8_t)
+define_find_first(be, uint16_t)
+define_find_first(be, uint32_t)
+define_find_first(be, uint64_t)
+define_find_first(le, uint8_t)
+define_find_first(le, uint16_t)
+define_find_first(le, uint32_t)
+define_find_first(le, uint64_t)
 
 /**
  * Generic function to search for the first occurrence of an unsigned integer
@@ -317,7 +434,7 @@ define_declare_find_first(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_find_first_sub(O, T) \
+#define define_find_first_sub(O, T) \
 /** Search for the first occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -331,16 +448,23 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
+static uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+{ \
+SUB_ITEM_VARS(T) \
+FIND_START_LOOP_BLOCK(T) \
+GET_SUB_ITEM_TASK(O, T) \
+FIND_FIRST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_find_first_sub(be, uint8_t)
-define_declare_find_first_sub(be, uint16_t)
-define_declare_find_first_sub(be, uint32_t)
-define_declare_find_first_sub(be, uint64_t)
-define_declare_find_first_sub(le, uint8_t)
-define_declare_find_first_sub(le, uint16_t)
-define_declare_find_first_sub(le, uint32_t)
-define_declare_find_first_sub(le, uint64_t)
+define_find_first_sub(be, uint8_t)
+define_find_first_sub(be, uint16_t)
+define_find_first_sub(be, uint32_t)
+define_find_first_sub(be, uint64_t)
+define_find_first_sub(le, uint8_t)
+define_find_first_sub(le, uint16_t)
+define_find_first_sub(le, uint32_t)
+define_find_first_sub(le, uint64_t)
 
 /**
  * Generic function to search for the last occurrence of an unsigned integer
@@ -349,7 +473,7 @@ define_declare_find_first_sub(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_find_last(O, T) \
+#define define_find_last(O, T) \
 /** Search for the last occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -361,16 +485,22 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search);
+static uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
+{ \
+FIND_START_LOOP_BLOCK(T) \
+GET_ITEM_TASK(O, T) \
+FIND_LAST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_find_last(be, uint8_t)
-define_declare_find_last(be, uint16_t)
-define_declare_find_last(be, uint32_t)
-define_declare_find_last(be, uint64_t)
-define_declare_find_last(le, uint8_t)
-define_declare_find_last(le, uint16_t)
-define_declare_find_last(le, uint32_t)
-define_declare_find_last(le, uint64_t)
+define_find_last(be, uint8_t)
+define_find_last(be, uint16_t)
+define_find_last(be, uint32_t)
+define_find_last(be, uint64_t)
+define_find_last(le, uint8_t)
+define_find_last(le, uint16_t)
+define_find_last(le, uint32_t)
+define_find_last(le, uint64_t)
 
 /**
  * Generic function to search for the last occurrence of an unsigned integer
@@ -379,7 +509,7 @@ define_declare_find_last(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_find_last_sub(O, T) \
+#define define_find_last_sub(O, T) \
 /** Search for the last occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -393,16 +523,23 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
+static uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+{ \
+SUB_ITEM_VARS(T) \
+FIND_START_LOOP_BLOCK(T) \
+GET_SUB_ITEM_TASK(O, T) \
+FIND_LAST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_find_last_sub(be, uint8_t)
-define_declare_find_last_sub(be, uint16_t)
-define_declare_find_last_sub(be, uint32_t)
-define_declare_find_last_sub(be, uint64_t)
-define_declare_find_last_sub(le, uint8_t)
-define_declare_find_last_sub(le, uint16_t)
-define_declare_find_last_sub(le, uint32_t)
-define_declare_find_last_sub(le, uint64_t)
+define_find_last_sub(be, uint8_t)
+define_find_last_sub(be, uint16_t)
+define_find_last_sub(be, uint32_t)
+define_find_last_sub(be, uint64_t)
+define_find_last_sub(le, uint8_t)
+define_find_last_sub(le, uint16_t)
+define_find_last_sub(le, uint32_t)
+define_find_last_sub(le, uint64_t)
 
 /**
  * Generic function to check if the next item still matches the search value.
@@ -410,7 +547,7 @@ define_declare_find_last_sub(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_has_next(O, T) \
+#define define_has_next(O, T) \
 /** Check if the next occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data still matches the search value.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -424,16 +561,20 @@ The item returned by find_first_##T should be set as the "pos" parameter in this
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_next_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search);
+static bool has_next_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *pos, uint64_t last, T search) \
+{ \
+HAS_NEXT_START_BLOCK \
+HAS_END_BLOCK(O, T) \
+}
 
-define_declare_has_next(be, uint8_t)
-define_declare_has_next(be, uint16_t)
-define_declare_has_next(be, uint32_t)
-define_declare_has_next(be, uint64_t)
-define_declare_has_next(le, uint8_t)
-define_declare_has_next(le, uint16_t)
-define_declare_has_next(le, uint32_t)
-define_declare_has_next(le, uint64_t)
+define_has_next(be, uint8_t)
+define_has_next(be, uint16_t)
+define_has_next(be, uint32_t)
+define_has_next(be, uint64_t)
+define_has_next(le, uint8_t)
+define_has_next(le, uint16_t)
+define_has_next(le, uint32_t)
+define_has_next(le, uint64_t)
 
 /**
  * Generic function to check if the next item still matches the search value.
@@ -441,7 +582,7 @@ define_declare_has_next(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_has_next_sub(O, T) \
+#define define_has_next_sub(O, T) \
 /** Check if the next occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data still matches the search value.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -457,16 +598,21 @@ The item returned by find_first_sub_##T should be set as the "pos" parameter in 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_next_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search);
+static bool has_next_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+{ \
+HAS_NEXT_START_BLOCK \
+SUB_ITEM_VARS(T) \
+HAS_SUB_END_BLOCK(O, T) \
+}
 
-define_declare_has_next_sub(be, uint8_t)
-define_declare_has_next_sub(be, uint16_t)
-define_declare_has_next_sub(be, uint32_t)
-define_declare_has_next_sub(be, uint64_t)
-define_declare_has_next_sub(le, uint8_t)
-define_declare_has_next_sub(le, uint16_t)
-define_declare_has_next_sub(le, uint32_t)
-define_declare_has_next_sub(le, uint64_t)
+define_has_next_sub(be, uint8_t)
+define_has_next_sub(be, uint16_t)
+define_has_next_sub(be, uint32_t)
+define_has_next_sub(be, uint64_t)
+define_has_next_sub(le, uint8_t)
+define_has_next_sub(le, uint16_t)
+define_has_next_sub(le, uint32_t)
+define_has_next_sub(le, uint64_t)
 
 /**
  * Generic function to check if the previous item still matches the search value.
@@ -474,7 +620,7 @@ define_declare_has_next_sub(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_has_prev(O, T) \
+#define define_has_prev(O, T) \
 /** Check if the previous occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data still matches the search value.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -488,16 +634,20 @@ The item returned by find_last_##T should be set as the "pos" parameter in this 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_prev_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search);
+static bool has_prev_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t first, uint64_t *pos, T search) \
+{ \
+HAS_PREV_START_BLOCK \
+HAS_END_BLOCK(O, T) \
+}
 
-define_declare_has_prev(be, uint8_t)
-define_declare_has_prev(be, uint16_t)
-define_declare_has_prev(be, uint32_t)
-define_declare_has_prev(be, uint64_t)
-define_declare_has_prev(le, uint8_t)
-define_declare_has_prev(le, uint16_t)
-define_declare_has_prev(le, uint32_t)
-define_declare_has_prev(le, uint64_t)
+define_has_prev(be, uint8_t)
+define_has_prev(be, uint16_t)
+define_has_prev(be, uint32_t)
+define_has_prev(be, uint64_t)
+define_has_prev(le, uint8_t)
+define_has_prev(le, uint16_t)
+define_has_prev(le, uint32_t)
+define_has_prev(le, uint64_t)
 
 /**
  * Generic function to check if the previous item still matches the search value.
@@ -505,7 +655,7 @@ define_declare_has_prev(le, uint64_t)
  * @param O Endiannes: be or le.
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_has_prev_sub(O, T) \
+#define define_has_prev_sub(O, T) \
 /** Check if the previous occurrence of an unsigned integer on a memory mapped
 binary file containing adjacent blocks of sorted binary data still matches the search value.
 The values in the file must be encoded in "O" format and sorted in ascending order.
@@ -521,16 +671,21 @@ The item returned by find_last_sub_##T should be set as the "pos" parameter in t
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool has_prev_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search);
+static bool has_prev_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+{ \
+HAS_PREV_START_BLOCK \
+SUB_ITEM_VARS(T) \
+HAS_SUB_END_BLOCK(O, T) \
+}
 
-define_declare_has_prev_sub(be, uint8_t)
-define_declare_has_prev_sub(be, uint16_t)
-define_declare_has_prev_sub(be, uint32_t)
-define_declare_has_prev_sub(be, uint64_t)
-define_declare_has_prev_sub(le, uint8_t)
-define_declare_has_prev_sub(le, uint16_t)
-define_declare_has_prev_sub(le, uint32_t)
-define_declare_has_prev_sub(le, uint64_t)
+define_has_prev_sub(be, uint8_t)
+define_has_prev_sub(be, uint16_t)
+define_has_prev_sub(be, uint32_t)
+define_has_prev_sub(be, uint64_t)
+define_has_prev_sub(le, uint8_t)
+define_has_prev_sub(le, uint16_t)
+define_has_prev_sub(le, uint32_t)
+define_has_prev_sub(le, uint64_t)
 
 // --- COLUMN MODE ---
 
@@ -540,7 +695,7 @@ define_declare_has_prev_sub(le, uint64_t)
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t.
  */
-#define define_declare_col_find_first(T) \
+#define define_col_find_first(T) \
 /** Search for the first occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of unsigned integers of the same type.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -550,12 +705,18 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t col_find_first_##T(const T *src, uint64_t *first, uint64_t *last, T search);
+static uint64_t col_find_first_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
+{ \
+FIND_START_LOOP_BLOCK(T) \
+COL_GET_ITEM_TASK \
+FIND_FIRST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_col_find_first(uint8_t)
-define_declare_col_find_first(uint16_t)
-define_declare_col_find_first(uint32_t)
-define_declare_col_find_first(uint64_t)
+define_col_find_first(uint8_t)
+define_col_find_first(uint16_t)
+define_col_find_first(uint32_t)
+define_col_find_first(uint64_t)
 
 /**
  * Generic function to search for the first occurrence of an unsigned integer
@@ -563,7 +724,7 @@ define_declare_col_find_first(uint64_t)
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_find_first_sub(T) \
+#define define_col_find_first_sub(T) \
 /** Search for the first occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of unsigned integers of the same type.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -575,12 +736,19 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return item number if found or (last + 1) if not found.
  */ \
-uint64_t col_find_first_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
+static uint64_t col_find_first_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+{ \
+SUB_ITEM_VARS(T) \
+FIND_START_LOOP_BLOCK(T) \
+COL_GET_SUB_ITEM_TASK \
+FIND_FIRST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_col_find_first_sub(uint8_t)
-define_declare_col_find_first_sub(uint16_t)
-define_declare_col_find_first_sub(uint32_t)
-define_declare_col_find_first_sub(uint64_t)
+define_col_find_first_sub(uint8_t)
+define_col_find_first_sub(uint16_t)
+define_col_find_first_sub(uint32_t)
+define_col_find_first_sub(uint64_t)
 
 /**
  * Generic function to search for the last occurrence of an unsigned integer
@@ -588,7 +756,7 @@ define_declare_col_find_first_sub(uint64_t)
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_find_last(T) \
+#define define_col_find_last(T) \
 /** Search for the last occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of unsigned integers of the same type.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -598,12 +766,18 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t col_find_last_##T(const T *src, uint64_t *first, uint64_t *last, T search);
+static uint64_t col_find_last_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
+{ \
+FIND_START_LOOP_BLOCK(T) \
+COL_GET_ITEM_TASK \
+FIND_LAST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_col_find_last(uint8_t)
-define_declare_col_find_last(uint16_t)
-define_declare_col_find_last(uint32_t)
-define_declare_col_find_last(uint64_t)
+define_col_find_last(uint8_t)
+define_col_find_last(uint16_t)
+define_col_find_last(uint32_t)
+define_col_find_last(uint64_t)
 
 /**
  * Generic function to search for the last occurrence of an unsigned integer
@@ -611,7 +785,7 @@ define_declare_col_find_last(uint64_t)
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_find_last_sub(T) \
+#define define_col_find_last_sub(T) \
 /** Search for the last occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of unsigned integers of the same type.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -623,19 +797,26 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param search    Unsigned number to search (type T).
 @return Item number if found or (last + 1) if not found.
 */ \
-uint64_t col_find_last_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search);
+static uint64_t col_find_last_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
+{ \
+SUB_ITEM_VARS(T) \
+FIND_START_LOOP_BLOCK(T) \
+COL_GET_SUB_ITEM_TASK \
+FIND_LAST_INNER_CHECK \
+FIND_END_LOOP_BLOCK \
+}
 
-define_declare_col_find_last_sub(uint8_t)
-define_declare_col_find_last_sub(uint16_t)
-define_declare_col_find_last_sub(uint32_t)
-define_declare_col_find_last_sub(uint64_t)
+define_col_find_last_sub(uint8_t)
+define_col_find_last_sub(uint16_t)
+define_col_find_last_sub(uint32_t)
+define_col_find_last_sub(uint64_t)
 
 /**
  * Generic function to check if the next item still matches the search value.
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_has_next(T) \
+#define define_col_has_next(T) \
 /** Check if the next occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of sorted binary data of the same type still matches the search value.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -647,19 +828,23 @@ The item returned by col_find_first_##T should be set as the "pos" parameter in 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool col_has_next_##T(const T *src, uint64_t *pos, uint64_t last, T search);
+static bool col_has_next_##T(const T *src, uint64_t *pos, uint64_t last, T search) \
+{ \
+HAS_NEXT_START_BLOCK \
+COL_HAS_END_BLOCK(T) \
+}
 
-define_declare_col_has_next(uint8_t)
-define_declare_col_has_next(uint16_t)
-define_declare_col_has_next(uint32_t)
-define_declare_col_has_next(uint64_t)
+define_col_has_next(uint8_t)
+define_col_has_next(uint16_t)
+define_col_has_next(uint32_t)
+define_col_has_next(uint64_t)
 
 /**
  * Generic function to check if the next item still matches the search value.
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_has_next_sub(T) \
+#define define_col_has_next_sub(T) \
 /** Check if the next occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of sorted binary data of the same type still matches the search value.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -673,19 +858,24 @@ The item returned by col_find_first_sub_##T should be set as the "pos" parameter
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool col_has_next_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search);
+static bool col_has_next_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *pos, uint64_t last, T search) \
+{ \
+HAS_NEXT_START_BLOCK \
+SUB_ITEM_VARS(T) \
+COL_HAS_SUB_END_BLOCK(T) \
+}
 
-define_declare_col_has_next_sub(uint8_t)
-define_declare_col_has_next_sub(uint16_t)
-define_declare_col_has_next_sub(uint32_t)
-define_declare_col_has_next_sub(uint64_t)
+define_col_has_next_sub(uint8_t)
+define_col_has_next_sub(uint16_t)
+define_col_has_next_sub(uint32_t)
+define_col_has_next_sub(uint64_t)
 
 /**
  * Generic function to check if the previous item still matches the search value.
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_has_prev(T) \
+#define define_col_has_prev(T) \
 /** Check if the previous occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of sorted binary data of the same type still matches the search value.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -697,19 +887,23 @@ The item returned by col_find_last_##T should be set as the "pos" parameter in t
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool col_has_prev_##T(const T *src, uint64_t first, uint64_t *pos, T search);
+static bool col_has_prev_##T(const T *src, uint64_t first, uint64_t *pos, T search) \
+{ \
+HAS_PREV_START_BLOCK \
+COL_HAS_END_BLOCK(T) \
+}
 
-define_declare_col_has_prev(uint8_t)
-define_declare_col_has_prev(uint16_t)
-define_declare_col_has_prev(uint32_t)
-define_declare_col_has_prev(uint64_t)
+define_col_has_prev(uint8_t)
+define_col_has_prev(uint16_t)
+define_col_has_prev(uint32_t)
+define_col_has_prev(uint64_t)
 
 /**
  * Generic function to check if the previous item still matches the search value.
  *
  * @param T Unsigned integer type, one of: uint8_t, uint16_t, uint32_t, uint64_t
  */
-#define define_declare_col_has_prev_sub(T) \
+#define define_col_has_prev_sub(T) \
 /** Check if the previous occurrence of an unsigned integer on a memory buffer
 containing contiguos blocks of sorted binary data of the same type still matches the search value.
 The values must be encoded in Little-Endian format and sorted in ascending order.
@@ -723,14 +917,80 @@ The item returned by col_find_last_sub_##T should be set as the "pos" parameter 
 @param search    Unsigned number to search (type T).
 @return 1 if the next item is valid, 0 otherwise.
  */ \
-bool col_has_prev_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search);
+static bool col_has_prev_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t first, uint64_t *pos, T search) \
+{ \
+HAS_PREV_START_BLOCK \
+SUB_ITEM_VARS(T) \
+COL_HAS_SUB_END_BLOCK(T) \
+}
 
-define_declare_col_has_prev_sub(uint8_t)
-define_declare_col_has_prev_sub(uint16_t)
-define_declare_col_has_prev_sub(uint32_t)
-define_declare_col_has_prev_sub(uint64_t)
+define_col_has_prev_sub(uint8_t)
+define_col_has_prev_sub(uint16_t)
+define_col_has_prev_sub(uint32_t)
+define_col_has_prev_sub(uint64_t)
 
 // --- FILE ---
+
+static void parse_col_offset(mmfile_t *mf)
+{
+    uint8_t i;
+    uint64_t b = 0;
+    mf->index[0] = mf->doffset;
+    for (i = 0; i < mf->ncols; i++)
+    {
+        b += mf->ctbytes[i];
+    }
+    if (b == 0)
+    {
+        return;
+    }
+    mf->nrows = (mf->dlength / b);
+    for (i = 1; i < mf->ncols; i++)
+    {
+        b = (mf->nrows * mf->ctbytes[(i - 1)]);
+        mf->index[i] = mf->index[(i - 1)] + b + ((8 - (b & 7)) & 7); // account for 8-byte padding
+    }
+}
+
+static void parse_info_binsrc(mmfile_t *mf)
+{
+    const uint8_t *tp = (const uint8_t *)(mf->src + 8);
+    mf->ncols = *tp++;
+    mf->doffset = (uint64_t)9 + mf->ncols + ((8 - ((mf->ncols + 1) & 7)) & 7); // account for 8-byte padding
+    const uint64_t *op = (const uint64_t *)(mf->src + mf->doffset);
+    mf->nrows = *op++;
+    uint8_t i;
+    for (i = 0; i < mf->ncols; i++)
+    {
+        mf->ctbytes[i] = *tp++;
+        mf->index[i] = *op++;
+    }
+    mf->doffset += ((mf->ncols + 1) * 8); // skip column offsets section
+    mf->dlength -= mf->doffset;
+}
+
+static void parse_info_arrow(mmfile_t *mf)
+{
+    mf->doffset = (uint64_t)(*((const uint32_t *)(mf->src + 9))) + 13; // skip metadata
+    mf->doffset += (uint64_t)(*((const uint32_t *)(mf->src + mf->doffset)) + 4); // skip dictionary
+    mf->dlength -= mf->doffset;
+    uint64_t type = (*((const uint64_t *)(mf->src + mf->size - 8)));
+    if ((type & 0xffffffffffff0000) == 0x31574f5252410000) // magic number "ARROW1" in LE
+    {
+        mf->dlength -= (uint64_t)(*((const uint32_t *)(mf->src + mf->size - 10))) + 10; // remove footer
+    }
+}
+
+static void parse_info_feather(mmfile_t *mf)
+{
+    mf->doffset = 8;
+    mf->dlength -= mf->doffset;
+    uint32_t type = (*((const uint32_t *)(mf->src + mf->size - 4)));
+    if (type == 0x31414546) // magic number "FEA1" in LE
+    {
+        mf->dlength -= (uint64_t)(*((const uint32_t *)(mf->src + mf->size - 8))) + 8; // remove metadata
+    }
+}
 
 /**
  * Memory map the specified file.
@@ -740,7 +1000,42 @@ define_declare_col_has_prev_sub(uint64_t)
  *
  * @return Returns the memory-mapped file descriptors.
  */
-void mmap_binfile(const char *file, mmfile_t *mf);
+static void mmap_binfile(const char *file, mmfile_t *mf)
+{
+    mf->src = (uint8_t*)MAP_FAILED; // NOLINT
+    mf->fd = -1;
+    mf->size = 0;
+    struct stat statbuf;
+    if (((mf->fd = open(file, O_RDONLY)) < 0) || (fstat(mf->fd, &statbuf) < 0))
+    {
+        return;
+    }
+    mf->size = (uint64_t)statbuf.st_size;
+    mf->src = (uint8_t*)mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
+    mf->doffset = 0;
+    mf->dlength = mf->size;
+    if (mf->size < 28)
+    {
+        return;
+    }
+    uint64_t type = (*((const uint64_t *)(mf->src)));
+    switch (type)
+    {
+    // Custom binsearch format
+    case 0x00314352534e4942: // magic number "BINSRC1" in LE
+        parse_info_binsrc(mf);
+        return;
+    // Basic support for Apache Arrow File format with a single RecordBatch.
+    case 0x000031574f525241: // magic number "ARROW1" in LE
+        parse_info_arrow(mf);
+        break;
+    // Basic support for Feather File format.
+    case 0x0000000031414546: // magic number "FEA1" in LE
+        parse_info_feather(mf);
+        break;
+    }
+    parse_col_offset(mf);
+}
 
 /**
  * Unmap and close the memory-mapped file.
@@ -750,10 +1045,14 @@ void mmap_binfile(const char *file, mmfile_t *mf);
  * @return On success, munmap() returns 0,
  *         on failure -1, and errno is set (probably to EINVAL).
  */
-int munmap_binfile(mmfile_t mf);
-
-#ifdef __cplusplus
+static int munmap_binfile(mmfile_t mf)
+{
+    int err = munmap(mf.src, mf.size);
+    if (err != 0)
+    {
+        return err;
+    }
+    return close(mf.fd);
 }
-#endif
 
 #endif  // BINSEARCH_H

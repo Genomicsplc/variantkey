@@ -31,25 +31,17 @@
 package variantkey
 
 /*
-#cgo CFLAGS: -O3 -pedantic -std=c99 -Wextra -Wno-strict-prototypes -Wcast-align -Wundef -Wformat-security -Wshadow
+#cgo CFLAGS: -O3 -pedantic -std=c99 -Wextra -Wno-strict-prototypes -Wcast-align -Wundef -Wformat-security -Wshadow -Wno-unused-function
 #include <stdlib.h>
 #include <inttypes.h>
 #include "../../c/src/binsearch.h"
-#include "../../c/src/binsearch.c"
 #include "../../c/src/esid.h"
-#include "../../c/src/esid.c"
 #include "../../c/src/genoref.h"
-#include "../../c/src/genoref.c"
 #include "../../c/src/hex.h"
-#include "../../c/src/hex.c"
 #include "../../c/src/nrvk.h"
-#include "../../c/src/nrvk.c"
 #include "../../c/src/regionkey.h"
-#include "../../c/src/regionkey.c"
 #include "../../c/src/rsidvar.h"
-#include "../../c/src/rsidvar.c"
 #include "../../c/src/variantkey.h"
-#include "../../c/src/variantkey.c"
 */
 import "C"
 import "unsafe"
