@@ -30,8 +30,14 @@ SCRIPT_DIR=$(${READLINK} -f $(dirname "$0"))
 # generate VariantKey hex files
 bcftools +variantkey-hex "${VCF_INPUT_FILE}"
 
-# process files in parallel
-parallel --no-notice  --env PARALLEL ::: "${SCRIPT_DIR}/nrvk.sh" "${SCRIPT_DIR}/rsvk.sh" "${SCRIPT_DIR}/vkrs.sh"
+# --- NON-REVERSIBLE VARIANTKEY BINARY FILE
+source "${SCRIPT_DIR}/nrvk.sh"
+
+# --- RSID -> VARIANTKEY BINARY FILE
+source "${SCRIPT_DIR}/rsvk.sh"
+
+# --- VARIANTKEY -> RSID BINARY FILE
+source "${SCRIPT_DIR}/vkrs.sh"
 
 # --- ADD VARIANTKEY TO THE VCF FILE
 
