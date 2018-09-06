@@ -48,7 +48,7 @@
 #include <sys/mman.h>
 #include "../../src/rsidvar.h"
 
-#define TEST_DATA_SIZE 400000000UL
+#define TEST_DATA_SIZE 10000000UL
 
 // returns current time in nanoseconds
 uint64_t get_time()
@@ -60,7 +60,7 @@ uint64_t get_time()
 
 int benchmark_find_rv_variantkey_by_rsid()
 {
-    const char *filename = "rsvk_test_400M.bin";
+    const char *filename = "rsvk_test.bin";
 
     uint32_t i;
 
@@ -77,16 +77,27 @@ int benchmark_find_rv_variantkey_by_rsid()
         b1 = (i >> 8) & 0xFF;
         b2 = (i >> 16) & 0xFF;
         b3 = (i >> 24) & 0xFF;
-        fprintf(f, "%c%c%c%c%c%c%c%c%c%c%c%c", b3, b2, b1, b0, z, z, z, z, b3, b2, b1, b0);
+        fprintf(f, "%c%c%c%c", b0, b1, b2, b3);
+    }
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        b0 = i & 0xFF;
+        b1 = (i >> 8) & 0xFF;
+        b2 = (i >> 16) & 0xFF;
+        b3 = (i >> 24) & 0xFF;
+        fprintf(f, "%c%c%c%c%c%c%c%c", b0, b1, b2, b3, z, z, z, z);
     }
     fclose(f);
 
     mmfile_t rv = {0};
+    rv.ncols = 2;
+    rv.ctbytes[0] = 4;
+    rv.ctbytes[1] = 8;
     rsidvar_cols_t crv = {0};
     mmap_rsvk_file(filename, &rv, &crv);
     if (crv.nrows != TEST_DATA_SIZE)
     {
-        fprintf(stderr, " * %s Expecting rsvk_test_400M.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, crv.nrows);
+        fprintf(stderr, " * %s Expecting rsvk_test.bin %" PRIu64 " items, got instead: %" PRIu64 "\n", __func__, TEST_DATA_SIZE, crv.nrows);
         return 1;
     }
 
@@ -111,7 +122,7 @@ int benchmark_find_rv_variantkey_by_rsid()
         for (i=0 ; i < TEST_DATA_SIZE; i++)
         {
             first = 0;
-            sum += find_rv_variantkey_by_rsid(crv, &first, TEST_DATA_SIZE, i);
+            sum += find_rv_variantkey_by_rsid(crv, &first, crv.nrows, i);
         }
         tend = get_time();
         fprintf(stdout, "   * %s %d. sum: %" PRIu64 " -- time: %" PRIu64 " ns -- %" PRIu64 " ns/op\n", __func__, j, sum, (tend - tstart - offset), (tend - tstart - offset)/TEST_DATA_SIZE);
@@ -121,7 +132,7 @@ int benchmark_find_rv_variantkey_by_rsid()
 
 int benchmark_find_vr_rsid_by_variantkey()
 {
-    const char *filename = "vkrs_test_400M.bin";
+    const char *filename = "vkrs_test.bin";
 
     uint64_t i;
 
@@ -138,11 +149,22 @@ int benchmark_find_vr_rsid_by_variantkey()
         b1 = (i >> 8) & 0xFF;
         b2 = (i >> 16) & 0xFF;
         b3 = (i >> 24) & 0xFF;
-        fprintf(f, "%c%c%c%c%c%c%c%c%c%c%c%c", z, z, z, z, b3, b2, b1, b0, b3, b2, b1, b0);
+        fprintf(f, "%c%c%c%c%c%c%c%c", b0, b1, b2, b3, z, z, z, z);
+    }
+    for (i=0 ; i < TEST_DATA_SIZE; i++)
+    {
+        b0 = i & 0xFF;
+        b1 = (i >> 8) & 0xFF;
+        b2 = (i >> 16) & 0xFF;
+        b3 = (i >> 24) & 0xFF;
+        fprintf(f, "%c%c%c%c%", b0, b1, b2, b3);
     }
     fclose(f);
 
     mmfile_t vr = {0};
+    vr.ncols = 2;
+    vr.ctbytes[0] = 8;
+    vr.ctbytes[1] = 4;
     rsidvar_cols_t cvr = {0};
     mmap_vkrs_file(filename, &vr, &cvr);
     if (cvr.nrows != TEST_DATA_SIZE)
@@ -172,7 +194,7 @@ int benchmark_find_vr_rsid_by_variantkey()
         for (i=0 ; i < TEST_DATA_SIZE; i++)
         {
             first = 0;
-            sum += find_vr_rsid_by_variantkey(cvr, &first, TEST_DATA_SIZE, i);
+            sum += find_vr_rsid_by_variantkey(cvr, &first, cvr.nrows, i);
         }
         tend = get_time();
         fprintf(stdout, "   * %s %d. sum: %" PRIu64 " -- time: %" PRIu64 " ns -- %" PRIu64 " ns/op\n", __func__, j, sum, (tend - tstart - offset), (tend - tstart - offset)/TEST_DATA_SIZE);
