@@ -33,7 +33,7 @@ DEALINGS IN THE SOFTWARE.  */
 
 const char *FILE_VKRS = "vkrs.unsorted.hex";
 const char *FILE_RSVK = "rsvk.unsorted.hex";
-const char *FILE_VKNR = "nrvk.unsorted.tsv";
+const char *FILE_NRVK = "nrvk.unsorted.tsv";
 
 FILE *fp_vkrs; // VariantKey -> rsID
 FILE *fp_rsvk; // rsID -> VariantKey
@@ -90,7 +90,7 @@ int init(int argc, char **argv, bcf_hdr_t *in, bcf_hdr_t *out)
         fprintf(stderr, "%s: %s\n", path, strerror(errno));
     }
     strcpy(path, dir);
-    strcat(path, FILE_VKNR);
+    strcat(path, FILE_NRVK);
     fp_nrvk = fopen(path, "w");
     if (!fp_nrvk)
     {

@@ -660,7 +660,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "int :\n"\
 "    CHROM + END POS encoding."
 
-#define PYVKNRBINTOTSV_DOCSTRING "Convert a vrnr.bin file to a simple TSV.\n"\
+#define PYNRVKBINTOTSV_DOCSTRING "Convert a vrnr.bin file to a simple TSV.\n"\
 "For the reverse operation see the resources/tools/nrvk.sh script.\n"\
 "\n"\
 "Parameters\n"\

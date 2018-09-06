@@ -997,7 +997,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"get_variantkey_endpos", (PyCFunction)py_get_variantkey_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYENDPOS_DOCSTRING},
     {"get_variantkey_chrom_startpos", (PyCFunction)py_get_variantkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMSTARTPOS_DOCSTRING},
     {"get_variantkey_chrom_endpos", (PyCFunction)py_get_variantkey_chrom_endpos, METH_VARARGS|METH_KEYWORDS, PYGETVARIANTKEYCHROMENDPOS_DOCSTRING},
-    {"nrvk_bin_to_tsv", (PyCFunction)py_nrvk_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYVKNRBINTOTSV_DOCSTRING},
+    {"nrvk_bin_to_tsv", (PyCFunction)py_nrvk_bin_to_tsv, METH_VARARGS|METH_KEYWORDS, PYNRVKBINTOTSV_DOCSTRING},
 
     // GENOREF
     {"mmap_genoref_file", (PyCFunction)py_mmap_genoref_file, METH_VARARGS|METH_KEYWORDS, PYMMAPGENOREFFILE_DOCSTRING},
