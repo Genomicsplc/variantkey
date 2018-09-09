@@ -255,7 +255,7 @@ int test_find_vr_chrompos_range_notfound(rsidvar_cols_t cvr)
         fprintf(stderr, "%s : Expected first 0, got %" PRIu64 "\n",  __func__, first);
         ++errors;
     }
-    if (last != 1)
+    if (last != 0)
     {
         fprintf(stderr, "%s : Expected last 1, got %" PRIu64 "\n",  __func__, last);
         ++errors;

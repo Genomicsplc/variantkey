@@ -289,15 +289,18 @@ define_get_src_offset(uint64_t)
 #define GET_MIDDLE_BLOCK(O, T) order_##O##_##T(*(get_src_offset(T, src, get_address(blklen, blkpos, middle))))
 
 #define FIND_START_LOOP_BLOCK(T) \
-    uint64_t middle, found = *last; \
+    uint64_t middle, notfound = *last; \
     T x; \
     while (*first < *last) \
     { \
         middle = get_middle_point(*first, *last); \
 
 #define FIND_END_LOOP_BLOCK \
+    if (x == search) \
+    { \
+        return middle; \
     } \
-    return found;
+    return notfound;
 
 #define SUB_ITEM_VARS(T) \
     T bitmask = ((T)1 << (bitend - bitstart)); \
@@ -317,52 +320,26 @@ define_get_src_offset(uint64_t)
         x = ((*(src + middle) >> rshift) & bitmask);
 
 #define FIND_FIRST_INNER_CHECK \
-        if (x == search) \
-        { \
-            if (middle == 0) { \
-                return middle; \
-            } \
-            found = middle; \
-            *last = middle; \
-        } \
-        else { \
-            if (x < search) { \
-                *first = (middle + 1); \
-            } \
-            else \
-            { \
-                if (middle > 0) { \
-                    *last = middle; \
-                } \
-                else \
-                { \
-                    return found; \
-                } \
-            } \
-        }
-
-#define FIND_LAST_INNER_CHECK \
-        if (x == search) \
-        { \
-            found = middle; \
+        if (x < search) { \
             *first = (middle + 1); \
         } \
         else \
         { \
-            if (x < search) { \
-                *first = (middle + 1); \
-            } \
-            else \
-            { \
-                if (middle > 0) { \
-                    *last = middle; \
-                } \
-                else \
-                { \
-                    return found; \
-                } \
-            } \
-        }
+            *last = middle; \
+        } \
+    } \
+    middle = *first;
+
+#define FIND_LAST_INNER_CHECK \
+        if (x > search) { \
+            *last = middle; \
+        } \
+        else \
+        { \
+            *first = (middle + 1); \
+        } \
+    } \
+    middle = (*first - 1);
 
 #define HAS_NEXT_START_BLOCK \
     if (*pos >= (last - 1)) \
@@ -408,13 +385,14 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return item number if found or (last + 1) if not found.
+@return item number if notfound or (last + 1) if not notfound.
  */ \
 static inline uint64_t find_first_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 GET_ITEM_TASK(O, T) \
 FIND_FIRST_INNER_CHECK \
+GET_ITEM_TASK(O, T) \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -446,7 +424,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return item number if found or (last + 1) if not found.
+@return item number if notfound or (last + 1) if not notfound.
  */ \
 static inline uint64_t find_first_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
@@ -454,6 +432,7 @@ SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
 GET_SUB_ITEM_TASK(O, T) \
 FIND_FIRST_INNER_CHECK \
+GET_SUB_ITEM_TASK(O, T) \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -483,13 +462,14 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return Item number if found or (last + 1) if not found.
+@return Item number if notfound or (last + 1) if not notfound.
 */ \
 static inline uint64_t find_last_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 GET_ITEM_TASK(O, T) \
 FIND_LAST_INNER_CHECK \
+GET_ITEM_TASK(O, T) \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -521,7 +501,7 @@ The values in the file must be encoded in "O" format and sorted in ascending ord
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return Item number if found or (last + 1) if not found.
+@return Item number if notfound or (last + 1) if not notfound.
 */ \
 static inline uint64_t find_last_sub_##O##_##T(const uint8_t *src, uint64_t blklen, uint64_t blkpos, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
@@ -529,6 +509,7 @@ SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
 GET_SUB_ITEM_TASK(O, T) \
 FIND_LAST_INNER_CHECK \
+GET_SUB_ITEM_TASK(O, T) \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -703,13 +684,14 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return item number if found or (last + 1) if not found.
+@return item number if notfound or (last + 1) if not notfound.
  */ \
 static inline uint64_t col_find_first_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 COL_GET_ITEM_TASK \
 FIND_FIRST_INNER_CHECK \
+COL_GET_ITEM_TASK \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -734,7 +716,7 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return item number if found or (last + 1) if not found.
+@return item number if notfound or (last + 1) if not notfound.
  */ \
 static inline uint64_t col_find_first_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
@@ -742,6 +724,7 @@ SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
 COL_GET_SUB_ITEM_TASK \
 FIND_FIRST_INNER_CHECK \
+COL_GET_SUB_ITEM_TASK \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -764,13 +747,14 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return Item number if found or (last + 1) if not found.
+@return Item number if notfound or (last + 1) if not notfound.
 */ \
 static inline uint64_t col_find_last_##T(const T *src, uint64_t *first, uint64_t *last, T search) \
 { \
 FIND_START_LOOP_BLOCK(T) \
 COL_GET_ITEM_TASK \
 FIND_LAST_INNER_CHECK \
+COL_GET_ITEM_TASK \
 FIND_END_LOOP_BLOCK \
 }
 
@@ -795,7 +779,7 @@ The values must be encoded in Little-Endian format and sorted in ascending order
 @param first     Pointer to the element from where to start the search (min value = 0).
 @param last      Pointer to the element (up to but not including) where to end the search (max value = nrows).
 @param search    Unsigned number to search (type T).
-@return Item number if found or (last + 1) if not found.
+@return Item number if notfound or (last + 1) if not notfound.
 */ \
 static inline uint64_t col_find_last_sub_##T(const T *src, uint8_t bitstart, uint8_t bitend, uint64_t *first, uint64_t *last, T search) \
 { \
@@ -803,6 +787,7 @@ SUB_ITEM_VARS(T) \
 FIND_START_LOOP_BLOCK(T) \
 COL_GET_SUB_ITEM_TASK \
 FIND_LAST_INNER_CHECK \
+COL_GET_SUB_ITEM_TASK \
 FIND_END_LOOP_BLOCK \
 }
 
