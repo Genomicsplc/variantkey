@@ -157,7 +157,7 @@ int benchmark_find_vr_rsid_by_variantkey()
         b1 = (i >> 8) & 0xFF;
         b2 = (i >> 16) & 0xFF;
         b3 = (i >> 24) & 0xFF;
-        fprintf(f, "%c%c%c%c%", b0, b1, b2, b3);
+        fprintf(f, "%c%c%c%c", b0, b1, b2, b3);
     }
     fclose(f);
 

@@ -47,7 +47,7 @@ func TestFindRVVariantKeyByRsid(t *testing.T) {
 
 func TestFindRVVariantKeyByRsidNotFound(t *testing.T) {
 	vk, first := rv.FindRVVariantKeyByRsid(0, rv.NRows, 0xfffffff0)
-	if first != 10 {
+	if first != 9 {
 		t.Errorf("Expected first 10, got %d", first)
 	}
 	if vk != 0 {
@@ -126,8 +126,8 @@ func TestFindVRRsidByVariantKeyNotFound(t *testing.T) {
 	if rsid != 0 {
 		t.Errorf("Expected rsid 0, got %x", rsid)
 	}
-	if first != 10 {
-		t.Errorf("Expected first 10, got %d", first)
+	if first != 9 {
+		t.Errorf("Expected first 9, got %d", first)
 	}
 }
 
@@ -146,7 +146,7 @@ func TestFindVRChromPosRange(t *testing.T) {
 	if first != 7 {
 		t.Errorf("Expected first 4, got %d", first)
 	}
-	if last != 8 {
+	if last != 9 {
 		t.Errorf("Expected last 4, got %d", last)
 	}
 }
@@ -160,7 +160,7 @@ func TestFindVRChromPosRangeNotFound(t *testing.T) {
 		t.Errorf("Expected first 10, got %d", first)
 	}
 	if last != 10 {
-		t.Errorf("Expected last 9, got %d", last)
+		t.Errorf("Expected last 10, got %d", last)
 	}
 }
 

@@ -106,7 +106,7 @@ static inline void mmap_rsvk_file(const char *file, mmfile_t *mf, rsidvar_cols_t
  * @param crv       Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
- * @param last      Last element of the range to search (max value = nitems - 1).
+ * @param last      Element (up to but not including) where to end the search (max value = nitems).
  * @param rsid      rsID to search.
  *
  * @return VariantKey data or zero data if not found
@@ -130,7 +130,7 @@ static inline uint64_t find_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64_t *
  *
  * @param crv       Structure containing the pointers to the RSVK memory mapped file columns (rsvk.bin).
  * @param pos       Pointer to the current item. This will hold the position of the next record.
- * @param last      Last element of the range to search (max value = nitems - 1).
+ * @param last      Element (up to but not including) where to end the search (max value = nitems).
  * @param rsid      rsID to search.
  *
  * @return VariantKey data or zero data if not found
@@ -150,7 +150,7 @@ static inline uint64_t get_next_rv_variantkey_by_rsid(rsidvar_cols_t crv, uint64
  * @param cvr       Structure containing the pointers to the VKRS memory mapped file columns (vkrs.bin).
  * @param first     Pointer to the first element of the range to search (min value = 0).
  *                  This will hold the position of the first record found.
- * @param last      Last element of the range to search (max value = nitems - 1).
+ * @param last      Element (up to but not including) where to end the search (max value = nitems).
  * @param vk        VariantKey.
  *
  * @return rsID or 0 if not found
@@ -172,7 +172,7 @@ static inline uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *
  *
  * @param cvr       Structure containing the pointers to the VKRS memory mapped file columns (vkrs.bin).
  * @param first     Pointer to the first element of the range to search (min value = 0).
- * @param last      Pointer to the last element of the range to search (max value = nitems - 1).
+ * @param last      Pointer to the Element (up to but not including) where to end the search (max value = nitems).
  * @param chrom     Chromosome encoded number.
  * @param pos_min   Start reference position, with the first base having position 0.
  * @param pos_max   End reference position, with the first base having position 0.
@@ -187,26 +187,16 @@ static inline uint32_t find_vr_chrompos_range(rsidvar_cols_t cvr, uint64_t *firs
     *first = col_find_first_sub_uint64_t(cvr.vk, 0, 32, &min, &max, (ckey | ((uint64_t)pos_min << 31)) >> 31);
     if (*first >= *last)
     {
-        *first = min;
-    }
-    else
-    {
-        min = *first;
-    }
-    if (min >= *last)
-    {
         return 0;
     }
+    min = *first;
     max = *last;
     uint64_t end = col_find_last_sub_uint64_t(cvr.vk, 0, 32, &min, &max, (ckey | ((uint64_t)pos_max << 31)) >> 31);
-    if (end >= *last)
+    if (end < *last)
     {
-        *last = max;
+        ++end;
     }
-    else
-    {
-        *last = end;
-    }
+    *last = end;
     return *(cvr.rs + *first);
 }
 

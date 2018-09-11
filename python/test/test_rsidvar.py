@@ -81,7 +81,7 @@ class TestFunctions(TestCase):
     def test_find_rv_variantkey_by_rsid_notfound(self):
         vk, first = bs.find_rv_variantkey_by_rsid(rvmc, 0, rvnrows, 0xfffffff0)
         self.assertEqual(vk, 0)
-        self.assertEqual(first, 10)
+        self.assertEqual(first, 9)
 
     def test_get_next_rv_variantkey_by_rsid(self):
         vk, pos = bs.get_next_rv_variantkey_by_rsid(rvmc, 2, rvnrows, 0x00000061)
@@ -111,13 +111,13 @@ class TestFunctions(TestCase):
     def test_find_vr_rsid_by_variantkey_notfound(self):
         rx, first = bs.find_vr_rsid_by_variantkey(vrmc, 0, vrnrows, 0xfffffffffffffff0)
         self.assertEqual(rx, 0)
-        self.assertEqual(first, 10)
+        self.assertEqual(first, 9)
 
     def test_find_vr_chrompos_range(self):
         xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrmc, 0, vrnrows, testData[6][1], testData[7][2], testData[8][2])
         self.assertEqual(xrsid, testData[7][4])
         self.assertEqual(xfirst, 7)
-        self.assertEqual(xlast, 8)
+        self.assertEqual(xlast, 9)
 
     def test_find_vr_chrompos_range_notfound(self):
         xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrmc, 0, vrnrows, 0xff, 0xffffff00, 0xfffffff0)

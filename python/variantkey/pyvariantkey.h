@@ -457,7 +457,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
 "rsid : int\n"\
 "    rsID to search.\n"\
 "\n"\
@@ -478,7 +478,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "pos : int\n"\
 "    Current item position.\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
 "rsid : int\n"\
 "    rsID to search.\n"\
 "\n"\
@@ -497,7 +497,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
 "rsid : int\n"\
 "    rsID to search.\n"\
 "\n"\
@@ -515,7 +515,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
 "vk : int\n"\
 "    VariantKey.\n"\
 "\n"\
@@ -534,7 +534,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "first : int\n"\
 "    First element of the range to search (min value = 0).\n"\
 "last : int\n"\
-"    Last element of the range to search (max value = nitems - 1).\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
 "chrom : int\n"\
 "    Chromosome encoded number.\n"\
 "pos_min : int\n"\

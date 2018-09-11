@@ -40,7 +40,7 @@ test_that("FindRvVariantKeyByRsid", {
 test_that("FindRvVariantKeyByRsidNotFound", {
     res <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvk$NROWS, 0xfffffff0)
     expect_that(res$VK, equals("0000000000000000"))
-    expect_that(res$FIRST, equals(10))
+    expect_that(res$FIRST, equals(9))
 })
 
 test_that("GetNextRvVariantKeyByRsid", {
@@ -61,14 +61,14 @@ test_that("FindVrRsidByVariantKey", {
 test_that("FindVrRsidByVariantKeyNotFound", {
     res <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, "fffffffffffffff0")
     expect_that(res$RSID, equals(0))
-    expect_that(res$FIRST, equals(10))
+    expect_that(res$FIRST, equals(9))
 })
 
 test_that("FindVrChromposRange", {
     res <- FindVrChromposRange(vkrs$MC, 0, vkrs$NROWS, 0x14, 0x000256C5, 0x000256CB)
     expect_that(res$RSID, equals(0x000026F5))
     expect_that(res$FIRST, equals(7))
-    expect_that(res$LAST, equals(8))
+    expect_that(res$LAST, equals(9))
 })
 
 test_that("FindVrChromposRangeNotFound", {

@@ -109,9 +109,9 @@ int test_find_rv_variantkey_by_rsid_notfound(rsidvar_cols_t crv)
     uint64_t vk;
     uint64_t first = 0;
     vk = find_rv_variantkey_by_rsid(crv, &first, crv.nrows, 0xfffffff0);
-    if (first != 10)
+    if (first != 9)
     {
-        fprintf(stderr, "%s : Expected first 10, got %" PRIu64 "\n", __func__, first);
+        fprintf(stderr, "%s : Expected first 9, got %" PRIu64 "\n", __func__, first);
         ++errors;
     }
     if (vk != 0)
@@ -187,7 +187,7 @@ int test_find_vr_rsid_by_variantkey_notfound(rsidvar_cols_t cvr)
         fprintf(stderr, "%s : Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
         ++errors;
     }
-    if (first != 10)
+    if (first != 9)
     {
         fprintf(stderr, "%s :  Expected first 10, got %" PRIu64 "\n",  __func__, first);
         ++errors;
@@ -200,7 +200,7 @@ int test_find_vr_chrompos_range(rsidvar_cols_t cvr)
     int errors = 0;
     uint32_t rsid;
     uint64_t first = 0;
-    uint64_t last = 9;
+    uint64_t last = 10;
     rsid = find_vr_chrompos_range(cvr, &first, &last, test_data[6].chrom, test_data[7].pos, test_data[8].pos);
     if (rsid != test_data[7].rsid)
     {
@@ -212,9 +212,9 @@ int test_find_vr_chrompos_range(rsidvar_cols_t cvr)
         fprintf(stderr, "%s : Expected first 7, got %" PRIu64 "\n", __func__, first);
         ++errors;
     }
-    if (last != 8)
+    if (last !=9)
     {
-        fprintf(stderr, "%s : Expected last 8, got %" PRIu64 "\n", __func__, last);
+        fprintf(stderr, "%s : Expected last 9, got %" PRIu64 "\n", __func__, last);
         ++errors;
     }
     return errors;
@@ -229,35 +229,35 @@ int test_find_vr_chrompos_range_notfound(rsidvar_cols_t cvr)
     rsid = find_vr_chrompos_range(cvr, &first, &last, 0xff, 0xffffff00, 0xfffffff0);
     if (rsid != 0)
     {
-        fprintf(stderr, "%s : Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
+        fprintf(stderr, "%s (1): Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
         ++errors;
     }
     if (first != 10)
     {
-        fprintf(stderr, "%s : Expected first 10, got %" PRIu64 "\n",  __func__, first);
+        fprintf(stderr, "%s (1): Expected first 10, got %" PRIu64 "\n",  __func__, first);
         ++errors;
     }
     if (last != 10)
     {
-        fprintf(stderr, "%s : Expected last 10, got %" PRIu64 "\n",  __func__, last);
+        fprintf(stderr, "%s (1): Expected last 10, got %" PRIu64 "\n",  __func__, last);
         ++errors;
     }
     first = 0;
     last = cvr.nrows;
     rsid = find_vr_chrompos_range(cvr, &first, &last, 0, 0, 0);
-    if (rsid != 1)
+    if (rsid != 0)
     {
-        fprintf(stderr, "%s : Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
+        fprintf(stderr, "%s (2): Expected rsid 0, got %" PRIx32 "\n",  __func__, rsid);
         ++errors;
     }
-    if (first != 0)
+    if (first != 10)
     {
-        fprintf(stderr, "%s : Expected first 0, got %" PRIu64 "\n",  __func__, first);
+        fprintf(stderr, "%s (2): Expected first 10, got %" PRIu64 "\n",  __func__, first);
         ++errors;
     }
-    if (last != 0)
+    if (last != 10)
     {
-        fprintf(stderr, "%s : Expected last 1, got %" PRIu64 "\n",  __func__, last);
+        fprintf(stderr, "%s (2): Expected last 10, got %" PRIu64 "\n",  __func__, last);
         ++errors;
     }
     return errors;

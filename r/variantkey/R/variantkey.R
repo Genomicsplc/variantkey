@@ -183,7 +183,7 @@ MmapVKRSFile <- function(file, ctbytes) {
 #' Search for the specified rsID and returns the first occurrence of VariantKey in the RV file, or zero if not found.
 #' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
 #' @param first     First element of the range to search (min value = 0).
-#' @param last      Last element of the range to search (max value = nitems - 1).
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_rv_variantkey_by_rsid
 #' @export
@@ -195,7 +195,7 @@ FindRvVariantKeyByRsid <- function(mc, first, last, rsid) {
 #' This function can be called in a loop to get all VariantKeys that are associated with the same rsID (if any).
 #' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
 #' @param pos       Current item.
-#' @param last      Last element of the range to search (max value = nitems - 1).
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_get_next_rv_variantkey_by_rsid
 #' @export
@@ -207,7 +207,7 @@ GetNextRvVariantKeyByRsid <- function(mc, pos, last, rsid) {
 #' NOTE: the output is limited to maximum 10 results.
 #' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
 #' @param first     First element of the range to search (min value = 0).
-#' @param last      Last element of the range to search (max value = nitems - 1).
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
 #' @param rsid      rsID to search.
 #' @useDynLib   variantkey R_find_all_rv_variantkey_by_rsid
 #' @export
@@ -218,7 +218,7 @@ FindAllRvVariantKeyByRsid <- function(mc, first, last, rsid) {
 #' Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found
 #' @param mc        Memory-mapped columns object as retured by MmapVKRSfile.
 #' @param first     First element of the range to search (min value = 0).
-#' @param last      Last element of the range to search (max value = nitems - 1).
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
 #' @param vk        VariantKey.
 #' @useDynLib   variantkey R_find_vr_rsid_by_variantkey
 #' @export
@@ -229,7 +229,7 @@ FindVrRsidByVariantKey <- function(mc, first, last, vk) {
 #' Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
 #' @param mc        Memory-mapped columns object as retured by MmapVKRSfile.
 #' @param first     First element of the range to search (min value = 0).
-#' @param last      Last element of the range to search (max value = nitems - 1).
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
 #' @param chrom     Chromosome encoded number.
 #' @param pos_min   Start reference position, with the first base having position 0.
 #' @param pos_max   End reference position, with the first base having position 0.

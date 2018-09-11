@@ -300,6 +300,10 @@ define_get_src_offset(uint64_t)
     { \
         return middle; \
     } \
+    if (*first > 0) \
+    { \
+        --(*first); \
+    } \
     return notfound;
 
 #define SUB_ITEM_VARS(T) \
@@ -321,7 +325,8 @@ define_get_src_offset(uint64_t)
 
 #define FIND_FIRST_INNER_CHECK \
         if (x < search) { \
-            *first = (middle + 1); \
+            *first = middle; \
+            ++(*first); \
         } \
         else \
         { \
@@ -336,23 +341,25 @@ define_get_src_offset(uint64_t)
         } \
         else \
         { \
-            *first = (middle + 1); \
+            *first = middle; \
+            ++(*first); \
         } \
     } \
-    middle = (*first - 1);
+    middle = *first; \
+    --middle;
 
 #define HAS_NEXT_START_BLOCK \
     if (*pos >= (last - 1)) \
     { \
         return 0; \
     } \
-    (*pos)++;
+    ++(*pos);
 
 #define HAS_PREV_START_BLOCK \
     if (*pos <= first) { \
         return 0; \
     } \
-    (*pos)--;
+    --(*pos);
 
 #define GET_POS_BLOCK(O, T) order_##O##_##T(*(get_src_offset(T, src, get_address(blklen, blkpos, *pos))))
 
