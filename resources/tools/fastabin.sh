@@ -23,7 +23,7 @@ set -e -u -x -o pipefail -o errtrace
 : ${FASTA_BINARY_FILE:=fasta.bin}   # Name of the output binary FASTA file
 
 # linearize the fasta file : one line per sequence
-gawk '/^>/ {printf("%s",(N>0?"\n":""));N++;next;} {printf("%s",$0);} END {printf("\n");}' ${REFERENCE_GENOME_FASTA_FILE} > fasta_full_linear.tmp
+LANG=ASCII gawk '/^>/ {printf("%s",(N>0?"\n":""));N++;next;} {printf("%s",$0);} END {printf("\n");}' ${REFERENCE_GENOME_FASTA_FILE} > fasta_full_linear.tmp
 
 # add BINSRC1 header
 echo "42494e5352433100" > fasta.header.hex
@@ -44,7 +44,7 @@ head --quiet --lines 25 fasta_full_linear.tmp >> fasta_linear.tmp
 rm -f fasta_full_linear.tmp
 
 # create the index in hexadecimal format
-gawk '{printf "%016x\n", (total += length($0));}' fasta_linear.tmp > fasta_index.tmp
+LANG=ASCII gawk '{printf "%016x\n", (total += length($0));}' fasta_linear.tmp > fasta_index.tmp
 # convert to Little-Endian
 perl -nE 'say reverse /(..)/g' fasta_index.tmp > fasta_index.hex
 rm -f fasta_index.tmp

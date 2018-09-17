@@ -38,7 +38,7 @@ LC_ALL=C sort --parallel=${PARALLEL:=4} --output=nrvk.sorted.tsv ${NRVK_INPUT_FI
 
 cut -f1 nrvk.sorted.tsv > nrvk.vk.hex
 
-gawk '{print 2+length($2)+length($3)}' nrvk.sorted.tsv > nrvk.pos.tsv
+LANG=ASCII gawk '{print 2+length($2)+length($3)}' nrvk.sorted.tsv > nrvk.pos.tsv
 
 # BINSRC1 header
 echo "42494e5352433100" > nrvk.hex
@@ -67,7 +67,7 @@ rm -f nrvk.vk.hex
 echo -e "0" > nrvk.offset.tsv
 head -n -1 nrvk.pos.tsv >> nrvk.offset.tsv
 rm -f nrvk.pos.tsv
-gawk '{printf "%016x\n", (total += $0)}' nrvk.offset.tsv > nrvk.pos.hex
+LANG=ASCII gawk '{printf "%016x\n", (total += $0)}' nrvk.offset.tsv > nrvk.pos.hex
 rm -f nrvk.offset.tsv
 perl -nE 'say reverse /(..)/g' nrvk.pos.hex >> nrvk.hex
 rm -f nrvk.pos.hex
@@ -77,5 +77,5 @@ xxd -r -p nrvk.hex ${NRVK_OUTPUT_FILE}
 rm -f nrvk.hex
 
 # data
-gawk '{printf("%c%c%s%s",length($2),length($3),$2,$3)}' nrvk.sorted.tsv >> ${NRVK_OUTPUT_FILE}
+LANG=ASCII gawk '{printf("%c%c%s%s",length($2),length($3),$2,$3)}' nrvk.sorted.tsv >> ${NRVK_OUTPUT_FILE}
 rm -f nrvk.sorted.tsv
