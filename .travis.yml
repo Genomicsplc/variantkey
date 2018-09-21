@@ -25,23 +25,23 @@ matrix:
   include:
     - language: c
       script:
-        - cd c && make all
+        - make c
       after_success:
         - coveralls-lcov /home/travis/build/Genomicsplc/variantkey/c/target/test/coverage/variantkey.info
     - language: go
       script:
-        - cd go && make deps qa
+        - make go
     - language: python
       script:
-        - cd python && make build
+        - make python
     - language: r
       script:
-        - cd r && make build
+        - make r
     - language: node_js
       node_js:
         - "7"
       install:
         - npm install --global uglify-js js-beautify
       script:
-        - cd javascript && make test build
+        - make javascript
       
