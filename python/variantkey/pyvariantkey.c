@@ -99,8 +99,8 @@ static PyObject* py_decode_refalt(PyObject *Py_UNUSED(ignored), PyObject *args, 
     PyObject *result = PyTuple_New(4);
     PyTuple_SetItem(result, 0, Py_BuildValue("y", ref));
     PyTuple_SetItem(result, 1, Py_BuildValue("y", alt));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", sizeref));
-    PyTuple_SetItem(result, 3, Py_BuildValue("K", sizealt));
+    PyTuple_SetItem(result, 2, Py_BuildValue("B", (uint8_t)sizeref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("B", (uint8_t)sizealt));
     return result;
 }
 
@@ -508,9 +508,9 @@ static PyObject* py_find_ref_alt_by_variantkey(PyObject *Py_UNUSED(ignored), PyO
     PyObject *result = PyTuple_New(5);
     PyTuple_SetItem(result, 0, Py_BuildValue("y", ref));
     PyTuple_SetItem(result, 1, Py_BuildValue("y", alt));
-    PyTuple_SetItem(result, 2, Py_BuildValue("K", sizeref));
-    PyTuple_SetItem(result, 3, Py_BuildValue("K", sizealt));
-    PyTuple_SetItem(result, 4, Py_BuildValue("K", len));
+    PyTuple_SetItem(result, 2, Py_BuildValue("B", (uint8_t)sizeref));
+    PyTuple_SetItem(result, 3, Py_BuildValue("B", (uint8_t)sizealt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("H", (uint16_t)len));
     return result;
 }
 
@@ -529,9 +529,9 @@ static PyObject* py_reverse_variantkey(PyObject *Py_UNUSED(ignored), PyObject *a
     PyTuple_SetItem(result, 1, Py_BuildValue("I", rev.pos));
     PyTuple_SetItem(result, 2, Py_BuildValue("y", rev.ref));
     PyTuple_SetItem(result, 3, Py_BuildValue("y", rev.alt));
-    PyTuple_SetItem(result, 4, Py_BuildValue("K", rev.sizeref));
-    PyTuple_SetItem(result, 5, Py_BuildValue("K", rev.sizealt));
-    PyTuple_SetItem(result, 6, Py_BuildValue("K", len));
+    PyTuple_SetItem(result, 4, Py_BuildValue("B", (uint8_t)rev.sizeref));
+    PyTuple_SetItem(result, 5, Py_BuildValue("B", (uint8_t)rev.sizealt));
+    PyTuple_SetItem(result, 6, Py_BuildValue("H", (uint16_t)len));
     return result;
 }
 
@@ -676,8 +676,8 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     PyTuple_SetItem(result, 1, Py_BuildValue("I", pos));
     PyTuple_SetItem(result, 2, Py_BuildValue("y", ref));
     PyTuple_SetItem(result, 3, Py_BuildValue("y", alt));
-    PyTuple_SetItem(result, 4, Py_BuildValue("K", stref));
-    PyTuple_SetItem(result, 5, Py_BuildValue("K", stalt));
+    PyTuple_SetItem(result, 4, Py_BuildValue("B", (uint8_t)stref));
+    PyTuple_SetItem(result, 5, Py_BuildValue("B", (uint8_t)stalt));
     return result;
 }
 
