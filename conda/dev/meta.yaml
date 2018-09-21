@@ -1,0 +1,15 @@
+package:
+  name: vk-dev
+  version: 4.2.2
+
+source:
+  path: ../..
+
+build:
+  number: 1
+
+about:
+  home: https://github.com/genomicsplc/variantkey
+  license: MIT
+  license_file: LICENSE
+  summary: VariantKey fast encoder c header only library

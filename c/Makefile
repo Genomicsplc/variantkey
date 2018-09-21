@@ -116,6 +116,7 @@ package_vk: version
 	cd target/build/vk && make -j package
 	../conda/setup-conda.sh
 	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/c.vk
+	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/dev
 
 # Set the version from VERSION file
 version:
