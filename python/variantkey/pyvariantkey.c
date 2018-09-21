@@ -1051,13 +1051,13 @@ static struct module_state _state;
 #endif
 
 #if PY_MAJOR_VERSION >= 3
-static int myextension_traverse(PyObject *m, visitproc visit, void *arg)
+static int variantkey_traverse(PyObject *m, visitproc visit, void *arg)
 {
     Py_VISIT(GETSTATE(m)->error);
     return 0;
 }
 
-static int myextension_clear(PyObject *m)
+static int variantkey_clear(PyObject *m)
 {
     Py_CLEAR(GETSTATE(m)->error);
     return 0;
@@ -1071,8 +1071,8 @@ static struct PyModuleDef moduledef =
     sizeof(struct module_state),
     PyVariantKeyMethods,
     NULL,
-    myextension_traverse,
-    myextension_clear,
+    variantkey_traverse,
+    variantkey_clear,
     NULL
 };
 
