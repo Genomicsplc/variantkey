@@ -115,10 +115,13 @@ build:
 package_vk: version
 	cd target/build/vk && make -j package
 	../conda/setup-conda.sh
+	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/c.src
 	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/c.vk
 
 # Set the version from VERSION file
 version:
+	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/c.src/meta.yaml
+	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/c.src/meta.yaml
 	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/c.vk/meta.yaml
 	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/c.vk/meta.yaml
 
