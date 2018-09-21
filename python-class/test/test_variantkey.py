@@ -7,7 +7,7 @@
 # @license    MIT (see LICENSE)
 # @link       https://github.com/genomicsplc/variantkey
 
-import pyvariantkey.pyvariantkey as pyvk
+import pyvariantkey.variantkey as pyvk
 from unittest import TestCase
 
 # chrom, vkchrom, pos, vkpos, vkrefalt, vk, vs, ref, alt
