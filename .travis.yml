@@ -33,7 +33,7 @@ matrix:
         - make go
     - language: python
       script:
-        - make python
+        - make python python-class
     - language: r
       script:
         - make r

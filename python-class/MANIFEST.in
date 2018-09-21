@@ -1,0 +1,24 @@
+exclude .gitignore
+exclude .coverage
+exclude .coveragerc
+exclude .travis.yml
+include setup.cfg
+include ../README.md
+include ../LICENSE
+prune .cache
+prune .git
+prune build
+prune dist
+prune htmlcov
+recursive-exclude *.egg-info *
+recursive-include test *
+
+
+
+
+
+
+
+
+
+

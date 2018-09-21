@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help c go javascript python r format clean
+.PHONY: help c go javascript python python-class r format clean
 
 # CVS path (path to the parent dir containing the project)
 CVSPATH=github.com/genomicsplc
@@ -24,16 +24,17 @@ help:
 	@echo "VariantKey Makefile."
 	@echo "The following commands are available:"
 	@echo ""
-	@echo "    make c          : Build and test the C version"
-	@echo "    make go         : Build and test the GO version"
-	@echo "    make javascript : Build and test the Javascript version"
-	@echo "    make python     : Build and test the Python version"
-	@echo "    make r          : Build and test the R version"
-	@echo "    make clean      : Remove any build artifact"
-	@echo "    make dbuild     : Build everything inside a Docker container"
+	@echo "    make c            : Build and test the C version"
+	@echo "    make go           : Build and test the GO version"
+	@echo "    make javascript   : Build and test the Javascript version"
+	@echo "    make python       : Build and test the Python version"
+	@echo "    make python-class : Build and test the Python wrapper class"
+	@echo "    make r            : Build and test the R version"
+	@echo "    make clean        : Remove any build artifact"
+	@echo "    make dbuild       : Build everything inside a Docker container"
 	@echo ""
 
-all: clean c go javascript python r
+all: clean c go javascript python python-class r
 
 # Build and test the C version
 c:
@@ -50,6 +51,10 @@ javascript:
 # Build and test the Python version
 python:
 	cd python && make all
+
+# Build and test the Python wrapper class
+python-class:
+	cd python-class && make all
 
 # Build and test the R version
 r:
