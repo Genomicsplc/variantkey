@@ -1,6 +1,6 @@
 """Vectorized VariantKey."""
 
-import variantkey as vk
+import variantkey as pvk
 import numpy as np
 
 
@@ -41,57 +41,320 @@ class VariantKey(object):
 
         if genoref_file is not None:
             # Load the reference genome binary file.
-            self.genoref_mf, self.genoref_size = vk.mmap_genoref_file(genoref_file)
+            self.genoref_mf, self.genoref_size = pvk.mmap_genoref_file(genoref_file)
             if self.genoref_size <= 0:
                 raise Exception('Unable to load the GENOREF file: {0}'.format(genoref_file))
 
         if nrvk_file is not None:
             # Load the lookup table for non-reversible variantkeys.
-            self.nrvk_mf, self.nrvk_mc, self.nrvk_nrows = vk.mmap_nrvk_file(nrvk_file)
+            self.nrvk_mf, self.nrvk_mc, self.nrvk_nrows = pvk.mmap_nrvk_file(nrvk_file)
             if self.nrvk_nrows <= 0:
                 raise Exception('Unable to load the NRVK file: {0}'.format(nrvk_file))
 
         if rsvk_file is not None:
             # Load the lookup table for rsID to VariantKey.
-            self.rsvk_mf, self.rsvk_mc, self.rsvk_nrows = vk.mmap_rsvk_file(rsvk_file, [4, 8])
+            self.rsvk_mf, self.rsvk_mc, self.rsvk_nrows = pvk.mmap_rsvk_file(rsvk_file, [4, 8])
             if self.rsvk_nrows <= 0:
                 raise Exception('Unable to load the RSVK file: {0}'.format(rsvk_file))
 
         if vkrs_file is not None:
             # Load the lookup table for VariantKey ro rsID
-            self.vkrs_mf, self.vkrs_mc, self.vkrs_nrows = vk.mmap_vkrs_file(vkrs_file, [8, 4])
+            self.vkrs_mf, self.vkrs_mc, self.vkrs_nrows = pvk.mmap_vkrs_file(vkrs_file, [8, 4])
             if self.vkrs_nrows <= 0:
                 raise Exception('Unable to load the VKRS file: {0}'.format(vkrs_file))
 
     def __del__(self):
         """Unmap memory-mapped files"""
-        if genoref_mf is not None:
-            vk.munmap_binfile(genoref_mf)
-        if nrvk_mf is not None:
-            vk.munmap_binfile(nrvk_mf)
-        if rsvk_mf is not None:
-            vk.munmap_binfile(rsvk_mf)
-        if vkrs_mf is not None:
-            vk.munmap_binfile(vkrs_mf)
+        if self.genoref_mf is not None:
+            pvk.munmap_binfile(self.genoref_mf)
+        if self.nrvk_mf is not None:
+            pvk.munmap_binfile(self.nrvk_mf)
+        if self.rsvk_mf is not None:
+            pvk.munmap_binfile(self.rsvk_mf)
+        if self.vkrs_mf is not None:
+            pvk.munmap_binfile(self.vkrs_mf)
 
     # BASIC VARIANTKEY FUNCTIONS
     # --------------------------
 
     def encode_chrom(self, chrom):
-        f = np.vectorize(vk.encode_chrom, otypes=[np.uint8])
+        """Returns chromosome numerical encoding.
+
+        Parameters
+        ----------
+        chrom : numpy.string_
+            Chromosome. An identifier from the reference genome, no white-space permitted.
+
+        Returns
+        -------
+        numpy.uint8 :
+            CHROM code
+        """
+        f = np.vectorize(pvk.encode_chrom, otypes=[np.uint8])
         return f(np.array(chrom).astype(np.string_))
 
-    # np_decode_chrom = np.vectorize(vk.decode_chrom, otypes=['|S2'])
-    # np_encode_refalt = np.vectorize(vk.encode_refalt, otypes=[np.uint32])
-    # np_decode_refalt = np.vectorize(vk.decode_refalt, otypes=['|S256', '|S256', np.uint8, np.uint8])
-    # np_encode_variantkey = np.vectorize(vk.encode_variantkey, otypes=[np.uint64])
-    # np_extract_variantkey_chrom = np.vectorize(vk.extract_variantkey_chrom, otypes=[np.uint8])
-    # np_extract_variantkey_pos = np.vectorize(vk.extract_variantkey_pos, otypes=[np.uint32])
-    # np_extract_variantkey_refalt = np.vectorize(vk.extract_variantkey_refalt, otypes=[np.uint32])
-    # np_decode_variantkey = np.vectorize(vk.decode_variantkey, otypes=[np.uint8, np.uint32, np.uint32])
-    # np_variantkey = np.vectorize(vk.variantkey, otypes=[np.uint64])
-    # np_variantkey_range = np.vectorize(vk.variantkey_range, otypes=[np.uint32, np.uint32])
-    # np_compare_variantkey_chrom = np.vectorize(vk.compare_variantkey_chrom, otypes=[np.int_])
-    # np_compare_variantkey_chrom_pos = np.vectorize(vk.compare_variantkey_chrom_pos, otypes=[np.int_])
-    # np_variantkey_hex = np.vectorize(vk.variantkey_hex, otypes=['|S16'])
-    # np_parse_variantkey_hex = np.vectorize(vk.parse_variantkey_hex, otypes=[np.uint64])
+    def decode_chrom(self, code):
+        """Decode the chromosome numerical code.
+
+        Parameters
+        ----------
+        code : numpy.uint8
+            CHROM code.
+
+        Returns
+        -------
+        '|S2' :
+            Chromosome string
+        """
+        f = np.vectorize(pvk.decode_chrom, otypes=['|S2'])
+        return f(np.array(code).astype(np.uint8))
+
+    def encode_refalt(self, ref, alt):
+        """Returns reference+alternate numerical encoding.
+
+        Parameters
+        ----------
+        ref : numpy.string_
+            Reference allele.
+            String containing a sequence of nucleotide letters.
+            The value in the pos field refers to the position of the first nucleotide in the String.
+            Characters must be A-Z, a-z or *
+        alt : numpy.string_
+            Alternate non-reference allele string. Characters must be A-Z, a-z or *
+
+        Returns
+        -------
+        numpy.uint32 :
+            code
+        """
+        f = np.vectorize(pvk.encode_refalt, otypes=[np.uint32])
+        return f(np.array(ref).astype(np.string_), np.array(alt).astype(np.string_))
+
+    def decode_refalt(self, code):
+        """Decode the 32 bit REF+ALT code if reversible
+        (if it has 11 or less bases in total and only contains ACGT letters).
+
+        Parameters
+        ----------
+        code : numpy.uint32
+            REF+ALT code
+
+        Returns
+        -------
+        tuple:
+            - REF
+            - ALT
+            - REF length
+            - ALT length
+        """
+        f = np.vectorize(pvk.decode_refalt, otypes=['|S256', '|S256', np.uint8, np.uint8])
+        return f(np.array(code).astype(np.uint32))
+
+    def encode_variantkey(self, chrom, pos, refalt):
+        """Returns a 64 bit variant key based on the pre-encoded CHROM, POS (0-based) and REF+ALT.
+
+        Parameters
+        ----------
+        chrom : numpy.uint8
+            Encoded Chromosome (see encode_chrom).
+        pos : numpy.uint32
+            Position. The reference position, with the first base having position 0.
+        refalt : numpy.uint32
+            Encoded Reference + Alternate (see encode_refalt).
+
+        Returns
+        -------
+        numpy.unit64:
+            VariantKey 64 bit code.
+        """
+        f = np.vectorize(pvk.encode_variantkey, otypes=[np.uint64])
+        return f(np.array(chrom).astype(np.uint8), np.array(pos).astype(np.uint32), np.array(r).astype(np.uint32))
+
+    def extract_variantkey_chrom(self, vk):
+        """Extract the CHROM code from VariantKey.
+
+        Parameters
+        ----------
+        vk : numpy.uint64
+            VariantKey code.
+
+        Returns
+        -------
+        numpy.uint8 :
+            CHROM code.
+        """
+        f = np.vectorize(pvk.extract_variantkey_chrom, otypes=[np.uint8])
+        return f(np.array(vk).astype(np.uint64))
+
+    def extract_variantkey_pos(self, vk):
+        """Extract the POS code from VariantKey.
+
+        Parameters
+        ----------
+        vk : numpy.uint64
+            VariantKey code.
+
+        Returns
+        -------
+        numpy.uint32 :
+            Position.
+        """
+        f = np.vectorize(pvk.extract_variantkey_pos, otypes=[np.uint32])
+        return f(np.array(vk).astype(np.uint64))
+
+    def extract_variantkey_refalt(self, vk):
+        """Extract the REF+ALT code from VariantKey.
+
+        Parameters
+        ----------
+        vk : numpy.uint64
+            VariantKey code.
+
+        Returns
+        -------
+        numpy.uint32 :
+            REF+ALT code.
+        """
+        f = np.vectorize(pvk.extract_variantkey_refalt, otypes=[np.uint32])
+        return f(np.array(vk).astype(np.uint64))
+
+    def decode_variantkey(self, vk):
+        """Decode a VariantKey code and returns the components.
+
+        Parameters
+        ----------
+        vk : numpy.uint64
+            VariantKey code.
+
+        Returns
+        -------
+        tuple :
+            - CHROM code
+            - POS
+            - REF+ALT code
+        """
+        f = np.vectorize(pvk.decode_variantkey, otypes=[np.uint8, np.uint32, np.uint32])
+        return f(np.array(vk).astype(np.uint64))
+
+    def variantkey(self, chrom, pos, ref, alt):
+        """Returns a 64 bit variant key based on CHROM, POS (0-based), REF, ALT.
+
+        Parameters
+        ----------
+        chrom : numpy.string_
+            Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+        pos : numpy.uint32
+            Position. The reference position, with the first base having position 0.
+        ref : numpy.string_
+            Reference allele. String containing a sequence of nucleotide letters.
+            The value in the pos field refers to the position of the first nucleotide in the String.
+            Characters must be A-Z, a-z or *
+        alt : numpy.string_
+            Alternate non-reference allele string. Characters must be A-Z, a-z or *
+
+        Returns
+        -------
+        numpy.uint64:
+            VariantKey 64 bit code.
+        """
+        f = np.vectorize(pvk.variantkey, otypes=[np.uint64])
+        return f(
+            np.array(chrom).astype(np.string_),
+            np.array(pos).astype(np.uint32),
+            np.array(ref).astype(np.string_),
+            np.array(alt).astype(np.string_))
+
+    def variantkey_range(self, chrom, pos_min, pos_max):
+        """Returns minimum and maximum VariantKeys for range searches.
+
+        Parameters
+        ----------
+        chrom : numpy.uint8
+            Chromosome encoded number.
+        pos_min : numpy.uint32
+            Start reference position, with the first base having position 0.
+        pos_max : numpy.uint32
+            End reference position, with the first base having position 0.
+
+        Returns
+        -------
+        tuple : numpy.uint64
+            - VariantKey min value
+            - VariantKey max value
+        """
+        f = np.vectorize(pvk.variantkey_range, otypes=[np.uint32, np.uint32])
+        return f(
+            np.array(chrom).astype(np.uint8),
+            np.array(pos_min).astype(np.uint32),
+            np.array(pos_max).astype(np.uint32))
+
+    def compare_variantkey_chrom(self, vka, vkb):
+        """Compares two VariantKeys by chromosome only.
+
+        Parameters
+        ----------
+        vka : numpy.uint64
+            The first VariantKey to be compared.
+        vkb : numpy.uint64
+            The second VariantKey to be compared.
+
+        Returns
+        -------
+        numpy.int_ :
+            -1 if the first chromosome is smaller than the second,
+            0 if they are equal and 1 if the first is greater than the second.
+        0
+        """
+        f = np.vectorize(pvk.compare_variantkey_chrom, otypes=[np.int_])
+        return f(np.array(vka).astype(np.uint64), np.array(vkb).astype(np.uint64))
+
+    def compare_variantkey_chrom_pos(self, vka, vkb):
+        """Compares two VariantKeys by chromosome and position.
+
+        Parameters
+        ----------
+        vka : numpy.uint64
+            The first VariantKey to be compared.
+        vkb : numpy.uint64
+            The second VariantKey to be compared.
+
+        Returns
+        -------
+        numpy.int_ :
+            -1 if the first CHROM+POS is smaller than the second,
+            0 if they are equal and 1 if the first is greater than the second.
+        """
+        f = np.vectorize(pvk.compare_variantkey_chrom_pos, otypes=[np.int_])
+        return f(np.array(vka).astype(np.uint64), np.array(vkb).astype(np.uint64))
+
+    def variantkey_hex(self, vk):
+        """Returns VariantKey hexadecimal string (16 characters).
+
+        Parameters
+        ----------
+        vk : numpy.uint64
+            VariantKey code.
+
+        Returns
+        -------
+        '|S16':
+            VariantKey hexadecimal string.
+        """
+        f = np.vectorize(pvk.variantkey_hex, otypes=['|S16'])
+        return f(np.array(vk).astype(np.uint64))
+
+    def parse_variantkey_hex(self, vs):
+        """Parses a VariantKey hexadecimal string and returns the code.
+
+        Parameters
+        ----------
+        vs : '|S16'
+            VariantKey hexadecimal string (it must contain 16 hexadecimal characters).
+
+        Returns
+        -------
+        numpy.uint64 :
+            VariantKey 64 bit code.
+        """
+        f = np.vectorize(pvk.parse_variantkey_hex, otypes=[np.uint64])
+        return f(np.array(vs).astype('|S16'))

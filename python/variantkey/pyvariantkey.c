@@ -210,7 +210,7 @@ static PyObject* py_compare_variantkey_chrom_pos(PyObject *Py_UNUSED(ignored), P
 static PyObject* py_variantkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t code;
-    static char *kwlist[] = {"code", NULL};
+    static char *kwlist[] = {"vk", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "K", kwlist, &code))
         return NULL;
     char str[17];
