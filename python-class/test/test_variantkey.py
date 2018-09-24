@@ -781,38 +781,38 @@ class TestFunctions(TestCase):
         h = npvk.variantkey(vtd[:, 0], vtd[:, 2], vtd[:, 7], vtd[:, 8])
         np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
 
-#    def test_variantkey_range(self):
-#        # 0:chrom, 1:pos_min, 2:pos_max, 3:vk_min, 4:vk_max
-#        d = np.array([
-#            (1, 0, 268435455, 0x0800000000000000, 0x0fffffffffffffff),
-#            (2, 268435454, 268435455, 0x17ffffff00000000, 0x17ffffffffffffff),
-#            (3, 0, 1, 0x1800000000000000, 0x18000000ffffffff),
-#            (4, 1000169, 267435286, 0x2007a17480000000, 0x27f85e8b7fffffff),
-#            (5, 2000338, 2050373, 0x280f42e900000000, 0x280fa4a2ffffffff),
-#            (6, 3000507, 3060549, 0x3016e45d80000000, 0x301759a2ffffffff),
-#            (7, 4000676, 4070725, 0x381e85d200000000, 0x381f0ea2ffffffff),
-#            (8, 5000845, 5080901, 0x4026274680000000, 0x4026c3a2ffffffff),
-#            (9, 6001014, 6091077, 0x482dc8bb00000000, 0x482e78a2ffffffff),
-#            (10, 7001183, 7101253, 0x50356a2f80000000, 0x50362da2ffffffff),
-#            (11, 8001352, 8111429, 0x583d0ba400000000, 0x583de2a2ffffffff),
-#            (12, 9001521, 9121605, 0x6044ad1880000000, 0x604597a2ffffffff),
-#            (13, 10001690, 10131781, 0x684c4e8d00000000, 0x684d4ca2ffffffff),
-#            (14, 11001859, 11141957, 0x7053f00180000000, 0x705501a2ffffffff),
-#            (15, 12002028, 12152133, 0x785b917600000000, 0x785cb6a2ffffffff),
-#            (16, 13002197, 13162309, 0x806332ea80000000, 0x80646ba2ffffffff),
-#            (17, 14002366, 14172485, 0x886ad45f00000000, 0x886c20a2ffffffff),
-#            (18, 15002535, 15182661, 0x907275d380000000, 0x9073d5a2ffffffff),
-#            (19, 16002704, 16192837, 0x987a174800000000, 0x987b8aa2ffffffff),
-#            (20, 17002873, 17203013, 0xa081b8bc80000000, 0xa0833fa2ffffffff),
-#            (21, 18003042, 18213189, 0xa8895a3100000000, 0xa88af4a2ffffffff),
-#            (22, 19003211, 19223365, 0xb090fba580000000, 0xb092a9a2ffffffff),
-#            (23, 20003380, 20233541, 0xb8989d1a00000000, 0xb89a5ea2ffffffff),
-#            (24, 21003549, 21243717, 0xc0a03e8e80000000, 0xc0a213a2ffffffff),
-#            (25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff),
-#        ])
-#        vkmin, vkmax = npvk.variantkey_range(d[:, 0], d[:, 1], d[:, 2])
-#        np.testing.assert_array_equal(vkmin, d[:, 3].astype(np.uint64))
-#        np.testing.assert_array_equal(vkmax, d[:, 4].astype(np.uint64))
+    def test_variantkey_range(self):
+        # 0:chrom, 1:pos_min, 2:pos_max, 3:vk_min, 4:vk_max
+        d = np.array([
+            (1, 0, 268435455, 0x0800000000000000, 0x0fffffffffffffff),
+            (2, 268435454, 268435455, 0x17ffffff00000000, 0x17ffffffffffffff),
+            (3, 0, 1, 0x1800000000000000, 0x18000000ffffffff),
+            (4, 1000169, 267435286, 0x2007a17480000000, 0x27f85e8b7fffffff),
+            (5, 2000338, 2050373, 0x280f42e900000000, 0x280fa4a2ffffffff),
+            (6, 3000507, 3060549, 0x3016e45d80000000, 0x301759a2ffffffff),
+            (7, 4000676, 4070725, 0x381e85d200000000, 0x381f0ea2ffffffff),
+            (8, 5000845, 5080901, 0x4026274680000000, 0x4026c3a2ffffffff),
+            (9, 6001014, 6091077, 0x482dc8bb00000000, 0x482e78a2ffffffff),
+            (10, 7001183, 7101253, 0x50356a2f80000000, 0x50362da2ffffffff),
+            (11, 8001352, 8111429, 0x583d0ba400000000, 0x583de2a2ffffffff),
+            (12, 9001521, 9121605, 0x6044ad1880000000, 0x604597a2ffffffff),
+            (13, 10001690, 10131781, 0x684c4e8d00000000, 0x684d4ca2ffffffff),
+            (14, 11001859, 11141957, 0x7053f00180000000, 0x705501a2ffffffff),
+            (15, 12002028, 12152133, 0x785b917600000000, 0x785cb6a2ffffffff),
+            (16, 13002197, 13162309, 0x806332ea80000000, 0x80646ba2ffffffff),
+            (17, 14002366, 14172485, 0x886ad45f00000000, 0x886c20a2ffffffff),
+            (18, 15002535, 15182661, 0x907275d380000000, 0x9073d5a2ffffffff),
+            (19, 16002704, 16192837, 0x987a174800000000, 0x987b8aa2ffffffff),
+            (20, 17002873, 17203013, 0xa081b8bc80000000, 0xa0833fa2ffffffff),
+            (21, 18003042, 18213189, 0xa8895a3100000000, 0xa88af4a2ffffffff),
+            (22, 19003211, 19223365, 0xb090fba580000000, 0xb092a9a2ffffffff),
+            (23, 20003380, 20233541, 0xb8989d1a00000000, 0xb89a5ea2ffffffff),
+            (24, 21003549, 21243717, 0xc0a03e8e80000000, 0xc0a213a2ffffffff),
+            (25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff),
+        ], dtype=np.uint64)
+        vkmin, vkmax = npvk.variantkey_range(d[:, 0], d[:, 1], d[:, 2])
+        np.testing.assert_array_equal(vkmin, d[:, 3].astype(np.uint64))
+        np.testing.assert_array_equal(vkmax, d[:, 4].astype(np.uint64))
 
     def test_compare_variantkey_chrom(self):
         d = np.array([
