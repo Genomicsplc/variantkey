@@ -1,6 +1,6 @@
 """Tests for variantkey module."""
 
-# test_variantkey.py
+# test_npvk.py
 # @category   Libraries
 # @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 # @copyright  2017-2018 GENOMICS plc
@@ -638,18 +638,18 @@ class TestFunctions(TestCase):
         chrom = npvk.encode_chrom(b"WRONG")
         self.assertEqual(chrom, 0)
 
-#    def test_encode_chrom_input_type(self):
-#        self.assertEqual(variantkey.encode_chrom(b"chr01"), variantkey.encode_chrom("chr01"))
-#
+    def test_encode_chrom_input_type(self):
+        self.assertEqual(npvk.encode_chrom(b"chr01"), npvk.encode_chrom("chr01"))
+
 #    def test_decode_chrom(self):
 #        chromTestDecodeData = [b"NA", b"1", b"2", b"3", b"4", b"5", b"6", b"7", b"8", b"9", b"10", b"11", b"12", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"]
 #        for i in range(0, 26):
-#            chrom = variantkey.decode_chrom(i)
+#            chrom = npvk.decode_chrom(i)
 #            self.assertEqual(chrom, chromTestDecodeData[i])
 #
 #    def test_encode_refalt_input_type(self):
-#        self.assertEqual(variantkey.encode_refalt(b"AC", b"GT"), variantkey.encode_refalt("AC", "GT"))
-#        self.assertEqual(variantkey.encode_refalt(b"ACGTACGT", b"GTACGTAC"), variantkey.encode_refalt("ACGTACGT", "GTACGTAC"))
+#        self.assertEqual(npvk.encode_refalt(b"AC", b"GT"), npvk.encode_refalt("AC", "GT"))
+#        self.assertEqual(npvk.encode_refalt(b"ACGTACGT", b"GTACGTAC"), npvk.encode_refalt("ACGTACGT", "GTACGTAC"))
 #
 #    def test_encode_refalt(self):
 #        input_data = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTACGTAC", b"ACGTacgtACGT"]
@@ -688,9 +688,9 @@ class TestFunctions(TestCase):
 #                ri = i
 #                rj = j
 #                for r in range(0, 2):
-#                    h = variantkey.encode_refalt(input_data[ri], input_data[rj])
+#                    h = npvk.encode_refalt(input_data[ri], input_data[rj])
 #                    self.assertEqual(h, expected_data[k])
-#                    ref, alt, sizeref, sizealt = variantkey.decode_refalt(h)
+#                    ref, alt, sizeref, sizealt = npvk.decode_refalt(h)
 #                    if sizealt > 0:
 #                        self.assertEqual(ref, input_data[ri].upper())
 #                        self.assertEqual(alt, input_data[rj].upper())
@@ -703,34 +703,34 @@ class TestFunctions(TestCase):
 #
 #    def test_encode_variantkey(self):
 #        for _, vkchrom, _, vkpos, vkrefalt, vk, _, _, _ in variantsTestData:
-#            h = variantkey.encode_variantkey(vkchrom, vkpos, vkrefalt)
+#            h = npvk.encode_variantkey(vkchrom, vkpos, vkrefalt)
 #            self.assertEqual(h, vk)
 #
 #    def test_extract_variantkey_chrom(self):
 #        for _, vkchrom, _, _, _, vk, _, _, _ in variantsTestData:
-#            h = variantkey.extract_variantkey_chrom(vk)
+#            h = npvk.extract_variantkey_chrom(vk)
 #            self.assertEqual(h, vkchrom)
 #
 #    def test_extract_variantkey_pos(self):
 #        for _, _, _, vkpos, _, vk, _, _, _ in variantsTestData:
-#            h = variantkey.extract_variantkey_pos(vk)
+#            h = npvk.extract_variantkey_pos(vk)
 #            self.assertEqual(h, vkpos)
 #
 #    def test_extract_variantkey_refalt(self):
 #        for _, _, _, _, vkrefalt, vk, _, _, _ in variantsTestData:
-#            h = variantkey.extract_variantkey_refalt(vk)
+#            h = npvk.extract_variantkey_refalt(vk)
 #            self.assertEqual(h, vkrefalt)
 #
 #    def test_decode_variantkey(self):
 #        for _, vkchrom, _, vkpos, vkrefalt, vk, _, _, _ in variantsTestData:
-#            h = variantkey.decode_variantkey(vk)
+#            h = npvk.decode_variantkey(vk)
 #            self.assertEqual(h[0], vkchrom)
 #            self.assertEqual(h[1], vkpos)
 #            self.assertEqual(h[2], vkrefalt)
 #
 #    def test_variantkey(self):
 #        for chrom, _, pos, _, _, vk, _, ref, alt in variantsTestData:
-#            h = variantkey.variantkey(chrom, pos, ref, alt)
+#            h = npvk.variantkey(chrom, pos, ref, alt)
 #            self.assertEqual(h, vk)
 #
 #    def test_variantkey_range(self):
@@ -762,7 +762,7 @@ class TestFunctions(TestCase):
 #            (25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff),
 #        ]
 #        for chrom, pos_min, pos_max, vk_min, vk_max in vkrangeTestData:
-#            vkmin, vkmax = variantkey.variantkey_range(chrom, pos_min, pos_max)
+#            vkmin, vkmax = npvk.variantkey_range(chrom, pos_min, pos_max)
 #            self.assertEqual(vkmin, vk_min)
 #            self.assertEqual(vkmax, vk_max)
 #
@@ -773,7 +773,7 @@ class TestFunctions(TestCase):
 #            (0x100036cc08900000, 0x08027a3c08e80000, 1),
 #        ]
 #        for vka, vkb, exp in vkcmpTestData:
-#            res = variantkey.compare_variantkey_chrom(vka, vkb)
+#            res = npvk.compare_variantkey_chrom(vka, vkb)
 #            self.assertEqual(res, exp)
 #
 #    def test_compare_variantkey_chrom_pos(self):
@@ -785,18 +785,18 @@ class TestFunctions(TestCase):
 #            (0x0fffffff88b80000, 0x08027a2588b00000, 1),
 #        ]
 #        for vka, vkb, exp in vkcmpTestData:
-#            res = variantkey.compare_variantkey_chrom_pos(vka, vkb)
+#            res = npvk.compare_variantkey_chrom_pos(vka, vkb)
 #            self.assertEqual(res, exp)
 #
 #    def test_variantkey_hex(self):
 #        for _, _, _, _, _, vk, vs, _, _ in variantsTestData:
-#            h = variantkey.variantkey_hex(vk)
+#            h = npvk.variantkey_hex(vk)
 #            self.assertEqual(h, vs)
 #
 #    def test_parse_variantkey_hex(self):
 #        for _, _, _, _, _, vk, vs, _, _ in variantsTestData:
-#            h = variantkey.parse_variantkey_hex(vs)
+#            h = npvk.parse_variantkey_hex(vs)
 #            self.assertEqual(h, vk)
 #
 #    def test_parse_variantkey_hex_input_type(self):
-#        self.assertEqual(variantkey.parse_variantkey_hex(b"b815481990e60000"), variantkey.parse_variantkey_hex("b815481990e60000"))
+#        self.assertEqual(npvk.parse_variantkey_hex(b"b815481990e60000"), npvk.parse_variantkey_hex("b815481990e60000"))

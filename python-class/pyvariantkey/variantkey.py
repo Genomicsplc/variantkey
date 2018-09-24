@@ -82,12 +82,12 @@ class VariantKey(object):
 
         Parameters
         ----------
-        chrom : numpy.string_
+        chrom : string
             Chromosome. An identifier from the reference genome, no white-space permitted.
 
         Returns
         -------
-        numpy.uint8 :
+        uint8 :
             CHROM code
         """
         f = np.vectorize(pvk.encode_chrom, otypes=[np.uint8])
@@ -98,7 +98,7 @@ class VariantKey(object):
 
         Parameters
         ----------
-        code : numpy.uint8
+        code : uint8
             CHROM code.
 
         Returns
@@ -114,17 +114,17 @@ class VariantKey(object):
 
         Parameters
         ----------
-        ref : numpy.string_
+        ref : string
             Reference allele.
             String containing a sequence of nucleotide letters.
             The value in the pos field refers to the position of the first nucleotide in the String.
             Characters must be A-Z, a-z or *
-        alt : numpy.string_
+        alt : string
             Alternate non-reference allele string. Characters must be A-Z, a-z or *
 
         Returns
         -------
-        numpy.uint32 :
+        uint32 :
             code
         """
         f = np.vectorize(pvk.encode_refalt, otypes=[np.uint32])
@@ -136,7 +136,7 @@ class VariantKey(object):
 
         Parameters
         ----------
-        code : numpy.uint32
+        code : uint32
             REF+ALT code
 
         Returns
@@ -155,16 +155,16 @@ class VariantKey(object):
 
         Parameters
         ----------
-        chrom : numpy.uint8
+        chrom : uint8
             Encoded Chromosome (see encode_chrom).
-        pos : numpy.uint32
+        pos : uint32
             Position. The reference position, with the first base having position 0.
-        refalt : numpy.uint32
+        refalt : uint32
             Encoded Reference + Alternate (see encode_refalt).
 
         Returns
         -------
-        numpy.unit64:
+        unit64:
             VariantKey 64 bit code.
         """
         f = np.vectorize(pvk.encode_variantkey, otypes=[np.uint64])
@@ -175,12 +175,12 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vk : numpy.uint64
+        vk : uint64
             VariantKey code.
 
         Returns
         -------
-        numpy.uint8 :
+        uint8 :
             CHROM code.
         """
         f = np.vectorize(pvk.extract_variantkey_chrom, otypes=[np.uint8])
@@ -191,12 +191,12 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vk : numpy.uint64
+        vk : uint64
             VariantKey code.
 
         Returns
         -------
-        numpy.uint32 :
+        uint32 :
             Position.
         """
         f = np.vectorize(pvk.extract_variantkey_pos, otypes=[np.uint32])
@@ -207,12 +207,12 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vk : numpy.uint64
+        vk : uint64
             VariantKey code.
 
         Returns
         -------
-        numpy.uint32 :
+        uint32 :
             REF+ALT code.
         """
         f = np.vectorize(pvk.extract_variantkey_refalt, otypes=[np.uint32])
@@ -223,7 +223,7 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vk : numpy.uint64
+        vk : uint64
             VariantKey code.
 
         Returns
@@ -241,20 +241,20 @@ class VariantKey(object):
 
         Parameters
         ----------
-        chrom : numpy.string_
+        chrom : string
             Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
-        pos : numpy.uint32
+        pos : uint32
             Position. The reference position, with the first base having position 0.
-        ref : numpy.string_
+        ref : string
             Reference allele. String containing a sequence of nucleotide letters.
             The value in the pos field refers to the position of the first nucleotide in the String.
             Characters must be A-Z, a-z or *
-        alt : numpy.string_
+        alt : string
             Alternate non-reference allele string. Characters must be A-Z, a-z or *
 
         Returns
         -------
-        numpy.uint64:
+        uint64:
             VariantKey 64 bit code.
         """
         f = np.vectorize(pvk.variantkey, otypes=[np.uint64])
@@ -269,16 +269,16 @@ class VariantKey(object):
 
         Parameters
         ----------
-        chrom : numpy.uint8
+        chrom : uint8
             Chromosome encoded number.
-        pos_min : numpy.uint32
+        pos_min : uint32
             Start reference position, with the first base having position 0.
-        pos_max : numpy.uint32
+        pos_max : uint32
             End reference position, with the first base having position 0.
 
         Returns
         -------
-        tuple : numpy.uint64
+        tuple : uint64
             - VariantKey min value
             - VariantKey max value
         """
@@ -293,14 +293,14 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vka : numpy.uint64
+        vka : uint64
             The first VariantKey to be compared.
-        vkb : numpy.uint64
+        vkb : uint64
             The second VariantKey to be compared.
 
         Returns
         -------
-        numpy.int_ :
+        int_ :
             -1 if the first chromosome is smaller than the second,
             0 if they are equal and 1 if the first is greater than the second.
         0
@@ -313,14 +313,14 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vka : numpy.uint64
+        vka : uint64
             The first VariantKey to be compared.
-        vkb : numpy.uint64
+        vkb : uint64
             The second VariantKey to be compared.
 
         Returns
         -------
-        numpy.int_ :
+        int_ :
             -1 if the first CHROM+POS is smaller than the second,
             0 if they are equal and 1 if the first is greater than the second.
         """
@@ -332,7 +332,7 @@ class VariantKey(object):
 
         Parameters
         ----------
-        vk : numpy.uint64
+        vk : uint64
             VariantKey code.
 
         Returns
@@ -353,7 +353,7 @@ class VariantKey(object):
 
         Returns
         -------
-        numpy.uint64 :
+        uint64 :
             VariantKey 64 bit code.
         """
         f = np.vectorize(pvk.parse_variantkey_hex, otypes=[np.uint64])
