@@ -14,7 +14,7 @@ from unittest import TestCase
 
 
 # 0:chrom, 1:vkchrom, 2:pos, 3:vkpos, 4:vkrefalt, 5:vk, 6:vs, 7:ref, 8:alt
-variantsTestData = np.array([
+vtd = np.array([
     (b"chr1", 1, 268435455, 0x0fffffff, 0x08b80000, 0x0fffffff88b80000, b"0fffffff88b80000", b"C", b"T"),
     (b"CHR01", 1, 324675, 0x0004f443, 0x08c80000, 0x08027a2188c80000, b"08027a2188c80000", b"G", b"C"),
     (b"1", 1, 0, 0x00000000, 0x3c6f5d8f, 0x080000003c6f5d8f, b"080000003c6f5d8f", b"ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", b"A"),
@@ -600,9 +600,6 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
-    def test_dummy(self):
-        self.assertEqual(1, 1)
-
     def test_encode_chrom(self):
         data = np.array([
             ["", "NA", "XY", "1X", "1Y", "1M", "1MT", "chr", " 1", "1 "],
@@ -759,41 +756,34 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(sizealt, esizealt)
 
     def test_encode_variantkey(self):
-        h = npvk.encode_variantkey(variantsTestData[:, 1], variantsTestData[:, 3], variantsTestData[:, 4])
-        np.testing.assert_array_equal(h, variantsTestData[:, 5].astype(np.uint64))
+        h = npvk.encode_variantkey(vtd[:, 1], vtd[:, 3], vtd[:, 4])
+        np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
 
     def test_extract_variantkey_chrom(self):
-        h = npvk.extract_variantkey_chrom(variantsTestData[:, 5].astype(np.uint64))
-        np.testing.assert_array_equal(h, variantsTestData[:, 1].astype(np.uint8))
+        h = npvk.extract_variantkey_chrom(vtd[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(h, vtd[:, 1].astype(np.uint8))
 
     def test_extract_variantkey_pos(self):
-        h = npvk.extract_variantkey_pos(variantsTestData[:, 5].astype(np.uint64))
-        np.testing.assert_array_equal(h, variantsTestData[:, 3].astype(np.uint32))
+        h = npvk.extract_variantkey_pos(vtd[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(h, vtd[:, 3].astype(np.uint32))
 
     def test_extract_variantkey_refalt(self):
-        h = npvk.extract_variantkey_refalt(variantsTestData[:, 5].astype(np.uint64))
-        np.testing.assert_array_equal(h, variantsTestData[:, 4].astype(np.uint32))
+        h = npvk.extract_variantkey_refalt(vtd[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(h, vtd[:, 4].astype(np.uint32))
 
     def test_decode_variantkey(self):
-        c, p, r = npvk.decode_variantkey(variantsTestData[:, 5].astype(np.uint64))
-        np.testing.assert_array_equal(c, variantsTestData[:, 1].astype(np.uint8))
-        np.testing.assert_array_equal(p, variantsTestData[:, 3].astype(np.uint32))
-        np.testing.assert_array_equal(r, variantsTestData[:, 4].astype(np.uint32))
+        c, p, r = npvk.decode_variantkey(vtd[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(c, vtd[:, 1].astype(np.uint8))
+        np.testing.assert_array_equal(p, vtd[:, 3].astype(np.uint32))
+        np.testing.assert_array_equal(r, vtd[:, 4].astype(np.uint32))
 
     def test_variantkey(self):
-        h = npvk.variantkey(
-            variantsTestData[:, 0].astype(np.string_),
-            variantsTestData[:, 2].astype(np.uint32),
-            variantsTestData[:, 7].astype(np.string_),
-            variantsTestData[:, 8].astype(np.string_))
-        np.testing.assert_array_equal(h, variantsTestData[:, 5].astype(np.uint64))
-
-
-# 0:chrom, 1:vkchrom, 2:pos, 3:vkpos, 4:vkrefalt, 5:vk, 6:vs, 7:ref, 8:alt
-
+        h = npvk.variantkey(vtd[:, 0], vtd[:, 2], vtd[:, 7], vtd[:, 8])
+        np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
 
 #    def test_variantkey_range(self):
-#        vkrangeTestData = [
+#        # 0:chrom, 1:pos_min, 2:pos_max, 3:vk_min, 4:vk_max
+#        d = np.array([
 #            (1, 0, 268435455, 0x0800000000000000, 0x0fffffffffffffff),
 #            (2, 268435454, 268435455, 0x17ffffff00000000, 0x17ffffffffffffff),
 #            (3, 0, 1, 0x1800000000000000, 0x18000000ffffffff),
@@ -819,43 +809,38 @@ class TestFunctions(TestCase):
 #            (23, 20003380, 20233541, 0xb8989d1a00000000, 0xb89a5ea2ffffffff),
 #            (24, 21003549, 21243717, 0xc0a03e8e80000000, 0xc0a213a2ffffffff),
 #            (25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff),
-#        ]
-#        for chrom, pos_min, pos_max, vk_min, vk_max in vkrangeTestData:
-#            vkmin, vkmax = npvk.variantkey_range(chrom, pos_min, pos_max)
-#            self.assertEqual(vkmin, vk_min)
-#            self.assertEqual(vkmax, vk_max)
-#
-#    def test_compare_variantkey_chrom(self):
-#        vkcmpTestData = [
-#            (0x08027a3c08e80000, 0x100036cc08900000, -1),
-#            (0x0fffffff88b80000, 0x08027a2188c80000, 0),
-#            (0x100036cc08900000, 0x08027a3c08e80000, 1),
-#        ]
-#        for vka, vkb, exp in vkcmpTestData:
-#            res = npvk.compare_variantkey_chrom(vka, vkb)
-#            self.assertEqual(res, exp)
-#
-#    def test_compare_variantkey_chrom_pos(self):
-#        vkcmpTestData = [
-#            (0x08027a3c08e80000, 0x100036cc08900000, -1),
-#            (0x100036cc08900000, 0x08027a3c08e80000, 1),
-#            (0x08027a2588b00000, 0x0fffffff88b80000, -1),
-#            (0x0fffffff88b80000, 0x0fffffff8ae2503b, 0),
-#            (0x0fffffff88b80000, 0x08027a2588b00000, 1),
-#        ]
-#        for vka, vkb, exp in vkcmpTestData:
-#            res = npvk.compare_variantkey_chrom_pos(vka, vkb)
-#            self.assertEqual(res, exp)
-#
-#    def test_variantkey_hex(self):
-#        for _, _, _, _, _, vk, vs, _, _ in variantsTestData:
-#            h = npvk.variantkey_hex(vk)
-#            self.assertEqual(h, vs)
-#
-#    def test_parse_variantkey_hex(self):
-#        for _, _, _, _, _, vk, vs, _, _ in variantsTestData:
-#            h = npvk.parse_variantkey_hex(vs)
-#            self.assertEqual(h, vk)
-#
-#    def test_parse_variantkey_hex_input_type(self):
-#        self.assertEqual(npvk.parse_variantkey_hex(b"b815481990e60000"), npvk.parse_variantkey_hex("b815481990e60000"))
+#        ])
+#        vkmin, vkmax = npvk.variantkey_range(d[:, 0], d[:, 1], d[:, 2])
+#        np.testing.assert_array_equal(vkmin, d[:, 3].astype(np.uint64))
+#        np.testing.assert_array_equal(vkmax, d[:, 4].astype(np.uint64))
+
+    def test_compare_variantkey_chrom(self):
+        d = np.array([
+            (0x08027a3c08e80000, 0x100036cc08900000, -1),
+            (0x0fffffff88b80000, 0x08027a2188c80000, 0),
+            (0x100036cc08900000, 0x08027a3c08e80000, 1),
+        ])
+        res = npvk.compare_variantkey_chrom(d[:, 0], d[:, 1])
+        np.testing.assert_array_equal(res, d[:, 2].astype(np.int_))
+
+    def test_compare_variantkey_chrom_pos(self):
+        d = np.array([
+            (0x08027a3c08e80000, 0x100036cc08900000, -1),
+            (0x100036cc08900000, 0x08027a3c08e80000, 1),
+            (0x08027a2588b00000, 0x0fffffff88b80000, -1),
+            (0x0fffffff88b80000, 0x0fffffff8ae2503b, 0),
+            (0x0fffffff88b80000, 0x08027a2588b00000, 1),
+        ])
+        res = npvk.compare_variantkey_chrom_pos(d[:, 0], d[:, 1])
+        np.testing.assert_array_equal(res, d[:, 2].astype(np.int_))
+
+    def test_variantkey_hex(self):
+        h = npvk.variantkey_hex(vtd[:, 5])
+        np.testing.assert_array_equal(h, vtd[:, 6].astype(np.string_))
+
+    def test_parse_variantkey_hex(self):
+        h = npvk.parse_variantkey_hex(vtd[:, 6])
+        np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
+
+    def test_parse_variantkey_hex_input_type(self):
+        self.assertEqual(npvk.parse_variantkey_hex(b"b815481990e60000"), npvk.parse_variantkey_hex("b815481990e60000"))

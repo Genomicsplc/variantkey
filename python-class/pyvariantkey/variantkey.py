@@ -282,7 +282,7 @@ class VariantKey(object):
             - VariantKey min value
             - VariantKey max value
         """
-        f = np.vectorize(pvk.variantkey_range, otypes=[np.uint32, np.uint32])
+        f = np.vectorize(pvk.variantkey_range, otypes=[np.uint64, np.uint64])
         return f(
             np.array(chrom).astype(np.uint8),
             np.array(pos_min).astype(np.uint32),
