@@ -762,37 +762,36 @@ class TestFunctions(TestCase):
         h = npvk.encode_variantkey(variantsTestData[:, 1], variantsTestData[:, 3], variantsTestData[:, 4])
         np.testing.assert_array_equal(h, variantsTestData[:, 5].astype(np.uint64))
 
+    def test_extract_variantkey_chrom(self):
+        h = npvk.extract_variantkey_chrom(variantsTestData[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(h, variantsTestData[:, 1].astype(np.uint8))
+
+    def test_extract_variantkey_pos(self):
+        h = npvk.extract_variantkey_pos(variantsTestData[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(h, variantsTestData[:, 3].astype(np.uint32))
+
+    def test_extract_variantkey_refalt(self):
+        h = npvk.extract_variantkey_refalt(variantsTestData[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(h, variantsTestData[:, 4].astype(np.uint32))
+
+    def test_decode_variantkey(self):
+        c, p, r = npvk.decode_variantkey(variantsTestData[:, 5].astype(np.uint64))
+        np.testing.assert_array_equal(c, variantsTestData[:, 1].astype(np.uint8))
+        np.testing.assert_array_equal(p, variantsTestData[:, 3].astype(np.uint32))
+        np.testing.assert_array_equal(r, variantsTestData[:, 4].astype(np.uint32))
+
+    def test_variantkey(self):
+        h = npvk.variantkey(
+            variantsTestData[:, 0].astype(np.string_),
+            variantsTestData[:, 2].astype(np.uint32),
+            variantsTestData[:, 7].astype(np.string_),
+            variantsTestData[:, 8].astype(np.string_))
+        np.testing.assert_array_equal(h, variantsTestData[:, 5].astype(np.uint64))
+
 
 # 0:chrom, 1:vkchrom, 2:pos, 3:vkpos, 4:vkrefalt, 5:vk, 6:vs, 7:ref, 8:alt
 
 
-#    def test_extract_variantkey_chrom(self):
-#        for _, vkchrom, _, _, _, vk, _, _, _ in variantsTestData:
-#            h = npvk.extract_variantkey_chrom(vk)
-#            self.assertEqual(h, vkchrom)
-#
-#    def test_extract_variantkey_pos(self):
-#        for _, _, _, vkpos, _, vk, _, _, _ in variantsTestData:
-#            h = npvk.extract_variantkey_pos(vk)
-#            self.assertEqual(h, vkpos)
-#
-#    def test_extract_variantkey_refalt(self):
-#        for _, _, _, _, vkrefalt, vk, _, _, _ in variantsTestData:
-#            h = npvk.extract_variantkey_refalt(vk)
-#            self.assertEqual(h, vkrefalt)
-#
-#    def test_decode_variantkey(self):
-#        for _, vkchrom, _, vkpos, vkrefalt, vk, _, _, _ in variantsTestData:
-#            h = npvk.decode_variantkey(vk)
-#            self.assertEqual(h[0], vkchrom)
-#            self.assertEqual(h[1], vkpos)
-#            self.assertEqual(h[2], vkrefalt)
-#
-#    def test_variantkey(self):
-#        for chrom, _, pos, _, _, vk, _, ref, alt in variantsTestData:
-#            h = npvk.variantkey(chrom, pos, ref, alt)
-#            self.assertEqual(h, vk)
-#
 #    def test_variantkey_range(self):
 #        vkrangeTestData = [
 #            (1, 0, 268435455, 0x0800000000000000, 0x0fffffffffffffff),
