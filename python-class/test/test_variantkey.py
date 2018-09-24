@@ -647,60 +647,117 @@ class TestFunctions(TestCase):
         c = npvk.decode_chrom(code)
         np.testing.assert_array_equal(c, e)
 
-#    def test_encode_refalt_input_type(self):
-#        self.assertEqual(npvk.encode_refalt(b"AC", b"GT"), npvk.encode_refalt("AC", "GT"))
-#        self.assertEqual(npvk.encode_refalt(b"ACGTACGT", b"GTACGTAC"), npvk.encode_refalt("ACGTACGT", "GTACGTAC"))
-#
-#    def test_encode_refalt(self):
-#        input_data = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTACGTAC", b"ACGTacgtACGT"]
-#        expected_data = [
-#            0x08800000, 0x08800000, 0x08880000, 0x08a00000, 0x2b524725,
-#            0x13ace339, 0x09160000, 0x10d80000, 0x09830000, 0x188c0000,
-#            0x0a836000, 0x288d8000, 0x0b036200, 0x308d8800, 0x0b836300,
-#            0x388d8c00, 0x0c036360, 0x408d8d80, 0x0d036362, 0x508d8d88,
-#            0x3f0ad81b, 0x519ec623, 0x08a80000, 0x08a80000, 0x51fde969,
-#            0x5a3ad561, 0x09360000, 0x10da0000, 0x09a30000, 0x188c8000,
-#            0x0aa36000, 0x288d8800, 0x0b236200, 0x308d8a00, 0x0ba36300,
-#            0x388d8c80, 0x0c236360, 0x408d8da0, 0x0d236362, 0x508d8d8a,
-#            0x535d6025, 0x50fd215f, 0x756046af, 0x756046af, 0x39e18639,
-#            0x699d04d1, 0x2e4f3f0b, 0x3bc2ca01, 0x688d4593, 0x4b35f78d,
-#            0x3c371093, 0x6ad462d3, 0x56f03e05, 0x709febcd, 0x10529813,
-#            0x64690b25, 0x62a17681, 0x46f770b7, 0x2ed058cb, 0x77413a59,
-#            0x115d8000, 0x115d8000, 0x11d8c000, 0x190d6000, 0x12d8d800,
-#            0x290d9600, 0x1358d880, 0x310d8d80, 0x13d8d8c0, 0x390d8d60,
-#            0x1458d8d8, 0x410d8dd8, 0x25eff603, 0x69e4072b, 0x650dd623,
-#            0x5869066f, 0x198c3000, 0x198c3000, 0x1a8c3600, 0x298d8300,
-#            0x1b0c3620, 0x318d88c0, 0x1b8c3630, 0x398d8c30, 0x1c0c3636,
-#            0x418d8d8c, 0x0b6df65d, 0x7087bc41, 0x5461bb97, 0x121cc5b3,
-#            0x2a8d8360, 0x2a8d8360, 0x2b0d8362, 0x328d88d8, 0x2b21970d,
-#            0x6a552833, 0x1e5367a7, 0x1b5a1cd9, 0x22a4482b, 0x0869e1d1,
-#            0x554389ed, 0x2578e3b3, 0x490569b1, 0x490569b1, 0x3fda5cad,
-#            0x48a04ed9, 0x3eb532e3, 0x28a272e3, 0x67768ecf, 0x45f77839,
-#            0x1f7f9b69, 0x68244db3, 0x333e12a5, 0x333e12a5, 0x5f37dd43,
-#            0x5231912b, 0x512ee699, 0x57b03177, 0x4b88730f, 0x222ba3a9,
-#            0x10fa989b, 0x10fa989b, 0x76788595, 0x1694f703, 0x266d0563,
-#            0x366a23af, 0x56871e01, 0x56871e01, 0x6001429b, 0x7bc28a63,
-#            0x3a396f37, 0x3a396f37,
-#        ]
-#        k = 0
-#        for i in range(0, 11):
-#            for j in range(i, 11):
-#                ri = i
-#                rj = j
-#                for r in range(0, 2):
-#                    h = npvk.encode_refalt(input_data[ri], input_data[rj])
-#                    self.assertEqual(h, expected_data[k])
-#                    ref, alt, sizeref, sizealt = npvk.decode_refalt(h)
-#                    if sizealt > 0:
-#                        self.assertEqual(ref, input_data[ri].upper())
-#                        self.assertEqual(alt, input_data[rj].upper())
-#                        self.assertEqual(sizeref, len(input_data[ri]))
-#                        self.assertEqual(sizealt, len(input_data[rj]))
-#                    k += 1
-#                    tmp = ri
-#                    ri = rj
-#                    rj = tmp
-#
+    def test_encode_refalt_input_type(self):
+        self.assertEqual(npvk.encode_refalt(b"AC", b"GT"), npvk.encode_refalt("AC", "GT"))
+        self.assertEqual(npvk.encode_refalt(b"ACGTACGT", b"GTACGTAC"), npvk.encode_refalt("ACGTACGT", "GTACGTAC"))
+
+    def test_encode_refalt(self):
+        base = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTACGTAC", b"ACGTacgtACGT"]
+        e = np.array([
+            142606336,  142606336,  143130624,  144703488,  726812453,  330097465,
+            152436736,  282591232,  159580160,  411828224,  176381952,  680361984,
+            184771072,  814581760,  193159936,  948800512,  201548640, 1083018624,
+            218325858, 1351454088, 1057675291, 1369359907,  145227776,  145227776,
+            1375594857, 1513805153,  154533888,  282722304,  161677312,  411860992,
+            178479104,  680364032,  186868224,  814582272,  195257088,  948800640,
+            203645792, 1083018656,  220423010, 1351454090, 1398628389, 1358766431,
+            1969243823, 1969243823,  971081273, 1771898065,  776945419, 1002621441,
+            1754088851, 1261827981, 1010241683, 1792303827, 1458585093, 1889528781,
+            273848339, 1684605733, 1654748801, 1190621367,  785406155, 2000763481,
+            291340288,  291340288,  299417600,  420306944,  316200960,  688756224,
+            324589696,  822971776,  332978368,  957189472,  341367000, 1091407320,
+            636483075, 1776551723, 1695405603, 1483277935,  428617728,  428617728,
+            445396480,  697139968,  453785120,  831359168,  462173744,  965577776,
+            470562358, 1099795852,  191755869, 1887943745, 1415691159,  303875507,
+            713917280,  713917280,  722305890,  848136408,  723621645, 1783965747,
+            508782503,  458890457,  581191723,  141156817, 1430489581,  628679603,
+            1225091505, 1225091505, 1071275181, 1218465497, 1052062435,  681734883,
+            1735823055, 1173846073,  528456553, 1747209651,  859706021,  859706021,
+            1597496643, 1378980139, 1362028185, 1471164791, 1267233551,  573285289,
+            284858523,  284858523, 1987610005,  378861315,  644679011,  912925615,
+            1451695617, 1451695617, 1610695323, 2076346979,  976842551,  976842551,
+        ], dtype=np.uint32)
+        iref = []
+        ialt = []
+        for i in range(0, 11):
+            for j in range(i, 11):
+                ri = i
+                rj = j
+                for r in range(0, 2):
+                    iref.append(base[ri])
+                    ialt.append(base[rj])
+                    tmp = ri
+                    ri = rj
+                    rj = tmp
+        h = npvk.encode_refalt(iref, ialt)
+        np.testing.assert_array_equal(h, e)
+
+    def test_decode_refalt(self):
+        d = np.array([
+            142606336,  142606336,  143130624,  144703488,  726812453,  330097465,
+            152436736,  282591232,  159580160,  411828224,  176381952,  680361984,
+            184771072,  814581760,  193159936,  948800512,  201548640, 1083018624,
+            218325858, 1351454088, 1057675291, 1369359907,  145227776,  145227776,
+            1375594857, 1513805153,  154533888,  282722304,  161677312,  411860992,
+            178479104,  680364032,  186868224,  814582272,  195257088,  948800640,
+            203645792, 1083018656,  220423010, 1351454090, 1398628389, 1358766431,
+            1969243823, 1969243823,  971081273, 1771898065,  776945419, 1002621441,
+            1754088851, 1261827981, 1010241683, 1792303827, 1458585093, 1889528781,
+            273848339, 1684605733, 1654748801, 1190621367,  785406155, 2000763481,
+            291340288,  291340288,  299417600,  420306944,  316200960,  688756224,
+            324589696,  822971776,  332978368,  957189472,  341367000, 1091407320,
+            636483075, 1776551723, 1695405603, 1483277935,  428617728,  428617728,
+            445396480,  697139968,  453785120,  831359168,  462173744,  965577776,
+            470562358, 1099795852,  191755869, 1887943745, 1415691159,  303875507,
+            713917280,  713917280,  722305890,  848136408,  723621645, 1783965747,
+            508782503,  458890457,  581191723,  141156817, 1430489581,  628679603,
+            1225091505, 1225091505, 1071275181, 1218465497, 1052062435,  681734883,
+            1735823055, 1173846073,  528456553, 1747209651,  859706021,  859706021,
+            1597496643, 1378980139, 1362028185, 1471164791, 1267233551,  573285289,
+            284858523,  284858523, 1987610005,  378861315,  644679011,  912925615,
+            1451695617, 1451695617, 1610695323, 2076346979,  976842551,  976842551,
+        ], dtype=np.uint32)
+        eref = np.array([b'A', b'A', b'A', b'C', b'', b'', b'A', b'GT', b'A', b'ACG', b'A', b'ACGTA', b'A',
+                         b'ACGTAC', b'A', b'ACGTACG', b'A', b'ACGTACGT', b'A', b'ACGTACGTAC', b'', b'',
+                         b'C', b'C', b'', b'', b'C', b'GT', b'C', b'ACG', b'C', b'ACGTA', b'C', b'ACGTAC',
+                         b'C', b'ACGTACG', b'C', b'ACGTACGT', b'C', b'ACGTACGTAC', b'', b'', b'', b'', b'',
+                         b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'GT', b'GT',
+                         b'GT', b'ACG', b'GT', b'ACGTA', b'GT', b'ACGTAC', b'GT', b'ACGTACG', b'GT',
+                         b'ACGTACGT', b'', b'', b'', b'', b'ACG', b'ACG', b'ACG', b'ACGTA', b'ACG',
+                         b'ACGTAC', b'ACG', b'ACGTACG', b'ACG', b'ACGTACGT', b'', b'', b'', b'', b'ACGTA',
+                         b'ACGTA', b'ACGTA', b'ACGTAC', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'',
+                         b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'',
+                         b'', b'', b'', b'', b'', b'', b'', b'', b''], dtype=np.string_)
+        ealt = np.array([b'A', b'A', b'C', b'A', b'', b'', b'GT', b'A', b'ACG', b'A', b'ACGTA', b'A',
+                         b'ACGTAC', b'A', b'ACGTACG', b'A', b'ACGTACGT', b'A', b'ACGTACGTAC', b'A', b'',
+                         b'', b'C', b'C', b'', b'', b'GT', b'C', b'ACG', b'C', b'ACGTA', b'C', b'ACGTAC', b'C',
+                         b'ACGTACG', b'C', b'ACGTACGT', b'C', b'ACGTACGTAC', b'C', b'', b'', b'', b'', b'',
+                         b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'GT', b'GT',
+                         b'ACG', b'GT', b'ACGTA', b'GT', b'ACGTAC', b'GT', b'ACGTACG', b'GT', b'ACGTACGT',
+                         b'GT', b'', b'', b'', b'', b'ACG', b'ACG', b'ACGTA', b'ACG', b'ACGTAC', b'ACG',
+                         b'ACGTACG', b'ACG', b'ACGTACGT', b'ACG', b'', b'', b'', b'', b'ACGTA', b'ACGTA',
+                         b'ACGTAC', b'ACGTA', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'',
+                         b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'', b'',
+                         b'', b'', b'', b'', b'', b'', b''], dtype=np.string_)
+        esizeref = np.array([1, 1, 1, 1, 0, 0, 1, 2, 1, 3, 1, 5, 1, 6, 1, 7, 1, 8, 1, 10, 0, 0, 1, 1,
+                             0, 0, 1, 2, 1, 3, 1, 5, 1, 6, 1, 7, 1, 8, 1, 10, 0, 0, 0, 0, 0, 0, 0, 0,
+                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 3, 2, 5, 2, 6, 2, 7, 2, 8,
+                             0, 0, 0, 0, 3, 3, 3, 5, 3, 6, 3, 7, 3, 8, 0, 0, 0, 0, 5, 5, 5, 6, 0, 0,
+                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
+        esizealt = np.array([1, 1, 1, 1, 0, 0, 2, 1, 3, 1, 5, 1, 6, 1, 7, 1, 8, 1, 10, 1, 0, 0, 1, 1,
+                             0, 0, 2, 1, 3, 1, 5, 1, 6, 1, 7, 1, 8, 1, 10, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 3, 2, 5, 2, 6, 2, 7, 2, 8, 2,
+                             0, 0, 0, 0, 3, 3, 5, 3, 6, 3, 7, 3, 8, 3, 0, 0, 0, 0, 5, 5, 6, 5, 0, 0,
+                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
+        ref, alt, sizeref, sizealt = npvk.decode_refalt(d)
+        np.testing.assert_array_equal(ref, eref)
+        np.testing.assert_array_equal(alt, ealt)
+        np.testing.assert_array_equal(sizeref, esizeref)
+        np.testing.assert_array_equal(sizealt, esizealt)
+
+
 #    def test_encode_variantkey(self):
 #        for _, vkchrom, _, vkpos, vkrefalt, vk, _, _, _ in variantsTestData:
 #            h = npvk.encode_variantkey(vkchrom, vkpos, vkrefalt)
