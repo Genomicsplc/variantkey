@@ -544,7 +544,7 @@ static PyObject* py_get_variantkey_ref_length(PyObject *Py_UNUSED(ignored), PyOb
         return NULL;
     const nrvk_cols_t *cmc = py_get_nrvk_mc(mc);
     size_t len = get_variantkey_ref_length(*cmc, vk);
-    return Py_BuildValue("K", len);
+    return Py_BuildValue("B", (uint8_t)len);
 }
 
 static PyObject* py_get_variantkey_endpos(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
@@ -911,7 +911,7 @@ static PyObject* py_encode_string_id(PyObject *Py_UNUSED(ignored), PyObject *arg
     const char *str;
     Py_ssize_t size;
     uint32_t start;
-    static char *kwlist[] = {"str", "start", NULL};
+    static char *kwlist[] = {"strid", "start", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#I", kwlist, &str, &size, &start))
         return NULL;
     uint64_t h = encode_string_id(str, (size_t)size, (size_t)start);
@@ -923,7 +923,7 @@ static PyObject* py_encode_string_num_id(PyObject *Py_UNUSED(ignored), PyObject 
     const char *str;
     Py_ssize_t size;
     char sep;
-    static char *kwlist[] = {"str", "sep", NULL};
+    static char *kwlist[] = {"strid", "sep", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "s#c", kwlist, &str, &size, &sep))
         return NULL;
     uint64_t h = encode_string_num_id(str, (size_t)size, sep);
@@ -941,7 +941,7 @@ static PyObject* py_decode_string_id(PyObject *Py_UNUSED(ignored), PyObject *arg
     PyObject *result;
     result = PyTuple_New(2);
     PyTuple_SetItem(result, 0, Py_BuildValue("y", str));
-    PyTuple_SetItem(result, 1, Py_BuildValue("K", len));
+    PyTuple_SetItem(result, 1, Py_BuildValue("B", (uint8_t)len));
     return result;
 }
 
