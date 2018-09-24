@@ -168,7 +168,7 @@ class VariantKey(object):
             VariantKey 64 bit code.
         """
         f = np.vectorize(pvk.encode_variantkey, otypes=[np.uint64])
-        return f(np.array(chrom).astype(np.uint8), np.array(pos).astype(np.uint32), np.array(r).astype(np.uint32))
+        return f(np.array(chrom).astype(np.uint8), np.array(pos).astype(np.uint32), np.array(refalt).astype(np.uint32))
 
     def extract_variantkey_chrom(self, vk):
         """Extract the CHROM code from VariantKey.

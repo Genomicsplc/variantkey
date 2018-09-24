@@ -12,8 +12,9 @@ import numpy as np
 import os
 from unittest import TestCase
 
-# chrom, vkchrom, pos, vkpos, vkrefalt, vk, vs, ref, alt
-variantsTestData = [
+
+# 0:chrom, 1:vkchrom, 2:pos, 3:vkpos, 4:vkrefalt, 5:vk, 6:vs, 7:ref, 8:alt
+variantsTestData = np.array([
     (b"chr1", 1, 268435455, 0x0fffffff, 0x08b80000, 0x0fffffff88b80000, b"0fffffff88b80000", b"C", b"T"),
     (b"CHR01", 1, 324675, 0x0004f443, 0x08c80000, 0x08027a2188c80000, b"08027a2188c80000", b"G", b"C"),
     (b"1", 1, 0, 0x00000000, 0x3c6f5d8f, 0x080000003c6f5d8f, b"080000003c6f5d8f", b"ACCTCACCAGGCCCAGCTCATGCTTCTTTGCAG", b"A"),
@@ -582,7 +583,7 @@ variantsTestData = [
     (b"mt", 25, 16528, 0x00004090, 0x08e80000, 0xc800204808e80000, b"c800204808e80000", b"t", b"c"),
     (b"MT", 25, 19870, 0x00004d9e, 0x0d636362, 0xc80026cf0d636362, b"c80026cf0d636362", b"T", b"ACGTACGTAC"),
     (b"MT", 25, 19871, 0x00004d9f, 0x508d8d8e, 0xc80026cfd08d8d8e, b"c80026cfd08d8d8e", b"ACGTACGTAC", b"T"),
-]
+])
 
 
 class TestFunctions(TestCase):
@@ -757,12 +758,14 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(sizeref, esizeref)
         np.testing.assert_array_equal(sizealt, esizealt)
 
+    def test_encode_variantkey(self):
+        h = npvk.encode_variantkey(variantsTestData[:, 1], variantsTestData[:, 3], variantsTestData[:, 4])
+        np.testing.assert_array_equal(h, variantsTestData[:, 5].astype(np.uint64))
 
-#    def test_encode_variantkey(self):
-#        for _, vkchrom, _, vkpos, vkrefalt, vk, _, _, _ in variantsTestData:
-#            h = npvk.encode_variantkey(vkchrom, vkpos, vkrefalt)
-#            self.assertEqual(h, vk)
-#
+
+# 0:chrom, 1:vkchrom, 2:pos, 3:vkpos, 4:vkrefalt, 5:vk, 6:vs, 7:ref, 8:alt
+
+
 #    def test_extract_variantkey_chrom(self):
 #        for _, vkchrom, _, _, _, vk, _, _, _ in variantsTestData:
 #            h = npvk.extract_variantkey_chrom(vk)
