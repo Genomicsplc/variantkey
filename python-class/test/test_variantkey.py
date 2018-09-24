@@ -641,12 +641,12 @@ class TestFunctions(TestCase):
     def test_encode_chrom_input_type(self):
         self.assertEqual(npvk.encode_chrom(b"chr01"), npvk.encode_chrom("chr01"))
 
-#    def test_decode_chrom(self):
-#        chromTestDecodeData = [b"NA", b"1", b"2", b"3", b"4", b"5", b"6", b"7", b"8", b"9", b"10", b"11", b"12", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"]
-#        for i in range(0, 26):
-#            chrom = npvk.decode_chrom(i)
-#            self.assertEqual(chrom, chromTestDecodeData[i])
-#
+    def test_decode_chrom(self):
+        code = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
+        e = np.array([b"NA", b"1", b"2", b"3", b"4", b"5", b"6", b"7", b"8", b"9", b"10", b"11", b"12", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"], dtype='|S2')
+        c = npvk.decode_chrom(code)
+        np.testing.assert_array_equal(c, e)
+
 #    def test_encode_refalt_input_type(self):
 #        self.assertEqual(npvk.encode_refalt(b"AC", b"GT"), npvk.encode_refalt("AC", "GT"))
 #        self.assertEqual(npvk.encode_refalt(b"ACGTACGT", b"GTACGTAC"), npvk.encode_refalt("ACGTACGT", "GTACGTAC"))
