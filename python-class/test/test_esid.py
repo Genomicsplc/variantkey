@@ -121,10 +121,9 @@ esidNumTestData = np.array([
 class TestFunctions(TestCase):
 
     @classmethod
-    def setUpClass(cls):
-        global npvk
+    def setUpClass(self):
         try:
-            npvk = pyvk.VariantKey(
+            self.npvk = pyvk.VariantKey(
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/genoref.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/nrvk.10.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/rsvk.10.bin"),
@@ -133,23 +132,23 @@ class TestFunctions(TestCase):
             assert False, "Unable to initialize the class: {0}".format(err)
 
     def test_encode_string_id(self):
-        h = npvk.encode_string_id(esidTestData[:, 6], esidTestData[:, 1])
+        h = self.npvk.encode_string_id(esidTestData[:, 6], esidTestData[:, 1])
         np.testing.assert_array_equal(h, esidTestData[:, 3].astype(np.uint64))
 
     def test_encode_string_num_id(self):
-        h = npvk.encode_string_num_id(esidNumTestData[:, 4], b':')
+        h = self.npvk.encode_string_num_id(esidNumTestData[:, 4], b':')
         np.testing.assert_array_equal(h, esidNumTestData[:, 2].astype(np.uint64))
 
     def test_decode_string_id(self):
-        esid, elen = npvk.decode_string_id(esidTestData[:, 3])
+        esid, elen = self.npvk.decode_string_id(esidTestData[:, 3])
         np.testing.assert_array_equal(esid, esidTestData[:, 5].astype(np.string_))
         np.testing.assert_array_equal(elen, esidTestData[:, 2].astype(np.uint8))
 
     def test_decode_string_num_id(self):
-        esid, elen = npvk.decode_string_id(esidNumTestData[:, 2])
+        esid, elen = self.npvk.decode_string_id(esidNumTestData[:, 2])
         np.testing.assert_array_equal(esid, esidNumTestData[:, 3].astype(np.string_))
         np.testing.assert_array_equal(elen, esidNumTestData[:, 1].astype(np.uint8))
 
     def test_hash_string_id(self):
-        h = npvk.hash_string_id(esidTestData[:, 6])
+        h = self.npvk.hash_string_id(esidTestData[:, 6])
         np.testing.assert_array_equal(h, esidTestData[:, 4].astype(np.uint64))

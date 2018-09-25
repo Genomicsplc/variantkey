@@ -1,6 +1,6 @@
 """Tests for variantkey module."""
 
-# test_npvk.py
+# test_self.npvk.py
 # @category   Libraries
 # @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
 # @copyright  2017-2018 GENOMICS plc
@@ -589,10 +589,9 @@ vtd = np.array([
 class TestFunctions(TestCase):
 
     @classmethod
-    def setUpClass(cls):
-        global npvk
+    def setUpClass(self):
         try:
-            npvk = pyvk.VariantKey(
+            self.npvk = pyvk.VariantKey(
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/genoref.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/nrvk.10.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/rsvk.10.bin"),
@@ -631,23 +630,23 @@ class TestFunctions(TestCase):
         ])
         for i in range(0, 26):
             e = np.repeat(i, 10)
-            c = npvk.encode_chrom(data[i])
+            c = self.npvk.encode_chrom(data[i])
             np.testing.assert_array_equal(c, e)
-        chrom = npvk.encode_chrom(b"WRONG")
+        chrom = self.npvk.encode_chrom(b"WRONG")
         self.assertEqual(chrom, 0)
 
     def test_encode_chrom_input_type(self):
-        self.assertEqual(npvk.encode_chrom(b"chr01"), npvk.encode_chrom("chr01"))
+        self.assertEqual(self.npvk.encode_chrom(b"chr01"), self.npvk.encode_chrom("chr01"))
 
     def test_decode_chrom(self):
         code = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25]
         e = np.array([b"NA", b"1", b"2", b"3", b"4", b"5", b"6", b"7", b"8", b"9", b"10", b"11", b"12", b"13", b"14", b"15", b"16", b"17", b"18", b"19", b"20", b"21", b"22", b"X", b"Y", b"MT"], dtype='|S2')
-        c = npvk.decode_chrom(code)
+        c = self.npvk.decode_chrom(code)
         np.testing.assert_array_equal(c, e)
 
     def test_encode_refalt_input_type(self):
-        self.assertEqual(npvk.encode_refalt(b"AC", b"GT"), npvk.encode_refalt("AC", "GT"))
-        self.assertEqual(npvk.encode_refalt(b"ACGTACGT", b"GTACGTAC"), npvk.encode_refalt("ACGTACGT", "GTACGTAC"))
+        self.assertEqual(self.npvk.encode_refalt(b"AC", b"GT"), self.npvk.encode_refalt("AC", "GT"))
+        self.assertEqual(self.npvk.encode_refalt(b"ACGTACGT", b"GTACGTAC"), self.npvk.encode_refalt("ACGTACGT", "GTACGTAC"))
 
     def test_encode_refalt(self):
         base = [b"A", b"C", b"N", b"GT", b"ACG", b"ACGTa", b"ACGTac", b"ACGTacg", b"ACGTacgt", b"ACGTACGTAC", b"ACGTacgtACGT"]
@@ -687,7 +686,7 @@ class TestFunctions(TestCase):
                     tmp = ri
                     ri = rj
                     rj = tmp
-        h = npvk.encode_refalt(iref, ialt)
+        h = self.npvk.encode_refalt(iref, ialt)
         np.testing.assert_array_equal(h, e)
 
     def test_decode_refalt(self):
@@ -749,36 +748,36 @@ class TestFunctions(TestCase):
                              0, 0, 0, 0, 3, 3, 5, 3, 6, 3, 7, 3, 8, 3, 0, 0, 0, 0, 5, 5, 6, 5, 0, 0,
                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                              0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], dtype=np.uint8)
-        ref, alt, sizeref, sizealt = npvk.decode_refalt(d)
+        ref, alt, sizeref, sizealt = self.npvk.decode_refalt(d)
         np.testing.assert_array_equal(ref, eref)
         np.testing.assert_array_equal(alt, ealt)
         np.testing.assert_array_equal(sizeref, esizeref)
         np.testing.assert_array_equal(sizealt, esizealt)
 
     def test_encode_variantkey(self):
-        h = npvk.encode_variantkey(vtd[:, 1], vtd[:, 3], vtd[:, 4])
+        h = self.npvk.encode_variantkey(vtd[:, 1], vtd[:, 3], vtd[:, 4])
         np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
 
     def test_extract_variantkey_chrom(self):
-        h = npvk.extract_variantkey_chrom(vtd[:, 5].astype(np.uint64))
+        h = self.npvk.extract_variantkey_chrom(vtd[:, 5].astype(np.uint64))
         np.testing.assert_array_equal(h, vtd[:, 1].astype(np.uint8))
 
     def test_extract_variantkey_pos(self):
-        h = npvk.extract_variantkey_pos(vtd[:, 5].astype(np.uint64))
+        h = self.npvk.extract_variantkey_pos(vtd[:, 5].astype(np.uint64))
         np.testing.assert_array_equal(h, vtd[:, 3].astype(np.uint32))
 
     def test_extract_variantkey_refalt(self):
-        h = npvk.extract_variantkey_refalt(vtd[:, 5].astype(np.uint64))
+        h = self.npvk.extract_variantkey_refalt(vtd[:, 5].astype(np.uint64))
         np.testing.assert_array_equal(h, vtd[:, 4].astype(np.uint32))
 
     def test_decode_variantkey(self):
-        c, p, r = npvk.decode_variantkey(vtd[:, 5].astype(np.uint64))
+        c, p, r = self.npvk.decode_variantkey(vtd[:, 5].astype(np.uint64))
         np.testing.assert_array_equal(c, vtd[:, 1].astype(np.uint8))
         np.testing.assert_array_equal(p, vtd[:, 3].astype(np.uint32))
         np.testing.assert_array_equal(r, vtd[:, 4].astype(np.uint32))
 
     def test_variantkey(self):
-        h = npvk.variantkey(vtd[:, 0], vtd[:, 2], vtd[:, 7], vtd[:, 8])
+        h = self.npvk.variantkey(vtd[:, 0], vtd[:, 2], vtd[:, 7], vtd[:, 8])
         np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
 
     def test_variantkey_range(self):
@@ -810,7 +809,7 @@ class TestFunctions(TestCase):
             (24, 21003549, 21243717, 0xc0a03e8e80000000, 0xc0a213a2ffffffff),
             (25, 22003718, 268435455, 0xc8a7e00300000000, 0xcfffffffffffffff),
         ], dtype=np.uint64)
-        vkmin, vkmax = npvk.variantkey_range(d[:, 0], d[:, 1], d[:, 2])
+        vkmin, vkmax = self.npvk.variantkey_range(d[:, 0], d[:, 1], d[:, 2])
         np.testing.assert_array_equal(vkmin, d[:, 3].astype(np.uint64))
         np.testing.assert_array_equal(vkmax, d[:, 4].astype(np.uint64))
 
@@ -820,7 +819,7 @@ class TestFunctions(TestCase):
             (0x0fffffff88b80000, 0x08027a2188c80000, 0),
             (0x100036cc08900000, 0x08027a3c08e80000, 1),
         ])
-        res = npvk.compare_variantkey_chrom(d[:, 0], d[:, 1])
+        res = self.npvk.compare_variantkey_chrom(d[:, 0], d[:, 1])
         np.testing.assert_array_equal(res, d[:, 2].astype(np.int_))
 
     def test_compare_variantkey_chrom_pos(self):
@@ -831,16 +830,16 @@ class TestFunctions(TestCase):
             (0x0fffffff88b80000, 0x0fffffff8ae2503b, 0),
             (0x0fffffff88b80000, 0x08027a2588b00000, 1),
         ])
-        res = npvk.compare_variantkey_chrom_pos(d[:, 0], d[:, 1])
+        res = self.npvk.compare_variantkey_chrom_pos(d[:, 0], d[:, 1])
         np.testing.assert_array_equal(res, d[:, 2].astype(np.int_))
 
     def test_variantkey_hex(self):
-        h = npvk.variantkey_hex(vtd[:, 5])
+        h = self.npvk.variantkey_hex(vtd[:, 5])
         np.testing.assert_array_equal(h, vtd[:, 6].astype(np.string_))
 
     def test_parse_variantkey_hex(self):
-        h = npvk.parse_variantkey_hex(vtd[:, 6])
+        h = self.npvk.parse_variantkey_hex(vtd[:, 6])
         np.testing.assert_array_equal(h, vtd[:, 5].astype(np.uint64))
 
     def test_parse_variantkey_hex_input_type(self):
-        self.assertEqual(npvk.parse_variantkey_hex(b"b815481990e60000"), npvk.parse_variantkey_hex("b815481990e60000"))
+        self.assertEqual(self.npvk.parse_variantkey_hex(b"b815481990e60000"), self.npvk.parse_variantkey_hex("b815481990e60000"))

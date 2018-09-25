@@ -65,6 +65,8 @@ class VariantKey(object):
 
     def __del__(self):
         """Unmap memory-mapped files"""
+        if pvk is None:
+            return
         if self.genoref_mf is not None:
             pvk.munmap_binfile(self.genoref_mf)
         if self.nrvk_mf is not None:
