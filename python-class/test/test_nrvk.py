@@ -75,7 +75,7 @@ class TestFunctions(TestCase):
         endpos = npvk.get_variantkey_endpos(testData[:, 0])
         np.testing.assert_array_equal(endpos, testData[:, 2].astype(np.uint32) + testData[:, 4].astype(np.uint32))
 
-    def test_get_variantkey_chrom_endpos(self):
+    def test_get_variantkey_chrom_startpos(self):
         res = npvk.get_variantkey_chrom_startpos(testData[:, 0])
         np.testing.assert_array_equal(res, testData[:, 6].astype(np.uint64))
 

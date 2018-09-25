@@ -39,6 +39,18 @@ class VariantKey(object):
             This file can be generated using the resources/tools/vkrs.sh script.
         """
 
+        self.genoref_mf = None
+        self.genoref_size = 0
+        self.nrvk_mf = None
+        self.nrvk_mc = None
+        self.nrvk_nrows = 0
+        self.rsvk_mf = None
+        self.rsvk_mc = None
+        self.rsvk_nrows = 0
+        self.vkrs_mf = None
+        self.vkrs_mc = None
+        self.vkrs_nrows = 0
+
         if genoref_file is not None:
             # Load the reference genome binary file.
             self.genoref_mf, self.genoref_size = pvk.mmap_genoref_file(genoref_file)
@@ -578,7 +590,7 @@ class VariantKey(object):
             CHROM + START POS encoding.
         """
         f = np.vectorize(pvk.get_variantkey_chrom_startpos, otypes=[np.uint64])
-        return f(self.nrvk_mc, np.array(vk).astype(np.uint64))
+        return f(np.array(vk).astype(np.uint64))
 
     def get_variantkey_chrom_endpos(self, vk):
         """Get the CHROM + END POS encoding from VariantKey.
