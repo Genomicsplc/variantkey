@@ -735,7 +735,7 @@ PyMODINIT_FUNC initvariantkey(void);
 
 #define PYFLIPALLELE_DOCSTRING "Flip the allele nucleotides (replaces each letter with its complement).\n"\
 " The resulting string is always in uppercase."\
-" Support extended nucleotide letters."\
+" Supports extended nucleotide letters."\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -884,7 +884,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "Returns\n"\
 "-------\n"\
 "tuple:\n"\
-"    - encodeed chromosome\n"\
+"    - encoded chromosome\n"\
 "    - start position\n"\
 "    - end position\n"\
 "    - encoded strand"
@@ -910,8 +910,6 @@ PyMODINIT_FUNC initvariantkey(void);
 "----------\n"\
 "chrom : str or bytes\n"\
 "    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.\n"\
-"sizechrom : int\n"\
-"    Length of the chrom string, excluding the terminating null byte.\n"\
 "startpos : int\n"\
 "    Start position (zero based).\n"\
 "endpos : int\n"\
@@ -1064,7 +1062,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "This function can be used to convert generic string IDs to numeric IDs.\n"\
 "Parameters\n"\
 "----------\n"\
-"str : str or bytes\n"\
+"strid : str or bytes\n"\
 "    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.\n"\
 "start : int\n"\
 "    First character to encode, starting from 0. To encode the last 10 characters, set this value at (size - 10).\n"\
@@ -1080,7 +1078,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "If the string is 10 character or less, then the encode_string_id() is used.\n"\
 "Parameters\n"\
 "----------\n"\
-"str : str or bytes\n"\
+"strid : str or bytes\n"\
 "    The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.\n"\
 "sep : str or byte\n"\
 "    Separator character between string and number.\n"\
@@ -1108,7 +1106,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "This function can be used to convert long string IDs to numeric IDs.\n"\
 "Parameters\n"\
 "----------\n"\
-"str : str or bytes\n"\
+"strid : str or bytes\n"\
 "    The string to encode.\n"\
 "\n"\
 "Returns\n"\

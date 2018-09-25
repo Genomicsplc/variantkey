@@ -1,5 +1,5 @@
 package:
-  name: variantkey
+  name: pyvariantkey
   version: 4.3.0
 
 source:
@@ -12,10 +12,15 @@ requirements:
   host:
     - python
     - setuptools
+    - numpy >=1.15.0
   build:
     - {{ compiler('c') }}
+    - variantkey >=4.3.0
+    - numpy >=1.15.0
   run:
     - python
+    - variantkey >=4.3.0
+    - numpy >=1.15.0
 
 test:
   requires:
@@ -26,11 +31,13 @@ test:
     - pytest-cov
     - pytest-benchmark
     - pycodestyle
+    - variantkey >=4.3.0
+    - numpy >=1.15.0
   imports:
-    - variantkey
+    - pyvariantkey
 
 about:
   home: https://github.com/genomicsplc/variantkey
   license: MIT
   license_file: LICENSE
-  summary: Genetic VariantKey Library
+  summary: Python class wrapper for Genetic VariantKey Library

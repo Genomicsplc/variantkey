@@ -24,15 +24,18 @@ class RunTests(Command):
         errno = call([
             'py.test',
             '--verbose',
+            '--cov=pyvariantkey',
+            '--cov-report=term-missing',
+            '--cov-config=.coveragerc',
         ])
         raise SystemExit(errno)
 
 
 setup(
-    name='variantkey',
+    name='pyvariantkey',
     version='4.3.0',
     keywords=('variantkey variant key genetic genomics'),
-    description="VariantKey Bindings for Python",
+    description="VariantKey Python wrapper class",
     long_description=read('../README.md'),
     author='Nicola Asuni',
     author_email='nicola.asuni@genomicsplc.com',
@@ -40,36 +43,15 @@ setup(
     license='MIT',
     platforms='Linux',
     packages=find_packages(exclude=['doc', 'test*']),
-    ext_modules=[
-        Extension('variantkey', [
-            'variantkey/pyvariantkey.c',
-        ],
-        include_dirs=[
-            '../c/src',
-            'variantkey',
-        ],
-        extra_compile_args=[
-            "-O3",
-            "-pedantic",
-            "-std=c99",
-            "-Wall",
-            "-Wextra",
-            "-Wno-strict-prototypes",
-            "-Wunused-value",
-            "-Wcast-align",
-            "-Wundef",
-            "-Wformat-security",
-            "-Wshadow",
-            "-Wno-format-overflow",
-            "-I../c/src",
-        ])
-    ],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'License :: OSI Approved :: MIT License',
         'Intended Audience :: Developers',
-        'Programming Language :: C',
         'Programming Language :: Python',
+    ],
+    install_requires=[
+        'numpy>=1.15.0',
+        'variantkey>=4.3.0',
     ],
     extras_require={
         'test': [

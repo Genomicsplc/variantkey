@@ -85,7 +85,7 @@ class TestFunctions(TestCase):
             endpos = bs.get_variantkey_endpos(mc, vkey)
             self.assertEqual(endpos, (pos + sizeref))
 
-    def test_get_variantkey_chrom_endpos(self):
+    def test_get_variantkey_chrom_startpos(self):
         for vkey, chrom, pos, ralen, sizeref, sizealt, csp, cep, ref, alt in testData:
             res = bs.get_variantkey_chrom_startpos(vkey)
             self.assertEqual(res, csp)

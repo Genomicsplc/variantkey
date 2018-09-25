@@ -30,6 +30,7 @@
 * [C Library](#clib)
 * [GO Library](#golib)
 * [Python Module](#pythonlib)
+* [Python Class](#pythonclass)
 * [R Module](#rlib)
 * [Javascript library](#jslib)
 
@@ -524,6 +525,13 @@ Use the "`make python`" command to test the Python wrapper and generate reports.
 
 See [Python Usage Examples](python/test/example.py).
 
+<a name="pythonclass"></a>
+## Python Class
+
+The python class module is a wrapper for the low-level Python library and it is located in the `python-class` directory.
+Use the "`make python`" command to test the Python class and generate reports.
+
+See [Python Usage Examples](python-class/test/example.py).
 
 <a name="rlib"></a>
 ## R Module

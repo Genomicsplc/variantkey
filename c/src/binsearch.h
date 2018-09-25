@@ -997,6 +997,9 @@ static inline void mmap_binfile(const char *file, mmfile_t *mf)
     mf->src = (uint8_t*)MAP_FAILED; // NOLINT
     mf->fd = -1;
     mf->size = 0;
+    mf->doffset = 0;
+    mf->dlength = 0;
+    mf->nrows = 0;
     struct stat statbuf;
     if (((mf->fd = open(file, O_RDONLY)) < 0) || (fstat(mf->fd, &statbuf) < 0))
     {
@@ -1004,7 +1007,6 @@ static inline void mmap_binfile(const char *file, mmfile_t *mf)
     }
     mf->size = (uint64_t)statbuf.st_size;
     mf->src = (uint8_t*)mmap(0, mf->size, PROT_READ, MAP_PRIVATE, mf->fd, 0);
-    mf->doffset = 0;
     mf->dlength = mf->size;
     if (mf->size < 28)
     {
