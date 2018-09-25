@@ -65,7 +65,7 @@ class VariantKey(object):
 
     def __del__(self):
         """Cleanup resources"""
-        if pvk is not None:
+        if pvk is not None:  # pragma: no cover
             self.close()
 
     def close(self):
