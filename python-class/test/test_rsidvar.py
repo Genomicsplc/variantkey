@@ -60,13 +60,6 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(vk, 0)
         np.testing.assert_array_equal(pos, 4)
 
-#    def test_find_all_rv_variantkey_by_rsid(self):
-#        vks = npvk.find_all_rv_variantkey_by_rsid(0x00000003)
-#        np.testing.assert_array_equal(len(vks), 3)
-#        np.testing.assert_array_equal(vks[0], 0x80010274003A0000)
-#        np.testing.assert_array_equal(vks[1], 0x8001028D00138000)
-#        np.testing.assert_array_equal(vks[2], 0x80010299007A0000)
-
     def test_find_all_rv_variantkey_by_rsid_notfound(self):
         vks = npvk.find_all_rv_variantkey_by_rsid(0xfffffff0)
         np.testing.assert_array_equal(len(vks), 0)
@@ -92,3 +85,17 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(xrsid, 0)
         np.testing.assert_array_equal(xfirst, 10)
         np.testing.assert_array_equal(xlast, 10)
+
+    def test_find_all_rv_variantkey_by_rsid(self):
+        try:
+            mnpvk = pyvk.VariantKey(
+                os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/genoref.bin"),
+                os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/nrvk.10.bin"),
+                os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/rsvk.m.10.bin"),
+                os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/vkrs.10.bin"))
+        except Exception as err:
+            assert False, "Unable to initialize the class: {0}".format(err)
+        vks = mnpvk.find_all_rv_variantkey_by_rsid([0x00000003, 0x00000004])
+        e = np.array([9223656209074749440, 9223656316446408704, 9223656367992733696, 11529544220955770880,
+                      11529544223106826240, 11529544237647750802, 11529544246004783107], dtype=np.uint64)
+        np.testing.assert_array_equal(vks, e)

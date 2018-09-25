@@ -425,11 +425,11 @@ class VariantKey(object):
         tuple : int
             - VariantKey(s).
         """
-        f = np.vectorize(pvk.find_all_rv_variantkey_by_rsid, excluded=['mc', 'first', 'last'], otypes=[np.uint64])
-        return f(self.rsvk_mc,
-                 0,
-                 self.rsvk_nrows,
-                 np.array(rsid).astype(np.uint32))
+        vk = []
+        rsid_arr = np.array(rsid).astype(np.uint32)
+        for x in np.nditer(rsid_arr):
+            vk = vk + pvk.find_all_rv_variantkey_by_rsid(self.rsvk_mc, 0, self.rsvk_nrows, x)
+        return np.array(vk).astype(np.uint64)
 
     def find_vr_rsid_by_variantkey(self, vk):
         """Search for the specified VariantKey and returns the first occurrence of rsID in the VR file.
