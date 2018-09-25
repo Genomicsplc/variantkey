@@ -6,5 +6,5 @@ rm -rf "${CONDA_ROOT}/conda-bld/coverage/*"
 cd ${PROJECT_ROOT} \
 && pycodestyle --max-line-length=120 pyvariantkey \
 && ${PYTHON} setup.py test \
-&& cp .coverage "${CONDA_ROOT}/conda-bld/coverage"
-cd "${CONDA_ROOT}/conda-bld/coverage" && coverage html
+&& cp .coverage.* "${CONDA_ROOT}/conda-bld/coverage"
+cd "${CONDA_ROOT}/conda-bld/coverage" && coverage combine && coverage html

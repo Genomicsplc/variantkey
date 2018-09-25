@@ -7,18 +7,6 @@ import numpy as np
 class VariantKey(object):
     """VariantKey numpy-vectorized functions."""
 
-    genoref_mf = None
-    genoref_size = 0
-    nrvk_mf = None
-    nrvk_mc = None
-    nrvk_nrows = 0
-    rsvk_mf = None
-    rsvk_mc = None
-    rsvk_nrows = 0
-    vkrs_mf = None
-    vkrs_mc = None
-    vkrs_nrows = 0
-
     def __init__(self, genoref_file=None, nrvk_file=None, rsvk_file=None, vkrs_file=None):
         """Instantiate a new VariantKey object.
         Load the support files if specified.
