@@ -366,15 +366,11 @@ class VariantKey(object):
     # RSIDVAR
     # -------
 
-    def find_rv_variantkey_by_rsid(self, first, last, rsid):
+    def find_rv_variantkey_by_rsid(self, rsid):
         """Search for the specified rsID and returns the first occurrence of VariantKey in the RV file.
 
         Parameters
         ----------
-        first : uint64
-            First element of the range to search (min value = 0).
-        last : uint64
-            Element (up to but not including) where to end the search (max value = nitems).
         rsid : uint32
             rsID to search.
 
@@ -384,13 +380,15 @@ class VariantKey(object):
             - VariantKey or 0 in case not found.
             - Item position in the file.
         """
-        f = np.vectorize(pvk.find_rv_variantkey_by_rsid, excluded=['mc'], otypes=[np.uint64, np.uint64])
+        f = np.vectorize(pvk.find_rv_variantkey_by_rsid,
+                         excluded=['mc', 'first', 'last'],
+                         otypes=[np.uint64, np.uint64])
         return f(self.rsvk_mc,
-                 np.array(first).astype(np.uint64),
-                 np.array(last).astype(np.uint64),
+                 0,
+                 self.rsvk_nrows,
                  np.array(rsid).astype(np.uint32))
 
-    def get_next_rv_variantkey_by_rsid(self, pos, last, rsid):
+    def get_next_rv_variantkey_by_rsid(self, pos, rsid):
         """Get the next VariantKey for the specified rsID in the RV file."\
         " This function should be used after find_rv_variantkey_by_rsid."\
         " This function can be called in a loop to get all VariantKeys that are associated with the same rsID (if any).
@@ -399,8 +397,6 @@ class VariantKey(object):
         ----------
         pos : uint64
             Current item position.
-        last : uint64
-            Element (up to but not including) where to end the search (max value = nitems).
         rsid : uint32
             rsID to search.
 
@@ -410,21 +406,17 @@ class VariantKey(object):
             - VariantKey or 0 in case not found.
             - Item position in the file.
         """
-        f = np.vectorize(pvk.get_next_rv_variantkey_by_rsid, excluded=['mc'], otypes=[np.uint64, np.uint64])
+        f = np.vectorize(pvk.get_next_rv_variantkey_by_rsid, excluded=['mc', 'last'], otypes=[np.uint64, np.uint64])
         return f(self.rsvk_mc,
                  np.array(pos).astype(np.uint64),
-                 np.array(last).astype(np.uint64),
+                 self.rsvk_nrows,
                  np.array(rsid).astype(np.uint32))
 
-    def find_all_rv_variantkey_by_rsid(self, first, last, rsid):
+    def find_all_rv_variantkey_by_rsid(self, rsid):
         """Search for the specified rsID and returns all associated VariantKeys.
 
         Parameters
         ----------
-        first : uint64
-            First element of the range to search (min value = 0).
-        last : uint64
-            Element (up to but not including) where to end the search (max value = nitems).
         rsid : uint32
             rsID to search.
 
@@ -433,21 +425,17 @@ class VariantKey(object):
         tuple : int
             - VariantKey(s).
         """
-        f = np.vectorize(pvk.find_all_rv_variantkey_by_rsid, excluded=['mc'], otypes=[np.uint64])
+        f = np.vectorize(pvk.find_all_rv_variantkey_by_rsid, excluded=['mc', 'first', 'last'], otypes=[np.uint64])
         return f(self.rsvk_mc,
-                 np.array(first).astype(np.uint64),
-                 np.array(last).astype(np.uint64),
+                 0,
+                 self.rsvk_nrows,
                  np.array(rsid).astype(np.uint32))
 
-    def find_vr_rsid_by_variantkey(self, first, last, vk):
+    def find_vr_rsid_by_variantkey(self, vk):
         """Search for the specified VariantKey and returns the first occurrence of rsID in the VR file.
 
         Parameters
         ----------
-        first : uint64
-            First element of the range to search (min value = 0).
-        last : uint64
-            Element (up to but not including) where to end the search (max value = nitems).
         vk : uint64
             VariantKey.
 
@@ -457,21 +445,19 @@ class VariantKey(object):
             - rsID or 0 in case not found.
             - Item position in the file.
         """
-        f = np.vectorize(pvk.find_vr_rsid_by_variantkey, excluded=['mc'], otypes=[np.uint32, np.uint64])
+        f = np.vectorize(pvk.find_vr_rsid_by_variantkey,
+                         excluded=['mc', 'first', 'last'],
+                         otypes=[np.uint32, np.uint64])
         return f(self.vkrs_mc,
-                 np.array(first).astype(np.uint64),
-                 np.array(last).astype(np.uint64),
+                 0,
+                 self.vkrs_nrows,
                  np.array(vk).astype(np.uint64))
 
-    def find_vr_chrompos_range(self, first, last, chrom, pos_min, pos_max):
+    def find_vr_chrompos_range(self, chrom, pos_min, pos_max):
         """Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
 
         Parameters
         ----------
-        first : uint64
-            First element of the range to search (min value = 0).
-        last : uint64
-            Element (up to but not including) where to end the search (max value = nitems).
         chrom : uint8
             Chromosome encoded number.
         pos_min : uint32
@@ -486,10 +472,12 @@ class VariantKey(object):
             - Position of the first item.
             - Position of the last item.
         """
-        f = np.vectorize(pvk.find_vr_chrompos_range, excluded=['mc'], otypes=[np.uint32, np.uint64, np.uint64])
+        f = np.vectorize(pvk.find_vr_chrompos_range,
+                         excluded=['mc', 'first', 'last'],
+                         otypes=[np.uint32, np.uint64, np.uint64])
         return f(self.vkrs_mc,
-                 np.array(first).astype(np.uint64),
-                 np.array(last).astype(np.uint64),
+                 0,
+                 self.vkrs_nrows,
                  np.array(chrom).astype(np.uint8),
                  np.array(pos_min).astype(np.uint32),
                  np.array(pos_max).astype(np.uint32))
