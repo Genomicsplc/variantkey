@@ -30,9 +30,10 @@ testData = np.array([
 class TestFunctions(TestCase):
 
     @classmethod
-    def setUpClass(self):
+    def setUpClass(cls):
+        global npvk
         try:
-            self.npvk = pyvk.VariantKey(
+            npvk = pyvk.VariantKey(
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/genoref.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/nrvk.10.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/rsvk.10.bin"),
@@ -41,7 +42,7 @@ class TestFunctions(TestCase):
             assert False, "Unable to initialize the class: {0}".format(err)
 
     def test_find_ref_alt_by_variantkey(self):
-        oref, oalt, osizeref, osizealt, oralen = self.npvk.find_ref_alt_by_variantkey(testData[:, 0])
+        oref, oalt, osizeref, osizealt, oralen = npvk.find_ref_alt_by_variantkey(testData[:, 0])
         np.testing.assert_array_equal(oref, testData[:, 8].astype('|S256'))
         np.testing.assert_array_equal(oalt, testData[:, 9].astype('|S256'))
         np.testing.assert_array_equal(osizeref, testData[:, 4].astype(np.uint8))
@@ -49,7 +50,7 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(oralen, (testData[:, 3].astype(np.uint8) - 2))
 
     def test_reverse_variantkey(self):
-        ochrom, opos, oref, oalt, osizeref, osizealt, oralen = self.npvk.reverse_variantkey(testData[:, 0])
+        ochrom, opos, oref, oalt, osizeref, osizealt, oralen = npvk.reverse_variantkey(testData[:, 0])
         np.testing.assert_array_equal(ochrom, testData[:, 1].astype('|S2'))
         np.testing.assert_array_equal(opos, testData[:, 2].astype(np.uint32))
         np.testing.assert_array_equal(oref, testData[:, 8].astype('|S256'))
@@ -59,29 +60,29 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(oralen, (testData[:, 3].astype(np.uint8) - 2))
 
     def test_get_variantkey_ref_length(self):
-        osizeref = self.npvk.get_variantkey_ref_length(testData[:, 0])
+        osizeref = npvk.get_variantkey_ref_length(testData[:, 0])
         np.testing.assert_array_equal(osizeref, testData[:, 4].astype(np.uint8))
 
     def test_get_variantkey_ref_length_reversible(self):
-        osizeref = self.npvk.get_variantkey_ref_length(0x1800925199160000)
+        osizeref = npvk.get_variantkey_ref_length(0x1800925199160000)
         np.testing.assert_array_equal(osizeref, 3)
 
     def test_get_variantkey_ref_length_not_found(self):
-        osizeref = self.npvk.get_variantkey_ref_length(0xffffffffffffffff)
+        osizeref = npvk.get_variantkey_ref_length(0xffffffffffffffff)
         np.testing.assert_array_equal(osizeref, 0)
 
     def test_get_variantkey_endpos(self):
-        endpos = self.npvk.get_variantkey_endpos(testData[:, 0])
+        endpos = npvk.get_variantkey_endpos(testData[:, 0])
         np.testing.assert_array_equal(endpos, testData[:, 2].astype(np.uint32) + testData[:, 4].astype(np.uint32))
 
     def test_get_variantkey_chrom_endpos(self):
-        res = self.npvk.get_variantkey_chrom_startpos(testData[:, 0])
+        res = npvk.get_variantkey_chrom_startpos(testData[:, 0])
         np.testing.assert_array_equal(res, testData[:, 6].astype(np.uint64))
 
     def test_get_variantkey_chrom_endpos(self):
-        res = self.npvk.get_variantkey_chrom_endpos(testData[:, 0])
+        res = npvk.get_variantkey_chrom_endpos(testData[:, 0])
         np.testing.assert_array_equal(res, testData[:, 7].astype(np.uint64))
 
     def test_nrvk_bin_to_tsv(self):
-        fsize = self.npvk.nrvk_bin_to_tsv("nrvk.test")
+        fsize = npvk.nrvk_bin_to_tsv("nrvk.test")
         np.testing.assert_array_equal(fsize, 305)
