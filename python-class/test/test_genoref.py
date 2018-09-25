@@ -27,6 +27,11 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
+    @classmethod
+    def tearDownClass(cls):
+        global npvk
+        npvk.close()
+
     def test_get_genoref_seq(self):
         chrom = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], dtype=np.uint8)
         ref = npvk.get_genoref_seq(chrom, 0)  # first

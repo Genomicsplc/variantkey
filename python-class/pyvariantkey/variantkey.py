@@ -64,9 +64,12 @@ class VariantKey(object):
                 raise Exception('Unable to load the VKRS file: {0}'.format(vkrs_file))
 
     def __del__(self):
-        """Unmap memory-mapped files"""
-        if pvk is None:
-            return
+        """Cleanup resources"""
+        if pvk is not None:
+            self.close()
+
+    def close(self):
+        """Close all input files"""
         if self.genoref_mf is not None:
             pvk.munmap_binfile(self.genoref_mf)
         if self.nrvk_mf is not None:

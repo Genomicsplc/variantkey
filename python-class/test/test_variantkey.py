@@ -600,6 +600,11 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
+    @classmethod
+    def tearDownClass(cls):
+        global npvk
+        npvk.close()
+
     def test_encode_chrom(self):
         data = np.array([
             ["", "NA", "XY", "1X", "1Y", "1M", "1MT", "chr", " 1", "1 "],

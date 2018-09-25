@@ -57,6 +57,11 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
+    @classmethod
+    def tearDownClass(cls):
+        global npvk
+        npvk.close()
+
     def test_encode_region_strand(self):
         h = npvk.encode_region_strand(regionsTestData[:, 3])
         np.testing.assert_array_equal(h, regionsTestData[:, 5].astype(np.uint8))

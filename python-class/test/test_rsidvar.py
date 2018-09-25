@@ -42,6 +42,11 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
+    @classmethod
+    def tearDownClass(cls):
+        global npvk
+        npvk.close()
+
     def test_find_rv_variantkey_by_rsid(self):
         vk, first = npvk.find_rv_variantkey_by_rsid(testData[:, 4])
         np.testing.assert_array_equal(vk, testData[:, 5].astype(np.uint64))
@@ -93,9 +98,11 @@ class TestFunctions(TestCase):
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/nrvk.10.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/rsvk.m.10.bin"),
                 os.path.realpath(os.path.dirname(os.path.realpath(__file__)) + "/../../c/test/data/vkrs.10.bin"))
+            vks = mnpvk.find_all_rv_variantkey_by_rsid([0x00000003, 0x00000004])
+            e = np.array([9223656209074749440, 9223656316446408704, 9223656367992733696, 11529544220955770880,
+                          11529544223106826240, 11529544237647750802, 11529544246004783107], dtype=np.uint64)
+            np.testing.assert_array_equal(vks, e)
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
-        vks = mnpvk.find_all_rv_variantkey_by_rsid([0x00000003, 0x00000004])
-        e = np.array([9223656209074749440, 9223656316446408704, 9223656367992733696, 11529544220955770880,
-                      11529544223106826240, 11529544237647750802, 11529544246004783107], dtype=np.uint64)
-        np.testing.assert_array_equal(vks, e)
+        finally:
+            mnpvk.close()

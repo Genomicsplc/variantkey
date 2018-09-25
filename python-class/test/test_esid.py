@@ -132,6 +132,11 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
+    @classmethod
+    def tearDownClass(cls):
+        global npvk
+        npvk.close()
+
     def test_encode_string_id(self):
         h = npvk.encode_string_id(esidTestData[:, 6], esidTestData[:, 1])
         np.testing.assert_array_equal(h, esidTestData[:, 3].astype(np.uint64))

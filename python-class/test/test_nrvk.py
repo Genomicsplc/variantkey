@@ -41,6 +41,11 @@ class TestFunctions(TestCase):
         except Exception as err:
             assert False, "Unable to initialize the class: {0}".format(err)
 
+    @classmethod
+    def tearDownClass(cls):
+        global npvk
+        npvk.close()
+
     def test_find_ref_alt_by_variantkey(self):
         oref, oalt, osizeref, osizealt, oralen = npvk.find_ref_alt_by_variantkey(testData[:, 0])
         np.testing.assert_array_equal(oref, testData[:, 8].astype('|S256'))
