@@ -147,10 +147,10 @@ class VariantKey(object):
         Returns
         -------
         tuple:
-            - REF
-            - ALT
-            - REF length
-            - ALT length
+            - '|S256' : REF
+            - '|S256' : ALT
+            - uint8   : REF length
+            - uint8   : ALT length
         """
         f = np.vectorize(pvk.decode_refalt, otypes=['|S256', '|S256', np.uint8, np.uint8])
         return f(np.array(code).astype(np.uint32))
@@ -236,9 +236,9 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - CHROM code
-            - POS
-            - REF+ALT code
+            - uint8  : CHROM code
+            - uint32 : POS
+            - uint32 : REF+ALT code
         """
         f = np.vectorize(pvk.decode_variantkey, otypes=[np.uint8, np.uint32, np.uint32])
         return f(np.array(vk).astype(np.uint64))
@@ -285,9 +285,9 @@ class VariantKey(object):
 
         Returns
         -------
-        tuple : uint64
-            - VariantKey min value
-            - VariantKey max value
+        tuple :
+            - uint64 : VariantKey min value
+            - uint64 : VariantKey max value
         """
         f = np.vectorize(pvk.variantkey_range, otypes=[np.uint64, np.uint64])
         return f(
@@ -307,7 +307,7 @@ class VariantKey(object):
 
         Returns
         -------
-        int_ :
+        int :
             -1 if the first chromosome is smaller than the second,
             0 if they are equal and 1 if the first is greater than the second.
         0
@@ -327,7 +327,7 @@ class VariantKey(object):
 
         Returns
         -------
-        int_ :
+        int :
             -1 if the first CHROM+POS is smaller than the second,
             0 if they are equal and 1 if the first is greater than the second.
         """
@@ -380,8 +380,8 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - VariantKey or 0 in case not found.
-            - Item position in the file.
+            - uint64 : VariantKey or 0 in case not found.
+            - uint64 : Item position in the file.
         """
         f = np.vectorize(pvk.find_rv_variantkey_by_rsid,
                          excluded=['mc', 'first', 'last'],
@@ -406,8 +406,8 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - VariantKey or 0 in case not found.
-            - Item position in the file.
+            - uint64 : VariantKey or 0 in case not found.
+            - uint64 : Item position in the file.
         """
         f = np.vectorize(pvk.get_next_rv_variantkey_by_rsid, excluded=['mc', 'last'], otypes=[np.uint64, np.uint64])
         return f(self.rsvk_mc,
@@ -425,7 +425,7 @@ class VariantKey(object):
 
         Returns
         -------
-        tuple : int
+        uint64 :
             - VariantKey(s).
         """
         vk = []
@@ -445,8 +445,8 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - rsID or 0 in case not found.
-            - Item position in the file.
+            - uint32 : rsID or 0 in case not found.
+            - uint64 : Item position in the file.
         """
         f = np.vectorize(pvk.find_vr_rsid_by_variantkey,
                          excluded=['mc', 'first', 'last'],
@@ -471,9 +471,9 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - rsID or 0 in case not found
-            - Position of the first item.
-            - Position of the last item.
+            - uint32 : rsID or 0 in case not found
+            - uint64 : Position of the first item.
+            - uint64 : Position of the last item.
         """
         f = np.vectorize(pvk.find_vr_chrompos_range,
                          excluded=['mc', 'first', 'last'],
@@ -499,11 +499,11 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - REF string.
-            - ALT string.
-            - REF length.
-            - ALT length.
-            - REF+ALT length.
+            - '|S256' : REF string.
+            - '|S256' : ALT string.
+            - uint8   : REF length.
+            - uint8   : ALT length.
+            - uint16  : REF+ALT length.
         """
         f = np.vectorize(
             pvk.find_ref_alt_by_variantkey,
@@ -522,13 +522,13 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - CHROM string.
-            - POS.
-            - REF string.
-            - ALT string.
-            - REF length.
-            - ALT length.
-            - REF+ALT length.
+            - '|S2'   : CHROM string.
+            - uint32  : POS.
+            - '|S256' : REF string.
+            - '|S256' : ALT string.
+            - uint8   : REF length.
+            - uint8   : ALT length.
+            - uint16  : REF+ALT length.
         """
         f = np.vectorize(pvk.reverse_variantkey,
                          excluded=['mc'],
@@ -630,7 +630,7 @@ class VariantKey(object):
 
         Returns
         -------
-        string :
+        '|S1' :
             Nucleotide letter or 0 (NULL char) in case of invalid position.
         """
         f = np.vectorize(pvk.get_genoref_seq, excluded=['mf'], otypes=['|S1'])
@@ -676,7 +676,7 @@ class VariantKey(object):
 
         Returns
         -------
-        string :
+        '|S256' :
             Flipped allele.
         """
         f = np.vectorize(pvk.flip_allele, otypes=['|S256'])
@@ -701,7 +701,7 @@ class VariantKey(object):
         Returns
         -------
         tuple :
-            - Bitmask number in case of success, negative number in case of error.
+            - int : Bitmask number in case of success, negative number in case of error.
               When positive, each bit has a different meaning when set:
              - bit 0 : The reference allele is inconsistent with the genome reference
                        (i.e. when contains nucleotide letters other than A, C, G and T).
@@ -711,11 +711,11 @@ class VariantKey(object):
              - bit 3 : Alleles have been left extended.
              - bit 4 : Alleles have been right trimmed.
              - bit 5 : Alleles have been left trimmed.
-            - POS.
-            - REF string.
-            - ALT string.
-            - REF length.
-            - ALT length.
+            - uint32  : POS.
+            - '|S256' : REF string.
+            - '|S256' : ALT string.
+            - uint8   : REF length.
+            - uint8   : ALT length.
         """
         f = np.vectorize(pvk.normalize_variant,
                          excluded=['mf'],
@@ -861,10 +861,10 @@ class VariantKey(object):
         Returns
         -------
         tuple:
-            - encoded chromosome
-            - start position
-            - end position
-            - encoded strand
+            - uint8  : encoded chromosome
+            - uint32 : start position
+            - uint32 : end position
+            - uint8  : encoded strand
         """
         f = np.vectorize(pvk.decode_regionkey, otypes=[np.uint8, np.uint32, np.uint32, np.uint8])
         return f(np.array(rk).astype(np.uint64))
@@ -880,10 +880,10 @@ class VariantKey(object):
         Returns
         -------
         tuple:
-            - chromosome
-            - start position
-            - end position
-            - strand
+            - '|S2'  : chromosome
+            - uint32 : start position
+            - uint32 : end position
+            - int16  : strand
         """
         f = np.vectorize(pvk.reverse_regionkey, otypes=['|S2', np.uint32, np.uint32, np.int16])
         return f(np.array(rk).astype(np.uint64))
@@ -1091,6 +1091,7 @@ class VariantKey(object):
     def encode_string_id(self, strid, start):
         """Encode maximum 10 characters of a string into a 64 bit unsigned integer.
         This function can be used to convert generic string IDs to numeric IDs.
+
         Parameters
         ----------
         strid : string
@@ -1111,6 +1112,7 @@ class VariantKey(object):
         character and a numerical section into a 64 bit unsigned integer. For example: ABCDE:0001234.
         Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.
         If the string is 10 character or less, then the encode_string_id() is used.
+
         Parameters
         ----------
         strid : string
@@ -1130,6 +1132,7 @@ class VariantKey(object):
         """Decode the encoded string ID.
         This function is the reverse of encode_string_id.
         The string is always returned in uppercase mode.
+
         Parameters
         ----------
         esid : uint64
@@ -1138,8 +1141,8 @@ class VariantKey(object):
         Returns
         -------
         tuple:
-            - STRING
-            - STRING length
+            - '|S23' : STRING
+            - uint8  : STRING length
         """
         f = np.vectorize(pvk.decode_string_id, otypes=['|S23', np.uint8])
         return f(np.array(esid).astype(np.uint64))
@@ -1147,6 +1150,7 @@ class VariantKey(object):
     def hash_string_id(self, strid):
         """Hash the input string into a 64 bit unsigned integer.
         This function can be used to convert long string IDs to numeric IDs.
+
         Parameters
         ----------
         strid : strint

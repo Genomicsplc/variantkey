@@ -197,7 +197,7 @@ print(vk.get_regionkey_chrom_startpos(0xc80001f400003e84))
 print(vk.get_regionkey_chrom_endpos(0xc80001f400003e84))
 # 6710888400
 
-print(vk.are_overlapping_regions(5, 4,  6, 5, 3, 7))
+print(vk.are_overlapping_regions(5, 4, 6, 5, 3, 7))
 # 1
 
 print(vk.are_overlapping_region_regionkey(5, 4, 6, 0x2800000180000038))

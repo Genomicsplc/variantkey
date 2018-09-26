@@ -529,6 +529,7 @@ See [Python Usage Examples](python/test/example.py).
 ## Python Class
 
 The python class module is a wrapper for the low-level Python library and it is located in the `python-class` directory.
+All methods of this class are vectorized, so they also accept lists or numpy arrays as input.
 Use the "`make python`" command to test the Python class and generate reports.
 
 See [Python Usage Examples](python-class/test/example.py).
