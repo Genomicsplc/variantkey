@@ -48,8 +48,8 @@
  *   - The "_le_" or "LE" functions refer to source files sorted in Little-Endian.
  */
 
-#ifndef BINSEARCH_H
-#define BINSEARCH_H
+#ifndef VARIANTKEY_BINSEARCH_H
+#define VARIANTKEY_BINSEARCH_H
 
 #include <inttypes.h>
 #include <fcntl.h>
@@ -1049,4 +1049,4 @@ static inline int munmap_binfile(mmfile_t mf)
     return close(mf.fd);
 }
 
-#endif  // BINSEARCH_H
+#endif  // VARIANTKEY_BINSEARCH_H

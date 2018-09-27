@@ -46,7 +46,7 @@
 #include <string.h>
 #include <time.h>
 #include <sys/mman.h>
-#include "../../src/rsidvar.h"
+#include "../../src/variantkey/rsidvar.h"
 
 #define TEST_DATA_SIZE 10000000UL
 

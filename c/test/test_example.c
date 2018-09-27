@@ -5,14 +5,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../src/hex.h"
-#include "../src/binsearch.h"
-#include "../src/esid.h"
-#include "../src/genoref.h"
-#include "../src/nrvk.h"
-#include "../src/regionkey.h"
-#include "../src/rsidvar.h"
-#include "../src/variantkey.h"
+#include "../src/variantkey/hex.h"
+#include "../src/variantkey/binsearch.h"
+#include "../src/variantkey/esid.h"
+#include "../src/variantkey/genoref.h"
+#include "../src/variantkey/nrvk.h"
+#include "../src/variantkey/regionkey.h"
+#include "../src/variantkey/rsidvar.h"
+#include "../src/variantkey/variantkey.h"
 
 int main()
 {

@@ -34,14 +34,14 @@
 #define PY_SSIZE_T_CLEAN  //!< Make "s#" use Py_ssize_t rather than int.
 
 #include <Python.h>
-#include "../../c/src/binsearch.h"
-#include "../../c/src/esid.h"
-#include "../../c/src/genoref.h"
-#include "../../c/src/hex.h"
-#include "../../c/src/nrvk.h"
-#include "../../c/src/regionkey.h"
-#include "../../c/src/rsidvar.h"
-#include "../../c/src/variantkey.h"
+#include "../../c/src/variantkey/binsearch.h"
+#include "../../c/src/variantkey/esid.h"
+#include "../../c/src/variantkey/genoref.h"
+#include "../../c/src/variantkey/hex.h"
+#include "../../c/src/variantkey/nrvk.h"
+#include "../../c/src/variantkey/regionkey.h"
+#include "../../c/src/variantkey/rsidvar.h"
+#include "../../c/src/variantkey/variantkey.h"
 #include "pyvariantkey.h"
 
 #ifndef Py_UNUSED // This is already defined for Python 3.4 onwards

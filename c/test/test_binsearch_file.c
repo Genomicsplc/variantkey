@@ -11,7 +11,7 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/mman.h>
-#include "../src/binsearch.h"
+#include "../src/variantkey/binsearch.h"
 
 int test_mmap_binfile_error(const char* file)
 {

@@ -38,8 +38,8 @@
  * The RegionKey is sortable for chromosome and start position, and it is also fully reversible.
  */
 
-#ifndef REGIONKEY_H
-#define REGIONKEY_H
+#ifndef VARIANTKEY_REGIONKEY_H
+#define VARIANTKEY_REGIONKEY_H
 
 #include <stdio.h>
 #include "nrvk.h"
@@ -315,4 +315,4 @@ static inline uint64_t variantkey_to_regionkey(nrvk_cols_t nvc, uint64_t vk)
     return ((vk & VKMASK_CHROMPOS) | ((uint64_t)get_variantkey_endpos(nvc, vk) << RKSHIFT_ENDPOS));
 }
 
-#endif  // REGIONKEY_H
+#endif  // VARIANTKEY_REGIONKEY_H

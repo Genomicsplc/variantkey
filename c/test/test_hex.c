@@ -44,7 +44,7 @@
 #include <string.h>
 #include <strings.h>
 #include <time.h>
-#include "../src/hex.h"
+#include "../src/variantkey/hex.h"
 
 // returns current time in nanoseconds
 uint64_t get_time()

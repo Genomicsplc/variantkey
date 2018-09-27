@@ -44,7 +44,7 @@
 #include <strings.h>
 #include <time.h>
 #include <sys/mman.h>
-#include "../src/regionkey.h"
+#include "../src/variantkey/regionkey.h"
 
 #define TEST_DATA_SIZE 10
 #define TEST_OVERLAP_SIZE 12

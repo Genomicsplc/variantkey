@@ -50,8 +50,8 @@
  * The first column must contain the VariantKey sorted in ascending order.
  */
 
-#ifndef RSIDVAR_H
-#define RSIDVAR_H
+#ifndef VARIANTKEY_RSIDVAR_H
+#define VARIANTKEY_RSIDVAR_H
 
 #include "binsearch.h"
 #include "variantkey.h"
@@ -200,4 +200,4 @@ static inline uint32_t find_vr_chrompos_range(rsidvar_cols_t cvr, uint64_t *firs
     return *(cvr.rs + *first);
 }
 
-#endif  // RSIDVAR_H
+#endif  // VARIANTKEY_RSIDVAR_H

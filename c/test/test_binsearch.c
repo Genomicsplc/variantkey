@@ -11,7 +11,7 @@
 #include <time.h>
 #include <errno.h>
 #include <sys/mman.h>
-#include "../src/binsearch.h"
+#include "../src/variantkey/binsearch.h"
 
 #define TEST_DATA_SIZE 38
 

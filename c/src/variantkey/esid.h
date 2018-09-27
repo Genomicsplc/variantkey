@@ -37,8 +37,8 @@
  * Utility functions to encode strings.
  */
 
-#ifndef ESID_H
-#define ESID_H
+#ifndef VARIANTKEY_ESID_H
+#define VARIANTKEY_ESID_H
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -318,4 +318,4 @@ static inline uint64_t hash_string_id(const char *str, size_t size)
     return (h | 0x8000000000000000); // set the first bit to indicate HASH mode
 }
 
-#endif  // ESID_H
+#endif  // VARIANTKEY_ESID_H

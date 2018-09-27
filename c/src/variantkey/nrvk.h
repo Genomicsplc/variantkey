@@ -50,8 +50,8 @@
  *     1800c351f61f65d3	A	AAGAAAGAAAG
  */
 
-#ifndef NRVK_H
-#define NRVK_H
+#ifndef VARIANTKEY_NRVK_H
+#define VARIANTKEY_NRVK_H
 
 #include <stdio.h>
 #include <string.h>
@@ -253,4 +253,4 @@ static inline size_t nrvk_bin_to_tsv(nrvk_cols_t nvc, const char *tsvfile)
     return len;
 }
 
-#endif  // NRVK_H
+#endif  // VARIANTKEY_NRVK_H

@@ -6,8 +6,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 # Add the binary tree directory to the search path for linking and include files
-link_directories(${PROJECT_BINARY_DIR}/src)
-include_directories(${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_BINARY_DIR}/src)
+link_directories(${PROJECT_BINARY_DIR}/src/variantkey)
+include_directories(${CMAKE_CURRENT_BINARY_DIR} ${PROJECT_BINARY_DIR}/src/variantkey)
 
 #define macro to simplify adding tests
 macro (do_test arg)

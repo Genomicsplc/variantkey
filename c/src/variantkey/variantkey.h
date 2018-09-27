@@ -40,8 +40,8 @@
  * It can be used to sort, search and match variant-based data easily and very quickly.
  */
 
-#ifndef VARIANTKEY_H
-#define VARIANTKEY_H
+#ifndef VARIANTKEY_VARIANTKEY_H
+#define VARIANTKEY_VARIANTKEY_H
 
 #include <inttypes.h>
 #include <stddef.h>
@@ -581,4 +581,4 @@ static inline uint64_t parse_variantkey_hex(const char *vs)
     return parse_hex_uint64_t(vs);
 }
 
-#endif  // VARIANTKEY_H
+#endif  // VARIANTKEY_VARIANTKEY_H

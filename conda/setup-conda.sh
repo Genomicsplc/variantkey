@@ -3,7 +3,7 @@ set -e -u -x -o pipefail
 
 : ${MINICONDA_URL:=https://repo.continuum.io/miniconda}
 : ${MINICONDA_PIN_VERSION:=-}
-: ${PYTHON_VERSION:=-}
+: ${PYTHON_VERSION:=3.6.*}
 : ${ENV_NAME:=env-variantkey}
 
 if [[ "$OSTYPE" == "linux"* ]]; then

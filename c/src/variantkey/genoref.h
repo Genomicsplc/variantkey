@@ -41,8 +41,8 @@
  * `resources/tools/fastabin.sh` script.
  */
 
-#ifndef GENOREF_H
-#define GENOREF_H
+#ifndef VARIANTKEY_GENOREF_H
+#define VARIANTKEY_GENOREF_H
 
 #include <stdio.h>
 #include <string.h>
@@ -410,4 +410,4 @@ static inline int normalize_variant(mmfile_t mf, uint8_t chrom, uint32_t *pos, c
     return status;
 }
 
-#endif  // GENOREF_H
+#endif  // VARIANTKEY_GENOREF_H

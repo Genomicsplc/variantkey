@@ -1,7 +1,7 @@
 echo -e "\n\n*** BUILD ***\n\n"
 INCLUDEDIR="${PREFIX}/include/variantkey"
 mkdir -p ${INCLUDEDIR}
-find "${RECIPE_DIR}/../../c/src/" -type f -name '*.h' -exec cp {} ${INCLUDEDIR} \;
+find "${RECIPE_DIR}/../../c/src/variantkey/" -type f -name '*.h' -exec cp {} ${INCLUDEDIR} \;
 DOCDIR="${PREFIX}/share/doc/variantkey-src/"
 mkdir -p ${DOCDIR}
 cp "${RECIPE_DIR}/../../README.md" ${DOCDIR}

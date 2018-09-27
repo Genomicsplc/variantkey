@@ -37,8 +37,8 @@
  * Collection of utility functions to manipulate strings.
  */
 
-#ifndef ASTRING_H
-#define ASTRING_H
+#ifndef VARIANTKEY_HEX_H
+#define VARIANTKEY_HEX_H
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -92,4 +92,4 @@ static inline uint64_t parse_hex_uint64_t(const char *s)
     return v;
 }
 
-#endif  // ASTRING_H
+#endif  // VARIANTKEY_HEX_H

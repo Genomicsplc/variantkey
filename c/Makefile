@@ -59,7 +59,7 @@ all: clean version format test tidy build doc
 
 # Test C code compatibility with C++
 testcpp:
-	find ./src -type f -name '*.h' -exec gcc -c -pedantic -Werror -Wall -Wextra -Wcast-align -Wundef -Wformat-security -std=c++14 -x c++ -o /dev/null {} \;
+	find ./src/variantkey -type f -name '*.h' -exec gcc -c -pedantic -Werror -Wall -Wextra -Wcast-align -Wundef -Wformat-security -std=c++14 -x c++ -o /dev/null {} \;
 
 # Build and run the unit tests
 test: testcpp
@@ -78,7 +78,7 @@ test: testcpp
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	make | tee make.log ; test $${PIPESTATUS[0]} -eq 0 && \
 	lcov --zerocounters --directory . && \
-	lcov --capture --initial --directory . --output-file coverage/variantkey && \
+	lcov --capture --initial --directory . --output-file coverage/variantkey.cov && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee test.log ; test $${PIPESTATUS[0]} -eq 0 && \
 	lcov --no-checksum --directory . --capture --output-file coverage/variantkey.info && \
 	lcov --remove coverage/variantkey.info "/test_*" --output-file coverage/variantkey.info && \
@@ -90,7 +90,7 @@ endif
 
 # use clang-tidy
 tidy:
-	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open,-hicpp-no-assembler,-hicpp-signed-bitwise,-clang-analyzer-alpha.*' -header-filter=.* -p . src/*.h vk/*.c test/*.c test/rsidvar_bench/*.c
+	clang-tidy -checks='*,-llvm-header-guard,-llvm-include-order,-android-cloexec-open,-hicpp-no-assembler,-hicpp-signed-bitwise,-clang-analyzer-alpha.*' -header-filter=.* -p . src/variantkey/*.h vk/*.c test/*.c test/rsidvar_bench/*.c
 
 # Build the library
 build:
@@ -132,7 +132,7 @@ doc:
 
 # Format the source code
 format:
-	astyle --style=allman --recursive --suffix=none 'src/*.h'
+	astyle --style=allman --recursive --suffix=none 'src/variantkey/*.h'
 	astyle --style=allman --recursive --suffix=none 'test/*.c'
 	astyle --style=allman --recursive --suffix=none 'vk/*.c'
 

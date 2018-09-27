@@ -32,14 +32,14 @@
 
 #include <R.h>
 #include <Rdefines.h>
-#include "../../../c/src/binsearch.h"
-#include "../../../c/src/esid.h"
-#include "../../../c/src/genoref.h"
-#include "../../../c/src/hex.h"
-#include "../../../c/src/nrvk.h"
-#include "../../../c/src/regionkey.h"
-#include "../../../c/src/rsidvar.h"
-#include "../../../c/src/variantkey.h"
+#include "../../../c/src/variantkey/binsearch.h"
+#include "../../../c/src/variantkey/esid.h"
+#include "../../../c/src/variantkey/genoref.h"
+#include "../../../c/src/variantkey/hex.h"
+#include "../../../c/src/variantkey/nrvk.h"
+#include "../../../c/src/variantkey/regionkey.h"
+#include "../../../c/src/variantkey/rsidvar.h"
+#include "../../../c/src/variantkey/variantkey.h"
 
 SEXP R_encode_chrom(SEXP chrom)
 {

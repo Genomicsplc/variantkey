@@ -44,7 +44,7 @@
 #include <strings.h>
 #include <time.h>
 #include <sys/mman.h>
-#include "../src/nrvk.h"
+#include "../src/variantkey/nrvk.h"
 
 #define TEST_DATA_SIZE 10
 
