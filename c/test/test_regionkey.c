@@ -485,12 +485,11 @@ int test_are_overlapping_regionkeys()
     return errors;
 }
 
-int test_are_overlapping_variantkey_regionkey()
+int test_are_overlapping_variantkey_regionkey(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
     uint8_t res;
-    nrvk_cols_t nvc = {0};
     for (i=0 ; i < TEST_OVERLAP_SIZE; i++)
     {
         res = are_overlapping_variantkey_regionkey(nvc, test_overlap[i].a_vk, test_overlap[i].b_rk);
@@ -503,12 +502,11 @@ int test_are_overlapping_variantkey_regionkey()
     return errors;
 }
 
-int test_variantkey_to_regionkey()
+int test_variantkey_to_regionkey(nrvk_cols_t nvc)
 {
     int errors = 0;
     int i;
     uint64_t res;
-    nrvk_cols_t nvc = {0};
     for (i=0 ; i < TEST_OVERLAP_SIZE; i++)
     {
         res = variantkey_to_regionkey(nvc, test_overlap[i].a_vk);
@@ -524,6 +522,17 @@ int test_variantkey_to_regionkey()
 int main()
 {
     int errors = 0;
+    int err;
+
+    mmfile_t nrvk = {0};
+    nrvk_cols_t nvc = {0};
+    mmap_nrvk_file("nrvk.10.bin", &nrvk, &nvc);
+
+    if (nrvk.nrows != TEST_DATA_SIZE)
+    {
+        fprintf(stderr, "Expecting %d items, got instead: %" PRIu64 "\n", TEST_DATA_SIZE, nrvk.nrows);
+        return 1;
+    }
 
     errors += test_encode_region_strand();
     errors += test_decode_region_strand();
@@ -542,12 +551,19 @@ int main()
     errors += test_are_overlapping_regions();
     errors += test_are_overlapping_region_regionkey();
     errors += test_are_overlapping_regionkeys();
-    errors += test_are_overlapping_variantkey_regionkey();
-    errors += test_variantkey_to_regionkey();
+    errors += test_are_overlapping_variantkey_regionkey(nvc);
+    errors += test_variantkey_to_regionkey(nvc);
 
     benchmark_decode_regionkey();
     benchmark_reverse_regionkey();
     benchmark_regionkey();
+
+    err = munmap_binfile(nrvk);
+    if (err != 0)
+    {
+        fprintf(stderr, "Got %d error while unmapping the nrvk file\n", err);
+        return 1;
+    }
 
     return errors;
 }

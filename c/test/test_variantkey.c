@@ -903,6 +903,12 @@ int test_encode_refalt()
         fprintf(stderr, "%s : (separator) expecting different hashes: %08" PRIx32 " %08" PRIx32 "\n", __func__, ha, hb);
         ++errors;
     }
+    h = encode_refalt("", 0, "", 0);
+    if (h != 0)
+    {
+        fprintf(stderr, "%s : (empty) expecting different hash: %08" PRIx32 "\n", __func__, h);
+        ++errors;
+    }
     return errors;
 }
 

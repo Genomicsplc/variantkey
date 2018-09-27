@@ -54,6 +54,7 @@
 #define VKMASK_REFALT   0x000000007FFFFFFF  //!< VariantKey binary mask for REF+ALT   [ 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111 ]
 #define VKSHIFT_CHROM   59 //!< CHROM LSB position from the VariantKey LSB
 #define VKSHIFT_POS     31 //!< POS LSB position from the VariantKey LSB
+#define MAXUINT32       0xFFFFFFFF //!< Maximum value for uint32_t
 
 /**
  * VariantKey struct.
@@ -205,7 +206,7 @@ static inline uint32_t encode_refalt_rev(const char *ref, size_t sizeref, const 
     uint8_t bitpos = 23;
     if ((encode_allele(&h, &bitpos, ref, sizeref) < 0) || (encode_allele(&h, &bitpos, alt, sizealt) < 0))
     {
-        return 0; // error code
+        return MAXUINT32; // error code
     }
     return h;
 }
@@ -318,7 +319,7 @@ static inline uint32_t encode_refalt(const char *ref, size_t sizeref, const char
     if ((sizeref + sizealt) <= 11)
     {
         uint32_t h = encode_refalt_rev(ref, sizeref, alt, sizealt);
-        if (h != 0)
+        if (h != MAXUINT32)
         {
             return h;
         }
