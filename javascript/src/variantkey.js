@@ -124,11 +124,11 @@ function encodeRefAltRev(ref, sizeref, alt, sizealt) {
     h |= (sizealt << 23); // AAAA: length of (ALT - 1)
     h = encodeAllele(h, 23, ref, sizeref);
     if (h < 0) {
-        return 0;
+        return 0xffffffff;
     }
     h = encodeAllele(h, (23 - (2 * sizeref)), alt, sizealt);
     if (h < 0) {
-        return 0;
+        return 0xffffffff;
     }
     return h >>> 0;
 }
@@ -219,7 +219,7 @@ function encodeRefAlt(ref, alt) {
     var sizealt = alt.length >>> 0;
     if ((sizeref + sizealt) <= 11) {
         var h = encodeRefAltRev(ref, sizeref, alt, sizealt);
-        if (h != 0) {
+        if (h != 0xffffffff) {
             return h >>> 0;
         }
     }

@@ -2475,6 +2475,11 @@ function test_encodeRefAlt() {
         console.error("(separator) expecting different hashes: ", ha, hb);
         ++errors;
     }
+    h = encodeRefAlt("", "");
+    if (h != 0) {
+        console.error("(empty) expecting - code: ", h);
+        ++errors;
+    }
     return errors;
 }
 
