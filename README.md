@@ -97,7 +97,7 @@ In this context, the human genetic variant for a given genome assembly is define
 * **`CHROM`** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
 * **`POS`** - position: The reference position in the chromosome, with the first nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
 * **`REF`** - reference allele: String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first nucleotide in the String.
-* **`ALT`** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multialleic variants must be decomposed in individual bialleic variants.
+* **`ALT`** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multiallelic variants must be decomposed in individual biallelic variants.
 
 
 <a name="decompandnorm"></a>
@@ -108,15 +108,15 @@ The *VariantKey* model assumes that the variants have been decomposed and normal
 <a name="decomposition"></a>
 ### Decomposition
 
-In the common *Variant Call Format* (VCF) the alternate field can contain comma-separated strings for multialleic variants, while in this context we only consider bialleic variants to allow for allelic comparisons between different data sets.
+In the common *Variant Call Format* (VCF) the alternate field can contain comma-separated strings for multiallelic variants, while in this context we only consider biallelic variants to allow for allelic comparisons between different data sets.
 
-For example, the multialleic variant:
+For example, the multiallelic variant:
 
 ```
     {CHROM=1, POS=3759889, REF=TA, ALT=TAA,TAAA,T}
 ```
 
-can be decomposed as three bialleic variants:
+can be decomposed as three biallelic variants:
 
 ```
     {CHROM=1, POS=3759889, REF=TA, ALT=TAA}
@@ -124,7 +124,7 @@ can be decomposed as three bialleic variants:
     {CHROM=1, POS=3759889, REF=TA, ALT=T}
 ```
 
-In VCF files the decomposition from multialleic to bialleic variants can be performed using the '[vt](https://genome.sph.umich.edu/wiki/Vt#Decompose)' software tool with the command:
+In VCF files the decomposition from multiallelic to biallelic variants can be performed using the '[vt](https://genome.sph.umich.edu/wiki/Vt#Decompose)' software tool with the command:
 
 ```
     vt decompose -s source.vcf -o decomposed.vcf
@@ -194,14 +194,14 @@ In VCF files the variant normalization can be performed using the [vt](https://g
 <a name="normfunc"></a>
 #### Normalization Function
 
-Individual bialleic variants can be normalized using the `normalize_variant` function provided by this library.  
+Individual biallelic variants can be normalized using the `normalize_variant` function provided by this library.  
 
 The `normalize_variant` function first checks if the reference allele matches the genome reference.
 The match is considered valid and consistent if there is a perfect letter-by-letter match, and valid but not consistent if one or more letter matches an equivalent one. The equivalent letters are defined as follows [[Cornish-Bowden, 1984](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC341218/)]:
 
 ```
     SYMBOL | DESCRIPTION                   | BASES   | COMPLEMENT
-    -------+-------------------------------+---------+-----------
+    -------|-------------------------------|---------|-----------
        A   | Adenine                       | A       |  T
        C   | Cytosine                      |   C     |  G
        G   | Guanine                       |     G   |  C
@@ -217,7 +217,7 @@ The match is considered valid and consistent if there is a perfect letter-by-let
        H   | not G (H comes after G)       | A C   T |  D
        V   | not T (V comes after T and U) | A C G   |  B
        N   | aNy base (not a gap)          | A C G T |  N
-    -------+-------------------------------+---------+----------
+    -------|-------------------------------|---------|----------
 ```
 
 If the reference allele is not valid, the `normalize_variant` function tries to find a reference match with one of the following variant transformations:
