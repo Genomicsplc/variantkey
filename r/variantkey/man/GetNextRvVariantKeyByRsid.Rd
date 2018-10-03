@@ -12,7 +12,7 @@ GetNextRvVariantKeyByRsid(mc, pos, last, rsid)
 
 \item{pos}{Current item.}
 
-\item{last}{Last element of the range to search (max value = nitems - 1).}
+\item{last}{Element (up to but not including) where to end the search (max value = nitems).}
 
 \item{rsid}{rsID to search.}
 }

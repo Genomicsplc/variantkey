@@ -12,7 +12,7 @@ FindAllRvVariantKeyByRsid(mc, first, last, rsid)
 
 \item{first}{First element of the range to search (min value = 0).}
 
-\item{last}{Last element of the range to search (max value = nitems - 1).}
+\item{last}{Element (up to but not including) where to end the search (max value = nitems).}
 
 \item{rsid}{rsID to search.}
 }
