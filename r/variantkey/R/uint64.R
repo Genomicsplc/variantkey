@@ -58,7 +58,7 @@ as.uint64.character <- function(x, ...) {
     ret
 }
 
-setAs("character",UINT64,function(from)as.uint64.character(from))
+setAs("character", UINT64, function(from)as.uint64.character(from))
 
 #' Coerce uint64 vector to character
 #' @param x uint64 vector
@@ -70,7 +70,7 @@ as.character.uint64 <- function(x, ...) {
     ret
 }
 
-setAs(UINT64,"character",function(from)as.character.uint64(from))
+setAs(UINT64, "character", function(from)as.character.uint64(from))
 
 #' Coerce uint64 vector to hexadecimal character vector.
 #' @param x uint64 vector

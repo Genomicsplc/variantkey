@@ -91,7 +91,7 @@ SEXP R_decstr_to_uint64(SEXP str, SEXP ret)
 
 SEXP R_uint64_to_decstr(SEXP x, SEXP ret)
 {
-    uint64_t i, n = LENGTH(x);
+    uint64_t i, n = LENGTH(ret);
     uint64_t *px = (uint64_t *)REAL(x);
     char str[MAX_UINT64_DEC_CHARS];
     for(i = 0; i < n; i++)
