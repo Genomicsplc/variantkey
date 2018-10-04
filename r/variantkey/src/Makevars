@@ -1,0 +1,1 @@
+PKG_CFLAGS=-O3 -pedantic -std=c99 -Wall -Wextra -Wno-strict-prototypes -Wunused-value -Wcast-align -Wundef -Wformat-security -Wshadow

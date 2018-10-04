@@ -62,10 +62,10 @@ print(x)
 x <- VariantKeyRange(23, 1234, 5678)
 print(x)
 # $MIN
-# [1] "b800026900000000"
-#
+# [1] 13258599952973561856
+# 
 # $MAX
-# [1] "b8000b177fffffff"
+# [1] 13258609498538377215
 
 x <- CompareVariantKeyChrom(hexToUint64(hexToUint64("B800026900000000"), hexToUint64("B8000B177FFFFFFF"))
 print(x)
@@ -85,13 +85,13 @@ print(x)
 # Load the reference genome binary file.
 # The input reference binary files can be generated from a FASTA file using the resources/tools/fastabin.sh script.
 # This example uses the "c/test/data/genoref.bin".
-genoref <- MmapGenorefFile("../c/test/data/genoref.bin")
+genoref <- MmapGenorefFile("genoref.bin")
 print(genoref$SIZE)
 # [1] 598
 
 x <- GetGenorefSeq(genoref$MF, chrom=23, pos=0)
 print(x)
-# [1] 65
+# [1] A
 
 x <- CheckReference(genoref$MF, chrom=23, pos=0, ref="A")
 print(x)
@@ -115,12 +115,6 @@ print(x)
 #
 # $ALT
 # [1] "F"
-#
-# $REF_LEN
-# [1] 1
-#
-# $ALT_LEN
-# [1] 1
 
 MunmapBinfile(genoref$MF)
 # [1] 0
@@ -136,7 +130,7 @@ MunmapBinfile(genoref$MF)
 # The input binary files can be generated from a normalized VCF file using the resources/tools/nrvk.sh script.
 # The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.
 # This example uses the "c/test/data/nrvk.10.bin".
-nrvk <- MmapNRVKFile("../c/test/data/nrvk.10.bin")
+nrvk <- MmapNRVKFile("nrvk.10.bin")
 print(nrvk$NROWS)
 # [1] 10
 
@@ -210,7 +204,7 @@ MunmapBinfile(nrvk$MF)
 # Load the lookup table for rsID to VariantKey.
 # The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.10.bin".
-rsvk <- MmapRSVKFile("../c/test/data/rsvk.10.bin", as.integer(c(4, 8)))
+rsvk <- MmapRSVKFile("rsvk.10.bin", as.integer(c(4, 8)))
 print(rsvk$NROWS)
 # [1] 10
 
@@ -238,7 +232,7 @@ MunmapBinfile(rsvk$MF)
 # Load the lookup table for rsID to VariantKey.
 # The input binary file can be generated using the resources/tools/rsvk.sh script.
 # This example uses the "c/test/data/rsvk.m.10.bin".
-rsvkm <- MmapRSVKFile("../c/test/data/rsvk.m.10.bin", as.integer(c()))
+rsvkm <- MmapRSVKFile("rsvk.m.10.bin", as.integer(c()))
 
 x <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, rsid=0x00000003)
 print(x)
@@ -259,7 +253,7 @@ MunmapBinfile(rsvkm$MF)
 # Load the lookup table for VariantKey ro rsID
 # The input binary file can be generated using the resources/tools/vkrs.sh script.
 # This example uses the "c/test/data/vkrs.10.bin".
-vkrs <- MmapVKRSFile("../c/test/data/vkrs.10.bin", as.integer(c(8, 4)))
+vkrs <- MmapVKRSFile("vkrs.10.bin", as.integer(c(8, 4)))
 
 x <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, vk="80010274003A0000")
 print(x)

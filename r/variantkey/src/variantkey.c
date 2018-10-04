@@ -310,8 +310,8 @@ SEXP R_variantkey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP ret)
 SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rmin, SEXP rmax)
 {
     uint64_t i, n = LENGTH(chrom);
-    uint32_t *pmin = (uint32_t *)INTEGER(rmin);
-    uint32_t *pmax = (uint32_t *)INTEGER(rmax);
+    uint64_t *pmin = (uint64_t *)REAL(rmin);
+    uint64_t *pmax = (uint64_t *)REAL(rmax);
     uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos_min = (uint32_t *)INTEGER(pos_min);
     uint32_t *ppos_max = (uint32_t *)INTEGER(pos_max);
@@ -520,7 +520,7 @@ SEXP R_get_next_rv_variantkey_by_rsid(SEXP mc, SEXP pos, SEXP last, SEXP rsid, S
 
 SEXP R_find_all_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid)
 {
-    static const int vecsize = 10; // limit the maximum nuber of results
+    static const uint32_t vecsize = 10; // limit the maximum nuber of results
     SEXP res = PROTECT(allocVector(VECSXP, vecsize));
     uint32_t i = 0;
     char hex[17];
@@ -663,7 +663,7 @@ SEXP R_reverse_variantkey(SEXP mc, SEXP vk, SEXP rchrom, SEXP rpos, SEXP rref, S
     uint64_t *pvk = (uint64_t *)REAL(vk);
     uint32_t *ppos = (uint32_t *)INTEGER(rpos);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    variantkey_rev_t v = {0, 0, 0, 0, 0, 0};
+    variantkey_rev_t v = {0};
     for(i = 0; i < n; i++)
     {
         v.chrom[0] = 0;
@@ -819,13 +819,16 @@ SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP
     size_t sizealt;
     char *r;
     char *a;
+    uint32_t tpos;
     for(i = 0; i < n; i++)
     {
         r = Rf_acopy_string(CHAR(STRING_ELT(ref, i)));
         a = Rf_acopy_string(CHAR(STRING_ELT(alt, i)));
         sizeref = strlen(r);
         sizealt = strlen(a);
-        code[i] = normalize_variant(*cmf, (uint8_t)(ichrom[i]), &(ipos[i]), r, &sizeref, a, &sizealt);
+        tpos = ipos[i];
+        code[i] = normalize_variant(*cmf, (uint8_t)(ichrom[i]), &tpos, r, &sizeref, a, &sizealt);
+        ppos[i] = tpos;
         SET_STRING_ELT(rref, i, mkChar(r));
         SET_STRING_ELT(ralt, i, mkChar(a));
     }
@@ -966,7 +969,7 @@ SEXP R_reverse_regionkey(SEXP rk, SEXP rchrom, SEXP rstartpos, SEXP rendpos, SEX
     uint32_t *pendpos = (uint32_t *)INTEGER(rendpos);
     int32_t *pstrand = (int32_t *)INTEGER(rstrand);
     uint64_t *prk = (uint64_t *)REAL(rk);
-    regionkey_rev_t v = {0, 0, 0, 0};
+    regionkey_rev_t v = {0};
     for(i = 0; i < n; i++)
     {
         v.chrom[0] = 0;

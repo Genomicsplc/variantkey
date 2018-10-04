@@ -2,7 +2,7 @@
 % Please edit documentation in R/variantkey.R
 \name{GetGenorefSeq}
 \alias{GetGenorefSeq}
-\title{Returns the genome reference nucleotide at the specified chromosome and position, or 0 in case of invalid position.}
+\title{Returns the genome reference nucleotide at the specified chromosome and position.}
 \usage{
 GetGenorefSeq(mf, chrom, pos)
 }
@@ -14,5 +14,5 @@ GetGenorefSeq(mf, chrom, pos)
 \item{mc}{Memory-mapped columns object as retured by MmapGenorefFile.}
 }
 \description{
-Returns the genome reference nucleotide at the specified chromosome and position, or 0 in case of invalid position.
+Returns the genome reference nucleotide at the specified chromosome and position.
 }

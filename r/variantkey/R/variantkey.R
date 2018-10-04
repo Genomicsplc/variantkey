@@ -156,8 +156,8 @@ VariantKeyRange <- function(chrom, pos_min, pos_max) {
     if ((n != length(pos_min)) || (n != length(pos_max))) {
         stop(ERR_INPUT_LENGTH)
     }
-    min <- integer(n)
-    max <- integer(n)
+    min <- uint64(n)
+    max <- uint64(n)
     return(.Call("R_variantkey_range", as.integer(chrom), as.integer(pos_min), as.integer(pos_max), min, max))
 }
 
@@ -418,7 +418,7 @@ MmapGenorefFile <- function(file) {
     return(.Call("R_mmap_genoref_file", file))
 }
 
-#' Returns the genome reference nucleotide at the specified chromosome and position, or 0 in case of invalid position.
+#' Returns the genome reference nucleotide at the specified chromosome and position.
 #' @param mc      Memory-mapped columns object as retured by MmapGenorefFile.
 #' @param chrom   Encoded Chromosome number (see encode_chrom).
 #' @param pos     Position. The reference position, with the first base having position 0.
@@ -430,7 +430,7 @@ GetGenorefSeq <- function(mf, chrom, pos) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_get_genoref_seq", mf, as.integer(chrom), as.integer(pos), ret))
+    return(intToUtf8(.Call("R_get_genoref_seq", mf, as.integer(chrom), as.integer(pos), ret)))
 }
 
 #' Check if the reference allele matches the reference genome data.
