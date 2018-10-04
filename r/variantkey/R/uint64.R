@@ -42,9 +42,7 @@ as.uint64.factor <- function(x, ...) {
 #' @param x NULL vector
 #' @export
 as.uint64.NULL <- function (x, ...) {
-    ret <- double()
-    oldClass(ret) <- UINT64
-    return(ret)
+    return(uint64())
 }
 
 #' Coerce from uint64 to uint64.
@@ -59,10 +57,8 @@ as.uint64.uint64 <- function(x, ...) {
 #' @useDynLib variantkey R_double_to_uint64
 #' @export
 as.uint64.double <- function(x, ...) {
-    ret <- double(length(x))
-    ret <- .Call("R_double_to_uint64", x, ret)
-    oldClass(ret) <- UINT64
-    return(ret)
+    ret <- uint64(length(x))
+    return(.Call("R_double_to_uint64", x, ret))
 }
 
 #' Coerce integer vector to uint64
@@ -70,10 +66,8 @@ as.uint64.double <- function(x, ...) {
 #' @useDynLib variantkey R_integer_to_uint64
 #' @export
 as.uint64.integer <- function(x, ...) {
-    ret <- double(length(x))
-    ret <- .Call("R_integer_to_uint64", x, ret)
-    oldClass(ret) <- UINT64
-    return(ret)
+    ret <- uint64(length(x))
+    return(.Call("R_integer_to_uint64", x, ret))
 }
 
 #' Coerce logical vector to uint64
@@ -81,10 +75,8 @@ as.uint64.integer <- function(x, ...) {
 #' @useDynLib variantkey R_integer_to_uint64
 #' @export
 as.uint64.logical <- function(x, ...) {
-    ret <- double(length(x))
-    ret <- .Call("R_integer_to_uint64", x, ret)
-    oldClass(ret) <- UINT64
-    return(ret)
+    ret <- uint64(length(x))
+    return(.Call("R_integer_to_uint64", x, ret))
 }
 
 #' Coerce character vector to uint64
@@ -92,10 +84,8 @@ as.uint64.logical <- function(x, ...) {
 #' @useDynLib variantkey R_decstr_to_uint64
 #' @export
 as.uint64.character <- function(x, ...) {
-    ret <- double(length(x))
-    ret <- .Call("R_decstr_to_uint64", x, ret)
-    oldClass(ret) <- UINT64
-    return(ret)
+    ret <- uint64(length(x))
+    return(.Call("R_decstr_to_uint64", x, ret))
 }
 
 setAs("character", UINT64, function(from)as.uint64.character(from))
@@ -112,23 +102,21 @@ as.character.uint64 <- function(x, ...) {
 setAs(UINT64, "character", function(from)as.character.uint64(from))
 
 #' Coerce hex64 vector to uint64
-#' @param x hexadecimal character vector
-#' @useDynLib variantkey R_parse_hex_uint64_t
-#' @export
-asUint64Hex <- function(x, ...) {
-    ret <- double(length(x))
-    ret <- .Call("R_parse_hex_uint64_t", as.character(x), ret)
-    oldClass(ret) <- UINT64
-    return(ret)
-}
-
-#' Coerce hex64 vector to uint64.
 #' @param x hexadecimal character vector (16 characters per item)
 #' @useDynLib variantkey R_parse_hex_uint64_t
 #' @export
-asHexUint64 <- function(x, ...) {
+hexToUint64 <- function(x, ...) {
+    ret <- uint64(length(x))
+    return(.Call("R_parse_hex_uint64_t", as.character(x), ret))
+}
+
+#' Coerce uint64 vector to hexadecimal character.
+#' @param x uint64 vector
+#' @useDynLib variantkey R_hex_uint64_t
+#' @export
+uint64ToHex <- function(x, ...) {
     ret <- character(length(x))
-    return(.Call("R_hex_uint64_t", x, ret))
+    return(.Call("R_hex_uint64_t", as.uint64(x), ret))
 }
 
 #' Get or set the length of uint64 vector.
