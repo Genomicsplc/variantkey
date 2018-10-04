@@ -348,7 +348,7 @@ SEXP R_compare_variantkey_chrom(SEXP vka, SEXP vkb, SEXP ret)
 SEXP R_compare_variantkey_chrom_pos(SEXP vka, SEXP vkb, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    int8_t *res = (int8_t *)INTEGER(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
     uint64_t *pvka = (uint64_t *)REAL(vka);
     uint64_t *pvkb = (uint64_t *)REAL(vkb);
     for(i = 0; i < n; i++)

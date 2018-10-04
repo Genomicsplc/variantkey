@@ -752,7 +752,7 @@ EncodeStringID <- function(str, start) {
 #' @export
 EncodeStringNumID <- function(str, sep) {
     ret <- uint64(length(str))
-    return(.Call("R_encode_string_num_id", as.character(str), sep, ret))
+    return(.Call("R_encode_string_num_id", as.character(str), utf8ToInt(as.character(sep))[1], ret))
 }
 
 #' Decode the encoded string ID.

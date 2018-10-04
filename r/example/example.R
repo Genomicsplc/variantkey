@@ -67,11 +67,11 @@ print(x)
 # $MAX
 # [1] "b8000b177fffffff"
 
-x <- CompareVariantKeyChrom("B800026900000000", "B8000B177FFFFFFF")
+x <- CompareVariantKeyChrom(hexToUint64(hexToUint64("B800026900000000"), hexToUint64("B8000B177FFFFFFF"))
 print(x)
 # [1] 0
 
-x <- CompareVariantKeyChromPos("B800026900000000", "B8000B177FFFFFFF")
+x <- CompareVariantKeyChromPos(hexToUint64("B800026900000000"), hexToUint64("B8000B177FFFFFFF"))
 print(x)
 # [1] -1
 
@@ -393,7 +393,7 @@ x <- DecodeStringID("a850850492e77999")
 print(x)
 # [1] "A0A022YWF9"
 
-x <- EncodeStringNumID("ABC:0000123456", 58)
+x <- EncodeStringNumID("ABC:0000123456", ":")
 print(x)
 # [1] "d8628c002001e240"
 
