@@ -65,9 +65,20 @@ as.uint64.double <- function(x, ...) {
 
 #' Coerce integer vector to uint64
 #' @param x integer vector
-#' @useDynLib variantkey R_double_to_uint64
+#' @useDynLib variantkey R_integer_to_uint64
 #' @export
 as.uint64.integer <- function(x, ...) {
+    ret <- double(length(x))
+    .Call("R_integer_to_uint64", x, ret)
+    oldClass(ret) <- UINT64
+    ret
+}
+
+#' Coerce logical vector to uint64
+#' @param x logical vector
+#' @useDynLib variantkey R_integer_to_uint64
+#' @export
+as.uint64.logical <- function(x, ...) {
     ret <- double(length(x))
     .Call("R_integer_to_uint64", x, ret)
     oldClass(ret) <- UINT64
@@ -92,6 +103,7 @@ setAs("character", UINT64, function(from)as.uint64.character(from))
 #' @useDynLib variantkey R_uint64_to_decstr
 #' @export
 as.character.uint64 <- function(x, ...) {
+    class(x) ######### DEBUG #######################
     ret <- character(length(x))
     .Call("R_uint64_to_decstr", x, ret)
     ret
