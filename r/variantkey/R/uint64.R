@@ -166,7 +166,7 @@ format.uint64 <- function(x, justify="right", ...) {
 
 #' Prints uint64 argument and returns it invisibly.
 #' @export
-print.uint64 <- function(x, quote=FALSE, ...) {
+print.uint64 <- function(x, quote=TRUE, ...) {
     a <- attributes(x)
     ret <- as.character(x)
     a$class <- remUint64Class(a$class)

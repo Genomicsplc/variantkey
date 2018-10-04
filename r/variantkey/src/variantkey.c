@@ -518,25 +518,21 @@ SEXP R_get_next_rv_variantkey_by_rsid(SEXP mc, SEXP pos, SEXP last, SEXP rsid, S
     return res;
 }
 
-SEXP R_find_all_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid)
+SEXP R_find_all_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid, SEXP ret)
 {
-    static const uint32_t vecsize = 10; // limit the maximum nuber of results
-    SEXP res = PROTECT(allocVector(VECSXP, vecsize));
-    uint32_t i = 0;
-    char hex[17];
+    uint64_t n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
     uint64_t pfirst = asInteger(first);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t vk = find_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
-    while ((vk > 0) && (i < vecsize))
+    uint32_t i = 0;
+    while ((vk > 0) && (i < n))
     {
-        variantkey_hex(vk, hex);
-        SET_VECTOR_ELT(res, i, Rf_mkString(hex));
+        res[i] = vk;
         i++;
         vk = get_next_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
     }
-    SETLENGTH(res, i);
-    UNPROTECT(1);
-    return res;
+    return ret;
 }
 
 SEXP R_find_vr_rsid_by_variantkey(SEXP mc, SEXP first, SEXP last, SEXP vk, SEXP rrsid, SEXP rfirst)
@@ -807,10 +803,10 @@ SEXP R_flip_allele(SEXP allele, SEXP ret)
     return ret;
 }
 
-SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP ret, SEXP rpos, SEXP rref, SEXP ralt)
+SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP rcode, SEXP rpos, SEXP rref, SEXP ralt)
 {
-    uint64_t i, n = LENGTH(ret);
-    int *code = (int *)INTEGER(ret);
+    uint64_t i, n = LENGTH(rcode);
+    int *code = (int *)INTEGER(rcode);
     uint32_t *ppos = (uint32_t *)INTEGER(rpos);
     uint32_t *ichrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ipos = (uint32_t *)INTEGER(pos);
@@ -834,7 +830,7 @@ SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP
     }
     const char *names[] = {"RET", "POS", "REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, ret);
+    SET_VECTOR_ELT(res, 0, rcode);
     SET_VECTOR_ELT(res, 1, rpos);
     SET_VECTOR_ELT(res, 2, rref);
     SET_VECTOR_ELT(res, 3, ralt);
@@ -1103,7 +1099,7 @@ SEXP R_are_overlapping_variantkey_regionkey(SEXP mc, SEXP vk, SEXP rk, SEXP ret)
 SEXP R_variantkey_to_regionkey(SEXP mc, SEXP vk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
     uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
     for(i = 0; i < n; i++)

@@ -277,10 +277,12 @@ GetNextRvVariantKeyByRsid <- function(mc, pos, last, rsid) {
 #' @param first     First element of the range to search (min value = 0).
 #' @param last      Element (up to but not including) where to end the search (max value = nitems).
 #' @param rsid      rsID to search.
+#' @param max       max number of results to return
 #' @useDynLib   variantkey R_find_all_rv_variantkey_by_rsid
 #' @export
-FindAllRvVariantKeyByRsid <- function(mc, first, last, rsid) {
-    return(.Call("R_find_all_rv_variantkey_by_rsid", mc, as.integer(first), as.integer(last), as.integer(rsid)))
+FindAllRvVariantKeyByRsid <- function(mc, first, last, rsid, max=10) {
+    ret <- uint64(max)
+    return(.Call("R_find_all_rv_variantkey_by_rsid", mc, as.integer(first), as.integer(last), as.integer(rsid), ret))
 }
 
 #' Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found
@@ -462,7 +464,7 @@ CheckReference <- function(mf, chrom, pos, ref) {
 #' @useDynLib   variantkey R_flip_allele
 #' @export
 FlipAllele <- function(allele) {
-    ref <- character(length(allele))
+    ret <- character(length(allele))
     return(.Call("R_flip_allele", as.character(allele), ret))
 }
 
@@ -495,10 +497,11 @@ NormalizeVariant <- function(mf, chrom, pos, ref, alt) {
     if ((n != length(pos)) || (n != length(ref)) || (n != length(alt))) {
         stop(ERR_INPUT_LENGTH)
     }
+    rcode <- integer(n)
     rpos <- integer(n)
     rref <- character(n)
     ralt <- character(n)
-    return(.Call("R_normalize_variant", mf, as.integer(chrom), as.integer(pos), as.character(ref), as.character(alt), rpos, rref, ralt))
+    return(.Call("R_normalize_variant", mf, as.integer(chrom), as.integer(pos), as.character(ref), as.character(alt), rcode, rpos, rref, ralt))
 }
 
 # --- REGIONKEY ---
@@ -680,7 +683,7 @@ AreOverlappingRegions <- function(a_chrom, a_startpos, a_endpos, b_chrom, b_star
 #' @useDynLib   variantkey R_are_overlapping_region_regionkey
 #' @export
 AreOverlappingRegionRegionKey <- function(chrom, startpos, endpos, rk) {
-    n <- length(a_chrom)
+    n <- length(chrom)
     if ((n != length(startpos)) || (n != length(endpos)) || (n != length(rk))) {
         stop(ERR_INPUT_LENGTH)
     }

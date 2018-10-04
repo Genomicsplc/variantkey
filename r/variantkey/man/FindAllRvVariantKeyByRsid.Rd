@@ -5,7 +5,7 @@
 \title{Search for the specified rsID and returns all the associated VariantKeys in the RV file.
 NOTE: the output is limited to maximum 10 results.}
 \usage{
-FindAllRvVariantKeyByRsid(mc, first, last, rsid)
+FindAllRvVariantKeyByRsid(mc, first, last, rsid, max = 10)
 }
 \arguments{
 \item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
@@ -15,6 +15,8 @@ FindAllRvVariantKeyByRsid(mc, first, last, rsid)
 \item{last}{Element (up to but not including) where to end the search (max value = nitems).}
 
 \item{rsid}{rsID to search.}
+
+\item{max}{max number of results to return}
 }
 \description{
 Search for the specified rsID and returns all the associated VariantKeys in the RV file.

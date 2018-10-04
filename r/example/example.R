@@ -30,7 +30,7 @@ print(x)
 
 x <- EncodeVariantKey(23, 12345, 286097408)
 print(x)
-# [1] 13258623813950472192
+# [1] "13258623813950472192"
 
 x <- ExtractVariantKeyChrom("13258623813950472192")
 print(x)
@@ -57,15 +57,15 @@ print(x)
 
 x <- VariantKey("X", 12345, "AC", "GT")
 print(x)
-# [1] 13258623813950472192
+# [1] "13258623813950472192"
 
 x <- VariantKeyRange(23, 1234, 5678)
 print(x)
 # $MIN
-# [1] 13258599952973561856
+# [1] "13258599952973561856"
 # 
 # $MAX
-# [1] 13258609498538377215
+# [1] "13258609498538377215"
 
 x <- CompareVariantKeyChrom(hexToUint64(hexToUint64("B800026900000000"), hexToUint64("B8000B177FFFFFFF"))
 print(x)
@@ -91,7 +91,7 @@ print(genoref$SIZE)
 
 x <- GetGenorefSeq(genoref$MF, chrom=23, pos=0)
 print(x)
-# [1] A
+# [1] "A"
 
 x <- CheckReference(genoref$MF, chrom=23, pos=0, ref="A")
 print(x)
@@ -134,25 +134,16 @@ nrvk <- MmapNRVKFile("nrvk.10.bin")
 print(nrvk$NROWS)
 # [1] 10
 
-x <- FindRefAltByVariantKey(nrvk$MC, vk="2000c3521f1c15ab")
+x <- FindRefAltByVariantKey(nrvk$MC, vk="2306057766690362795")
 print(x)
 # $REF
 # [1] "ACGTACGT"
 #
 # $ALT
 # [1] "ACGT"
-#
-# $REF_LEN
-# [1] 8
-#
-# $ALT_LEN
-# [1] 4
-#
-# $LEN
-# [1] 12
 
 # Reverse all VariantKeys, including the ones that are not directly reversible by using a lookup table.
-x <- ReverseVariantKey(nrvk$MC, vk="2000c3521f1c15ab")
+x <- ReverseVariantKey(nrvk$MC, vk="2306057766690362795")
 print(x)
 # $CHROM
 # [1] "4"
@@ -165,31 +156,22 @@ print(x)
 #
 # $ALT
 # [1] "ACGT"
-#
-# $REF_LEN
-# [1] 8
-#
-# $ALT_LEN
-# [1] 4
-#
-# $LEN
-# [1] 12
 
-x <- GetVariantKeyRefLength(nrvk$MC, vk="2000c3521f1c15ab")
+x <- GetVariantKeyRefLength(nrvk$MC, vk="2306057766690362795")
 print(x)
 # [1] 8
 
-x <- GetVariantKeyEndPos(nrvk$MC, vk="2000c3521f1c15ab")
+x <- GetVariantKeyEndPos(nrvk$MC, vk="2306057766690362795")
 print(x)
 # [1] 100012
 
-x <- GetVariantKeyChromStartPos(vk="2000c3521f1c15ab")
+x <- GetVariantKeyChromStartPos(vk="2306057766690362795")
 print(x)
-# [1] "00000000400186a4"
+# [1] "1073841828"
 
-x <- GetVariantKeyChromEndPos(nrvk$MC, vk="2000c3521f1c15ab")
+x <- GetVariantKeyChromEndPos(nrvk$MC, vk="2306057766690362795")
 print(x)
-# [1] "00000000400186ac"
+# [1] "1073841836"
 
 MunmapBinfile(nrvk$MF)
 # [1] 0
@@ -211,7 +193,7 @@ print(rsvk$NROWS)
 x <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvk$NROWS, rsid=0x00000061)
 print(x)
 # $VK
-# [1] "80010274003a0000"
+# [1] "9223656209074749440"
 #
 # $FIRST
 # [1] 3
@@ -219,7 +201,7 @@ print(x)
 x <- GetNextRvVariantKeyByRsid(rsvk$MC, 2, rsvk$NROWS, rsid=0x00000061)
 print(x)
 # $VK
-# [1] "80010274003a0000"
+# [1] "9223656209074749440"
 #
 # $POS
 # [1] 3
@@ -237,13 +219,13 @@ rsvkm <- MmapRSVKFile("rsvk.m.10.bin", as.integer(c()))
 x <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, rsid=0x00000003)
 print(x)
 # [[1]]
-# [1] "80010274003a0000"
+# [1] "9223656209074749440"
 #
 # [[2]]
-# [1] "8001028d00138000"
+# [1] "9223656316446408704"
 #
 # [[3]]
-# [1] "80010299007a0000"
+# [1] "9223656367992733696"
 
 MunmapBinfile(rsvkm$MF)
 # [1] 0
@@ -255,7 +237,7 @@ MunmapBinfile(rsvkm$MF)
 # This example uses the "c/test/data/vkrs.10.bin".
 vkrs <- MmapVKRSFile("vkrs.10.bin", as.integer(c(8, 4)))
 
-x <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, vk="80010274003A0000")
+x <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, vk="9223656209074749440")
 print(x)
 # $RSID
 # [1] 97
@@ -272,7 +254,7 @@ print(x)
 #[1] 7
 #
 #$LAST
-#[1] 8
+#[1] 9
 
 MunmapBinfile(vkrs$MF)
 # [1] 0
@@ -294,25 +276,25 @@ print(x)
 
 x <- EncodeRegionKey(chrom=25, startpos=1000, endpos=2000, strand=2)
 print(x)
-# [1] "c80001f400003e84"
+# [1] "14411520955069251204"
 
-x <- ExtractRegionKeyChrom("c80001f400003e84")
+x <- ExtractRegionKeyChrom("14411520955069251204")
 print(x)
 # [1] 25
 
-x <- ExtractRegionKeyStartPos("c80001f400003e84")
+x <- ExtractRegionKeyStartPos("14411520955069251204")
 print(x)
 # [1] 1000
 
-x <- ExtractRegionKeyEndPos("c80001f400003e84")
+x <- ExtractRegionKeyEndPos("14411520955069251204")
 print(x)
 # [1] 2000
 
-x <- ExtractRegionKeyStrand("c80001f400003e84")
+x <- ExtractRegionKeyStrand("14411520955069251204")
 print(x)
 # [1] 2
 
-x <- DecodeRegionKey("c80001f400003e84")
+x <- DecodeRegionKey("14411520955069251204")
 print(x)
 # $CHROM
 # [1] 25
@@ -326,7 +308,7 @@ print(x)
 # $STRAND
 # [1] 2
 
-x <- ReverseRegionKey("c80001f400003e84")
+x <- ReverseRegionKey("14411520955069251204")
 print(x)
 # $CHROM
 # [1] "MT"
@@ -342,35 +324,35 @@ print(x)
 
 x <- RegionKey(chrom="MT", startpos=1000, endpos=2000, strand=-1)
 print(x)
-# [1] "c80001f400003e84"
+# [1] "14411520955069251204"
 
-x <- GetRegionKeyChromStartPos("c80001f400003e84")
+x <- GetRegionKeyChromStartPos("14411520955069251204")
 print(x)
-# [1] "00000001900003e8"
+# [1] "6710887400"
 
-x <- GetRegionKeyChromEndPos("c80001f400003e84")
+x <- GetRegionKeyChromEndPos("14411520955069251204")
 print(x)
-# [1] "00000001900007d0"
+# [1] "6710888400"
 
 x <- AreOverlappingRegions(a_chrom=5, a_startpos=4, a_endpos=6, b_chrom=5, b_startpos=3, b_endpos=7)
 print(x)
 # [1] 1
 
-x <- AreOverlappingRegionRegionKey(5, 4, 6, "2800000180000038")
+x <- AreOverlappingRegionRegionKey(5, 4, 6, "2882303767959568440")
 print(x)
 # [1] 1
 
-x <- AreOverlappingRegionKeys("2800000200000030", "2800000180000038")
+x <- AreOverlappingRegionKeys("2882303770107052080", "2882303767959568440")
 print(x)
 # [1] 1
 
-x <- AreOverlappingVariantKeyRegionKey(NULL, "2800000210920000", "2800000180000038")
+x <- AreOverlappingVariantKeyRegionKey(NULL, "2882303770385055744", "2882303767959568440")
 print(x)
 # [1] 1
 
-x <- VariantToRegionkey(NULL, "2800000210920000")
+x <- VariantToRegionkey(NULL, "2882303770385055744")
 print(x)
-# [1] "2800000200000030"
+# [1] "2882303770107052080"
 
 
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
@@ -381,23 +363,23 @@ print(x)
 
 x <- EncodeStringID("A0A022YWF9", 0)
 print(x)
-# [1] "a850850492e77999"
+# [1] "12128340051199752601"
 
-x <- DecodeStringID("a850850492e77999")
+x <- DecodeStringID("12128340051199752601")
 print(x)
 # [1] "A0A022YWF9"
 
 x <- EncodeStringNumID("ABC:0000123456", ":")
 print(x)
-# [1] "d8628c002001e240"
+# [1] "15592178792074961472"
 
-x <- DecodeStringID("d8628c002001e240")
+x <- DecodeStringID("15592178792074961472")
 print(x)
 # [1] "ABC:0000123456"
 
 x <- HashStringID("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 print(x)
-# [1] "b3a5fdb8808cb7dc"
+# [1] "12945031672818874332"
 
 
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
