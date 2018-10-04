@@ -105,28 +105,30 @@ setAs("character", UINT64, function(from)as.uint64.character(from))
 #' @useDynLib variantkey R_uint64_to_decstr
 #' @export
 as.character.uint64 <- function(x, ...) {
-    return(.Call("R_uint64_to_decstr", x, character(length(x))))
+    ret <- character(length(x))
+    return(.Call("R_uint64_to_decstr", x, ret))
 }
 
 setAs(UINT64, "character", function(from)as.character.uint64(from))
 
-#' Coerce uint64 vector to hexadecimal character vector.
-#' @param x uint64 vector
-#' @useDynLib variantkey R_hex_uint64_t
+#' Coerce hex64 vector to uint64
+#' @param x hexadecimal character vector
+#' @useDynLib variantkey R_parse_hex_uint64_t
 #' @export
-as.uint64.hex <- function(x, ...) {
+asUint64Hex <- function(x, ...) {
     ret <- double(length(x))
-    ret <- .Call("R_hex_uint64_t", x, ret)
+    ret <- .Call("R_parse_hex_uint64_t", as.character(x), ret)
     oldClass(ret) <- UINT64
     return(ret)
 }
 
-#' Coerce hexadecimal character vector vector to uint64.
+#' Coerce hex64 vector to uint64.
 #' @param x hexadecimal character vector (16 characters per item)
 #' @useDynLib variantkey R_parse_hex_uint64_t
 #' @export
-as.hex.uint64 <- function(x, ...) {
-    return(.Call("R_parse_hex_uint64_t", x, character(length(x))))
+asHexUint64 <- function(x, ...) {
+    ret <- character(length(x))
+    return(.Call("R_hex_uint64_t", x, ret))
 }
 
 #' Get or set the length of uint64 vector.
@@ -134,9 +136,10 @@ as.hex.uint64 <- function(x, ...) {
 #' @param value value to set the new length
 #' @export
 "length<-.uint64" <- function(x, value) {
+    cx <- oldClass(x)
     n <- length(x)
     x <- NextMethod()
-    oldClass(x) <- oldClass(x)
+    oldClass(x) <- cx
     if (value > n) {
         x[(n + 1):value] <- 0L
     }
@@ -147,8 +150,9 @@ as.hex.uint64 <- function(x, ...) {
 #' @param x uint64 vector to be replicated
 #' @export
 "rep.uint64" <- function(x, ...) {
+    cx <- oldClass(x)
     ret <- NextMethod()
-    oldClass(ret) <- oldClass(x)
+    oldClass(ret) <- cx
     return(ret)
 }
 
@@ -200,8 +204,9 @@ str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length
 #' @param x uint64 vector
 #' @export
 "[.uint64" <- function(x,...) {
+    cx <- oldClass(x)
     ret <- NextMethod()
-    oldClass(ret) <- oldClass(x)
+    oldClass(ret) <- cx
     return(ret)
 }
 
@@ -209,8 +214,9 @@ str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length
 #' @param x uint64 vector
 #' @export
 "[[.uint64" <- function(x,...) {
+    cx <- oldClass(x)
     ret <- NextMethod()
-    oldClass(ret) <- oldClass(x)
+    oldClass(ret) <- cx
     return(ret)
 }
 
@@ -219,9 +225,10 @@ str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length
 #' @param value uint64 replacement value
 #' @export
 "[<-.uint64" <- function(x,...,value) {
+    cx <- oldClass(x)
     value <- as.uint64(value)
     ret <- NextMethod()
-    oldClass(ret) <- oldClass(x)
+    oldClass(ret) <- cx
     return(ret)
 }
 
@@ -230,9 +237,10 @@ str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length
 #' @param value uint64 replacement value
 #' @export
 "[[<-.uint64" <- function(x,...,value) {
+    cx <- oldClass(x)
     value <- as.uint64(value)
     ret <- NextMethod()
-    oldClass(ret) <- oldClass(x)
+    oldClass(ret) <- cx
     return(ret)
 }
 
@@ -299,13 +307,13 @@ rbind.uint64 <- function(...) {
 #' @param x uint64 vector
 #' @export
 as.data.frame.uint64 <- function(x, ...) {
-    c <- oldClass(x)
-    on.exit(setattr(x, "class", c))
-    setattr(x, "class", remUint64Class(c))
+    cx <- oldClass(x)
+    on.exit(setattr(x, "class", cx))
+    setattr(x, "class", remUint64Class(cx))
     ret <- as.data.frame(x, ...)
     k <- length(ret)
     for (i in 1:k) {
-        setattr(ret[[i]], "class", c)
+        setattr(ret[[i]], "class", cx)
     }
     return(ret)
 }

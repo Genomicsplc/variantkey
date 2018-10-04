@@ -42,7 +42,7 @@ print(x)
 
 x <- ExtractVariantKeyRefAlt("13258623813950472192")
 print(x)
-# 286097408
+# [1] 286097408
 
 x <- DecodeVariantKey("13258623813950472192")
 print(x)
