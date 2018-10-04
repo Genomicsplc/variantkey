@@ -113,26 +113,26 @@ y <- rbind(
 colnames(y) <- list("size", "esize", "esid", "estr", "str")
 
 test_that("EncodeStringID", {
-    res <- mapply(EncodeStringID, unlist(x[,"str"]), unlist(x[,"start"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"esid"])))
+    res <- EncodeStringID(unlist(x[,"str"]), unlist(x[,"start"]))
+    expect_that(uint64ToHex(res), equals(unlist(x[,"esid"])))
 })
 
 test_that("EncodeStringNumID", {
-    res <- mapply(EncodeStringNumID, unlist(y[,"str"]), MoreArgs = list(sep = 58), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(y[,"esid"])))
+    res <- EncodeStringNumID(unlist(y[,"str"]), ":")
+    expect_that(uint64ToHex(res), equals(unlist(y[,"esid"])))
 })
 
 test_that("DecodeStringID", {
-    res <- mapply(DecodeStringID, unlist(x[,"esid"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- DecodeStringID(hexToUint64(unlist(x[,"esid"])))
     expect_that(res, equals(unlist(x[,"estr"])))
 })
 
 test_that("DecodeStringNumID", {
-    res <- mapply(DecodeStringID, unlist(y[,"esid"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- DecodeStringID(hexToUint64(unlist(y[,"esid"])))
     expect_that(res, equals(unlist(y[,"estr"])))
 })
 
 test_that("HashStringID", {
-    res <- mapply(HashStringID, unlist(x[,"str"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"hsid"])))
+    res <- HashStringID(unlist(x[,"str"]))
+    expect_that(uint64ToHex(res), equals(unlist(x[,"hsid"])))
 })
