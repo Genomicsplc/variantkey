@@ -156,8 +156,8 @@ VariantKeyRange <- function(chrom, pos_min, pos_max) {
     if ((n != length(pos_min)) || (n != length(pos_max))) {
         stop(ERR_INPUT_LENGTH)
     }
-    min <- uint64(n)
-    max <- uint64(n)
+    min <- integer(n)
+    max <- integer(n)
     return(.Call("R_variantkey_range", as.integer(chrom), as.integer(pos_min), as.integer(pos_max), min, max))
 }
 
@@ -312,7 +312,7 @@ FindVrChromposRange <- function(mc, first, last, chrom, pos_min, pos_max) {
         stop(ERR_INPUT_LENGTH)
     }
     rsid <- integer(n)
-    rfirst <- uint64(n)
+    rfirst <- integer(n)
     rlast <- integer(n)
     return(.Call("R_find_vr_chrompos_range", mc, as.integer(first), as.integer(last), as.integer(chrom), as.integer(pos_min), as.integer(pos_max), rsid, rfirst, rlast))
 }

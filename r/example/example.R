@@ -57,7 +57,7 @@ print(x)
 
 x <- VariantKey("X", 12345, "AC", "GT")
 print(x)
-# [1] "b800181c910d8000"
+# [1] 13258623813950472192
 
 x <- VariantKeyRange(23, 1234, 5678)
 print(x)
