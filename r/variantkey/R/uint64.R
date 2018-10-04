@@ -11,6 +11,11 @@ uint64 <- function(length=0) {
     ret
 }
 
+#' Check if the object x is of uint64 class.
+#' @param x object
+#' @export
+is.uint64 <- function(x)inherits(x, UINT64)
+
 #' Identity function for class uint64.
 #' @export
 identical.uint64 <- function(x, y, num.eq=FALSE, single.NA=FALSE, attrib.as.set=TRUE, ignore.bytecode=TRUE) {
@@ -45,6 +50,28 @@ as.uint64.NULL <- function (x, ...) {
 #' @export
 as.uint64.uint64 <- function(x, ...) {
     x
+}
+
+#' Coerce double vector to uint64
+#' @param x double vector
+#' @useDynLib variantkey R_double_to_uint64
+#' @export
+as.uint64.double <- function(x, ...) {
+    ret <- double(length(x))
+    .Call("R_double_to_uint64", x, ret)
+    oldClass(ret) <- UINT64
+    ret
+}
+
+#' Coerce integer vector to uint64
+#' @param x integer vector
+#' @useDynLib variantkey R_double_to_uint64
+#' @export
+as.uint64.integer <- function(x, ...) {
+    ret <- double(length(x))
+    .Call("R_integer_to_uint64", x, ret)
+    oldClass(ret) <- UINT64
+    ret
 }
 
 #' Coerce character vector to uint64
@@ -93,33 +120,6 @@ as.hex.uint64 <- function(x, ...) {
     ret
 }
 
-#' Coerce double vector to uint64
-#' @param x double vector
-#' @useDynLib variantkey R_double_to_uint64
-#' @export
-as.uint64.double <- function(x, ...) {
-    ret <- double(length(x))
-    .Call("R_double_to_uint64", x, ret)
-    oldClass(ret) <- UINT64
-    ret
-}
-
-#' Coerce integer vector to uint64
-#' @param x integer vector
-#' @useDynLib variantkey R_double_to_uint64
-#' @export
-as.uint64.integer <- function(x, ...) {
-    ret <- double(length(x))
-    .Call("R_integer_to_uint64", x, ret)
-    oldClass(ret) <- UINT64
-    ret
-}
-
-#' Check if the object x is of uint64 class.
-#' @param x object
-#' @export
-is.uint64 <- function(x)inherits(x, UINT64)
-
 #' Get or set the length of uint64 vector.
 #' @param x uint64 vector
 #' @param value value to set the new length
@@ -158,8 +158,7 @@ remUint64Class <- function(x) {
 #' @export
 format.uint64 <- function(x, justify="right", ...) {
     a <- attributes(x)
-    x <- as.character(x)
-    ret <- format(x, justify=justify, ...)
+    ret <- format(as.character(x), justify=justify, ...)
     a$class <- remUint64Class(a$class)
     attributes(ret) <- a
     ret
@@ -167,14 +166,8 @@ format.uint64 <- function(x, justify="right", ...) {
 
 #' Prints uint64 argument and returns it invisibly.
 #' @export
-print.uint64 <- function(x, quote=FALSE, ...) {
-    cat(paste(UINT64, "\n"))
-    a <- attributes(x)
-    ret <- as.character(x)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    print(ret, quote=quote, ...)
-    invisible(x)
+print.uint64 <- function(x, ...) {
+    cat(format.uint64(x, ...), "\n")
 }
 
 #' Prints uint64 values.
@@ -186,7 +179,7 @@ str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length
     if (n > vec.len) {
         object <- object[seq_len(vec.len)]
     }
-    cat(if (give.head)paste(paste(UINT64, " "), if (give.length && (n > 1)) paste("[1:",n,"] ",sep=""), sep=""), paste(as.character(object), collapse=" "), if (n > vec.len)" ...", " \n", sep="")
+    cat(if (give.head)paste(" ", UINT64, " ", if (give.length && (n > 1)) paste("[1:",n,"] ",sep=""), sep=""), paste(as.character(object), collapse=" "), if (n > vec.len)" ...", " \n", sep="")
     invisible()
 }
 

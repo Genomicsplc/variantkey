@@ -96,7 +96,7 @@ SEXP R_uint64_to_decstr(SEXP x, SEXP ret)
     char str[MAX_UINT64_DEC_CHARS];
     for(i = 0; i < n; i++)
     {
-        snprintf(str, MAX_UINT64_DEC_CHARS, PRIu64, px[i]);
+        snprintf(str, MAX_UINT64_DEC_CHARS, "%" PRIu64, px[i]);
         SET_STRING_ELT(ret, i, mkChar(str));
     }
     return ret;
