@@ -525,13 +525,14 @@ SEXP R_find_all_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid,
     uint64_t pfirst = asInteger(first);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t vk = find_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
-    uint32_t i = 0;
+    uint64_t i = 0;
     while ((vk > 0) && (i < n))
     {
         res[i] = vk;
         i++;
         vk = get_next_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
     }
+    SETLENGTH(ret, i);
     return ret;
 }
 

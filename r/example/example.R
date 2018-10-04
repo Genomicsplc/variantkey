@@ -218,14 +218,7 @@ rsvkm <- MmapRSVKFile("rsvk.m.10.bin", as.integer(c()))
 
 x <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, rsid=0x00000003)
 print(x)
-# [[1]]
-# [1] "9223656209074749440"
-#
-# [[2]]
-# [1] "9223656316446408704"
-#
-# [[3]]
-# [1] "9223656367992733696"
+# [1] "9223656209074749440" "9223656316446408704" "9223656367992733696"
 
 MunmapBinfile(rsvkm$MF)
 # [1] 0
