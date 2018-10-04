@@ -45,6 +45,7 @@
 #define ALLELE_BUFFSIZE 12
 #define MAX_UINT64_DEC_CHARS 21
 
+// --- LOGIC ---
 #define CMP_EQ(x, y, r) r = ((x == y) ? TRUE : FALSE);
 #define CMP_NE(x, y, r) r = ((x != y) ? TRUE : FALSE);
 #define CMP_LE(x, y, r) r = ((x <= y) ? TRUE : FALSE);
@@ -75,6 +76,8 @@ define_cmpfunc(GE)
 define_cmpfunc(LT)
 define_cmpfunc(GT)
 
+// --- STRING CONVERSION ---
+
 SEXP R_decstr_to_uint64(SEXP str, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
@@ -93,8 +96,8 @@ SEXP R_uint64_to_decstr(SEXP num, SEXP ret)
     char str[MAX_UINT64_DEC_CHARS];
     for(i = 0; i < n; i++)
     {
-        snprintf(str, MAX_UINT64_DEC_CHARS, PRIu64, pnum[i]); 
-        SET_STRING_ELT(ret, i, mkChar(str)); 
+        snprintf(str, MAX_UINT64_DEC_CHARS, PRIu64, pnum[i]);
+        SET_STRING_ELT(ret, i, mkChar(str));
     }
     return ret;
 }
@@ -107,7 +110,7 @@ SEXP R_hex_uint64_t(SEXP num, SEXP ret)
     for(i = 0; i < n; i++)
     {
         hex_uint64_t(pnum[i], hex);
-        SET_STRING_ELT(ret, i, mkChar(hex)); 
+        SET_STRING_ELT(ret, i, mkChar(hex));
     }
     return ret;
 }
@@ -123,10 +126,12 @@ SEXP R_parse_hex_uint64_t(SEXP hex, SEXP ret)
     return ret;
 }
 
+// --- VARIANTKEY ---
+
 SEXP R_encode_chrom(SEXP chrom, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     for(i = 0; i < n; i++)
     {
         const char *chr = CHAR(STRING_ELT(chrom, i));
@@ -138,13 +143,13 @@ SEXP R_encode_chrom(SEXP chrom, SEXP ret)
 SEXP R_decode_chrom(SEXP code, SEXP ret)
 {
     uint64_t i, n = LENGTH(code);
-    uint8_t *c = (uint8_t *)INTEGER(code);
+    uint32_t *c = (uint32_t *)INTEGER(code);
     char chrom[3];
     for(i = 0; i < n; i++)
     {
         chrom[0] = 0;
-        decode_chrom(c[i], chrom);
-        SET_STRING_ELT(ret, i, mkChar(chrom)); 
+        decode_chrom((uint8_t)(c[i]), chrom);
+        SET_STRING_ELT(ret, i, mkChar(chrom));
     }
     return ret;
 }
@@ -176,7 +181,7 @@ SEXP R_decode_refalt(SEXP code, SEXP rref, SEXP ralt)
         sizealt = 0;
         decode_refalt(c[i], ref, &sizeref, alt, &sizealt);
         SET_STRING_ELT(rref, i, mkChar(ref));
-        SET_STRING_ELT(ralt, i, mkChar(alt)); 
+        SET_STRING_ELT(ralt, i, mkChar(alt));
     }
     const char *names[] = {"REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -207,7 +212,7 @@ SEXP R_extract_variantkey_chrom(SEXP vk, SEXP ret)
     uint64_t *pvk = (uint64_t *)REAL(vk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_variantkey_chrom(pvk[i]); 
+        res[i] = extract_variantkey_chrom(pvk[i]);
     }
     return ret;
 }
@@ -219,7 +224,7 @@ SEXP R_extract_variantkey_pos(SEXP vk, SEXP ret)
     uint64_t *pvk = (uint64_t *)REAL(vk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_variantkey_pos(pvk[i]); 
+        res[i] = extract_variantkey_pos(pvk[i]);
     }
     return ret;
 }
@@ -231,7 +236,7 @@ SEXP R_extract_variantkey_refalt(SEXP vk, SEXP ret)
     uint64_t *pvk = (uint64_t *)REAL(vk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_variantkey_refalt(pvk[i]); 
+        res[i] = extract_variantkey_refalt(pvk[i]);
     }
     return ret;
 }
@@ -311,7 +316,7 @@ SEXP R_compare_variantkey_chrom(SEXP vka, SEXP vkb, SEXP ret)
     uint64_t *pvkb = (uint64_t *)REAL(vkb);
     for(i = 0; i < n; i++)
     {
-        res[i] = compare_variantkey_chrom(pvka[i], pvkb[i]); 
+        res[i] = compare_variantkey_chrom(pvka[i], pvkb[i]);
     }
     return ret;
 }
@@ -324,7 +329,7 @@ SEXP R_compare_variantkey_chrom_pos(SEXP vka, SEXP vkb, SEXP ret)
     uint64_t *pvkb = (uint64_t *)REAL(vkb);
     for(i = 0; i < n; i++)
     {
-        res[i] = compare_variantkey_chrom_pos(pvka[i], pvkb[i]); 
+        res[i] = compare_variantkey_chrom_pos(pvka[i], pvkb[i]);
     }
     return ret;
 }
@@ -608,7 +613,7 @@ SEXP R_find_ref_alt_by_variantkey(SEXP mc, SEXP vk, SEXP rref, SEXP ralt)
         alt[0] = 0;
         find_ref_alt_by_variantkey(*cmc, pvk[i], ref, &sizeref, alt, &sizealt);
         SET_STRING_ELT(rref, i, mkChar(ref));
-        SET_STRING_ELT(ralt, i, mkChar(alt)); 
+        SET_STRING_ELT(ralt, i, mkChar(alt));
     }
     const char *names[] = {"REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -634,10 +639,10 @@ SEXP R_reverse_variantkey(SEXP mc, SEXP vk, SEXP rchrom, SEXP rpos, SEXP rref, S
         v.sizeref = 0;
         v.sizealt = 0;
         reverse_variantkey(*cmc, pvk[i], &v);
-        SET_STRING_ELT(rchrom, i, mkChar(v.chrom)); 
+        SET_STRING_ELT(rchrom, i, mkChar(v.chrom));
         ppos[i] = v.pos;
         SET_STRING_ELT(rref, i, mkChar(v.ref));
-        SET_STRING_ELT(ralt, i, mkChar(v.alt)); 
+        SET_STRING_ELT(ralt, i, mkChar(v.alt));
     }
     const char *names[] = {"CHROM", "POS", "REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -848,7 +853,7 @@ SEXP R_extract_regionkey_chrom(SEXP rk, SEXP ret)
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_regionkey_chrom(prk[i]); 
+        res[i] = extract_regionkey_chrom(prk[i]);
     }
     return ret;
 }
@@ -860,7 +865,7 @@ SEXP R_extract_regionkey_startpos(SEXP rk, SEXP ret)
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_regionkey_startpos(prk[i]); 
+        res[i] = extract_regionkey_startpos(prk[i]);
     }
     return ret;
 }
@@ -872,7 +877,7 @@ SEXP R_extract_regionkey_endpos(SEXP rk, SEXP ret)
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_regionkey_endpos(prk[i]); 
+        res[i] = extract_regionkey_endpos(prk[i]);
     }
     return ret;
 }
@@ -884,7 +889,7 @@ SEXP R_extract_regionkey_strand(SEXP rk, SEXP ret)
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
-        res[i] = extract_regionkey_strand(prk[i]); 
+        res[i] = extract_regionkey_strand(prk[i]);
     }
     return ret;
 }
@@ -1108,7 +1113,7 @@ SEXP R_decode_string_id(SEXP esid, SEXP ret)
     {
         str[0] = 0;
         decode_string_id(pesid[i], str);
-        SET_STRING_ELT(ret, i, mkChar(str)); 
+        SET_STRING_ELT(ret, i, mkChar(str));
     }
     return ret;
 }

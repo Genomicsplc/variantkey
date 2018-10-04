@@ -38,7 +38,7 @@ ERR_INPUT_LENGTH <- "Error: vector inputs must have the same length."
 #' @export
 EncodeChrom <- function(chrom) {
     ret <- integer(length(chrom))
-    return(.Call("R_encode_chrom", chrom, ret))
+    return(.Call("R_encode_chrom", as.character(chrom), ret))
 }
 
 #' Decode the CHROM code.
@@ -47,7 +47,7 @@ EncodeChrom <- function(chrom) {
 #' @export
 DecodeChrom <- function(code) {
     ret <- character(length(code))
-    return(.Call("R_decode_chrom", code, ret))
+    return(.Call("R_decode_chrom", as.integer(code), ret))
 }
 
 #' Returns reference+alternate encoding.
