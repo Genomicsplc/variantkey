@@ -195,12 +195,12 @@ SEXP R_encode_variantkey(SEXP chrom, SEXP pos, SEXP refalt, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
     uint64_t *res = (uint64_t *)REAL(ret);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos = (uint32_t *)INTEGER(pos);
     uint32_t *prefalt = (uint32_t *)INTEGER(refalt);
     for(i = 0; i < n; i++)
     {
-        res[i] = encode_variantkey(pchrom[i], ppos[i], prefalt[i]);
+        res[i] = encode_variantkey((uint8_t)(pchrom[i]), ppos[i], prefalt[i]);
     }
     return ret;
 }
@@ -208,7 +208,7 @@ SEXP R_encode_variantkey(SEXP chrom, SEXP pos, SEXP refalt, SEXP ret)
 SEXP R_extract_variantkey_chrom(SEXP vk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *pvk = (uint64_t *)REAL(vk);
     for(i = 0; i < n; i++)
     {
@@ -244,7 +244,7 @@ SEXP R_extract_variantkey_refalt(SEXP vk, SEXP ret)
 SEXP R_decode_variantkey(SEXP vk, SEXP rchrom, SEXP rpos, SEXP rrefalt)
 {
     uint64_t i, n = LENGTH(rchrom);
-    uint8_t *pchrom = (uint8_t *)INTEGER(rchrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(rchrom);
     uint32_t *ppos = (uint32_t *)INTEGER(rpos);
     uint32_t *prefalt = (uint32_t *)INTEGER(rrefalt);
     uint64_t *pvk = (uint64_t *)REAL(vk);
@@ -286,9 +286,9 @@ SEXP R_variantkey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP ret)
 SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rmin, SEXP rmax)
 {
     uint64_t i, n = LENGTH(chrom);
-    uint64_t *pmin = (uint64_t *)REAL(rmin);
-    uint64_t *pmax = (uint64_t *)REAL(rmax);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *pmin = (uint32_t *)INTEGER(rmin);
+    uint32_t *pmax = (uint32_t *)INTEGER(rmax);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos_min = (uint32_t *)INTEGER(pos_min);
     uint32_t *ppos_max = (uint32_t *)INTEGER(pos_max);
     vkrange_t r = {0, 0};
@@ -296,7 +296,7 @@ SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rmin, SEXP 
     {
         r.min = 0;
         r.max = 0;
-        variantkey_range(pchrom[i], ppos_min[i], ppos_max[i], &r);
+        variantkey_range((uint8_t)(pchrom[i]), ppos_min[i], ppos_max[i], &r);
         pmin[i] = r.min;
         pmax[i] = r.max;
     }
@@ -311,7 +311,7 @@ SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rmin, SEXP 
 SEXP R_compare_variantkey_chrom(SEXP vka, SEXP vkb, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    int8_t *res = (int8_t *)INTEGER(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
     uint64_t *pvka = (uint64_t *)REAL(vka);
     uint64_t *pvkb = (uint64_t *)REAL(vkb);
     for(i = 0; i < n; i++)
@@ -450,15 +450,17 @@ SEXP R_find_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid, SEX
 {
     uint64_t i, n = LENGTH(rvk);
     uint64_t *pvk = (uint64_t *)REAL(rvk);
-    uint64_t *pfirst = (uint64_t *)REAL(rfirst);
+    uint32_t *pfirst = (uint32_t *)INTEGER(rfirst);
     uint32_t *prsid = (uint32_t *)INTEGER(rsid);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t ppfirst = asInteger(first);
     uint64_t pplast = asInteger(last);
+    uint64_t tfirst;
     for(i = 0; i < n; i++)
     {
-        pfirst[i] = ppfirst;
-        pvk[i] = find_rv_variantkey_by_rsid(*cmc, &(pfirst[i]), pplast, prsid[i]);
+        tfirst = ppfirst;
+        pvk[i] = find_rv_variantkey_by_rsid(*cmc, &tfirst, pplast, prsid[i]);
+        pfirst[i] = tfirst;
     }
     const char *names[] = {"VK", "FIRST", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -472,15 +474,17 @@ SEXP R_get_next_rv_variantkey_by_rsid(SEXP mc, SEXP pos, SEXP last, SEXP rsid, S
 {
     uint64_t i, n = LENGTH(rvk);
     uint64_t *pvk = (uint64_t *)REAL(rvk);
-    uint64_t *ppos = (uint64_t *)REAL(rpos);
-    uint64_t *ipos = (uint64_t *)REAL(pos);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
+    uint32_t *ipos = (uint32_t *)INTEGER(pos);
     uint32_t *prsid = (uint32_t *)INTEGER(rsid);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t pplast = asInteger(last);
+    uint64_t tpos;
     for(i = 0; i < n; i++)
     {
-        ppos[i] = ipos[i];
-        pvk[i] = get_next_rv_variantkey_by_rsid(*cmc, &(ppos[i]), pplast, prsid[i]);
+        tpos = ipos[i];
+        pvk[i] = get_next_rv_variantkey_by_rsid(*cmc, &tpos, pplast, prsid[i]);
+        ppos[i] = tpos;
     }
     const char *names[] = {"VK", "POS", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -515,15 +519,17 @@ SEXP R_find_vr_rsid_by_variantkey(SEXP mc, SEXP first, SEXP last, SEXP vk, SEXP 
 {
     uint64_t i, n = LENGTH(rrsid);
     uint32_t *prsid = (uint32_t *)INTEGER(rrsid);
-    uint64_t *pfirst = (uint64_t *)REAL(rfirst);
+    uint32_t *pfirst = (uint32_t *)INTEGER(rfirst);
     uint64_t *pvk = (uint64_t *)REAL(vk);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t ppfirst = asInteger(first);
     uint64_t pplast = asInteger(last);
+    uint64_t tfirst;
     for(i = 0; i < n; i++)
     {
-        pfirst[i] = ppfirst;
-        prsid[i] = find_vr_rsid_by_variantkey(*cmc, &(pfirst[i]), pplast, pvk[i]);
+        tfirst = ppfirst;
+        prsid[i] = find_vr_rsid_by_variantkey(*cmc, &tfirst, pplast, pvk[i]);
+        pfirst[i] = tfirst;
     }
     const char *names[] = {"RSID", "FIRST", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -537,19 +543,23 @@ SEXP R_find_vr_chrompos_range(SEXP mc, SEXP first, SEXP last, SEXP chrom, SEXP p
 {
     uint64_t i, n = LENGTH(rrsid);
     uint32_t *prsid = (uint32_t *)INTEGER(rrsid);
-    uint64_t *pfirst = (uint64_t *)REAL(rfirst);
-    uint64_t *plast = (uint64_t *)REAL(rlast);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *pfirst = (uint32_t *)INTEGER(rfirst);
+    uint32_t *plast = (uint32_t *)INTEGER(rlast);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos_min = (uint32_t *)INTEGER(pos_min);
     uint32_t *ppos_max = (uint32_t *)INTEGER(pos_max);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t ppfirst = asInteger(first);
     uint64_t pplast = asInteger(last);
+    uint64_t tfirst;
+    uint64_t tlast;
     for(i = 0; i < n; i++)
     {
-        pfirst[i] = ppfirst;
-        plast[i] = pplast;
-        prsid[i] = find_vr_chrompos_range(*cmc, &(pfirst[i]), &(plast[i]), pchrom[i], ppos_min[i], ppos_max[i]);
+        tfirst = ppfirst;
+        tlast = pplast;
+        prsid[i] = find_vr_chrompos_range(*cmc, &tfirst, &tlast, (uint8_t)(pchrom[i]), ppos_min[i], ppos_max[i]);
+        pfirst[i] = tfirst;
+        plast[i] = tlast;
     }
     const char *names[] = {"RSID", "FIRST", "LAST", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
@@ -627,7 +637,7 @@ SEXP R_reverse_variantkey(SEXP mc, SEXP vk, SEXP rchrom, SEXP rpos, SEXP rref, S
 {
     uint64_t i, n = LENGTH(vk);
     uint64_t *pvk = (uint64_t *)REAL(vk);
-    uint32_t *ppos = (uint32_t *)REAL(rpos);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
     variantkey_rev_t v = {0, 0, 0, 0, 0, 0};
     for(i = 0; i < n; i++)
@@ -657,7 +667,7 @@ SEXP R_reverse_variantkey(SEXP mc, SEXP vk, SEXP rchrom, SEXP rpos, SEXP rref, S
 SEXP R_get_variantkey_ref_length(SEXP mc, SEXP vk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    size_t *res = (size_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
     for(i = 0; i < n; i++)
@@ -734,13 +744,13 @@ SEXP R_mmap_genoref_file(SEXP file)
 SEXP R_get_genoref_seq(SEXP mf, SEXP chrom, SEXP pos, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
     for(i = 0; i < n; i++)
     {
-        res[i] = get_genoref_seq(*cmf, pchrom[i], ppos[i]);
+        res[i] = get_genoref_seq(*cmf, (uint8_t)(pchrom[i]), ppos[i]);
     }
     return ret;
 }
@@ -749,13 +759,13 @@ SEXP R_check_reference(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
     int *res = (int *)INTEGER(ret);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
     for(i = 0; i < n; i++)
     {
         const char *pref = CHAR(STRING_ELT(ref, i));
-        res[i] = check_reference(*cmf, pchrom[i], ppos[i], pref, strlen(pref));
+        res[i] = check_reference(*cmf, (uint8_t)(pchrom[i]), ppos[i], pref, strlen(pref));
     }
     return ret;
 }
@@ -778,7 +788,7 @@ SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP
     uint64_t i, n = LENGTH(ret);
     int *code = (int *)INTEGER(ret);
     uint32_t *ppos = (uint32_t *)INTEGER(rpos);
-    uint8_t *ichrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *ichrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ipos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
     size_t sizeref;
@@ -791,7 +801,7 @@ SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP
         a = Rf_acopy_string(CHAR(STRING_ELT(alt, i)));
         sizeref = strlen(r);
         sizealt = strlen(a);
-        code[i] = normalize_variant(*cmf, ichrom[i], &(ipos[i]), r, &sizeref, a, &sizealt);
+        code[i] = normalize_variant(*cmf, (uint8_t)(ichrom[i]), &(ipos[i]), r, &sizeref, a, &sizealt);
         SET_STRING_ELT(rref, i, mkChar(r));
         SET_STRING_ELT(ralt, i, mkChar(a));
     }
@@ -810,11 +820,11 @@ SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP
 SEXP R_encode_region_strand(SEXP strand, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
-    int8_t *pstrand = (int8_t *)INTEGER(strand);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    int32_t *pstrand = (int32_t *)INTEGER(strand);
     for(i = 0; i < n; i++)
     {
-        res[i] = encode_region_strand(pstrand[i]);
+        res[i] = encode_region_strand((int8_t)(pstrand[i]));
     }
     return ret;
 }
@@ -822,11 +832,11 @@ SEXP R_encode_region_strand(SEXP strand, SEXP ret)
 SEXP R_decode_region_strand(SEXP strand, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    int8_t *res = (int8_t *)INTEGER(ret);
-    uint8_t *pstrand = (uint8_t *)INTEGER(strand);
+    int32_t *res = (int32_t *)INTEGER(ret);
+    uint32_t *pstrand = (uint32_t *)INTEGER(strand);
     for(i = 0; i < n; i++)
     {
-        res[i] = decode_region_strand(pstrand[i]);
+        res[i] = decode_region_strand((uint8_t)(pstrand[i]));
     }
     return ret;
 }
@@ -835,13 +845,13 @@ SEXP R_encode_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand, SEX
 {
     uint64_t i, n = LENGTH(ret);
     uint64_t *res = (uint64_t *)REAL(ret);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *pstartpos = (uint32_t *)INTEGER(startpos);
     uint32_t *pendpos = (uint32_t *)INTEGER(endpos);
-    uint8_t *pstrand = (uint8_t *)INTEGER(strand);
+    uint32_t *pstrand = (uint32_t *)INTEGER(strand);
     for(i = 0; i < n; i++)
     {
-        res[i] = encode_regionkey(pchrom[i], pstartpos[i], pendpos[i], pstrand[i]);
+        res[i] = encode_regionkey((uint8_t)(pchrom[i]), pstartpos[i], pendpos[i], (uint8_t)(pstrand[i]));
     }
     return ret;
 }
@@ -849,7 +859,7 @@ SEXP R_encode_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand, SEX
 SEXP R_extract_regionkey_chrom(SEXP rk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
@@ -885,7 +895,7 @@ SEXP R_extract_regionkey_endpos(SEXP rk, SEXP ret)
 SEXP R_extract_regionkey_strand(SEXP rk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
@@ -897,10 +907,10 @@ SEXP R_extract_regionkey_strand(SEXP rk, SEXP ret)
 SEXP R_decode_regionkey(SEXP rk, SEXP rchrom, SEXP rstartpos, SEXP rendpos, SEXP rstrand)
 {
     uint64_t i, n = LENGTH(rchrom);
-    uint8_t *pchrom = (uint8_t *)INTEGER(rchrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(rchrom);
     uint32_t *pstartpos = (uint32_t *)INTEGER(rstartpos);
     uint32_t *pendpos = (uint32_t *)INTEGER(rendpos);
-    uint8_t *pstrand = (uint8_t *)INTEGER(rstrand);
+    uint32_t *pstrand = (uint32_t *)INTEGER(rstrand);
     uint64_t *prk = (uint64_t *)REAL(rk);
     regionkey_t v = {0, 0, 0, 0};
     for(i = 0; i < n; i++)
@@ -930,7 +940,7 @@ SEXP R_reverse_regionkey(SEXP rk, SEXP rchrom, SEXP rstartpos, SEXP rendpos, SEX
     uint64_t i, n = LENGTH(rk);
     uint32_t *pstartpos = (uint32_t *)INTEGER(rstartpos);
     uint32_t *pendpos = (uint32_t *)INTEGER(rendpos);
-    int8_t *pstrand = (int8_t *)INTEGER(rstrand);
+    int32_t *pstrand = (int32_t *)INTEGER(rstrand);
     uint64_t *prk = (uint64_t *)REAL(rk);
     regionkey_rev_t v = {0, 0, 0, 0};
     for(i = 0; i < n; i++)
@@ -961,11 +971,11 @@ SEXP R_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand, SEXP ret)
     uint64_t *res = (uint64_t *)REAL(ret);
     uint32_t *pstartpos = (uint32_t *)INTEGER(startpos);
     uint32_t *pendpos = (uint32_t *)INTEGER(endpos);
-    int8_t *pstrand = (int8_t *)INTEGER(strand);
+    int32_t *pstrand = (int32_t *)INTEGER(strand);
     for(i = 0; i < n; i++)
     {
         const char *chr = CHAR(STRING_ELT(chrom, i));
-        res[i] = regionkey(chr, strlen(chr), pstartpos[i], pendpos[i], pstrand[i]);
+        res[i] = regionkey(chr, strlen(chr), pstartpos[i], pendpos[i], (int8_t)(pstrand[i]));
     }
     return ret;
 }
@@ -1007,16 +1017,16 @@ SEXP R_get_regionkey_chrom_endpos(SEXP rk, SEXP ret)
 SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEXP b_chrom, SEXP b_startpos, SEXP b_endpos, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
-    uint8_t *pachrom = (uint8_t *)INTEGER(a_chrom);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint32_t *pachrom = (uint32_t *)INTEGER(a_chrom);
     uint32_t *pastartpos = (uint32_t *)INTEGER(a_startpos);
     uint32_t *paendpos = (uint32_t *)INTEGER(a_endpos);
-    uint8_t *pbchrom = (uint8_t *)INTEGER(b_chrom);
+    uint32_t *pbchrom = (uint32_t *)INTEGER(b_chrom);
     uint32_t *pbstartpos = (uint32_t *)INTEGER(b_startpos);
     uint32_t *pbendpos = (uint32_t *)INTEGER(b_endpos);
     for(i = 0; i < n; i++)
     {
-        res[i] = are_overlapping_regions(pachrom[i], pastartpos[i], paendpos[i], pbchrom[i], pbstartpos[i], pbendpos[i]);
+        res[i] = are_overlapping_regions((uint8_t)(pachrom[i]), pastartpos[i], paendpos[i], (uint8_t)(pbchrom[i]), pbstartpos[i], pbendpos[i]);
     }
     return ret;
 }
@@ -1024,14 +1034,14 @@ SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEX
 SEXP R_are_overlapping_region_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP rk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
-    uint8_t *pchrom = (uint8_t *)INTEGER(chrom);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *pstartpos = (uint32_t *)INTEGER(startpos);
     uint32_t *pendpos = (uint32_t *)INTEGER(endpos);
     uint64_t *prk = (uint64_t *)REAL(rk);
     for(i = 0; i < n; i++)
     {
-        res[i] = are_overlapping_region_regionkey(pchrom[i], pstartpos[i], pendpos[i], prk[i]);
+        res[i] = are_overlapping_region_regionkey((uint8_t)(pchrom[i]), pstartpos[i], pendpos[i], prk[i]);
     }
     return ret;
 }
@@ -1039,7 +1049,7 @@ SEXP R_are_overlapping_region_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, 
 SEXP R_are_overlapping_regionkeys(SEXP rka, SEXP rkb, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *prka = (uint64_t *)REAL(rka);
     uint64_t *prkb = (uint64_t *)REAL(rkb);
     for(i = 0; i < n; i++)
@@ -1052,7 +1062,7 @@ SEXP R_are_overlapping_regionkeys(SEXP rka, SEXP rkb, SEXP ret)
 SEXP R_are_overlapping_variantkey_regionkey(SEXP mc, SEXP vk, SEXP rk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *pvk = (uint64_t *)REAL(vk);
     uint64_t *prk = (uint64_t *)REAL(rk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
@@ -1066,7 +1076,7 @@ SEXP R_are_overlapping_variantkey_regionkey(SEXP mc, SEXP vk, SEXP rk, SEXP ret)
 SEXP R_variantkey_to_regionkey(SEXP mc, SEXP vk, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    uint8_t *res = (uint8_t *)INTEGER(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
     uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
     for(i = 0; i < n; i++)

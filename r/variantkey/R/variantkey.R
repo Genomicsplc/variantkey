@@ -61,7 +61,7 @@ EncodeRefAlt <- function(ref, alt) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_encode_refalt", ref, alt, ret))
+    return(.Call("R_encode_refalt", as.character(ref), as.character(alt), ret))
 }
 
 #' Decode the 32 bit REF+ALT code if reversible (if it has 11 or less bases in total and only contains ACGT letters).
@@ -70,8 +70,8 @@ EncodeRefAlt <- function(ref, alt) {
 #' @export
 DecodeRefAlt <- function(code) {
     ref <- character(length(code))
-    alt <- ref
-    return(.Call("R_decode_refalt", code, ref, alt))
+    alt <- character(length(code))
+    return(.Call("R_decode_refalt", as.integer(code), ref, alt))
 }
 
 #' Returns a 64 bit variant key based on pre-encoded CHROM, POS (0-base) and REF+ALT.
@@ -86,7 +86,7 @@ EncodeVariantKey <- function(chrom, pos, refalt) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- uint64(n)
-    return(.Call("R_encode_variantkey", chrom, pos, refalt, ret))
+    return(.Call("R_encode_variantkey", as.integer(chrom), as.integer(pos), as.integer(refalt), ret))
 }
 
 #' Extract the CHROM code from VariantKey.
@@ -95,7 +95,7 @@ EncodeVariantKey <- function(chrom, pos, refalt) {
 #' @export
 ExtractVariantKeyChrom <- function(vk) {
     ret <- integer(length(vk))
-    return(.Call("R_extract_variantkey_chrom", vk, ret))
+    return(.Call("R_extract_variantkey_chrom", as.unit64(vk), ret))
 }
 
 #' Extract the POS code from VariantKey.
@@ -104,7 +104,7 @@ ExtractVariantKeyChrom <- function(vk) {
 #' @export
 ExtractVariantKeyPos <- function(vk) {
     ret <- integer(length(vk))
-    return(.Call("R_extract_variantkey_pos", vk, ret))
+    return(.Call("R_extract_variantkey_pos", as.unit64(vk), ret))
 }
 
 #' Extract the REF+ALT code from VariantKey.
@@ -113,7 +113,7 @@ ExtractVariantKeyPos <- function(vk) {
 #' @export
 ExtractVariantKeyRefAlt <- function(vk) {
     ret <- integer(length(vk))
-    return(.Call("R_extract_variantkey_refalt", vk, ret))
+    return(.Call("R_extract_variantkey_refalt", as.unit64(vk), ret))
 }
 
 #' Decode a VariantKey code and returns the components.
@@ -122,10 +122,11 @@ ExtractVariantKeyRefAlt <- function(vk) {
 #' @useDynLib   variantkey R_decode_variantkey
 #' @export
 DecodeVariantKey <- function(vk) {
-    chrom <- integer(length(vk))
-    pos <- chrom
-    refalt <- chrom
-    return(.Call("R_decode_variantkey", vk, chrom, pos, refalt))
+    n <- length(vk)
+    chrom <- integer(n)
+    pos <- integer(n)
+    refalt <- integer(n)
+    return(.Call("R_decode_variantkey", as.unit64(vk), chrom, pos, refalt))
 }
 
 #' Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
@@ -141,7 +142,7 @@ VariantKey <- function(chrom, pos, ref, alt) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- uint64(n)
-    return(.Call("R_variantkey", chrom, pos, ref, alt, ret))
+    return(.Call("R_variantkey", as.character(chrom), as.integer(pos), as.character(ref), as.character(alt), ret))
 }
 
 #' Returns minimum and maximum variant keys for range searches.
@@ -156,8 +157,8 @@ VariantKeyRange <- function(chrom, pos_min, pos_max) {
         stop(ERR_INPUT_LENGTH)
     }
     min <- uint64(n)
-    max <- min
-    return(.Call("R_variantkey_range", chrom, pos_min, pos_max, min, max))
+    max <- uint64(n)
+    return(.Call("R_variantkey_range", as.integer(chrom), as.integer(pos_min), as.integer(pos_max), min, max))
 }
 
 #' Compares two VariantKeys by chromosome only.
@@ -172,7 +173,7 @@ CompareVariantKeyChrom <- function(vka, vkb) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_compare_variantkey_chrom", vka, vkb, ret))
+    return(.Call("R_compare_variantkey_chrom", as.uint64(vka), as.uint64(vkb), ret))
 }
 
 #' Compares two VariantKeys by chromosome and position.
@@ -187,7 +188,7 @@ CompareVariantKeyChromPos <- function(vka, vkb) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_compare_variantkey_chrom_pos", vka, vkb, ret))
+    return(.Call("R_compare_variantkey_chrom_pos", as.uint64(vka), as.uint64(vkb), ret))
 }
 
 #' Returns VariantKey hexadecimal string (16 characters).
@@ -196,7 +197,7 @@ CompareVariantKeyChromPos <- function(vka, vkb) {
 #' @export
 VariantKeyHex <- function(vk) {
     ret <- character(length(vk))
-    return(.Call("R_variantkey_hex", vk, ret))
+    return(.Call("R_variantkey_hex", as.uint64(vk), ret))
 }
 
 #' Parses a VariantKey hexadecimal string and returns the code.
@@ -205,7 +206,7 @@ VariantKeyHex <- function(vk) {
 #' @export
 ParseVariantKeyHex <- function(hex) {
     ret <- uint64(length(hex))
-    return(.Call("R_parse_variantkey_hex", hex, ret))
+    return(.Call("R_parse_variantkey_hex", as.character(hex), ret))
 }
 
 # --- BINSEARCH ---
@@ -249,9 +250,10 @@ MmapVKRSFile <- function(file, ctbytes) {
 #' @useDynLib   variantkey R_find_rv_variantkey_by_rsid
 #' @export
 FindRvVariantKeyByRsid <- function(mc, first, last, rsid) {
-    vk <- uint64(length(rsid))
-    rfirst <- vk
-    return(.Call("R_find_rv_variantkey_by_rsid", mc, first, last, rsid, vk, rfirst))
+    n <- length(rsid)
+    vk <- uint64(n)
+    rfirst <- integer(n)
+    return(.Call("R_find_rv_variantkey_by_rsid", mc, as.integer(first), as.integer(last), as.integer(rsid), vk, rfirst))
 }
 
 #' Get the next VariantKey for the specified rsID in the RV file, or 0 if not found
@@ -263,9 +265,10 @@ FindRvVariantKeyByRsid <- function(mc, first, last, rsid) {
 #' @useDynLib   variantkey R_get_next_rv_variantkey_by_rsid
 #' @export
 GetNextRvVariantKeyByRsid <- function(mc, pos, last, rsid) {
-    vk <- uint64(length(rsid))
-    rpos <- vk
-    return(.Call("R_get_next_rv_variantkey_by_rsid", mc, pos, last, rsid, vk, rpos))
+    n <- length(rsid)
+    vk <- uint64(n)
+    rpos <- integer(n)
+    return(.Call("R_get_next_rv_variantkey_by_rsid", mc, as.integer(pos), as.integer(last), as.integer(rsid), vk, rpos))
 }
 
 #' Search for the specified rsID and returns all the associated VariantKeys in the RV file.
@@ -277,7 +280,7 @@ GetNextRvVariantKeyByRsid <- function(mc, pos, last, rsid) {
 #' @useDynLib   variantkey R_find_all_rv_variantkey_by_rsid
 #' @export
 FindAllRvVariantKeyByRsid <- function(mc, first, last, rsid) {
-    return(.Call("R_find_all_rv_variantkey_by_rsid", mc, first, last, rsid))
+    return(.Call("R_find_all_rv_variantkey_by_rsid", mc, as.integer(first), as.integer(last), as.integer(rsid)))
 }
 
 #' Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found
@@ -290,8 +293,8 @@ FindAllRvVariantKeyByRsid <- function(mc, first, last, rsid) {
 FindVrRsidByVariantKey <- function(mc, first, last, vk) {
     len <- length(vk)
     rsid <- integer(len)
-    rfirst <- uint64(len)
-    return(.Call("R_find_vr_rsid_by_variantkey", mc, first, last, vk, rsid, rfirst))
+    rfirst <- integer(len)
+    return(.Call("R_find_vr_rsid_by_variantkey", mc, as.integer(first), as.integer(last), as.uint64(vk), rsid, rfirst))
 }
 
 #' Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
@@ -310,8 +313,8 @@ FindVrChromposRange <- function(mc, first, last, chrom, pos_min, pos_max) {
     }
     rsid <- integer(n)
     rfirst <- uint64(n)
-    rlast <- rfirst
-    return(.Call("R_find_vr_chrompos_range", mc, first, last, chrom, pos_min, pos_max, rsid, rfirst, rlast))
+    rlast <- integer(n)
+    return(.Call("R_find_vr_chrompos_range", mc, as.integer(first), as.integer(last), as.integer(chrom), as.integer(pos_min), as.integer(pos_max), rsid, rfirst, rlast))
 }
 
 # --- NRVK ---
@@ -332,9 +335,10 @@ MmapNRVKFile <- function(file) {
 #' @useDynLib   variantkey R_find_ref_alt_by_variantkey
 #' @export
 FindRefAltByVariantKey <- function(mc, vk) {
-    ref <- character(length(vk))
-    alt <- ref
-    return(.Call("R_find_ref_alt_by_variantkey", mc, vk, ref, alt))
+    n <- length(vk)
+    ref <- character(n)
+    alt <- character(n)
+    return(.Call("R_find_ref_alt_by_variantkey", mc, as.uint64(vk), ref, alt))
 }
 
 #' Reverse a VariantKey code and returns the normalized components.
@@ -343,12 +347,12 @@ FindRefAltByVariantKey <- function(mc, vk) {
 #' @useDynLib   variantkey R_reverse_variantkey
 #' @export
 ReverseVariantKey <- function(mc, vk) {
-    len <- length(vk)
-    chrom <- character(len)
-    pos <- integer(len)
-    ref <- chrom
-    alt <- chrom
-    return(.Call("R_reverse_variantkey", mc, vk, chrom, pos, ref, alt))
+    n <- length(vk)
+    chrom <- character(n)
+    pos <- integer(n)
+    ref <- character(n)
+    alt <- character(n)
+    return(.Call("R_reverse_variantkey", mc, as.uint64(vk), chrom, pos, ref, alt))
 }
 
 #' Retrieve the REF length for the specified VariantKey.
@@ -359,7 +363,7 @@ ReverseVariantKey <- function(mc, vk) {
 #' @export
 GetVariantKeyRefLength <- function(mc, vk) {
     ret <- integer(length(vk))
-    return(.Call("R_get_variantkey_ref_length", mc, vk, ret))
+    return(.Call("R_get_variantkey_ref_length", mc, as.uint64(vk), ret))
 }
 
 #' Get the VariantKey end position (POS + REF length).
@@ -370,7 +374,7 @@ GetVariantKeyRefLength <- function(mc, vk) {
 #' @export
 GetVariantKeyEndPos <- function(mc, vk) {
     ret <- integer(length(vk))
-    return(.Call("R_get_variantkey_endpos", mc, vk, ret))
+    return(.Call("R_get_variantkey_endpos", mc, as.uint64(vk), ret))
 }
 
 #' Get the CHROM + START POS encoding from VariantKey.
@@ -379,7 +383,7 @@ GetVariantKeyEndPos <- function(mc, vk) {
 #' @export
 GetVariantKeyChromStartPos <- function(vk) {
     ret <- uint64(length(vk))
-    return(.Call("R_get_variantkey_chrom_startpos", vk, ret))
+    return(.Call("R_get_variantkey_chrom_startpos", as.uint64(vk), ret))
 }
 
 #' Get the CHROM + END POS encoding from VariantKey.
@@ -389,7 +393,7 @@ GetVariantKeyChromStartPos <- function(vk) {
 #' @export
 GetVariantKeyChromEndPos <- function(mc, vk) {
     ret <- uint64(length(vk))
-    return(.Call("R_get_variantkey_chrom_endpos", mc, vk, ret))
+    return(.Call("R_get_variantkey_chrom_endpos", mc, as.uint64(vk), ret))
 }
 
 #' Convert a vrnr.bin file to a simple TSV.
@@ -426,7 +430,7 @@ GetGenorefSeq <- function(mf, chrom, pos) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_get_genoref_seq", mf, chrom, pos, ret))
+    return(.Call("R_get_genoref_seq", mf, as.integer(chrom), as.integer(pos), ret))
 }
 
 #' Check if the reference allele matches the reference genome data.
@@ -447,7 +451,7 @@ CheckReference <- function(mf, chrom, pos, ref) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_check_reference", mf, chrom, pos, ref, ret))
+    return(.Call("R_check_reference", mf, as.integer(chrom), as.integer(pos), as.character(ref), ret))
 }
 
 #' Flip the allele nucleotides (replaces each letter with its complement).
@@ -459,7 +463,7 @@ CheckReference <- function(mf, chrom, pos, ref) {
 #' @export
 FlipAllele <- function(allele) {
     ref <- character(length(allele))
-    return(.Call("R_flip_allele", allele, ret))
+    return(.Call("R_flip_allele", as.character(allele), ret))
 }
 
 #' Normalize a variant.
@@ -493,8 +497,8 @@ NormalizeVariant <- function(mf, chrom, pos, ref, alt) {
     }
     rpos <- integer(n)
     rref <- character(n)
-    ralt <- rref
-    return(.Call("R_normalize_variant", mf, chrom, pos, ref, alt, rpos, rref, ralt))
+    ralt <- character(n)
+    return(.Call("R_normalize_variant", mf, as.integer(chrom), as.integer(pos), as.character(ref), as.character(alt), rpos, rref, ralt))
 }
 
 # --- REGIONKEY ---
@@ -505,7 +509,7 @@ NormalizeVariant <- function(mf, chrom, pos, ref, alt) {
 #' @export
 EncodeRegionStrand <- function(strand) {
     ret <- integer(length(strand))
-    return(.Call("R_encode_region_strand", strand, ret))
+    return(.Call("R_encode_region_strand", as.integer(strand), ret))
 }
 
 #' Decode the strand direction code (0 > 0, 1 > +1, 2 > -1).
@@ -514,7 +518,7 @@ EncodeRegionStrand <- function(strand) {
 #' @export
 DecodeRegionStrand <- function(strand) {
     ret <- integer(length(strand))
-    return(.Call("R_decode_region_strand", strand, ret))
+    return(.Call("R_decode_region_strand", as.integer(strand), ret))
 }
 
 #' Returns a 64 bit regionkey
@@ -530,7 +534,7 @@ EncodeRegionKey <- function(chrom, startpos, endpos, strand) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- uint64(n)
-    return(.Call("R_encode_regionkey", chrom, startpos, endpos, strand, ret))
+    return(.Call("R_encode_regionkey", as.integer(chrom), as.integer(startpos), as.integer(endpos), as.integer(strand), ret))
 }
 
 #' Extract the CHROM code from RegionKey.
@@ -539,7 +543,7 @@ EncodeRegionKey <- function(chrom, startpos, endpos, strand) {
 #' @export
 ExtractRegionKeyChrom <- function(rk) {
     ret <- integer(length(rk))
-    return(.Call("R_extract_regionkey_chrom", rk, ret))
+    return(.Call("R_extract_regionkey_chrom", as.uint64(rk), ret))
 }
 
 #' Extract the START POS code from RegionKey.
@@ -548,7 +552,7 @@ ExtractRegionKeyChrom <- function(rk) {
 #' @export
 ExtractRegionKeyStartPos <- function(rk) {
     ret <- integer(length(rk))
-    return(.Call("R_extract_regionkey_startpos", rk, ret))
+    return(.Call("R_extract_regionkey_startpos", as.uint64(rk), ret))
 }
 
 #' Extract the END POS code from RegionKey.
@@ -557,7 +561,7 @@ ExtractRegionKeyStartPos <- function(rk) {
 #' @export
 ExtractRegionKeyEndPos <- function(rk) {
     ret <- integer(length(rk))
-    return(.Call("R_extract_regionkey_endpos", rk, ret))
+    return(.Call("R_extract_regionkey_endpos", as.uint64(rk), ret))
 }
 
 #' Extract the STRAND from RegionKey.
@@ -566,7 +570,7 @@ ExtractRegionKeyEndPos <- function(rk) {
 #' @export
 ExtractRegionKeyStrand <- function(rk) {
     ret <- integer(length(rk))
-    return(.Call("R_extract_regionkey_strand", rk, ret))
+    return(.Call("R_extract_regionkey_strand", as.uint64(rk), ret))
 }
 
 #' Decode a RegionKey code and returns the components as regionkey_t structure.
@@ -574,11 +578,12 @@ ExtractRegionKeyStrand <- function(rk) {
 #' @useDynLib   variantkey R_decode_regionkey
 #' @export
 DecodeRegionKey <- function(rk) {
-    chrom <- integer(length(rk))
-    startpos <- chrom
-    endpos <- chrom
-    strand <- chrom
-    return(.Call("R_decode_regionkey", rk, chrom, startpos, endpos, strand))
+    n <- length(rk)
+    chrom <- integer(n)
+    startpos <- integer(n)
+    endpos <- integer(n)
+    strand <- integer(n)
+    return(.Call("R_decode_regionkey", as.uint64(rk), chrom, startpos, endpos, strand))
 }
 
 #' Reverse a RegionKey code and returns the normalized components as regionkey_rev_t structure.
@@ -586,12 +591,12 @@ DecodeRegionKey <- function(rk) {
 #' @useDynLib   variantkey R_reverse_regionkey
 #' @export
 ReverseRegionKey <- function(rk) {
-    len <- length(rk)
-    chrom <- character(len)
-    startpos <- integer(len)
-    endpos <- startpos
-    strand <- startpos
-    return(.Call("R_reverse_regionkey", rk, chrom, startpos, endpos, strand))
+    n <- length(rk)
+    chrom <- character(n)
+    startpos <- integer(n)
+    endpos <- integer(n)
+    strand <- integer(n)
+    return(.Call("R_reverse_regionkey", as.uint64(rk), chrom, startpos, endpos, strand))
 }
 
 #' Returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STRAND.
@@ -608,7 +613,7 @@ RegionKey <- function(chrom, startpos, endpos, strand) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- uint64(n)
-    return(.Call("R_regionkey", chrom, startpos, endpos, strand, ret))
+    return(.Call("R_regionkey", as.character(chrom), as.integer(startpos), as.integer(endpos), as.integer(strand), ret))
 }
 
 #' Returns RegionKey hexadecimal string (16 characters).
@@ -617,7 +622,7 @@ RegionKey <- function(chrom, startpos, endpos, strand) {
 #' @export
 RegionKeyHex <- function(vk) {
     ret <- character(length(vk))
-    return(.Call("R_regionkey_hex", vk, ret))
+    return(.Call("R_regionkey_hex", as.uint64(vk), ret))
 }
 
 #' Parses a RegionKey hexadecimal string and returns the code.
@@ -626,7 +631,7 @@ RegionKeyHex <- function(vk) {
 #' @export
 ParseRegionKeyHex <- function(hex) {
     ret <- uint64(length(hex))
-    return(.Call("R_parse_regionkey_hex", hex, ret))
+    return(.Call("R_parse_regionkey_hex", as.character(hex), ret))
 }
 
 #' Get the CHROM + START POS encoding from RegionKey.
@@ -635,7 +640,7 @@ ParseRegionKeyHex <- function(hex) {
 #' @export
 GetRegionKeyChromStartPos <- function(rk) {
     ret <- uint64(length(rk))
-    return(.Call("R_get_regionkey_chrom_startpos", rk, ret))
+    return(.Call("R_get_regionkey_chrom_startpos", as.uint64(rk), ret))
 }
 
 #' Get the CHROM + END POS encoding from RegionKey.
@@ -644,7 +649,7 @@ GetRegionKeyChromStartPos <- function(rk) {
 #' @export
 GetRegionKeyChromEndPos <- function(rk) {
     ret <- uint64(length(rk))
-    return(.Call("R_get_regionkey_chrom_endpos", rk, ret))
+    return(.Call("R_get_regionkey_chrom_endpos", as.uint64(rk), ret))
 }
 
 #' Check if two regions are overlapping.
@@ -663,7 +668,7 @@ AreOverlappingRegions <- function(a_chrom, a_startpos, a_endpos, b_chrom, b_star
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_are_overlapping_regions", a_chrom, a_startpos, a_endpos, b_chrom, b_startpos, b_endpos, ret))
+    return(.Call("R_are_overlapping_regions", as.integer(a_chrom), as.integer(a_startpos), as.integer(a_endpos), as.integer(b_chrom), as.integer(b_startpos), as.integer(b_endpos), ret))
 }
 
 #' Check if a region and a regionkey are overlapping.
@@ -680,7 +685,7 @@ AreOverlappingRegionRegionKey <- function(chrom, startpos, endpos, rk) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_are_overlapping_region_regionkey", chrom, startpos, endpos, rk, ret))
+    return(.Call("R_are_overlapping_region_regionkey", as.integer(chrom), as.integer(startpos), as.integer(endpos), as.uint64(rk), ret))
 }
 
 #' Check if two regionkeys are overlapping.
@@ -695,7 +700,7 @@ AreOverlappingRegionKeys <- function(rka, rkb) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_are_overlapping_regionkeys", rka, rkb, ret))
+    return(.Call("R_are_overlapping_regionkeys", as.uint64(rka), as.uint64(rkb), ret))
 }
 
 #' Check if variantkey and regionkey are overlapping.
@@ -711,7 +716,7 @@ AreOverlappingVariantKeyRegionKey <- function(mc, vk, rk) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(.Call("R_are_overlapping_variantkey_regionkey", mc, vk, rk, ret))
+    return(.Call("R_are_overlapping_variantkey_regionkey", mc, as.uint64(vk), as.uint64(rk), ret))
 }
 
 #' Get RegionKey from VariantKey.
@@ -721,7 +726,7 @@ AreOverlappingVariantKeyRegionKey <- function(mc, vk, rk) {
 #' @export
 VariantToRegionkey <- function(mc, vk) {
     ret <- uint64(length(vk))
-    return(.Call("R_variantkey_to_regionkey", mc, vk, ret))
+    return(.Call("R_variantkey_to_regionkey", mc, as.uint64(vk), ret))
 }
 
 # --- ESID ---
@@ -734,7 +739,7 @@ VariantToRegionkey <- function(mc, vk) {
 #' @export
 EncodeStringID <- function(str, start) {
     ret <- uint64(length(str))
-    return(.Call("R_encode_string_id", str, start, ret))
+    return(.Call("R_encode_string_id", as.character(str), as.integer(start), ret))
 }
 
 #' Encode a string composed by a character section followed by a separator character and a numerical section
@@ -747,7 +752,7 @@ EncodeStringID <- function(str, start) {
 #' @export
 EncodeStringNumID <- function(str, sep) {
     ret <- uint64(length(str))
-    return(.Call("R_encode_string_num_id", str, sep, ret))
+    return(.Call("R_encode_string_num_id", as.character(str), sep, ret))
 }
 
 #' Decode the encoded string ID.
@@ -758,7 +763,7 @@ EncodeStringNumID <- function(str, sep) {
 #' @export
 DecodeStringID <- function(esid) {
     ret <- character(length(esid))
-    return(.Call("R_decode_string_id", esid, ret))
+    return(.Call("R_decode_string_id", as.uint64(esid), ret))
 }
 
 #' Hash the input string into a 64 bit unsigned integer.
@@ -768,5 +773,5 @@ DecodeStringID <- function(esid) {
 #' @export
 HashStringID <- function(str) {
     ret <- uint64(length(str))
-    return(.Call("R_hash_string_id", str, ret))
+    return(.Call("R_hash_string_id", as.character(str), ret))
 }
