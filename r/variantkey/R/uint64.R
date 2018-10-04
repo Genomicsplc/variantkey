@@ -174,11 +174,16 @@ format.uint64 <- function(x, justify="right", ...) {
 
 #' Prints uint64 argument and returns it invisibly.
 #' @export
-print.uint64 <- function(x, ...) {
-    return(cat(format.uint64(x, ...), "\n"))
+print.uint64 <- function(x, quote=FALSE, ...) {
+    a <- attributes(x)
+    ret <- as.character(x)
+    a$class <- remUint64Class(a$class)
+    attributes(ret) <- a
+    print(ret, quote=quote, ...)
+    invisible(x)
 }
 
-#' Prints uint64 values.
+#' Compactly Display the Structure of an uint64 Object.
 #' @export
 str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length=give.head, ...) {
     strO <- strOptions()

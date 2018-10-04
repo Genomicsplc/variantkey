@@ -2,11 +2,11 @@
 % Please edit documentation in R/uint64.R
 \name{str.uint64}
 \alias{str.uint64}
-\title{Prints uint64 values.}
+\title{Compactly Display the Structure of an uint64 Object.}
 \usage{
 \method{str}{uint64}(object, vec.len = strO$vec.len, give.head = TRUE,
   give.length = give.head, ...)
 }
 \description{
-Prints uint64 values.
+Compactly Display the Structure of an uint64 Object.
 }

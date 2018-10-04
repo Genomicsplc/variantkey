@@ -4,7 +4,7 @@
 \alias{print.uint64}
 \title{Prints uint64 argument and returns it invisibly.}
 \usage{
-\method{print}{uint64}(x, ...)
+\method{print}{uint64}(x, quote = FALSE, ...)
 }
 \description{
 Prints uint64 argument and returns it invisibly.

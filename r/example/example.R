@@ -27,16 +27,10 @@ print(x)
 #
 # $ALT
 # [1] "GT"
-#
-# $REF_LEN
-# [1] 2
-#
-# $ALT_LEN
-# [1] 2
 
 x <- EncodeVariantKey(23, 12345, 286097408)
 print(x)
-# [1] "b800181c910d8000"
+# [1] 13258623813950472192
 
 x <- ExtractVariantKeyChrom("b800181c910d8000")
 print(x)
