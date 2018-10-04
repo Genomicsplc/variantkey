@@ -76,7 +76,7 @@ define_cmpfunc(GE)
 define_cmpfunc(LT)
 define_cmpfunc(GT)
 
-// --- STRING CONVERSION ---
+// --- UINT64 ---
 
 SEXP R_decstr_to_uint64(SEXP str, SEXP ret)
 {
@@ -89,27 +89,27 @@ SEXP R_decstr_to_uint64(SEXP str, SEXP ret)
     return ret;
 }
 
-SEXP R_uint64_to_decstr(SEXP num, SEXP ret)
+SEXP R_uint64_to_decstr(SEXP x, SEXP ret)
 {
-    uint64_t i, n = LENGTH(num);
-    uint64_t *pnum = (uint64_t *)REAL(num);
+    uint64_t i, n = LENGTH(x);
+    uint64_t *px = (uint64_t *)REAL(x);
     char str[MAX_UINT64_DEC_CHARS];
     for(i = 0; i < n; i++)
     {
-        snprintf(str, MAX_UINT64_DEC_CHARS, PRIu64, pnum[i]);
+        snprintf(str, MAX_UINT64_DEC_CHARS, PRIu64, px[i]);
         SET_STRING_ELT(ret, i, mkChar(str));
     }
     return ret;
 }
 
-SEXP R_hex_uint64_t(SEXP num, SEXP ret)
+SEXP R_hex_uint64_t(SEXP x, SEXP ret)
 {
-    uint64_t i, n = LENGTH(num);
-    uint64_t *pnum = (uint64_t *)REAL(num);
+    uint64_t i, n = LENGTH(x);
+    uint64_t *px = (uint64_t *)REAL(x);
     char hex[17];
     for(i = 0; i < n; i++)
     {
-        hex_uint64_t(pnum[i], hex);
+        hex_uint64_t(px[i], hex);
         SET_STRING_ELT(ret, i, mkChar(hex));
     }
     return ret;
@@ -122,6 +122,30 @@ SEXP R_parse_hex_uint64_t(SEXP hex, SEXP ret)
     for(i = 0; i < n; i++)
     {
         res[i] = parse_hex_uint64_t(CHAR(STRING_ELT(hex, i)));
+    }
+    return ret;
+}
+
+SEXP R_double_to_uint64(SEXP x, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    double *px = REAL(x);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = (uint64_t)(px[i]);
+    }
+    return ret;
+}
+
+SEXP R_integer_to_uint64(SEXP x, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *px = (uint32_t *)INTEGER(x);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = (uint64_t)(px[i]);
     }
     return ret;
 }
