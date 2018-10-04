@@ -95,7 +95,7 @@ EncodeVariantKey <- function(chrom, pos, refalt) {
 #' @export
 ExtractVariantKeyChrom <- function(vk) {
     ret <- integer(length(vk))
-    return(.Call("R_extract_variantkey_chrom", as.unit64(vk), ret))
+    return(.Call("R_extract_variantkey_chrom", as.uint64(vk), ret))
 }
 
 #' Extract the POS code from VariantKey.
@@ -104,7 +104,7 @@ ExtractVariantKeyChrom <- function(vk) {
 #' @export
 ExtractVariantKeyPos <- function(vk) {
     ret <- integer(length(vk))
-    return(.Call("R_extract_variantkey_pos", as.unit64(vk), ret))
+    return(.Call("R_extract_variantkey_pos", as.uint64(vk), ret))
 }
 
 #' Extract the REF+ALT code from VariantKey.
@@ -113,7 +113,7 @@ ExtractVariantKeyPos <- function(vk) {
 #' @export
 ExtractVariantKeyRefAlt <- function(vk) {
     ret <- integer(length(vk))
-    return(.Call("R_extract_variantkey_refalt", as.unit64(vk), ret))
+    return(.Call("R_extract_variantkey_refalt", as.uint64(vk), ret))
 }
 
 #' Decode a VariantKey code and returns the components.
@@ -126,7 +126,7 @@ DecodeVariantKey <- function(vk) {
     chrom <- integer(n)
     pos <- integer(n)
     refalt <- integer(n)
-    return(.Call("R_decode_variantkey", as.unit64(vk), chrom, pos, refalt))
+    return(.Call("R_decode_variantkey", as.uint64(vk), chrom, pos, refalt))
 }
 
 #' Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.

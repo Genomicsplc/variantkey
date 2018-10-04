@@ -32,19 +32,19 @@ x <- EncodeVariantKey(23, 12345, 286097408)
 print(x)
 # [1] 13258623813950472192
 
-x <- ExtractVariantKeyChrom("b800181c910d8000")
+x <- ExtractVariantKeyChrom("13258623813950472192")
 print(x)
 # [1] 23
 
-x <- ExtractVariantKeyPos("b800181c910d8000")
+x <- ExtractVariantKeyPos("13258623813950472192")
 print(x)
 # [1] 12345
 
-x <- ExtractVariantKeyRefAlt("b800181c910d8000")
+x <- ExtractVariantKeyRefAlt("13258623813950472192")
 print(x)
 # 286097408
 
-x <- DecodeVariantKey("b800181c910d8000")
+x <- DecodeVariantKey("13258623813950472192")
 print(x)
 # $CHROM
 # [1] 23
