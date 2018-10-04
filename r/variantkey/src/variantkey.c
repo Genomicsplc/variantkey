@@ -168,7 +168,7 @@ SEXP R_decode_chrom(SEXP code, SEXP ret)
 {
     uint64_t i, n = LENGTH(code);
     uint32_t *c = (uint32_t *)INTEGER(code);
-    char chrom[3];
+    char chrom[4];
     for(i = 0; i < n; i++)
     {
         chrom[0] = 0;
