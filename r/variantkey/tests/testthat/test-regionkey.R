@@ -39,92 +39,92 @@ t <- rbind(
 colnames(t) <- list("exp", "a_chrom", "b_chrom", "a_startpos", "b_startpos", "a_endpos", "b_endpos", "a_rk", "a_vk", "b_rk")
 
 test_that("EncodeRegionStrand", {
-    res <- mapply(EncodeRegionStrand, unlist(x[,"strand"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- EncodeRegionStrand(unlist(x[,"strand"]))
     expect_that(res, equals(unlist(x[,"estrand"])))
 })
 
 test_that("DecodeRegionStrand", {
-    res <- mapply(DecodeRegionStrand, unlist(x[,"estrand"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- DecodeRegionStrand(unlist(x[,"estrand"]))
     expect_that(res, equals(unlist(x[,"strand"])))
 })
 
 test_that("EncodeRegionKey", {
-    res <- mapply(EncodeRegionKey, unlist(x[,"echrom"]), unlist(x[,"startpos"]), unlist(x[,"endpos"]), unlist(x[,"estrand"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_identical(res, unlist(x[,"rk"]))
+    res <- EncodeRegionKey(unlist(x[,"echrom"]), unlist(x[,"startpos"]), unlist(x[,"endpos"]), unlist(x[,"estrand"]))
+    expect_identical(res, hexToUint64(unlist(x[,"rk"])))
 })
 
 test_that("ExtractRegionKeyChrom", {
-    res <- mapply(ExtractRegionKeyChrom, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractRegionKeyChrom(hexToUint64(unlist(x[,"rk"])))
     expect_that(res, equals(unlist(x[,"echrom"])))
 })
 
 test_that("ExtractRegionKeyStartPos", {
-    res <- mapply(ExtractRegionKeyStartPos, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractRegionKeyStartPos(hexToUint64(unlist(x[,"rk"])))
     expect_that(res, equals(unlist(x[,"startpos"])))
 })
 
 test_that("ExtractRegionKeyEndPos", {
-    res <- mapply(ExtractRegionKeyEndPos, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractRegionKeyEndPos(hexToUint64(unlist(x[,"rk"])))
     expect_that(res, equals(unlist(x[,"endpos"])))
 })
 
 test_that("ExtractRegionKeyStrand", {
-    res <- mapply(ExtractRegionKeyStrand, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractRegionKeyStrand(hexToUint64(unlist(x[,"rk"])))
     expect_that(res, equals(unlist(x[,"estrand"])))
 })
 
 test_that("DecodeRegionKey", {
-    res <- mapply(DecodeRegionKey, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(unlist(res[1,]), equals(unlist(x[,"echrom"])))
-    expect_that(unlist(res[2,]), equals(unlist(x[,"startpos"])))
-    expect_that(unlist(res[3,]), equals(unlist(x[,"endpos"])))
-    expect_that(unlist(res[4,]), equals(unlist(x[,"estrand"])))
+    res <- DecodeRegionKey(hexToUint64(unlist(x[,"rk"])))
+    expect_that(res$CHROM, equals(unlist(x[,"echrom"])))
+    expect_that(res$STARTPOS, equals(unlist(x[,"startpos"])))
+    expect_that(res$ENDPOS, equals(unlist(x[,"endpos"])))
+    expect_that(res$STRAND, equals(unlist(x[,"estrand"])))
 })
 
 test_that("ReverseRegionKey", {
-    res <- mapply(ReverseRegionKey, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(unlist(res[1,]), equals(unlist(x[,"chrom"])))
-    expect_that(unlist(res[2,]), equals(unlist(x[,"startpos"])))
-    expect_that(unlist(res[3,]), equals(unlist(x[,"endpos"])))
-    expect_that(unlist(res[4,]), equals(unlist(x[,"strand"])))
+    res <- ReverseRegionKey(hexToUint64(unlist(x[,"rk"])))
+    expect_that(res$CHROM, equals(unlist(x[,"chrom"])))
+    expect_that(res$STARTPOS, equals(unlist(x[,"startpos"])))
+    expect_that(res$ENDPOS, equals(unlist(x[,"endpos"])))
+    expect_that(res$STRAND, equals(unlist(x[,"strand"])))
 })
 
 test_that("RegionKey", {
-    res <- mapply(RegionKey, unlist(x[,"chrom"]), unlist(x[,"startpos"]), unlist(x[,"endpos"]), unlist(x[,"strand"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_identical(res, unlist(x[,"rk"]))
+    res <- RegionKey(unlist(x[,"chrom"]), unlist(x[,"startpos"]), unlist(x[,"endpos"]), unlist(x[,"strand"]))
+    expect_identical(res, hexToUint64(unlist(x[,"rk"])))
 })
 
 test_that("GetRegionKeyChromStartPos", {
-    res <- mapply(GetRegionKeyChromStartPos, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"csp"])))
+    res <- GetRegionKeyChromStartPos(hexToUint64(unlist(x[,"rk"])))
+    expect_that(res, equals(hexToUint64(unlist(x[,"csp"]))))
 })
 
 test_that("GetRegionKeyChromEndPos", {
-    res <- mapply(GetRegionKeyChromEndPos, unlist(x[,"rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(x[,"cep"])))
+    res <- GetRegionKeyChromEndPos(hexToUint64(unlist(x[,"rk"])))
+    expect_that(res, equals(hexToUint64(unlist(x[,"cep"]))))
 })
 
 test_that("AreOverlappingRegions", {
-    res <- mapply(AreOverlappingRegions, unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), unlist(t[,"b_chrom"]), unlist(t[,"b_startpos"]), unlist(t[,"b_endpos"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- AreOverlappingRegions(unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), unlist(t[,"b_chrom"]), unlist(t[,"b_startpos"]), unlist(t[,"b_endpos"]))
     expect_that(res, equals(unlist(t[,"exp"])))
 })
 
 test_that("AreOverlappingRegionRegionKey", {
-    res <- mapply(AreOverlappingRegionRegionKey, unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), unlist(t[,"b_rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- AreOverlappingRegionRegionKey(unlist(t[,"a_chrom"]), unlist(t[,"a_startpos"]), unlist(t[,"a_endpos"]), hexToUint64(unlist(t[,"b_rk"])))
     expect_that(res, equals(unlist(t[,"exp"])))
 })
 
 test_that("AreOverlappingRegionKeys", {
-    res <- mapply(AreOverlappingRegionKeys, unlist(t[,"a_rk"]), unlist(t[,"b_rk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- AreOverlappingRegionKeys(hexToUint64(unlist(t[,"a_rk"])), hexToUint64(unlist(t[,"b_rk"])))
     expect_that(res, equals(unlist(t[,"exp"])))
 })
 
 test_that("AreOverlappingVariantKeyRegionKey", {
-    res <- mapply(AreOverlappingVariantKeyRegionKey, unlist(t[,"a_vk"]), unlist(t[,"b_rk"]), MoreArgs = list(mc = NULL), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- AreOverlappingVariantKeyRegionKey(mc = NULL, hexToUint64(unlist(t[,"a_vk"])), hexToUint64(unlist(t[,"b_rk"])))
     expect_that(res, equals(unlist(t[,"exp"])))
 })
 
 test_that("VariantToRegionkey", {
-    res <- mapply(VariantToRegionkey, unlist(t[,"a_vk"]), MoreArgs = list(mc = NULL), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(res, equals(unlist(t[,"a_rk"])))
+    res <- VariantToRegionkey(mc = NULL, hexToUint64(unlist(t[,"a_vk"])))
+    expect_that(res, equals(hexToUint64(unlist(t[,"a_rk"]))))
 })

@@ -432,7 +432,7 @@ GetGenorefSeq <- function(mf, chrom, pos) {
         stop(ERR_INPUT_LENGTH)
     }
     ret <- integer(n)
-    return(intToUtf8(.Call("R_get_genoref_seq", mf, as.integer(chrom), as.integer(pos), ret)))
+    return(intToUtf8(.Call("R_get_genoref_seq", mf, as.integer(chrom), as.integer(pos), ret), multiple = TRUE))
 }
 
 #' Check if the reference allele matches the reference genome data.

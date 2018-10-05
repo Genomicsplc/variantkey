@@ -779,7 +779,7 @@ SEXP R_get_genoref_seq(SEXP mf, SEXP chrom, SEXP pos, SEXP ret)
 SEXP R_check_reference(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    int *res = (int *)INTEGER(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
     uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ppos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
@@ -794,10 +794,10 @@ SEXP R_check_reference(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP ret)
 SEXP R_flip_allele(SEXP allele, SEXP ret)
 {
     uint64_t i, n = LENGTH(ret);
-    char *s;
+    char s[ALLELE_MAXSIZE];
     for(i = 0; i < n; i++)
     {
-        s = Rf_acopy_string(CHAR(STRING_ELT(allele, i)));
+        strncpy(s, CHAR(STRING_ELT(allele, i)), ALLELE_MAXSIZE);
         flip_allele(s, strlen(s));
         SET_STRING_ELT(ret, i, mkChar(s));
     }
@@ -807,20 +807,20 @@ SEXP R_flip_allele(SEXP allele, SEXP ret)
 SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP rcode, SEXP rpos, SEXP rref, SEXP ralt)
 {
     uint64_t i, n = LENGTH(rcode);
-    int *code = (int *)INTEGER(rcode);
+    int32_t *code = (int32_t *)INTEGER(rcode);
     uint32_t *ppos = (uint32_t *)INTEGER(rpos);
     uint32_t *ichrom = (uint32_t *)INTEGER(chrom);
     uint32_t *ipos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
     size_t sizeref;
     size_t sizealt;
-    char *r;
-    char *a;
+    char r[ALLELE_MAXSIZE];
+    char a[ALLELE_MAXSIZE];
     uint32_t tpos;
     for(i = 0; i < n; i++)
     {
-        r = Rf_acopy_string(CHAR(STRING_ELT(ref, i)));
-        a = Rf_acopy_string(CHAR(STRING_ELT(alt, i)));
+        strncpy(r, CHAR(STRING_ELT(ref, i)), ALLELE_MAXSIZE);
+        strncpy(a, CHAR(STRING_ELT(alt, i)), ALLELE_MAXSIZE);
         sizeref = strlen(r);
         sizealt = strlen(a);
         tpos = ipos[i];

@@ -32,34 +32,34 @@ test_that("MmapRSVKFile", {
 })
 
 test_that("FindRvVariantKeyByRsid", {
-    res <- mapply(FindRvVariantKeyByRsid, rsid = unlist(x[,"rsid"]), MoreArgs = list(mc = rsvk$MC, first = 0, last = rsvk$NROWS), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(unlist(res[1,]), equals(unlist(x[,"vk"])))
-    expect_that(unlist(res[2,]), equals(unlist(x[,"item"])))
+    res <- FindRvVariantKeyByRsid(mc = rsvk$MC, first = 0, last = rsvk$NROWS, rsid = unlist(x[,"rsid"]))
+    expect_that(res$VK, equals(hexToUint64(unlist(x[,"vk"]))))
+    expect_that(res$FIRST, equals(unlist(x[,"item"])))
 })
 
 test_that("FindRvVariantKeyByRsidNotFound", {
     res <- FindRvVariantKeyByRsid(rsvk$MC, 0, rsvk$NROWS, 0xfffffff0)
-    expect_that(res$VK, equals("0000000000000000"))
+    expect_that(res$VK, equals(as.uint64(0)))
     expect_that(res$FIRST, equals(9))
 })
 
 test_that("GetNextRvVariantKeyByRsid", {
     res <- GetNextRvVariantKeyByRsid(rsvk$MC, 2, rsvk$NROWS, 0x00000061)
-    expect_that(res$VK, equals("80010274003a0000"))
+    expect_that(res$VK, equals(hexToUint64("80010274003a0000")))
     expect_that(res$POS, equals(3))
     res <- GetNextRvVariantKeyByRsid(rsvk$MC, res$POS, rsvk$NROWS, 0x00000061)
-    expect_that(res$VK, equals("0000000000000000"))
+    expect_that(res$VK, equals(as.uint64(0)))
     expect_that(res$POS, equals(4))
 })
 
 test_that("FindVrRsidByVariantKey", {
-    res <- mapply(FindVrRsidByVariantKey, vk = unlist(x[,"vk"]), MoreArgs = list(mc = vkrs$MC, first = 0, last = vkrs$NROWS), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(unlist(res[1,]), equals(unlist(x[,"rsid"])))
-    expect_that(unlist(res[2,]), equals(unlist(x[,"item"])))
+    res <- FindVrRsidByVariantKey(mc = vkrs$MC, first = 0, last = vkrs$NROWS, vk = hexToUint64(unlist(x[,"vk"])))
+    expect_that(res$RSID, equals(unlist(x[,"rsid"])))
+    expect_that(res$FIRST, equals(unlist(x[,"item"])))
 })
 
 test_that("FindVrRsidByVariantKeyNotFound", {
-    res <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, "fffffffffffffff0")
+    res <- FindVrRsidByVariantKey(vkrs$MC, 0, vkrs$NROWS, hexToUint64("fffffffffffffff0"))
     expect_that(res$RSID, equals(0))
     expect_that(res$FIRST, equals(9))
 })
@@ -81,9 +81,9 @@ test_that("FindVrChromposRangeNotFound", {
 test_that("FindAllRvVariantKeyByRsid", {
     res <- FindAllRvVariantKeyByRsid(rsvkm$MC, 0, rsvkm$NROWS, 0x00000003)
     expect_that(length(res), equals(3))
-    expect_that(unlist(res[1]), equals("80010274003a0000"))
-    expect_that(unlist(res[2]), equals("8001028d00138000"))
-    expect_that(unlist(res[3]), equals("80010299007a0000"))
+    expect_that(unlist(res[1]), equals(hexToUint64("80010274003a0000")))
+    expect_that(unlist(res[2]), equals(hexToUint64("8001028d00138000")))
+    expect_that(unlist(res[3]), equals(hexToUint64("80010299007a0000")))
 })
 
 test_that("FindAllRvVariantKeyByRsidNotFound", {

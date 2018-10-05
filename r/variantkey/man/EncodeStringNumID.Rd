@@ -7,7 +7,7 @@ into a 64 bit unsigned integer. For example: "ABCDE:0001234"
 Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.
 If the string is 10 character or less, then the EncodeStringID() is used.}
 \usage{
-EncodeStringNumID(str, sep)
+EncodeStringNumID(str, sep = ":")
 }
 \arguments{
 \item{str}{The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.}
