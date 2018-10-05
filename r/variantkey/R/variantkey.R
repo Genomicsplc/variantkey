@@ -740,8 +740,13 @@ VariantToRegionkey <- function(mc, vk) {
 #' @param start  First character to encode, starting from 0. To encode the last 10 characters, set this value at (size - 10).
 #' @useDynLib   variantkey R_encode_string_id
 #' @export
-EncodeStringID <- function(str, start) {
-    ret <- uint64(length(str))
+EncodeStringID <- function(str, start=0) {
+    n <- length(str)
+    m <- length(start)
+    if ((m > 1) && (n > m)) {
+        stop(ERR_INPUT_LENGTH)
+    }
+    ret <- uint64(n)
     return(.Call("R_encode_string_id", as.character(str), as.integer(start), ret))
 }
 
@@ -753,7 +758,7 @@ EncodeStringID <- function(str, start) {
 #' @param sep    Separator character between string and number.
 #' @useDynLib   variantkey R_encode_string_num_id
 #' @export
-EncodeStringNumID <- function(str, sep) {
+EncodeStringNumID <- function(str, sep=":") {
     ret <- uint64(length(str))
     return(.Call("R_encode_string_num_id", as.character(str), utf8ToInt(as.character(sep))[1], ret))
 }

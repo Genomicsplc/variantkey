@@ -1114,13 +1114,20 @@ SEXP R_variantkey_to_regionkey(SEXP mc, SEXP vk, SEXP ret)
 
 SEXP R_encode_string_id(SEXP str, SEXP start, SEXP ret)
 {
-    uint64_t i, n = LENGTH(ret);
-    size_t pstart = (size_t)asInteger(start);
+    uint64_t i, j = 0, k = 0;
+    uint64_t n = LENGTH(ret);
+    uint64_t m = LENGTH(start);
     uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *pstart = (uint32_t *)INTEGER(start);
+    if (m > 1)
+    {
+        k = 1;
+    }
     for(i = 0; i < n; i++)
     {
         const char *chr = CHAR(STRING_ELT(str, i));
-        res[i] = encode_string_id(chr, strlen(chr), pstart);
+        res[i] = encode_string_id(chr, strlen(chr), pstart[j]);
+        j += k;
     }
     return ret;
 }
