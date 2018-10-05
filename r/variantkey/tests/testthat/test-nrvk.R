@@ -22,19 +22,16 @@ x <- rbind(
 )
 colnames(x) <- list("vk", "chrom", "pos", "ralen", "sizeref", "sizealt", "csp", "cep", "ref", "alt")
 
-test_that("MmapBinfile", {
-    nrvk <<- MmapNRVKFile("../../../../c/test/data/nrvk.10.bin")
-    expect_that(nrvk$NROWS, equals(10))
-})
+InitVariantKey(nrvk_file = "../../../../c/test/data/nrvk.10.bin")
 
 test_that("FindRefAltByVariantKey", {
-    res <- FindRefAltByVariantKey(mc = nrvk$MC, vk = hexToUint64(unlist(x[,"vk"])))
+    res <- FindRefAltByVariantKey(vk = hexToUint64(unlist(x[,"vk"])))
     expect_that(res$REF, equals(unlist(x[,"ref"])))
     expect_that(res$ALT, equals(unlist(x[,"alt"])))
 })
 
 test_that("ReverseVariantKey", {
-    res <- ReverseVariantKey(mc = nrvk$MC, vk = hexToUint64(unlist(x[,"vk"])))
+    res <- ReverseVariantKey(vk = hexToUint64(unlist(x[,"vk"])))
     expect_that(res$CHROM, equals(unlist(x[,"chrom"])))
     expect_that(res$POS, equals(unlist(x[,"pos"])))
     expect_that(res$REF, equals(unlist(x[,"ref"])))
@@ -42,22 +39,22 @@ test_that("ReverseVariantKey", {
 })
 
 test_that("GetVariantKeyRefLength", {
-    res <- GetVariantKeyRefLength(mc = nrvk$MC, vk = hexToUint64(unlist(x[,"vk"])))
+    res <- GetVariantKeyRefLength(vk = hexToUint64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"sizeref"])))
 })
 
 test_that("GetVariantKeyRefLengthReversible", {
-    res <- GetVariantKeyRefLength(nrvk$MC, hexToUint64("1800925199160000"))
+    res <- GetVariantKeyRefLength(hexToUint64("1800925199160000"))
     expect_that(res, equals(3))
 })
 
 test_that("GetVariantKeyRefLengthNotFound", {
-    res <- GetVariantKeyRefLength(nrvk$MC, hexToUint64("ffffffffffffffff"))
+    res <- GetVariantKeyRefLength(hexToUint64("ffffffffffffffff"))
     expect_that(res, equals(0))
 })
 
 test_that("GetVariantKeyEndPos", {
-    res <- GetVariantKeyEndPos(mc = nrvk$MC, vk = hexToUint64(unlist(x[,"vk"])))
+    res <- GetVariantKeyEndPos(vk = hexToUint64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"pos"]) + unlist(x[,"sizeref"])))
 })
 
@@ -67,16 +64,13 @@ test_that("GetVariantKeyChromStartPos", {
 })
 
 test_that("GetVariantKeyChromEndPos", {
-    res <- GetVariantKeyChromEndPos(mc = nrvk$MC, vk = hexToUint64(unlist(x[,"vk"])))
+    res <- GetVariantKeyChromEndPos(vk = hexToUint64(unlist(x[,"vk"])))
     expect_that(res, equals(hexToUint64(unlist(x[,"cep"]))))
 })
 
 test_that("VknrBinToTsv", {
-    size <- VknrBinToTsv(nrvk$MC, "nrvk.test")
+    size <- VknrBinToTsv("nrvk.test")
     expect_that(size, equals(305))
 })
 
-test_that("MunmapBinfile", {
-    err <- MunmapBinfile(nrvk$MF)
-    expect_that(err, equals(0))
-})
+CloseVariantKey()

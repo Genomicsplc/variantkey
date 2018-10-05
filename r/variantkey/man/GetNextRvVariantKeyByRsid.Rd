@@ -5,16 +5,17 @@
 \title{Get the next VariantKey for the specified rsID in the RV file, or 0 if not found
 This function can be called in a loop to get all VariantKeys that are associated with the same rsID (if any).}
 \usage{
-GetNextRvVariantKeyByRsid(mc, pos, last, rsid)
+GetNextRvVariantKeyByRsid(rsid, pos, last = vk.env$rsvk_$NROWS,
+  mc = vk.env$rsvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
+\item{rsid}{rsID to search.}
 
 \item{pos}{Current item.}
 
 \item{last}{Element (up to but not including) where to end the search (max value = nitems).}
 
-\item{rsid}{rsID to search.}
+\item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
 }
 \description{
 Get the next VariantKey for the specified rsID in the RV file, or 0 if not found

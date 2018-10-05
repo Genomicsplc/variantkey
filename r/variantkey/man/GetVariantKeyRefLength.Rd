@@ -5,12 +5,12 @@
 \title{Retrieve the REF length for the specified VariantKey.
 Return REF length or 0 if the VariantKey is not reversible and not found.}
 \usage{
-GetVariantKeyRefLength(mc, vk)
+GetVariantKeyRefLength(vk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Retrieve the REF length for the specified VariantKey.

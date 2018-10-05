@@ -4,12 +4,12 @@
 \alias{VariantToRegionkey}
 \title{Get RegionKey from VariantKey.}
 \usage{
-VariantToRegionkey(mc, vk)
+VariantToRegionkey(vk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey code.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Get RegionKey from VariantKey.

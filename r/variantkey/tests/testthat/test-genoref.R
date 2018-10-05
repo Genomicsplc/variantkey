@@ -8,18 +8,15 @@ library(variantkey)
 # @license    MIT (see LICENSE)
 # @link       https://github.com/genomicsplc/variantkey
 
-test_that("MmapBinfile", {
-    genoref <<- MmapGenorefFile("../../../../c/test/data/genoref.bin")
-    expect_that(genoref$SIZE, equals(598))
-})
+InitVariantKey(genoref_file = "../../../../c/test/data/genoref.bin")
 
 test_that("GetGenorefSeq", {
     chrom = seq(1, 25)
-    res <- GetGenorefSeq(mf = genoref$MF, chrom = chrom, pos = rep(as.integer(0), 25)) # first
+    res <- GetGenorefSeq(chrom = chrom, pos = rep(as.integer(0), 25)) # first
     expect_that(res, equals(rep("A", 25))) # always A
-    res <- GetGenorefSeq(mf = genoref$MF, chrom = chrom, pos = seq(25, 1)) # last
+    res <- GetGenorefSeq(chrom = chrom, pos = seq(25, 1)) # last
     expect_that(res, equals(intToUtf8(seq(utf8ToInt("Z"), utf8ToInt("B")), multiple = TRUE))) # Z to A
-    res <- GetGenorefSeq(mf = genoref$MF, chrom = chrom, pos = seq(26, 2)) # invalid
+    res <- GetGenorefSeq(chrom = chrom, pos = seq(26, 2)) # invalid
     expect_that(res, equals(intToUtf8(rep(0, 25), multiple = TRUE))) # always 0
 })
 
@@ -69,7 +66,7 @@ test_that("CheckReference", {
         list( 1, 1,  24,  1, "T"                         )
     )
     colnames(x) <- list("exp", "chrom", "pos", "sizeref", "ref")
-    res <- CheckReference(mf = genoref$MF, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]))
+    res <- CheckReference(chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]))
     expect_that(res, equals(unlist(x[,"exp"])))
 })
 
@@ -94,14 +91,11 @@ test_that("NormalizeVariant", {
         list( 6, 1,  0,  0, 1, 1, 1, 1, "A",  "C",  "G",      "T"     )   # swap + flip
     )
     colnames(x) <- list("ecode", "chrom", "pos", "epos", "sizeref", "sizealt", "esizeref", "esizealt", "eref", "ealt", "ref", "alt")
-    res <- NormalizeVariant(mf = genoref$MF, chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]))
+    res <- NormalizeVariant(chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]))
     expect_that(res$RET, equals(unlist(x[,"ecode"])))
     expect_that(res$POS, equals(unlist(x[,"epos"])))
     expect_that(res$REF, equals(unlist(x[,"eref"])))
     expect_that(res$ALT, equals(unlist(x[,"ealt"])))
 })
 
-test_that("MunmapBinfile", {
-    err <- MunmapBinfile(genoref$MF)
-    expect_that(err, equals(0))
-})
+CloseVariantKey()

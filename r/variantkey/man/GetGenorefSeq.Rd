@@ -4,14 +4,14 @@
 \alias{GetGenorefSeq}
 \title{Returns the genome reference nucleotide at the specified chromosome and position.}
 \usage{
-GetGenorefSeq(mf, chrom, pos)
+GetGenorefSeq(chrom, pos, mf = vk.env$genoref_$MF)
 }
 \arguments{
 \item{chrom}{Encoded Chromosome number (see encode_chrom).}
 
 \item{pos}{Position. The reference position, with the first base having position 0.}
 
-\item{mc}{Memory-mapped columns object as retured by MmapGenorefFile.}
+\item{mf}{Memory-mapped file object as retured by MmapGenorefFile.}
 }
 \description{
 Returns the genome reference nucleotide at the specified chromosome and position.

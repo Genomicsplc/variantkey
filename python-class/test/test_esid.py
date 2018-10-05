@@ -141,6 +141,10 @@ class TestFunctions(TestCase):
         h = npvk.encode_string_id(esidTestData[:, 6], esidTestData[:, 1])
         np.testing.assert_array_equal(h, esidTestData[:, 3].astype(np.uint64))
 
+    def test_encode_string_id_scalar_start(self):
+        h = npvk.encode_string_id(esidTestData[14:16, 6], 0)
+        np.testing.assert_array_equal(h, esidTestData[14:16, 3].astype(np.uint64))
+
     def test_encode_string_num_id(self):
         h = npvk.encode_string_num_id(esidNumTestData[:, 4], b':')
         np.testing.assert_array_equal(h, esidNumTestData[:, 2].astype(np.uint64))

@@ -5,14 +5,14 @@
 \title{Check if variantkey and regionkey are overlapping.
 Return 1 if the regions overlap, 0 otherwise.}
 \usage{
-AreOverlappingVariantKeyRegionKey(mc, vk, rk)
+AreOverlappingVariantKeyRegionKey(vk, rk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey code.}
 
 \item{rk}{RegionKey code.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Check if variantkey and regionkey are overlapping.
