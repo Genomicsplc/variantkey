@@ -20,7 +20,7 @@ When positive, each bit has a different meaning when set, has defined by the NOR
   * bit 5:
       Alleles have been left trimmed.}
 \usage{
-NormalizeVariant(mf, chrom, pos, ref, alt)
+NormalizeVariant(chrom, pos, ref, alt, mf = vk.env$genoref_$MF)
 }
 \arguments{
 \item{chrom}{Chromosome encoded number.}
@@ -31,7 +31,7 @@ NormalizeVariant(mf, chrom, pos, ref, alt)
 
 \item{alt}{Alternate non-reference allele string.}
 
-\item{mc}{Memory-mapped columns object as retured by MmapGenorefFile.}
+\item{mf}{Memory-mapped file object as retured by MmapGenorefFile.}
 }
 \description{
 Normalize a variant.

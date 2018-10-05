@@ -62,7 +62,7 @@ format:
 
 # Remove any build artifact
 clean:
-	rm -rf variantkey.Rcheck
+	rm -f variantkey.Rcheck variantkey/src/variantkey.o variantkey/src/variantkey.so
 
 devdoc:
 	cd variantkey &&\

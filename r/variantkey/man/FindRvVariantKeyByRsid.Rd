@@ -4,16 +4,17 @@
 \alias{FindRvVariantKeyByRsid}
 \title{Search for the specified rsID and returns the first occurrence of VariantKey in the RV file, or zero if not found.}
 \usage{
-FindRvVariantKeyByRsid(mc, first, last, rsid)
+FindRvVariantKeyByRsid(rsid, first = 0, last = vk.env$rsvk_$NROWS,
+  mc = vk.env$rsvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
+\item{rsid}{rsID to search.}
 
 \item{first}{First element of the range to search (min value = 0).}
 
-\item{last}{Last element of the range to search (max value = nitems - 1).}
+\item{last}{Element (up to but not including) where to end the search (max value = nitems).}
 
-\item{rsid}{rsID to search.}
+\item{mc}{Memory-mapped columns object as retured by MmapRSVKfile.}
 }
 \description{
 Search for the specified rsID and returns the first occurrence of VariantKey in the RV file, or zero if not found.

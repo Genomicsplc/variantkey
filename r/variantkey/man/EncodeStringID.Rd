@@ -5,7 +5,7 @@
 \title{Encode maximum 10 characters of a string into a 64 bit unsigned integer.
 This function can be used to convert generic string IDs to numeric IDs.}
 \usage{
-EncodeStringID(str, start)
+EncodeStringID(str, start = 0)
 }
 \arguments{
 \item{str}{The string to encode. It must be maximum 10 characters long and support ASCII characters from '!' to 'z'.}

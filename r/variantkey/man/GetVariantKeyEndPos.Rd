@@ -5,12 +5,12 @@
 \title{Get the VariantKey end position (POS + REF length).
 Return variant end position.}
 \usage{
-GetVariantKeyEndPos(mc, vk)
+GetVariantKeyEndPos(vk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Get the VariantKey end position (POS + REF length).

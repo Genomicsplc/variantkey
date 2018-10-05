@@ -4,12 +4,12 @@
 \alias{GetVariantKeyChromEndPos}
 \title{Get the CHROM + END POS encoding from VariantKey.}
 \usage{
-GetVariantKeyChromEndPos(mc, vk)
+GetVariantKeyChromEndPos(vk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Get the CHROM + END POS encoding from VariantKey.

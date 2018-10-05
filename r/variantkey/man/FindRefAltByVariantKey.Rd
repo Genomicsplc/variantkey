@@ -5,12 +5,12 @@
 \title{Retrieve the REF and ALT strings for the specified VariantKey.
 Return REF+ALT length or 0 if the VariantKey is not found.}
 \usage{
-FindRefAltByVariantKey(mc, vk)
+FindRefAltByVariantKey(vk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey to search.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Retrieve the REF and ALT strings for the specified VariantKey.

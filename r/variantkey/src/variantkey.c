@@ -32,6 +32,7 @@
 
 #include <R.h>
 #include <Rdefines.h>
+#include <stdlib.h>
 #include "../../../c/src/variantkey/binsearch.h"
 #include "../../../c/src/variantkey/esid.h"
 #include "../../../c/src/variantkey/genoref.h"
@@ -41,148 +42,330 @@
 #include "../../../c/src/variantkey/rsidvar.h"
 #include "../../../c/src/variantkey/variantkey.h"
 
-SEXP R_encode_chrom(SEXP chrom)
-{
-    const char* chr = CHAR(STRING_ELT(chrom, 0));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = encode_chrom(chr, strlen(chr));
-    UNPROTECT(1);
-    return res;
+#define ALLELE_BUFFSIZE 12
+#define MAX_UINT64_DEC_CHARS 21
+
+// --- LOGIC ---
+#define CMP_EQ(x, y, r) r = ((x == y) ? TRUE : FALSE);
+#define CMP_NE(x, y, r) r = ((x != y) ? TRUE : FALSE);
+#define CMP_LE(x, y, r) r = ((x <= y) ? TRUE : FALSE);
+#define CMP_GE(x, y, r) r = ((x >= y) ? TRUE : FALSE);
+#define CMP_LT(x, y, r) r = ((x < y) ? TRUE : FALSE);
+#define CMP_GT(x, y, r) r = ((x > y) ? TRUE : FALSE);
+
+#define define_cmpfunc(T) \
+SEXP R_##T##_uint64(SEXP x, SEXP y, SEXP r) \
+{ \
+    uint64_t i, n = LENGTH(r); \
+    uint64_t ix, nx = LENGTH(x); \
+    uint64_t iy, ny = LENGTH(y); \
+    uint64_t *vx = (uint64_t *)REAL(x); \
+    uint64_t *vy = (uint64_t *)REAL(y); \
+    Rboolean *vr = (Rboolean *)LOGICAL(r); \
+    for (i = ix = iy = 0; i < n; ix = ((++ix == nx) ? 0 : ix), iy = ((++iy == ny) ? 0 : iy), ++i) \
+    { \
+        CMP_##T(vx[ix], vy[iy], vr[i]) \
+    } \
+    return r; \
 }
 
-SEXP R_decode_chrom(SEXP code)
+define_cmpfunc(EQ)
+define_cmpfunc(NE)
+define_cmpfunc(LE)
+define_cmpfunc(GE)
+define_cmpfunc(LT)
+define_cmpfunc(GT)
+
+// --- UINT64 ---
+
+SEXP R_decstr_to_uint64(SEXP str, SEXP ret)
 {
-    char chrom[3] = "";
-    decode_chrom(asInteger(code), chrom);
-    return Rf_mkString(chrom);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = strtoull(CHAR(STRING_ELT(str, i)), NULL, 10);
+    }
+    return ret;
 }
 
-SEXP R_encode_refalt(SEXP ref, SEXP alt)
+SEXP R_uint64_to_decstr(SEXP x, SEXP ret)
 {
-    const char* r = CHAR(STRING_ELT(ref, 0));
-    const char* a = CHAR(STRING_ELT(alt, 0));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = encode_refalt(r, strlen(r), a, strlen(a));
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *px = (uint64_t *)REAL(x);
+    char str[MAX_UINT64_DEC_CHARS];
+    for(i = 0; i < n; i++)
+    {
+        snprintf(str, MAX_UINT64_DEC_CHARS, "%" PRIu64, px[i]);
+        SET_STRING_ELT(ret, i, mkChar(str));
+    }
+    return ret;
 }
 
-SEXP R_decode_refalt(SEXP code)
+SEXP R_hex_uint64_t(SEXP x, SEXP ret)
 {
-    char ref[12] = "", alt[12] = "";
-    size_t sizeref = 0, sizealt = 0;
-    decode_refalt(asInteger(code), ref, &sizeref, alt, &sizealt);
-    const char *names[] = {"REF", "ALT", "REF_LEN", "ALT_LEN", ""};
-    SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(ref));
-    SET_VECTOR_ELT(res, 1, Rf_mkString(alt));
-    SET_VECTOR_ELT(res, 2, ScalarInteger(sizeref));
-    SET_VECTOR_ELT(res, 3, ScalarInteger(sizealt));
-    UNPROTECT(1);
-    return res;
-}
-
-SEXP R_encode_variantkey(SEXP chrom, SEXP pos, SEXP refalt)
-{
-    uint64_t code = encode_variantkey(asInteger(chrom), asInteger(pos), asInteger(refalt));
+    uint64_t i, n = LENGTH(x);
+    uint64_t *px = (uint64_t *)REAL(x);
     char hex[17];
-    variantkey_hex(code, hex);
-    return Rf_mkString(hex);
+    for(i = 0; i < n; i++)
+    {
+        hex_uint64_t(px[i], hex);
+        SET_STRING_ELT(ret, i, mkChar(hex));
+    }
+    return ret;
 }
 
-SEXP R_extract_variantkey_chrom(SEXP vk)
+SEXP R_parse_hex_uint64_t(SEXP hex, SEXP ret)
 {
-    uint64_t code = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_variantkey_chrom(code);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = parse_hex_uint64_t(CHAR(STRING_ELT(hex, i)));
+    }
+    return ret;
+}
+
+SEXP R_double_to_uint64(SEXP x, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    double *px = REAL(x);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = (uint64_t)(px[i]);
+    }
+    return ret;
+}
+
+SEXP R_integer_to_uint64(SEXP x, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *px = (uint32_t *)INTEGER(x);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = (uint64_t)(px[i]);
+    }
+    return ret;
+}
+
+// --- VARIANTKEY ---
+
+SEXP R_encode_chrom(SEXP chrom, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    for(i = 0; i < n; i++)
+    {
+        const char *chr = CHAR(STRING_ELT(chrom, i));
+        res[i] = encode_chrom(chr, strlen(chr));
+    }
+    return ret;
+}
+
+SEXP R_decode_chrom(SEXP code, SEXP ret)
+{
+    uint64_t i, n = LENGTH(code);
+    uint32_t *c = (uint32_t *)INTEGER(code);
+    char chrom[4];
+    for(i = 0; i < n; i++)
+    {
+        chrom[0] = 0;
+        decode_chrom((uint8_t)(c[i]), chrom);
+        SET_STRING_ELT(ret, i, mkChar(chrom));
+    }
+    return ret;
+}
+
+SEXP R_encode_refalt(SEXP ref, SEXP alt, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    for(i = 0; i < n; i++)
+    {
+        const char *r = CHAR(STRING_ELT(ref, i));
+        const char *a = CHAR(STRING_ELT(alt, i));
+        res[i] = encode_refalt(r, strlen(r), a, strlen(a));
+    }
+    return ret;
+}
+
+SEXP R_decode_refalt(SEXP code, SEXP rref, SEXP ralt)
+{
+    uint64_t i, n = LENGTH(code);
+    uint32_t *c = (uint32_t *)INTEGER(code);
+    char ref[ALLELE_BUFFSIZE], alt[ALLELE_BUFFSIZE];
+    size_t sizeref = 0, sizealt = 0;
+    for(i = 0; i < n; i++)
+    {
+        ref[0] = 0;
+        alt[0] = 0;
+        sizeref = 0;
+        sizealt = 0;
+        decode_refalt(c[i], ref, &sizeref, alt, &sizealt);
+        SET_STRING_ELT(rref, i, mkChar(ref));
+        SET_STRING_ELT(ralt, i, mkChar(alt));
+    }
+    const char *names[] = {"REF", "ALT", ""};
+    SEXP res = PROTECT(mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(res, 0, rref);
+    SET_VECTOR_ELT(res, 1, ralt);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_extract_variantkey_pos(SEXP vk)
+SEXP R_encode_variantkey(SEXP chrom, SEXP pos, SEXP refalt, SEXP ret)
 {
-    uint64_t code = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_variantkey_pos(code);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *ppos = (uint32_t *)INTEGER(pos);
+    uint32_t *prefalt = (uint32_t *)INTEGER(refalt);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = encode_variantkey((uint8_t)(pchrom[i]), ppos[i], prefalt[i]);
+    }
+    return ret;
 }
 
-SEXP R_extract_variantkey_refalt(SEXP vk)
+SEXP R_extract_variantkey_chrom(SEXP vk, SEXP ret)
 {
-    uint64_t code = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_variantkey_refalt(code);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_variantkey_chrom(pvk[i]);
+    }
+    return ret;
 }
 
-SEXP R_decode_variantkey(SEXP vk)
+SEXP R_extract_variantkey_pos(SEXP vk, SEXP ret)
 {
-    uint64_t code = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    variantkey_t v = {0};
-    decode_variantkey(code, &v);
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_variantkey_pos(pvk[i]);
+    }
+    return ret;
+}
+
+SEXP R_extract_variantkey_refalt(SEXP vk, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_variantkey_refalt(pvk[i]);
+    }
+    return ret;
+}
+
+SEXP R_decode_variantkey(SEXP vk, SEXP rchrom, SEXP rpos, SEXP rrefalt)
+{
+    uint64_t i, n = LENGTH(rchrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(rchrom);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
+    uint32_t *prefalt = (uint32_t *)INTEGER(rrefalt);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    variantkey_t v = {0, 0, 0};
+    for(i = 0; i < n; i++)
+    {
+        v.chrom = 0;
+        v.pos = 0;
+        v.refalt = 0;
+        decode_variantkey(pvk[i], &v);
+        pchrom[i] = v.chrom;
+        ppos[i] = v.pos;
+        prefalt[i] = v.refalt;
+    }
     const char *names[] = {"CHROM", "POS", "REFALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, ScalarInteger(v.chrom));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(v.pos));
-    SET_VECTOR_ELT(res, 2, ScalarInteger(v.refalt));
+    SET_VECTOR_ELT(res, 0, rchrom);
+    SET_VECTOR_ELT(res, 1, rpos);
+    SET_VECTOR_ELT(res, 2, rrefalt);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_variantkey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
+SEXP R_variantkey(SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP ret)
 {
-    const char *chr = CHAR(STRING_ELT(chrom, 0));
-    const char *r = CHAR(STRING_ELT(ref, 0));
-    const char *a = CHAR(STRING_ELT(alt, 0));
-    uint64_t code = variantkey(chr, strlen(chr), asInteger(pos), r, strlen(r), a, strlen(a));
-    char hex[17];
-    variantkey_hex(code, hex);
-    return Rf_mkString(hex);
+    uint64_t i, n = LENGTH(pos);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *ppos = (uint32_t *)INTEGER(pos);
+    for(i = 0; i < n; i++)
+    {
+        const char *c = CHAR(STRING_ELT(chrom, i));
+        const char *r = CHAR(STRING_ELT(ref, i));
+        const char *a = CHAR(STRING_ELT(alt, i));
+        res[i] = variantkey(c, strlen(c), ppos[i], r, strlen(r), a, strlen(a));
+    }
+    return ret;
 }
 
-SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max)
+SEXP R_variantkey_range(SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rmin, SEXP rmax)
 {
-    vkrange_t r = {0};
-    variantkey_range(asInteger(chrom), asInteger(pos_min), asInteger(pos_max), &r);
-    char vk_min[17];
-    char vk_max[17];
-    variantkey_hex(r.min, vk_min);
-    variantkey_hex(r.max, vk_max);
+    uint64_t i, n = LENGTH(chrom);
+    uint64_t *pmin = (uint64_t *)REAL(rmin);
+    uint64_t *pmax = (uint64_t *)REAL(rmax);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *ppos_min = (uint32_t *)INTEGER(pos_min);
+    uint32_t *ppos_max = (uint32_t *)INTEGER(pos_max);
+    vkrange_t r = {0, 0};
+    for(i = 0; i < n; i++)
+    {
+        r.min = 0;
+        r.max = 0;
+        variantkey_range((uint8_t)(pchrom[i]), ppos_min[i], ppos_max[i], &r);
+        pmin[i] = r.min;
+        pmax[i] = r.max;
+    }
     const char *names[] = {"MIN", "MAX", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(vk_min));
-    SET_VECTOR_ELT(res, 1, Rf_mkString(vk_max));
+    SET_VECTOR_ELT(res, 0, rmin);
+    SET_VECTOR_ELT(res, 1, rmax);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_compare_variantkey_chrom(SEXP vka, SEXP vkb)
+SEXP R_compare_variantkey_chrom(SEXP vka, SEXP vkb, SEXP ret)
 {
-    uint64_t acode = parse_variantkey_hex(CHAR(STRING_ELT(vka, 0)));
-    uint64_t bcode = parse_variantkey_hex(CHAR(STRING_ELT(vkb, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = compare_variantkey_chrom(acode, bcode);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
+    uint64_t *pvka = (uint64_t *)REAL(vka);
+    uint64_t *pvkb = (uint64_t *)REAL(vkb);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = compare_variantkey_chrom(pvka[i], pvkb[i]);
+    }
+    return ret;
 }
 
-SEXP R_compare_variantkey_chrom_pos(SEXP vka, SEXP vkb)
+SEXP R_compare_variantkey_chrom_pos(SEXP vka, SEXP vkb, SEXP ret)
 {
-    uint64_t acode = parse_variantkey_hex(CHAR(STRING_ELT(vka, 0)));
-    uint64_t bcode = parse_variantkey_hex(CHAR(STRING_ELT(vkb, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = compare_variantkey_chrom_pos(acode, bcode);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
+    uint64_t *pvka = (uint64_t *)REAL(vka);
+    uint64_t *pvkb = (uint64_t *)REAL(vkb);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = compare_variantkey_chrom_pos(pvka[i], pvkb[i]);
+    }
+    return ret;
+}
+
+SEXP R_variantkey_hex(SEXP vk, SEXP ret)
+{
+    return R_hex_uint64_t(vk, ret);
+}
+
+SEXP R_parse_variantkey_hex(SEXP hex, SEXP ret)
+{
+    return R_parse_hex_uint64_t(hex, ret);
 }
 
 // --- BINSEARCH ---
@@ -287,82 +470,123 @@ SEXP R_mmap_vkrs_file(SEXP file, SEXP ctbytes)
     return res;
 }
 
-SEXP R_find_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid)
+SEXP R_find_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid, SEXP rvk, SEXP rfirst)
 {
-    uint64_t pfirst = asInteger(first);
+    uint64_t i, n = LENGTH(rvk);
+    uint64_t *pvk = (uint64_t *)REAL(rvk);
+    uint32_t *pfirst = (uint32_t *)INTEGER(rfirst);
+    uint32_t *prsid = (uint32_t *)INTEGER(rsid);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
-    uint64_t vk = find_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
-    char hex[17];
-    variantkey_hex(vk, hex);
+    uint64_t ppfirst = asInteger(first);
+    uint64_t pplast = asInteger(last);
+    uint64_t tfirst;
+    for(i = 0; i < n; i++)
+    {
+        tfirst = ppfirst;
+        pvk[i] = find_rv_variantkey_by_rsid(*cmc, &tfirst, pplast, prsid[i]);
+        pfirst[i] = tfirst;
+    }
     const char *names[] = {"VK", "FIRST", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(hex));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(pfirst));
+    SET_VECTOR_ELT(res, 0, rvk);
+    SET_VECTOR_ELT(res, 1, rfirst);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_get_next_rv_variantkey_by_rsid(SEXP mc, SEXP pos, SEXP last, SEXP rsid)
+SEXP R_get_next_rv_variantkey_by_rsid(SEXP mc, SEXP pos, SEXP last, SEXP rsid, SEXP rvk, SEXP rpos)
 {
-    uint64_t ppos = asInteger(pos);
+    uint64_t i, n = LENGTH(rvk);
+    uint64_t *pvk = (uint64_t *)REAL(rvk);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
+    uint32_t *ipos = (uint32_t *)INTEGER(pos);
+    uint32_t *prsid = (uint32_t *)INTEGER(rsid);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
-    uint64_t vk = get_next_rv_variantkey_by_rsid(*cmc, &ppos, asInteger(last), asInteger(rsid));
-    char hex[17];
-    variantkey_hex(vk, hex);
+    uint64_t pplast = asInteger(last);
+    uint64_t tpos;
+    for(i = 0; i < n; i++)
+    {
+        tpos = ipos[i];
+        pvk[i] = get_next_rv_variantkey_by_rsid(*cmc, &tpos, pplast, prsid[i]);
+        ppos[i] = tpos;
+    }
     const char *names[] = {"VK", "POS", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(hex));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(ppos));
+    SET_VECTOR_ELT(res, 0, rvk);
+    SET_VECTOR_ELT(res, 1, rpos);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_find_all_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid)
+SEXP R_find_all_rv_variantkey_by_rsid(SEXP mc, SEXP first, SEXP last, SEXP rsid, SEXP ret)
 {
-    static const int vecsize = 10; // limit the maximum nuber of results
-    SEXP res = PROTECT(allocVector(VECSXP, vecsize));
-    uint32_t i = 0;
-    char hex[17];
+    uint64_t n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
     uint64_t pfirst = asInteger(first);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
     uint64_t vk = find_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
-    while ((vk > 0) && (i < vecsize))
+    uint64_t i = 0;
+    while ((vk > 0) && (i < n))
     {
-        variantkey_hex(vk, hex);
-        SET_VECTOR_ELT(res, i, Rf_mkString(hex));
+        res[i] = vk;
         i++;
         vk = get_next_rv_variantkey_by_rsid(*cmc, &pfirst, asInteger(last), asInteger(rsid));
     }
-    SETLENGTH(res, i);
-    UNPROTECT(1);
-    return res;
+    SETLENGTH(ret, i);
+    return ret;
 }
 
-SEXP R_find_vr_rsid_by_variantkey(SEXP mc, SEXP first, SEXP last, SEXP vk)
+SEXP R_find_vr_rsid_by_variantkey(SEXP mc, SEXP first, SEXP last, SEXP vk, SEXP rrsid, SEXP rfirst)
 {
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    uint64_t pfirst = asInteger(first);
+    uint64_t i, n = LENGTH(rrsid);
+    uint32_t *prsid = (uint32_t *)INTEGER(rrsid);
+    uint32_t *pfirst = (uint32_t *)INTEGER(rfirst);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
-    uint32_t rsid = find_vr_rsid_by_variantkey(*cmc, &pfirst, asInteger(last), varkey);
+    uint64_t ppfirst = asInteger(first);
+    uint64_t pplast = asInteger(last);
+    uint64_t tfirst;
+    for(i = 0; i < n; i++)
+    {
+        tfirst = ppfirst;
+        prsid[i] = find_vr_rsid_by_variantkey(*cmc, &tfirst, pplast, pvk[i]);
+        pfirst[i] = tfirst;
+    }
     const char *names[] = {"RSID", "FIRST", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, ScalarInteger(rsid));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(pfirst));
+    SET_VECTOR_ELT(res, 0, rrsid);
+    SET_VECTOR_ELT(res, 1, rfirst);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_find_vr_chrompos_range(SEXP mc, SEXP first, SEXP last, SEXP chrom, SEXP pos_min, SEXP pos_max)
+SEXP R_find_vr_chrompos_range(SEXP mc, SEXP first, SEXP last, SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rrsid, SEXP rfirst, SEXP rlast)
 {
-    uint64_t pfirst = asInteger(first);
-    uint64_t plast = asInteger(last);
+    uint64_t i, n = LENGTH(rrsid);
+    uint32_t *prsid = (uint32_t *)INTEGER(rrsid);
+    uint32_t *pfirst = (uint32_t *)INTEGER(rfirst);
+    uint32_t *plast = (uint32_t *)INTEGER(rlast);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *ppos_min = (uint32_t *)INTEGER(pos_min);
+    uint32_t *ppos_max = (uint32_t *)INTEGER(pos_max);
     const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
-    uint32_t rsid = find_vr_chrompos_range(*cmc, &pfirst, &plast, asInteger(chrom), asInteger(pos_min), asInteger(pos_max));
+    uint64_t ppfirst = asInteger(first);
+    uint64_t pplast = asInteger(last);
+    uint64_t tfirst;
+    uint64_t tlast;
+    for(i = 0; i < n; i++)
+    {
+        tfirst = ppfirst;
+        tlast = pplast;
+        prsid[i] = find_vr_chrompos_range(*cmc, &tfirst, &tlast, (uint8_t)(pchrom[i]), ppos_min[i], ppos_max[i]);
+        pfirst[i] = tfirst;
+        plast[i] = tlast;
+    }
     const char *names[] = {"RSID", "FIRST", "LAST", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, ScalarInteger(rsid));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(pfirst));
-    SET_VECTOR_ELT(res, 2, ScalarInteger(plast));
+    SET_VECTOR_ELT(res, 0, rrsid);
+    SET_VECTOR_ELT(res, 1, rfirst);
+    SET_VECTOR_ELT(res, 2, rlast);
     UNPROTECT(1);
     return res;
 }
@@ -407,82 +631,109 @@ SEXP R_mmap_nrvk_file(SEXP file)
     return res;
 }
 
-SEXP R_find_ref_alt_by_variantkey(SEXP mc, SEXP vk)
+SEXP R_find_ref_alt_by_variantkey(SEXP mc, SEXP vk, SEXP rref, SEXP ralt)
 {
-    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    uint64_t i, n = LENGTH(vk);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    const nrvk_cols_t *cmc = get_nrvk_mc(mc);
     size_t sizeref = 0, sizealt = 0;
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    size_t len = find_ref_alt_by_variantkey(*cmc, varkey, ref, &sizeref, alt, &sizealt);
-    const char *names[] = {"REF", "ALT", "REF_LEN", "ALT_LEN", "LEN", ""};
+    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    for(i = 0; i < n; i++)
+    {
+        ref[0] = 0;
+        alt[0] = 0;
+        find_ref_alt_by_variantkey(*cmc, pvk[i], ref, &sizeref, alt, &sizealt);
+        SET_STRING_ELT(rref, i, mkChar(ref));
+        SET_STRING_ELT(ralt, i, mkChar(alt));
+    }
+    const char *names[] = {"REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(ref));
-    SET_VECTOR_ELT(res, 1, Rf_mkString(alt));
-    SET_VECTOR_ELT(res, 2, ScalarInteger(sizeref));
-    SET_VECTOR_ELT(res, 3, ScalarInteger(sizealt));
-    SET_VECTOR_ELT(res, 4, ScalarInteger(len));
+    SET_VECTOR_ELT(res, 0, rref);
+    SET_VECTOR_ELT(res, 1, ralt);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_reverse_variantkey(SEXP mc, SEXP vk)
+SEXP R_reverse_variantkey(SEXP mc, SEXP vk, SEXP rchrom, SEXP rpos, SEXP rref, SEXP ralt)
 {
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    variantkey_rev_t rev = {0};
+    uint64_t i, n = LENGTH(vk);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    size_t len = reverse_variantkey(*cmc, varkey, &rev);
-    const char *names[] = {"CHROM", "POS", "REF", "ALT", "REF_LEN", "ALT_LEN", "LEN", ""};
+    variantkey_rev_t v = {0};
+    for(i = 0; i < n; i++)
+    {
+        v.chrom[0] = 0;
+        v.pos = 0;
+        v.ref[0] = 0;
+        v.alt[0] = 0;
+        v.sizeref = 0;
+        v.sizealt = 0;
+        reverse_variantkey(*cmc, pvk[i], &v);
+        SET_STRING_ELT(rchrom, i, mkChar(v.chrom));
+        ppos[i] = v.pos;
+        SET_STRING_ELT(rref, i, mkChar(v.ref));
+        SET_STRING_ELT(ralt, i, mkChar(v.alt));
+    }
+    const char *names[] = {"CHROM", "POS", "REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(rev.chrom));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(rev.pos));
-    SET_VECTOR_ELT(res, 2, Rf_mkString(rev.ref));
-    SET_VECTOR_ELT(res, 3, Rf_mkString(rev.alt));
-    SET_VECTOR_ELT(res, 4, ScalarInteger(rev.sizeref));
-    SET_VECTOR_ELT(res, 5, ScalarInteger(rev.sizealt));
-    SET_VECTOR_ELT(res, 6, ScalarInteger(len));
+    SET_VECTOR_ELT(res, 0, rchrom);
+    SET_VECTOR_ELT(res, 1, rpos);
+    SET_VECTOR_ELT(res, 2, rref);
+    SET_VECTOR_ELT(res, 3, ralt);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_get_variantkey_ref_length(SEXP mc, SEXP vk)
+SEXP R_get_variantkey_ref_length(SEXP mc, SEXP vk, SEXP ret)
 {
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    INTEGER(res)[0] = get_variantkey_ref_length(*cmc, varkey);
-    UNPROTECT(1);
-    return res;
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_variantkey_ref_length(*cmc, pvk[i]);
+    }
+    return ret;
 }
 
-SEXP R_get_variantkey_endpos(SEXP mc, SEXP vk)
+SEXP R_get_variantkey_endpos(SEXP mc, SEXP vk, SEXP ret)
 {
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    INTEGER(res)[0] = get_variantkey_endpos(*cmc, varkey);
-    UNPROTECT(1);
-    return res;
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_variantkey_endpos(*cmc, pvk[i]);
+    }
+    return ret;
 }
 
-SEXP R_get_variantkey_chrom_startpos(SEXP vk)
+SEXP R_get_variantkey_chrom_startpos(SEXP vk, SEXP ret)
 {
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
-    uint64_t res = get_variantkey_chrom_startpos(varkey);
-    char hex[17];
-    hex_uint64_t(res, hex);
-    return Rf_mkString(hex);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_variantkey_chrom_startpos(pvk[i]);
+    }
+    return ret;
 }
 
-SEXP R_get_variantkey_chrom_endpos(SEXP mc, SEXP vk)
+SEXP R_get_variantkey_chrom_endpos(SEXP mc, SEXP vk, SEXP ret)
 {
-    uint64_t varkey = parse_variantkey_hex(CHAR(STRING_ELT(vk, 0)));
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    uint64_t res = get_variantkey_chrom_endpos(*cmc, varkey);
-    char hex[17];
-    hex_uint64_t(res, hex);
-    return Rf_mkString(hex);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_variantkey_chrom_endpos(*cmc, pvk[i]);
+    }
+    return ret;
 }
 
 SEXP R_nrvk_bin_to_tsv(SEXP mc, SEXP tsvfile)
@@ -511,271 +762,411 @@ SEXP R_mmap_genoref_file(SEXP file)
     return res;
 }
 
-SEXP R_get_genoref_seq(SEXP mf, SEXP chrom, SEXP pos)
+SEXP R_get_genoref_seq(SEXP mf, SEXP chrom, SEXP pos, SEXP ret)
 {
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *ppos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
-    INTEGER(res)[0] = get_genoref_seq(*cmf, asInteger(chrom), asInteger(pos));
-    UNPROTECT(1);
-    return res;
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_genoref_seq(*cmf, (uint8_t)(pchrom[i]), ppos[i]);
+    }
+    return ret;
 }
 
-SEXP R_check_reference(SEXP mf, SEXP chrom, SEXP pos, SEXP ref)
+SEXP R_check_reference(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP ret)
 {
-    const char *pref = CHAR(STRING_ELT(ref, 0));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
+    uint64_t i, n = LENGTH(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *ppos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
-    INTEGER(res)[0] = check_reference(*cmf, asInteger(chrom), asInteger(pos), pref, strlen(pref));
-    UNPROTECT(1);
-    return res;
+    for(i = 0; i < n; i++)
+    {
+        const char *pref = CHAR(STRING_ELT(ref, i));
+        res[i] = check_reference(*cmf, (uint8_t)(pchrom[i]), ppos[i], pref, strlen(pref));
+    }
+    return ret;
 }
 
-SEXP R_flip_allele(SEXP allele)
+SEXP R_flip_allele(SEXP allele, SEXP ret)
 {
-    char *s = Rf_acopy_string(CHAR(STRING_ELT(allele, 0)));
-    flip_allele(s, strlen(s));
-    return Rf_mkString(s);
+    uint64_t i, n = LENGTH(ret);
+    char s[ALLELE_MAXSIZE];
+    for(i = 0; i < n; i++)
+    {
+        strncpy(s, CHAR(STRING_ELT(allele, i)), ALLELE_MAXSIZE);
+        flip_allele(s, strlen(s));
+        SET_STRING_ELT(ret, i, mkChar(s));
+    }
+    return ret;
 }
 
-SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt)
+SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP rcode, SEXP rpos, SEXP rref, SEXP ralt)
 {
-    const char *cpref = CHAR(STRING_ELT(ref, 0));
-    const char *cpalt = CHAR(STRING_ELT(alt, 0));
-    size_t sizeref = strlen(cpref);
-    size_t sizealt = strlen(cpalt);
-    char pref[ALLELE_MAXSIZE] = "";
-    char palt[ALLELE_MAXSIZE] = "";
-    strncpy(pref, cpref, sizeref);
-    strncpy(palt, cpalt, sizealt);
-    pref[sizeref] = 0;
-    palt[sizealt] = 0;
-    uint32_t ppos = asInteger(pos);
+    uint64_t i, n = LENGTH(rcode);
+    int32_t *code = (int32_t *)INTEGER(rcode);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
+    uint32_t *ichrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *ipos = (uint32_t *)INTEGER(pos);
     const mmfile_t *cmf = get_mmfile_mf(mf);
-    int ret = normalize_variant(*cmf, asInteger(chrom), &ppos, pref, &sizeref, palt, &sizealt);
-    const char *names[] = {"RET", "POS", "REF", "ALT", "REF_LEN", "ALT_LEN", ""};
+    size_t sizeref;
+    size_t sizealt;
+    char r[ALLELE_MAXSIZE];
+    char a[ALLELE_MAXSIZE];
+    uint32_t tpos;
+    for(i = 0; i < n; i++)
+    {
+        strncpy(r, CHAR(STRING_ELT(ref, i)), ALLELE_MAXSIZE);
+        strncpy(a, CHAR(STRING_ELT(alt, i)), ALLELE_MAXSIZE);
+        sizeref = strlen(r);
+        sizealt = strlen(a);
+        tpos = ipos[i];
+        code[i] = normalize_variant(*cmf, (uint8_t)(ichrom[i]), &tpos, r, &sizeref, a, &sizealt);
+        ppos[i] = tpos;
+        SET_STRING_ELT(rref, i, mkChar(r));
+        SET_STRING_ELT(ralt, i, mkChar(a));
+    }
+    const char *names[] = {"RET", "POS", "REF", "ALT", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, ScalarInteger(ret));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(ppos));
-    SET_VECTOR_ELT(res, 2, Rf_mkString(pref));
-    SET_VECTOR_ELT(res, 3, Rf_mkString(palt));
-    SET_VECTOR_ELT(res, 4, ScalarInteger(sizeref));
-    SET_VECTOR_ELT(res, 5, ScalarInteger(sizealt));
+    SET_VECTOR_ELT(res, 0, rcode);
+    SET_VECTOR_ELT(res, 1, rpos);
+    SET_VECTOR_ELT(res, 2, rref);
+    SET_VECTOR_ELT(res, 3, ralt);
     UNPROTECT(1);
     return res;
 }
 
 // --- REGIONKEY ---
 
-SEXP R_encode_region_strand(SEXP strand)
+SEXP R_encode_region_strand(SEXP strand, SEXP ret)
 {
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = encode_region_strand(asInteger(strand));
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    int32_t *pstrand = (int32_t *)INTEGER(strand);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = encode_region_strand((int8_t)(pstrand[i]));
+    }
+    return ret;
 }
 
-SEXP R_decode_region_strand(SEXP strand)
+SEXP R_decode_region_strand(SEXP strand, SEXP ret)
 {
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = decode_region_strand(asInteger(strand));
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    int32_t *res = (int32_t *)INTEGER(ret);
+    uint32_t *pstrand = (uint32_t *)INTEGER(strand);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = decode_region_strand((uint8_t)(pstrand[i]));
+    }
+    return ret;
 }
 
-SEXP R_encode_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand)
+SEXP R_encode_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand, SEXP ret)
 {
-    uint64_t code = encode_regionkey(asInteger(chrom), asInteger(startpos), asInteger(endpos), asInteger(strand));
-    char hex[17];
-    regionkey_hex(code, hex);
-    return Rf_mkString(hex);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *pstartpos = (uint32_t *)INTEGER(startpos);
+    uint32_t *pendpos = (uint32_t *)INTEGER(endpos);
+    uint32_t *pstrand = (uint32_t *)INTEGER(strand);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = encode_regionkey((uint8_t)(pchrom[i]), pstartpos[i], pendpos[i], (uint8_t)(pstrand[i]));
+    }
+    return ret;
 }
 
-SEXP R_extract_regionkey_chrom(SEXP rk)
+SEXP R_extract_regionkey_chrom(SEXP rk, SEXP ret)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_regionkey_chrom(code);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_regionkey_chrom(prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_extract_regionkey_startpos(SEXP rk)
+SEXP R_extract_regionkey_startpos(SEXP rk, SEXP ret)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_regionkey_startpos(code);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_regionkey_startpos(prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_extract_regionkey_endpos(SEXP rk)
+SEXP R_extract_regionkey_endpos(SEXP rk, SEXP ret)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_regionkey_endpos(code);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_regionkey_endpos(prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_extract_regionkey_strand(SEXP rk)
+SEXP R_extract_regionkey_strand(SEXP rk, SEXP ret)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = extract_regionkey_strand(code);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extract_regionkey_strand(prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_decode_regionkey(SEXP rk)
+SEXP R_decode_regionkey(SEXP rk, SEXP rchrom, SEXP rstartpos, SEXP rendpos, SEXP rstrand)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    regionkey_t v = {0};
-    decode_regionkey(code, &v);
+    uint64_t i, n = LENGTH(rchrom);
+    uint32_t *pchrom = (uint32_t *)INTEGER(rchrom);
+    uint32_t *pstartpos = (uint32_t *)INTEGER(rstartpos);
+    uint32_t *pendpos = (uint32_t *)INTEGER(rendpos);
+    uint32_t *pstrand = (uint32_t *)INTEGER(rstrand);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    regionkey_t v = {0, 0, 0, 0};
+    for(i = 0; i < n; i++)
+    {
+        v.chrom = 0;
+        v.startpos = 0;
+        v. endpos = 0;
+        v.strand = 0;
+        decode_regionkey(prk[i], &v);
+        pchrom[i] = v.chrom;
+        pstartpos[i] = v.startpos;
+        pendpos[i] = v.endpos;
+        pstrand[i] = v.strand;
+    }
     const char *names[] = {"CHROM", "STARTPOS", "ENDPOS", "STRAND", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, ScalarInteger(v.chrom));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(v.startpos));
-    SET_VECTOR_ELT(res, 2, ScalarInteger(v.endpos));
-    SET_VECTOR_ELT(res, 3, ScalarInteger(v.strand));
+    SET_VECTOR_ELT(res, 0, rchrom);
+    SET_VECTOR_ELT(res, 1, rstartpos);
+    SET_VECTOR_ELT(res, 2, rendpos);
+    SET_VECTOR_ELT(res, 3, rstrand);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_reverse_regionkey(SEXP rk)
+SEXP R_reverse_regionkey(SEXP rk, SEXP rchrom, SEXP rstartpos, SEXP rendpos, SEXP rstrand)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
+    uint64_t i, n = LENGTH(rk);
+    uint32_t *pstartpos = (uint32_t *)INTEGER(rstartpos);
+    uint32_t *pendpos = (uint32_t *)INTEGER(rendpos);
+    int32_t *pstrand = (int32_t *)INTEGER(rstrand);
+    uint64_t *prk = (uint64_t *)REAL(rk);
     regionkey_rev_t v = {0};
-    reverse_regionkey(code, &v);
+    for(i = 0; i < n; i++)
+    {
+        v.chrom[0] = 0;
+        v.startpos = 0;
+        v. endpos = 0;
+        v.strand = 0;
+        reverse_regionkey(prk[i], &v);
+        SET_STRING_ELT(rchrom, i, mkChar(v.chrom));
+        pstartpos[i] = v.startpos;
+        pendpos[i] = v.endpos;
+        pstrand[i] = v.strand;
+    }
     const char *names[] = {"CHROM", "STARTPOS", "ENDPOS", "STRAND", ""};
     SEXP res = PROTECT(mkNamed(VECSXP, names));
-    SET_VECTOR_ELT(res, 0, Rf_mkString(v.chrom));
-    SET_VECTOR_ELT(res, 1, ScalarInteger(v.startpos));
-    SET_VECTOR_ELT(res, 2, ScalarInteger(v.endpos));
-    SET_VECTOR_ELT(res, 3, ScalarInteger(v.strand));
+    SET_VECTOR_ELT(res, 0, rchrom);
+    SET_VECTOR_ELT(res, 1, rstartpos);
+    SET_VECTOR_ELT(res, 2, rendpos);
+    SET_VECTOR_ELT(res, 3, rstrand);
     UNPROTECT(1);
     return res;
 }
 
-SEXP R_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand)
+SEXP R_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand, SEXP ret)
 {
-    const char *chr = CHAR(STRING_ELT(chrom, 0));
-    uint64_t code = regionkey(chr, strlen(chr), asInteger(startpos), asInteger(endpos), asInteger(strand));
-    char hex[17];
-    regionkey_hex(code, hex);
-    return Rf_mkString(hex);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *pstartpos = (uint32_t *)INTEGER(startpos);
+    uint32_t *pendpos = (uint32_t *)INTEGER(endpos);
+    int32_t *pstrand = (int32_t *)INTEGER(strand);
+    for(i = 0; i < n; i++)
+    {
+        const char *chr = CHAR(STRING_ELT(chrom, i));
+        res[i] = regionkey(chr, strlen(chr), pstartpos[i], pendpos[i], (int8_t)(pstrand[i]));
+    }
+    return ret;
 }
 
-SEXP R_get_regionkey_chrom_startpos(SEXP rk)
+SEXP R_regionkey_hex(SEXP rk, SEXP ret)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    uint64_t cp = get_regionkey_chrom_startpos(code);
-    char hex[17];
-    regionkey_hex(cp, hex);
-    return Rf_mkString(hex);
+    return R_hex_uint64_t(rk, ret);
 }
 
-SEXP R_get_regionkey_chrom_endpos(SEXP rk)
+SEXP R_parse_regionkey_hex(SEXP hex, SEXP ret)
 {
-    uint64_t code = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    uint64_t cp = get_regionkey_chrom_endpos(code);
-    char hex[17];
-    regionkey_hex(cp, hex);
-    return Rf_mkString(hex);
+    return R_parse_hex_uint64_t(hex, ret);
 }
 
-SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEXP b_chrom, SEXP b_startpos, SEXP b_endpos)
+SEXP R_get_regionkey_chrom_startpos(SEXP rk, SEXP ret)
 {
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = are_overlapping_regions(asInteger(a_chrom), asInteger(a_startpos), asInteger(a_endpos), asInteger(b_chrom), asInteger(b_startpos), asInteger(b_endpos));
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_regionkey_chrom_startpos(prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_are_overlapping_region_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP rk)
+SEXP R_get_regionkey_chrom_endpos(SEXP rk, SEXP ret)
 {
-    uint64_t rkcode = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = are_overlapping_region_regionkey(asInteger(chrom), asInteger(startpos), asInteger(endpos), rkcode);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = get_regionkey_chrom_endpos(prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_are_overlapping_regionkeys(SEXP rka, SEXP rkb)
+SEXP R_are_overlapping_regions(SEXP a_chrom, SEXP a_startpos, SEXP a_endpos, SEXP b_chrom, SEXP b_startpos, SEXP b_endpos, SEXP ret)
 {
-    uint64_t rkacode = parse_regionkey_hex(CHAR(STRING_ELT(rka, 0)));
-    uint64_t rkbcode = parse_regionkey_hex(CHAR(STRING_ELT(rkb, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
-    INTEGER(res)[0] = are_overlapping_regionkeys(rkacode, rkbcode);
-    UNPROTECT(1);
-    return res;
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint32_t *pachrom = (uint32_t *)INTEGER(a_chrom);
+    uint32_t *pastartpos = (uint32_t *)INTEGER(a_startpos);
+    uint32_t *paendpos = (uint32_t *)INTEGER(a_endpos);
+    uint32_t *pbchrom = (uint32_t *)INTEGER(b_chrom);
+    uint32_t *pbstartpos = (uint32_t *)INTEGER(b_startpos);
+    uint32_t *pbendpos = (uint32_t *)INTEGER(b_endpos);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = are_overlapping_regions((uint8_t)(pachrom[i]), pastartpos[i], paendpos[i], (uint8_t)(pbchrom[i]), pbstartpos[i], pbendpos[i]);
+    }
+    return ret;
 }
 
-SEXP R_are_overlapping_variantkey_regionkey(SEXP mc, SEXP vk, SEXP rk)
+SEXP R_are_overlapping_region_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP rk, SEXP ret)
 {
-    uint64_t vkcode = parse_regionkey_hex(CHAR(STRING_ELT(vk, 0)));
-    uint64_t rkcode = parse_regionkey_hex(CHAR(STRING_ELT(rk, 0)));
-    SEXP res;
-    PROTECT(res = NEW_INTEGER(1));
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint32_t *pchrom = (uint32_t *)INTEGER(chrom);
+    uint32_t *pstartpos = (uint32_t *)INTEGER(startpos);
+    uint32_t *pendpos = (uint32_t *)INTEGER(endpos);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = are_overlapping_region_regionkey((uint8_t)(pchrom[i]), pstartpos[i], pendpos[i], prk[i]);
+    }
+    return ret;
+}
+
+SEXP R_are_overlapping_regionkeys(SEXP rka, SEXP rkb, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *prka = (uint64_t *)REAL(rka);
+    uint64_t *prkb = (uint64_t *)REAL(rkb);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = are_overlapping_regionkeys(prka[i], prkb[i]);
+    }
+    return ret;
+}
+
+SEXP R_are_overlapping_variantkey_regionkey(SEXP mc, SEXP vk, SEXP rk, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    uint64_t *prk = (uint64_t *)REAL(rk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    INTEGER(res)[0] = are_overlapping_variantkey_regionkey(*cmc, vkcode, rkcode);
-    UNPROTECT(1);
-    return res;
+    for(i = 0; i < n; i++)
+    {
+        res[i] = are_overlapping_variantkey_regionkey(*cmc, pvk[i], prk[i]);
+    }
+    return ret;
 }
 
-SEXP R_variantkey_to_regionkey(SEXP mc, SEXP vk)
+SEXP R_variantkey_to_regionkey(SEXP mc, SEXP vk, SEXP ret)
 {
-    uint64_t vkcode = parse_regionkey_hex(CHAR(STRING_ELT(vk, 0)));
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
     const nrvk_cols_t *cmc = get_nrvk_mc(mc);
-    uint64_t rk = variantkey_to_regionkey(*cmc, vkcode);
-    char hex[17];
-    regionkey_hex(rk, hex);
-    return Rf_mkString(hex);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = variantkey_to_regionkey(*cmc, pvk[i]);
+    }
+    return ret;
 }
 
 // --- ESID ---
 
-SEXP R_encode_string_id(SEXP str, SEXP start)
+SEXP R_encode_string_id(SEXP str, SEXP start, SEXP ret)
 {
-    const char *chr = CHAR(STRING_ELT(str, 0));
-    uint64_t esid = encode_string_id(chr, strlen(chr), asInteger(start));
-    char hex[17];
-    hex_uint64_t(esid, hex);
-    return Rf_mkString(hex);
+    uint64_t i, j = 0, k = 0;
+    uint64_t n = LENGTH(ret);
+    uint64_t m = LENGTH(start);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint32_t *pstart = (uint32_t *)INTEGER(start);
+    if (m > 1)
+    {
+        k = 1;
+    }
+    for(i = 0; i < n; i++)
+    {
+        const char *chr = CHAR(STRING_ELT(str, i));
+        res[i] = encode_string_id(chr, strlen(chr), pstart[j]);
+        j += k;
+    }
+    return ret;
 }
 
-SEXP R_encode_string_num_id(SEXP str, SEXP sep)
+SEXP R_encode_string_num_id(SEXP str, SEXP sep, SEXP ret)
 {
-    const char *chr = CHAR(STRING_ELT(str, 0));
-    uint64_t esid = encode_string_num_id(chr, strlen(chr), asInteger(sep));
-    char hex[17];
-    hex_uint64_t(esid, hex);
-    return Rf_mkString(hex);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint8_t psep = (uint8_t)asInteger(sep);
+    for(i = 0; i < n; i++)
+    {
+        const char *chr = CHAR(STRING_ELT(str, i));
+        res[i] = encode_string_num_id(chr, strlen(chr), psep);
+    }
+    return ret;
 }
 
-SEXP R_decode_string_id(SEXP esid)
+SEXP R_decode_string_id(SEXP esid, SEXP ret)
 {
-    uint64_t code = parse_hex_uint64_t(CHAR(STRING_ELT(esid, 0)));
+    uint64_t i, n = LENGTH(esid);
+    uint64_t *pesid = (uint64_t *)REAL(esid);
     char str[23] = "";
-    decode_string_id(code, str);
-    return Rf_mkString(str);
+    for(i = 0; i < n; i++)
+    {
+        str[0] = 0;
+        decode_string_id(pesid[i], str);
+        SET_STRING_ELT(ret, i, mkChar(str));
+    }
+    return ret;
 }
 
-SEXP R_hash_string_id(SEXP str)
+SEXP R_hash_string_id(SEXP str, SEXP ret)
 {
-    const char *chr = CHAR(STRING_ELT(str, 0));
-    uint64_t hsid = hash_string_id(chr, strlen(chr));
-    char hex[17];
-    hex_uint64_t(hsid, hex);
-    return Rf_mkString(hex);
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    for(i = 0; i < n; i++)
+    {
+        const char *chr = CHAR(STRING_ELT(str, i));
+        res[i] = hash_string_id(chr, strlen(chr));
+    }
+    return ret;
 }

@@ -6,12 +6,12 @@
 Return Number of written bytes or 0 in case of error.
 For the reverse operation see the resources/tools/nrvk.sh script.}
 \usage{
-VknrBinToTsv(mc, tsvfile)
+VknrBinToTsv(tsvfile, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{tsvfile}{Output tsv file name. Note that existing files will be replaced.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Convert a vrnr.bin file to a simple TSV.

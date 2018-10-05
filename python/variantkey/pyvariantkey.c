@@ -71,7 +71,7 @@ static PyObject* py_decode_chrom(PyObject *Py_UNUSED(ignored), PyObject *args, P
     static char *kwlist[] = {"code", NULL};
     if (!PyArg_ParseTupleAndKeywords(args, keywds, "B", kwlist, &code))
         return NULL;
-    char chrom[3] = "";
+    char chrom[4] = "";
     decode_chrom(code, chrom);
     return Py_BuildValue("y", chrom);
 }

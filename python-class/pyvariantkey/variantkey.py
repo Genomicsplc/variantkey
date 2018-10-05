@@ -1088,7 +1088,7 @@ class VariantKey(object):
     # ESID
     # ----
 
-    def encode_string_id(self, strid, start):
+    def encode_string_id(self, strid, start=0):
         """Encode maximum 10 characters of a string into a 64 bit unsigned integer.
         This function can be used to convert generic string IDs to numeric IDs.
 
@@ -1104,10 +1104,14 @@ class VariantKey(object):
         uint64 :
             Encoded string ID.
         """
+        vstrid = np.array(strid).astype(np.string_)
+        vstart = np.array(start).astype(np.uint32)
+        if ((vstart.size == 1) and (vstrid.size > vstart.size)):
+            start = np.repeat(start, vstrid.size)
         f = np.vectorize(pvk.encode_string_id, otypes=[np.uint64])
-        return f(np.array(strid).astype(np.string_), np.array(start).astype(np.uint32))
+        return f(vstrid, vstart)
 
-    def encode_string_num_id(self, strid, sep):
+    def encode_string_num_id(self, strid, sep=b':'):
         """Encode a string composed by a character section followed by a separator
         character and a numerical section into a 64 bit unsigned integer. For example: ABCDE:0001234.
         Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.

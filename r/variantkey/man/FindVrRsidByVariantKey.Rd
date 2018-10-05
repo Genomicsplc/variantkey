@@ -2,19 +2,20 @@
 % Please edit documentation in R/variantkey.R
 \name{FindVrRsidByVariantKey}
 \alias{FindVrRsidByVariantKey}
-\title{Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found}
+\title{Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found.}
 \usage{
-FindVrRsidByVariantKey(mc, first, last, vk)
+FindVrRsidByVariantKey(vk, first = 0, last = vk.env$vkrs_$NROWS,
+  mc = vk.env$vkrs_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapVKRSfile.}
+\item{vk}{VariantKey.}
 
 \item{first}{First element of the range to search (min value = 0).}
 
-\item{last}{Last element of the range to search (max value = nitems - 1).}
+\item{last}{Element (up to but not including) where to end the search (max value = nitems).}
 
-\item{vk}{VariantKey.}
+\item{mc}{Memory-mapped columns object as retured by MmapVKRSfile.}
 }
 \description{
-Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found
+Search for the specified VariantKey and returns the first occurrence of rsID in the VR file, or 0 if not found.
 }

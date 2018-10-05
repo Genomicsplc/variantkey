@@ -581,82 +581,82 @@ x <- rbind(
 colnames(x) <- list("chrom", "nchrom", "kchrom", "pos", "refalt", "ref", "alt", "rref", "ralt", "vk")
 
 test_that("EncodeChrom", {
-    res <- mapply(EncodeChrom, unlist(x[,"chrom"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- EncodeChrom(unlist(x[,"chrom"]))
     expect_that(res, equals(unlist(x[,"kchrom"])))
 })
 
 test_that("DecodeChrom", {
-    res <- mapply(DecodeChrom, unlist(x[,"kchrom"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- DecodeChrom(unlist(x[,"kchrom"]))
     expect_that(res, equals(unlist(x[,"nchrom"])))
 })
 
 test_that("EncodeRefAlt", {
-    res <- mapply(EncodeRefAlt, unlist(x[,"ref"]), unlist(x[,"alt"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- EncodeRefAlt(unlist(x[,"ref"]), unlist(x[,"alt"]))
     expect_that(res, equals(unlist(x[,"refalt"])))
 })
 
 test_that("DecodeRefAlt", {
-    res <- mapply(DecodeRefAlt, unlist(x[,"refalt"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(unlist(res[1,]), equals(unlist(x[,"rref"])))
-    expect_that(unlist(res[2,]), equals(unlist(x[,"ralt"])))
+    res <- DecodeRefAlt(unlist(x[,"refalt"]))
+    expect_that(res$REF, equals(unlist(x[,"rref"])))
+    expect_that(res$ALT, equals(unlist(x[,"ralt"])))
 })
 
 test_that("EncodeVariantKey", {
-    res <- mapply(EncodeVariantKey, unlist(x[,"kchrom"]), unlist(x[,"pos"]), unlist(x[,"refalt"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_identical(res, unlist(x[,"vk"]))
+    res <- EncodeVariantKey(unlist(x[,"kchrom"]), unlist(x[,"pos"]), unlist(x[,"refalt"]))
+    expect_identical(res, hexToUint64(unlist(x[,"vk"])))
 })
 
 test_that("ExtractVariantKeyChrom", {
-    res <- mapply(ExtractVariantKeyChrom, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractVariantKeyChrom(hexToUint64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"kchrom"])))
 })
 
 test_that("ExtractVariantKeyPos", {
-    res <- mapply(ExtractVariantKeyPos, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractVariantKeyPos(hexToUint64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"pos"])))
 })
 
 test_that("ExtractVariantKeyRefAlt", {
-    res <- mapply(ExtractVariantKeyRefAlt, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- ExtractVariantKeyRefAlt(hexToUint64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"refalt"])))
 })
 
 test_that("DecodeVariantKey", {
-    res <- mapply(DecodeVariantKey, unlist(x[,"vk"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_that(unlist(res[1,]), equals(unlist(x[,"kchrom"])))
-    expect_that(unlist(res[2,]), equals(unlist(x[,"pos"])))
-    expect_that(unlist(res[3,]), equals(unlist(x[,"refalt"])))
+    res <- DecodeVariantKey(hexToUint64(unlist(x[,"vk"])))
+    expect_that(res$CHROM, equals(unlist(x[,"kchrom"])))
+    expect_that(res$POS, equals(unlist(x[,"pos"])))
+    expect_that(res$REFALT, equals(unlist(x[,"refalt"])))
 })
 
 test_that("VariantKey", {
-    res <- mapply(VariantKey, unlist(x[,"chrom"]), unlist(x[,"pos"]), unlist(x[,"ref"]), unlist(x[,"alt"]), SIMPLIFY = TRUE, USE.NAMES = FALSE)
-    expect_identical(res, unlist(x[,"vk"]))
+    res <- VariantKey(unlist(x[,"chrom"]), unlist(x[,"pos"]), unlist(x[,"ref"]), unlist(x[,"alt"]))
+    expect_identical(res, hexToUint64(unlist(x[,"vk"])))
 })
 
 test_that("VariantKeyRange", {
     res <- VariantKeyRange(1, 0, 268435455)
-    expect_that(res$MIN, equals("0800000000000000"))
-    expect_that(res$MAX, equals("0fffffffffffffff"))
+    expect_that(res$MIN, equals(hexToUint64("0800000000000000")))
+    expect_that(res$MAX, equals(hexToUint64("0fffffffffffffff")))
 })
 
 test_that("CompareVariantKeyChrom", {
-    res <- mapply(CompareVariantKeyChrom, "08027a3c08e80000", "100036cc08900000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChrom(hexToUint64("08027a3c08e80000"), hexToUint64("100036cc08900000"))
     expect_that(res, equals(-1))
-    res <- mapply(CompareVariantKeyChrom, "0fffffff88b80000", "08027a2188c80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChrom(hexToUint64("0fffffff88b80000"), hexToUint64("08027a2188c80000"))
     expect_that(res, equals(0))
-    res <- mapply(CompareVariantKeyChrom, "100036cc08900000", "08027a3c08e80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChrom(hexToUint64("100036cc08900000"), hexToUint64("08027a3c08e80000"))
     expect_that(res, equals(1))
 })
 
 test_that("CompareVariantKeyChromPos", {
-    res <- mapply(CompareVariantKeyChromPos, "08027a3c08e80000", "100036cc08900000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChromPos(hexToUint64("08027a3c08e80000"), hexToUint64("100036cc08900000"))
     expect_that(res, equals(-1))
-    res <- mapply(CompareVariantKeyChromPos, "100036cc08900000", "08027a3c08e80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChromPos(hexToUint64("100036cc08900000"), hexToUint64("08027a3c08e80000"))
     expect_that(res, equals(1))
-    res <- mapply(CompareVariantKeyChromPos, "08027a2588b00000", "0fffffff88b80000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChromPos(hexToUint64("08027a2588b00000"), hexToUint64("0fffffff88b80000"))
     expect_that(res, equals(-1))
-    res <- mapply(CompareVariantKeyChromPos, "0fffffff88b80000", "0fffffff8ae2503b", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChromPos(hexToUint64("0fffffff88b80000"), hexToUint64("0fffffff8ae2503b"))
     expect_that(res, equals(0))
-    res <- mapply(CompareVariantKeyChromPos, "0fffffff88b80000", "08027a2588b00000", SIMPLIFY = TRUE, USE.NAMES = FALSE)
+    res <- CompareVariantKeyChromPos(hexToUint64("0fffffff88b80000"), hexToUint64("08027a2588b00000"))
     expect_that(res, equals(1))
 })

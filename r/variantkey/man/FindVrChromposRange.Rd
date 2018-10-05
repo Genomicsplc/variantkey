@@ -4,20 +4,21 @@
 \alias{FindVrChromposRange}
 \title{Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.}
 \usage{
-FindVrChromposRange(mc, first, last, chrom, pos_min, pos_max)
+FindVrChromposRange(chrom, pos_min, pos_max, first = 0,
+  last = vk.env$vkrs_$NROWS, mc = vk.env$vkrs_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapVKRSfile.}
-
-\item{first}{First element of the range to search (min value = 0).}
-
-\item{last}{Last element of the range to search (max value = nitems - 1).}
-
 \item{chrom}{Chromosome encoded number.}
 
 \item{pos_min}{Start reference position, with the first base having position 0.}
 
 \item{pos_max}{End reference position, with the first base having position 0.}
+
+\item{first}{First element of the range to search (min value = 0).}
+
+\item{last}{Element (up to but not including) where to end the search (max value = nitems).}
+
+\item{mc}{Memory-mapped columns object as retured by MmapVKRSfile.}
 }
 \description{
 Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.

@@ -9,7 +9,7 @@ Return Positive number in case of success, negative in case of error:
   * -1 the reference allele don't match the reference genome;
   * -2 the reference allele is longer than the genome reference sequence.}
 \usage{
-CheckReference(mf, chrom, pos, ref)
+CheckReference(chrom, pos, ref, mf = vk.env$genoref_$MF)
 }
 \arguments{
 \item{chrom}{Encoded Chromosome number (see encode_chrom).}
@@ -18,7 +18,7 @@ CheckReference(mf, chrom, pos, ref)
 
 \item{ref}{Reference allele. String containing a sequence of nucleotide letters.}
 
-\item{mc}{Memory-mapped columns object as retured by MmapGenorefFile.}
+\item{mf}{Memory-mapped file object as retured by MmapGenorefFile.}
 }
 \description{
 Check if the reference allele matches the reference genome data.

@@ -124,7 +124,7 @@ func EncodeChrom(chrom string) uint8 {
 
 // DecodeChrom decode chrom to string
 func DecodeChrom(c uint8) string {
-	cstr := C.malloc(3)
+	cstr := C.malloc(4)
 	defer C.free(unsafe.Pointer(cstr)) // #nosec
 	len := C.decode_chrom(C.uint8_t(c), (*C.char)(cstr))
 	return C.GoStringN((*C.char)(cstr), C.int(len))

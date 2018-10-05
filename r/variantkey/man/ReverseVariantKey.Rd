@@ -4,12 +4,12 @@
 \alias{ReverseVariantKey}
 \title{Reverse a VariantKey code and returns the normalized components.}
 \usage{
-ReverseVariantKey(mc, vk)
+ReverseVariantKey(vk, mc = vk.env$nrvk_$MC)
 }
 \arguments{
-\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
-
 \item{vk}{VariantKey code.}
+
+\item{mc}{Memory-mapped columns object as retured by MmapNRVKfile.}
 }
 \description{
 Reverse a VariantKey code and returns the normalized components.
