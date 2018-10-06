@@ -114,25 +114,25 @@ colnames(y) <- list("size", "esize", "esid", "estr", "str")
 
 test_that("EncodeStringID", {
     res <- EncodeStringID(unlist(x[,"str"]), unlist(x[,"start"]))
-    expect_that(res, equals(hexToUint64(unlist(x[,"esid"]))))
+    expect_that(res, equals(as.uint64(as.hex64(unlist(x[,"esid"])))))
 })
 
 test_that("EncodeStringNumID", {
     res <- EncodeStringNumID(unlist(y[,"str"]), ":")
-    expect_that(res, equals(hexToUint64(unlist(y[,"esid"]))))
+    expect_that(res, equals(as.uint64(as.hex64(unlist(y[,"esid"])))))
 })
 
 test_that("DecodeStringID", {
-    res <- DecodeStringID(hexToUint64(unlist(x[,"esid"])))
+    res <- DecodeStringID(as.uint64(as.hex64(unlist(x[,"esid"]))))
     expect_that(res, equals(unlist(x[,"estr"])))
 })
 
 test_that("DecodeStringNumID", {
-    res <- DecodeStringID(hexToUint64(unlist(y[,"esid"])))
+    res <- DecodeStringID(as.uint64(as.hex64(unlist(y[,"esid"]))))
     expect_that(res, equals(unlist(y[,"estr"])))
 })
 
 test_that("HashStringID", {
     res <- HashStringID(unlist(x[,"str"]))
-    expect_that(res, equals(hexToUint64(unlist(x[,"hsid"]))))
+    expect_that(res, equals(as.uint64(as.hex64(unlist(x[,"hsid"])))))
 })

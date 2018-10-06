@@ -26,7 +26,7 @@ InitVariantKey(rsvk_file = "../../../../c/test/data/rsvk.10.bin", vkrs_file = ".
 
 test_that("FindRvVariantKeyByRsid", {
     res <- FindRvVariantKeyByRsid(rsid = unlist(x[,"rsid"]))
-    expect_that(res$VK, equals(hexToUint64(unlist(x[,"vk"]))))
+    expect_that(res$VK, equals(as.uint64(as.hex64(unlist(x[,"vk"])))))
     expect_that(res$FIRST, equals(unlist(x[,"item"])))
 })
 
@@ -38,7 +38,7 @@ test_that("FindRvVariantKeyByRsidNotFound", {
 
 test_that("GetNextRvVariantKeyByRsid", {
     res <- GetNextRvVariantKeyByRsid(pos=2, rsid=0x00000061)
-    expect_that(res$VK, equals(hexToUint64("80010274003a0000")))
+    expect_that(res$VK, equals(as.uint64(as.hex64("80010274003a0000"))))
     expect_that(res$POS, equals(3))
     res <- GetNextRvVariantKeyByRsid(rsid=0x00000061, pos=res$POS)
     expect_that(res$VK, equals(as.uint64(0)))
@@ -46,13 +46,13 @@ test_that("GetNextRvVariantKeyByRsid", {
 })
 
 test_that("FindVrRsidByVariantKey", {
-    res <- FindVrRsidByVariantKey(vk = hexToUint64(unlist(x[,"vk"])))
+    res <- FindVrRsidByVariantKey(vk = as.hex64(unlist(x[,"vk"])))
     expect_that(res$RSID, equals(unlist(x[,"rsid"])))
     expect_that(res$FIRST, equals(unlist(x[,"item"])))
 })
 
 test_that("FindVrRsidByVariantKeyNotFound", {
-    res <- FindVrRsidByVariantKey(hexToUint64("fffffffffffffff0"))
+    res <- FindVrRsidByVariantKey(as.hex64("fffffffffffffff0"))
     expect_that(res$RSID, equals(0))
     expect_that(res$FIRST, equals(9))
 })
@@ -79,9 +79,9 @@ test_that("MmapRSVKFile", {
 test_that("FindAllRvVariantKeyByRsid", {
     res <- FindAllRvVariantKeyByRsid(rsid=0x00000003, first=0, last=rsvkm$NROWS, mc=rsvkm$MC)
     expect_that(length(res), equals(3))
-    expect_that(unlist(res[1]), equals(hexToUint64("80010274003a0000")))
-    expect_that(unlist(res[2]), equals(hexToUint64("8001028d00138000")))
-    expect_that(unlist(res[3]), equals(hexToUint64("80010299007a0000")))
+    expect_that(unlist(res[1]), equals(as.uint64(as.hex64("80010274003a0000"))))
+    expect_that(unlist(res[2]), equals(as.uint64(as.hex64("8001028d00138000"))))
+    expect_that(unlist(res[3]), equals(as.uint64(as.hex64("80010299007a0000"))))
 })
 
 test_that("FindAllRvVariantKeyByRsidNotFound", {

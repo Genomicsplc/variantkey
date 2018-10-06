@@ -78,11 +78,11 @@ print(x)
 # $MAX
 # [1] "13258609498538377215"
 
-x <- CompareVariantKeyChrom(hexToUint64(hexToUint64("B800026900000000"), hexToUint64("B8000B177FFFFFFF"))
+x <- CompareVariantKeyChrom(as.hex64("B800026900000000"), as.hex64("B8000B177FFFFFFF"))
 print(x)
 # [1] 0
 
-x <- CompareVariantKeyChromPos(hexToUint64("B800026900000000"), hexToUint64("B8000B177FFFFFFF"))
+x <- CompareVariantKeyChromPos(as.hex64("B800026900000000"), as.hex64("B8000B177FFFFFFF"))
 print(x)
 # [1] -1
 

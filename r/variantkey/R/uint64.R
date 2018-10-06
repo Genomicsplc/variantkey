@@ -92,22 +92,13 @@ as.character.uint64 <- function(x, ...) {
 
 setAs(UINT64, "character", function(from)as.character.uint64(from))
 
-#' Convert hexadecimal character vector to uint64
+#' Convert hexadecimal character vector to uint64.
 #' @param x hexadecimal character vector (16 characters per item)
 #' @useDynLib variantkey R_parse_hex_uint64_t
 #' @export
-hexToUint64 <- function(x, ...) {
+as.uint64.hex64 <- function(x, ...) {
     ret <- uint64(length(x))
     return(.Call("R_parse_hex_uint64_t", as.character(x), ret))
-}
-
-#' Convert uint64 vector to hexadecimal character.
-#' @param x uint64 vector
-#' @useDynLib variantkey R_hex_uint64_t
-#' @export
-uint64ToHex <- function(x, ...) {
-    ret <- character(length(x))
-    return(.Call("R_hex_uint64_t", as.uint64(x), ret))
 }
 
 #' Replicate elements of uint64 vectors.
@@ -179,18 +170,14 @@ uint64ToHex <- function(x, ...) {
     return(ret)
 }
 
-uint64LogicCompare <- function(cfunc, x, y) {
-    ret <- logical(max(length(x), length(y)))
-    return(.Call(cfunc, as.uint64(x), as.uint64(y), ret))
-}
-
 #' Returns true if x and y are equal.
 #' @param x uint64 vector
 #' @param y uint64 vector
 #' @useDynLib variantkey R_EQ_uint64
 #' @export
 "==.uint64" <- function(x, y) {
-    return(uint64LogicCompare("R_EQ_uint64", x, y))
+    ret <- logical(max(length(x), length(y)))
+    return(.Call("R_EQ_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
 #' Returns true if x and y are different.
@@ -199,7 +186,8 @@ uint64LogicCompare <- function(cfunc, x, y) {
 #' @useDynLib variantkey R_NE_uint64
 #' @export
 "!=.uint64" <- function(x, y) {
-    return(uint64LogicCompare("R_NE_uint64", x, y))
+    ret <- logical(max(length(x), length(y)))
+    return(.Call("R_NE_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
 #' Returns true if x is less than y.
@@ -208,7 +196,8 @@ uint64LogicCompare <- function(cfunc, x, y) {
 #' @useDynLib variantkey R_LT_uint64
 #' @export
 "<.uint64" <- function(x, y) {
-    return(uint64LogicCompare("R_LT_uint64", x, y))
+    ret <- logical(max(length(x), length(y)))
+    return(.Call("R_LT_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
 #' Returns true if x is less or equal than y.
@@ -217,7 +206,8 @@ uint64LogicCompare <- function(cfunc, x, y) {
 #' @useDynLib variantkey R_LE_uint64
 #' @export
 "<=.uint64" <- function(x, y) {
-    return(uint64LogicCompare("R_LE_uint64", x, y))
+    ret <- logical(max(length(x), length(y)))
+    return(.Call("R_LE_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
 #' Returns true if x is greater than y.
@@ -226,7 +216,8 @@ uint64LogicCompare <- function(cfunc, x, y) {
 #' @useDynLib variantkey R_GT_uint64
 #' @export
 ">.uint64" <- function(x, y) {
-    return(uint64LogicCompare("R_GT_uint64", x, y))
+    ret <- logical(max(length(x), length(y)))
+    return(.Call("R_GT_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
 #' Returns true if x is greater or equal than y.
@@ -235,7 +226,8 @@ uint64LogicCompare <- function(cfunc, x, y) {
 #' @useDynLib variantkey R_GE_uint64
 #' @export
 ">=.uint64" <- function(x, y) {
-    return(uint64LogicCompare("R_GE_uint64", x, y))
+    ret <- logical(max(length(x), length(y)))
+    return(.Call("R_GE_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
 #' Format uint64 vector for pretty printing.
@@ -312,4 +304,73 @@ as.data.frame.uint64 <- function(x, ...) {
         setattr(ret[[i]], "class", cx)
     }
     return(ret)
+}
+
+# @TODO: implement native uint64 functions to avoid conversion to and from hex
+
+#' Ordering Permutation.
+#' @param x uint64 vector
+#' @export
+order.uint64 <- function(x, ...) {
+    return(order(as.character(as.hex64(x)), ...))
+}
+
+#' Sorting or Ordering uint64 Vectors.
+#' @param x uint64 vector
+#' @export
+sort.uint64 <- function(x, ...) {
+    return(as.uint64(as.hex64(sort(as.character(as.hex64(x)), ...))))
+}
+
+#' Extract Unique Elements.
+#' @param x uint64 vector
+#' @export
+unique.uint64 <- function(x, ...) {
+    return(as.uint64(as.hex64(unique(as.character(as.hex64(x)), ...))))
+}
+
+#' Performs set union on two vectors.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @export
+union.uint64 <- function(x, y) {
+    return(as.uint64(as.hex64(union(as.character(as.hex64(x)), as.character(as.hex64(y))))))
+}
+
+#' Performs set (asymmetric!) difference on two vectors.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @export
+intersect.uint64 <- function(x, y) {
+    return(as.uint64(as.hex64(intersect(as.character(as.hex64(x)), as.character(as.hex64(y))))))
+}
+
+#' Performs set setdiff on two vectors.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @export
+setdiff.uint64 <- function(x, y) {
+    return(as.uint64(as.hex64(setdiff(as.character(as.hex64(x)), as.character(as.hex64(y))))))
+}
+
+#' Performs set equality on two vectors.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @export
+setequal.uint64 <- function(x, y) {
+    return(setequal(as.character(as.hex64(x)), as.character(as.hex64(y))))
+}
+
+#' Determines which elements of a vector or data frame are duplicates of elements with smaller subscripts, and returns a logical vector indicating which elements (rows) are duplicates.
+#' @param x uint64 vector
+#' @export
+duplicated.uint64 <- function(x, ...) {
+    return(duplicated(as.character(as.hex64(x)), ...))
+}
+
+#' Generalized” more efficient shortcut for any(duplicated(.)).
+#' @param x uint64 vector
+#' @export
+anyDuplicated.uint64 <- function(x, ...) {
+    return(anyDuplicated(as.character(as.hex64(x)), ...))
 }

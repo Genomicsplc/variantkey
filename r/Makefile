@@ -56,6 +56,7 @@ build: version
 # Format the source code
 format:
 	astyle --style=allman --recursive --suffix=none 'variantkey/src/*.c'
+	astyle --style=allman --recursive --suffix=none 'variantkey/src/*.h'
 	#astyle --style=google --recursive --suffix=none 'variantkey/R/*.R'
 	#astyle --style=google --recursive --suffix=none 'variantkey/tests/*.R'
 	#astyle --style=google --recursive --suffix=none 'example/*.R'

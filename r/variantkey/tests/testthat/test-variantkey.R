@@ -603,26 +603,26 @@ test_that("DecodeRefAlt", {
 
 test_that("EncodeVariantKey", {
     res <- EncodeVariantKey(unlist(x[,"kchrom"]), unlist(x[,"pos"]), unlist(x[,"refalt"]))
-    expect_identical(res, hexToUint64(unlist(x[,"vk"])))
+    expect_identical(res, as.uint64(as.hex64(unlist(x[,"vk"]))))
 })
 
 test_that("ExtractVariantKeyChrom", {
-    res <- ExtractVariantKeyChrom(hexToUint64(unlist(x[,"vk"])))
+    res <- ExtractVariantKeyChrom(as.hex64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"kchrom"])))
 })
 
 test_that("ExtractVariantKeyPos", {
-    res <- ExtractVariantKeyPos(hexToUint64(unlist(x[,"vk"])))
+    res <- ExtractVariantKeyPos(as.hex64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"pos"])))
 })
 
 test_that("ExtractVariantKeyRefAlt", {
-    res <- ExtractVariantKeyRefAlt(hexToUint64(unlist(x[,"vk"])))
+    res <- ExtractVariantKeyRefAlt(as.hex64(unlist(x[,"vk"])))
     expect_that(res, equals(unlist(x[,"refalt"])))
 })
 
 test_that("DecodeVariantKey", {
-    res <- DecodeVariantKey(hexToUint64(unlist(x[,"vk"])))
+    res <- DecodeVariantKey(as.hex64(unlist(x[,"vk"])))
     expect_that(res$CHROM, equals(unlist(x[,"kchrom"])))
     expect_that(res$POS, equals(unlist(x[,"pos"])))
     expect_that(res$REFALT, equals(unlist(x[,"refalt"])))
@@ -630,33 +630,33 @@ test_that("DecodeVariantKey", {
 
 test_that("VariantKey", {
     res <- VariantKey(unlist(x[,"chrom"]), unlist(x[,"pos"]), unlist(x[,"ref"]), unlist(x[,"alt"]))
-    expect_identical(res, hexToUint64(unlist(x[,"vk"])))
+    expect_identical(res, as.uint64(as.hex64(unlist(x[,"vk"]))))
 })
 
 test_that("VariantKeyRange", {
     res <- VariantKeyRange(1, 0, 268435455)
-    expect_that(res$MIN, equals(hexToUint64("0800000000000000")))
-    expect_that(res$MAX, equals(hexToUint64("0fffffffffffffff")))
+    expect_that(res$MIN, equals(as.uint64(as.hex64("0800000000000000"))))
+    expect_that(res$MAX, equals(as.uint64(as.hex64("0fffffffffffffff"))))
 })
 
 test_that("CompareVariantKeyChrom", {
-    res <- CompareVariantKeyChrom(hexToUint64("08027a3c08e80000"), hexToUint64("100036cc08900000"))
+    res <- CompareVariantKeyChrom(as.hex64("08027a3c08e80000"), as.hex64("100036cc08900000"))
     expect_that(res, equals(-1))
-    res <- CompareVariantKeyChrom(hexToUint64("0fffffff88b80000"), hexToUint64("08027a2188c80000"))
+    res <- CompareVariantKeyChrom(as.hex64("0fffffff88b80000"), as.hex64("08027a2188c80000"))
     expect_that(res, equals(0))
-    res <- CompareVariantKeyChrom(hexToUint64("100036cc08900000"), hexToUint64("08027a3c08e80000"))
+    res <- CompareVariantKeyChrom(as.hex64("100036cc08900000"), as.hex64("08027a3c08e80000"))
     expect_that(res, equals(1))
 })
 
 test_that("CompareVariantKeyChromPos", {
-    res <- CompareVariantKeyChromPos(hexToUint64("08027a3c08e80000"), hexToUint64("100036cc08900000"))
+    res <- CompareVariantKeyChromPos(as.hex64("08027a3c08e80000"), as.hex64("100036cc08900000"))
     expect_that(res, equals(-1))
-    res <- CompareVariantKeyChromPos(hexToUint64("100036cc08900000"), hexToUint64("08027a3c08e80000"))
+    res <- CompareVariantKeyChromPos(as.hex64("100036cc08900000"), as.hex64("08027a3c08e80000"))
     expect_that(res, equals(1))
-    res <- CompareVariantKeyChromPos(hexToUint64("08027a2588b00000"), hexToUint64("0fffffff88b80000"))
+    res <- CompareVariantKeyChromPos(as.hex64("08027a2588b00000"), as.hex64("0fffffff88b80000"))
     expect_that(res, equals(-1))
-    res <- CompareVariantKeyChromPos(hexToUint64("0fffffff88b80000"), hexToUint64("0fffffff8ae2503b"))
+    res <- CompareVariantKeyChromPos(as.hex64("0fffffff88b80000"), as.hex64("0fffffff8ae2503b"))
     expect_that(res, equals(0))
-    res <- CompareVariantKeyChromPos(hexToUint64("0fffffff88b80000"), hexToUint64("08027a2588b00000"))
+    res <- CompareVariantKeyChromPos(as.hex64("0fffffff88b80000"), as.hex64("08027a2588b00000"))
     expect_that(res, equals(1))
 })
