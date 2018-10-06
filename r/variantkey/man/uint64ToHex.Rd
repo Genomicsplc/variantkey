@@ -2,7 +2,7 @@
 % Please edit documentation in R/uint64.R
 \name{uint64ToHex}
 \alias{uint64ToHex}
-\title{Coerce uint64 vector to hexadecimal character.}
+\title{Convert uint64 vector to hexadecimal character.}
 \usage{
 uint64ToHex(x, ...)
 }
@@ -10,5 +10,5 @@ uint64ToHex(x, ...)
 \item{x}{uint64 vector}
 }
 \description{
-Coerce uint64 vector to hexadecimal character.
+Convert uint64 vector to hexadecimal character.
 }

@@ -4,7 +4,7 @@
 \alias{format.uint64}
 \title{Format uint64 vector for pretty printing.}
 \usage{
-\method{format}{uint64}(x, justify = "right", ...)
+\method{format}{uint64}(x, ...)
 }
 \description{
 Format uint64 vector for pretty printing.

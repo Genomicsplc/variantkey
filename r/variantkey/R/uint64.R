@@ -27,7 +27,7 @@ identical.uint64 <- function(x, y, num.eq=FALSE, single.NA=FALSE, attrib.as.set=
 #' Coerce to uint64.
 #' @param x vector
 #' @export
-as.uint64 <- function (x, ...) {
+as.uint64 <- function(x, ...) {
     UseMethod("as.uint64")
 }
 
@@ -41,7 +41,7 @@ as.uint64.factor <- function(x, ...) {
 #' Coerce from NULL to uint64.
 #' @param x NULL vector
 #' @export
-as.uint64.NULL <- function (x, ...) {
+as.uint64.NULL <- function(x, ...) {
     return(uint64())
 }
 
@@ -70,15 +70,6 @@ as.uint64.integer <- function(x, ...) {
     return(.Call("R_integer_to_uint64", x, ret))
 }
 
-#' Coerce logical vector to uint64
-#' @param x logical vector
-#' @useDynLib variantkey R_integer_to_uint64
-#' @export
-as.uint64.logical <- function(x, ...) {
-    ret <- uint64(length(x))
-    return(.Call("R_integer_to_uint64", x, ret))
-}
-
 #' Coerce character vector to uint64
 #' @param x character vector
 #' @useDynLib variantkey R_decstr_to_uint64
@@ -101,7 +92,7 @@ as.character.uint64 <- function(x, ...) {
 
 setAs(UINT64, "character", function(from)as.character.uint64(from))
 
-#' Coerce hex64 vector to uint64
+#' Convert hexadecimal character vector to uint64
 #' @param x hexadecimal character vector (16 characters per item)
 #' @useDynLib variantkey R_parse_hex_uint64_t
 #' @export
@@ -110,28 +101,13 @@ hexToUint64 <- function(x, ...) {
     return(.Call("R_parse_hex_uint64_t", as.character(x), ret))
 }
 
-#' Coerce uint64 vector to hexadecimal character.
+#' Convert uint64 vector to hexadecimal character.
 #' @param x uint64 vector
 #' @useDynLib variantkey R_hex_uint64_t
 #' @export
 uint64ToHex <- function(x, ...) {
     ret <- character(length(x))
     return(.Call("R_hex_uint64_t", as.uint64(x), ret))
-}
-
-#' Get or set the length of uint64 vector.
-#' @param x uint64 vector
-#' @param value value to set the new length
-#' @export
-"length<-.uint64" <- function(x, value) {
-    cx <- oldClass(x)
-    n <- length(x)
-    x <- NextMethod()
-    oldClass(x) <- cx
-    if (value > n) {
-        x[(n + 1):value] <- 0L
-    }
-    return(x)
 }
 
 #' Replicate elements of uint64 vectors.
@@ -144,48 +120,19 @@ uint64ToHex <- function(x, ...) {
     return(ret)
 }
 
-remUint64Class <- function(x) {
-    if (length(x)) {
-        i <- (x == UINT64)
-        if (any(i)) {
-            return(x[!i])
-        }
+#' Set the length of uint64 vector.
+#' @param x uint64 vector
+#' @param value value to set the new length
+#' @export
+"length<-.uint64" <- function(x, value) {
+    cx <- oldClass(x)
+    n <- length(x)
+    x <- NextMethod()
+    oldClass(x) <- cx
+    if (value > n) {
+        x[(n + 1):value] <- as.uint64(0)
     }
     return(x)
-}
-
-#' Format uint64 vector for pretty printing.
-#' @export
-format.uint64 <- function(x, justify="right", ...) {
-    a <- attributes(x)
-    ret <- format(as.character(x), justify=justify, ...)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    return(ret)
-}
-
-#' Prints uint64 argument and returns it invisibly.
-#' @export
-print.uint64 <- function(x, quote=TRUE, ...) {
-    a <- attributes(x)
-    ret <- as.character(x)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    print(ret, quote=quote, ...)
-    invisible(x)
-}
-
-#' Compactly Display the Structure of an uint64 Object.
-#' @export
-str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length=give.head, ...) {
-    strO <- strOptions()
-    vec.len <- (2 * vec.len)
-    n <- length(object)
-    if (n > vec.len) {
-        object <- object[seq_len(vec.len)]
-    }
-    cat(if (give.head)paste(" ", UINT64, " ", if (give.length && (n > 1)) paste("[1:",n,"] ",sep=""), sep=""), paste(as.character(object), collapse=" "), if (n > vec.len)" ...", " \n", sep="")
-    invisible()
 }
 
 #' Extract uint64 vector parts
@@ -232,63 +179,124 @@ str.uint64 <- function(object, vec.len=strO$vec.len, give.head=TRUE, give.length
     return(ret)
 }
 
+uint64LogicCompare <- function(cfunc, x, y) {
+    ret <- logical(max(length(x), length(y)))
+    return(.Call(cfunc, as.uint64(x), as.uint64(y), ret))
+}
+
+#' Returns true if x and y are equal.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @useDynLib variantkey R_EQ_uint64
+#' @export
+"==.uint64" <- function(x, y) {
+    return(uint64LogicCompare("R_EQ_uint64", x, y))
+}
+
+#' Returns true if x and y are different.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @useDynLib variantkey R_NE_uint64
+#' @export
+"!=.uint64" <- function(x, y) {
+    return(uint64LogicCompare("R_NE_uint64", x, y))
+}
+
+#' Returns true if x is less than y.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @useDynLib variantkey R_LT_uint64
+#' @export
+"<.uint64" <- function(x, y) {
+    return(uint64LogicCompare("R_LT_uint64", x, y))
+}
+
+#' Returns true if x is less or equal than y.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @useDynLib variantkey R_LE_uint64
+#' @export
+"<=.uint64" <- function(x, y) {
+    return(uint64LogicCompare("R_LE_uint64", x, y))
+}
+
+#' Returns true if x is greater than y.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @useDynLib variantkey R_GT_uint64
+#' @export
+">.uint64" <- function(x, y) {
+    return(uint64LogicCompare("R_GT_uint64", x, y))
+}
+
+#' Returns true if x is greater or equal than y.
+#' @param x uint64 vector
+#' @param y uint64 vector
+#' @useDynLib variantkey R_GE_uint64
+#' @export
+">=.uint64" <- function(x, y) {
+    return(uint64LogicCompare("R_GE_uint64", x, y))
+}
+
+#' Format uint64 vector for pretty printing.
+#' @export
+format.uint64 <- function(x, ...) {
+    return(format(as.character(x), ...))
+}
+
+#' Prints uint64 argument and returns it invisibly.
+#' @export
+print.uint64 <- function(x, ...) {
+    return(print(as.character(x), ...))
+}
+
+bindUint64 <- function(mode, recursive=FALSE, ...) {
+    x <- list(...)
+    n <- length(x)
+    for (i in 1:n) {
+        if (recursive && is.list(x[[i]])) {
+            x[[i]] <- do.call("c.uint64", c(x[[i]], list(recursive=TRUE)))
+        } else {
+            if (!is.uint64(x[[i]])) {
+                m <- names(x[[i]])
+                x[[i]] <- as.uint64(x[[i]])
+                names(x[[i]]) <- m
+            }
+            oldClass(x[[i]]) <- NULL
+        }
+    }
+    ret <- do.call(mode, x)
+    oldClass(ret) <- UINT64
+    return(ret)
+}
+
 #' Concatenate uint64 vectors.
 #' @param Two or more vectors coerced to uint64
 #' @export
-c.uint64 <- function (..., recursive=FALSE) {
-    l <- list(...)
-    K <- length(l)
-    for (k in 1:K) {
-        if (recursive && is.list(l[[k]])) {
-            l[[k]] <- do.call("c.uint64", c(l[[k]], list(recursive=TRUE)))
-        } else {
-            if (!is.uint64(l[[k]])) {
-                s <- names(l[[k]])
-                l[[k]] <- as.uint64(l[[k]])
-                names(l[[k]]) <- s
-            }
-            oldClass(l[[k]]) <- NULL
-        }
-    }
-    ret <- do.call("c", l)
-    oldClass(ret) <- UINT64
-    return(ret)
+c.uint64 <- function(..., recursive=FALSE) {
+    return(bindUint64(mode="c", recursive=recursive, ...))
 }
 
 #' Combine uint64 vectors by columns.
 #' @export
 cbind.uint64 <- function(...) {
-    l <- list(...)
-    K <- length(l)
-    for (k in 1:K) {
-        if (!is.uint64(l[[k]])) {
-            s <- names(l[[k]])
-            l[[k]] <- as.uint64(l[[k]])
-            names(l[[k]]) <- s
-        }
-        oldClass(l[[k]]) <- NULL
-    }
-    ret <- do.call("cbind", l)
-    oldClass(ret) <- UINT64
-    return(ret)
+    return(bindUint64(mode="cbind", recursive=FALSE, ...))
 }
 
 #' Combine uint64 vectors by rows.
 #' @export
 rbind.uint64 <- function(...) {
-    l <- list(...)
-    K <- length(l)
-    for (k in 1:K) {
-        if (!is.uint64(l[[k]])) {
-            s <- names(l[[k]])
-            l[[k]] <- as.uint64(l[[k]])
-            names(l[[k]]) <- s
+    return(bindUint64(mode="rbind", recursive=FALSE, ...))
+}
+
+remUint64Class <- function(x) {
+    if (length(x)) {
+        i <- (x == UINT64)
+        if (any(i)) {
+            return(x[!i])
         }
-        oldClass(l[[k]]) <- NULL
     }
-    ret <- do.call("rbind", l)
-    oldClass(ret) <- UINT64
-    return(ret)
+    return(x)
 }
 
 #' Coerce uint64 vector to data.frame.
@@ -299,148 +307,9 @@ as.data.frame.uint64 <- function(x, ...) {
     on.exit(setattr(x, "class", cx))
     setattr(x, "class", remUint64Class(cx))
     ret <- as.data.frame(x, ...)
-    k <- length(ret)
-    for (i in 1:k) {
+    n <- length(ret)
+    for (i in 1:n) {
         setattr(ret[[i]], "class", cx)
     }
-    return(ret)
-}
-
-selattr <- function(x, y) {
-    nx <- length(x)
-    ny <- length(y)
-    dx <- dim(x)
-    dy <- dim(y)
-    ldx <- length(dx)
-    ldy <- length(dy)
-    if (ldx) {
-        if (ldy) {
-            if (!identical(dx, dy)) {
-                stop("non-conformable arrays")
-            }
-        } else {
-            if (ny > nx) {
-                stop("length(y) does not match dim(x)")
-            }
-            if (nx %% ny) {
-                warning("length(x) not a multiple length(y)")
-            }
-        }
-        return(attributes(x))
-    }
-    if (ldy) {
-        if (nx > ny) {
-            stop("length(x) does not match dim(y)")
-        }
-        if (ny %% nx) {
-            warning("length(y) not a multiple length(x)")
-        }
-        return(attributes(y))
-    }
-    if (nx < ny) {
-        if (ny %% nx) {
-            warning("length(y) not a multiple length(x)")
-        }
-    } else {
-        if (nx %% ny) {
-            warning("length(x) not a multiple length(y)")
-        }
-    }
-    return(attributes(x))
-}
-
-#' Returns true if x and y are equal.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @useDynLib variantkey R_EQ_uint64
-#' @export
-"==.uint64" <- function(x, y) {
-    a <- selattr(x, y)
-    x <- as.uint64(x)
-    y <- as.uint64(y)
-    ret <- logical(max(length(x), length(y)))
-    ret <- .Call("R_EQ_uint64", x, y, ret)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    return(ret)
-}
-
-#' Returns true if x and y are different.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @useDynLib variantkey R_NE_uint64
-#' @export
-"!=.uint64" <- function(x, y) {
-    a <- selattr(x, y)
-    x <- as.uint64(x)
-    y <- as.uint64(y)
-    ret <- logical(max(length(x), length(y)))
-    ret <- .Call("R_NE_uint64", x, y, ret)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    return(ret)
-}
-
-#' Returns true if x is less than y.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @useDynLib variantkey R_LT_uint64
-#' @export
-"<.uint64" <- function(x, y) {
-    a <- selattr(x, y)
-    x <- as.uint64(x)
-    y <- as.uint64(y)
-    ret <- logical(max(length(x), length(y)))
-    ret <- .Call("R_LT_uint64", x, y, ret)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    return(ret)
-}
-
-#' Returns true if x is less or equal than y.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @useDynLib variantkey R_LE_uint64
-#' @export
-"<=.uint64" <- function(x, y) {
-    a <- selattr(x, y)
-    x <- as.uint64(x)
-    y <- as.uint64(y)
-    ret <- logical(max(length(x), length(y)))
-    ret <- .Call("R_LE_uint64", x, y, ret)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    return(ret)
-}
-
-#' Returns true if x is greater than y.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @useDynLib variantkey R_GT_uint64
-#' @export
-">.uint64" <- function(x, y) {
-    a <- selattr(x, y)
-    x <- as.uint64(x)
-    y <- as.uint64(y)
-    ret <- logical(max(length(x), length(y)))
-    ret <- .Call("R_GT_uint64", x, y, ret)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
-    return(ret)
-}
-
-#' Returns true if x is greater or equal than y.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @useDynLib variantkey R_GE_uint64
-#' @export
-">=.uint64" <- function(x, y) {
-    a <- selattr(x, y)
-    x <- as.uint64(x)
-    y <- as.uint64(y)
-    ret <- logical(max(length(x), length(y)))
-    ret <- .Call("R_GE_uint64", x, y, ret)
-    a$class <- remUint64Class(a$class)
-    attributes(ret) <- a
     return(ret)
 }

@@ -45,26 +45,26 @@
 #define ALLELE_BUFFSIZE 12
 #define MAX_UINT64_DEC_CHARS 21
 
-// --- LOGIC ---
-#define CMP_EQ(x, y, r) r = ((x == y) ? TRUE : FALSE);
-#define CMP_NE(x, y, r) r = ((x != y) ? TRUE : FALSE);
-#define CMP_LE(x, y, r) r = ((x <= y) ? TRUE : FALSE);
-#define CMP_GE(x, y, r) r = ((x >= y) ? TRUE : FALSE);
-#define CMP_LT(x, y, r) r = ((x < y) ? TRUE : FALSE);
-#define CMP_GT(x, y, r) r = ((x > y) ? TRUE : FALSE);
+// --- UINT64 ---
+
+#define CMP_EQ(r, x, y) r = (x == y);
+#define CMP_NE(r, x, y) r = (x != y);
+#define CMP_LE(r, x, y) r = (x <= y);
+#define CMP_GE(r, x, y) r = (x >= y);
+#define CMP_LT(r, x, y) r = (x < y);
+#define CMP_GT(r, x, y) r = (x > y);
 
 #define define_cmpfunc(T) \
 SEXP R_##T##_uint64(SEXP x, SEXP y, SEXP r) \
 { \
-    uint64_t i, n = LENGTH(r); \
-    uint64_t ix, nx = LENGTH(x); \
-    uint64_t iy, ny = LENGTH(y); \
-    uint64_t *vx = (uint64_t *)REAL(x); \
-    uint64_t *vy = (uint64_t *)REAL(y); \
-    Rboolean *vr = (Rboolean *)LOGICAL(r); \
+    uint64_t i, ix, iy; \
+    uint64_t n = LENGTH(r), nx = LENGTH(x), ny = LENGTH(y); \
+    Rboolean *pr = (Rboolean *)LOGICAL(r); \
+    uint64_t *px = (uint64_t *)REAL(x); \
+    uint64_t *py = (uint64_t *)REAL(y); \
     for (i = ix = iy = 0; i < n; ix = ((++ix == nx) ? 0 : ix), iy = ((++iy == ny) ? 0 : iy), ++i) \
     { \
-        CMP_##T(vx[ix], vy[iy], vr[i]) \
+        CMP_##T(pr[i], px[ix], py[iy]) \
     } \
     return r; \
 }
@@ -75,8 +75,6 @@ define_cmpfunc(LE)
 define_cmpfunc(GE)
 define_cmpfunc(LT)
 define_cmpfunc(GT)
-
-// --- UINT64 ---
 
 SEXP R_decstr_to_uint64(SEXP str, SEXP ret)
 {

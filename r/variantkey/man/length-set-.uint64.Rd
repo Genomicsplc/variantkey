@@ -2,7 +2,7 @@
 % Please edit documentation in R/uint64.R
 \name{length<-.uint64}
 \alias{length<-.uint64}
-\title{Get or set the length of uint64 vector.}
+\title{Set the length of uint64 vector.}
 \usage{
 \method{length}{uint64}(x) <- value
 }
@@ -12,5 +12,5 @@
 \item{value}{value to set the new length}
 }
 \description{
-Get or set the length of uint64 vector.
+Set the length of uint64 vector.
 }
