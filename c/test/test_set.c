@@ -90,7 +90,8 @@ int test_unique_uint64_t()
 {
     int errors = 0;
     uint64_t arr[22] = {0,1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,5,6,7,8,9,9};
-    uint64_t n = unique_uint64_t(arr, 22);
+    uint64_t *p = unique_uint64_t(arr, 22);
+    uint64_t n = (p - arr);
     if (n != 10)
     {
         fprintf(stderr, "%s : Expected 10, got %" PRIu64 "\n", __func__, n);
@@ -112,7 +113,8 @@ int test_unique_uint64_t_zero()
 {
     int errors = 0;
     uint64_t arr[1] = {0};
-    uint64_t n = unique_uint64_t(arr, 0);
+    uint64_t *p = unique_uint64_t(arr, 0);
+    uint64_t n = (p - arr);
     if (n != 0)
     {
         fprintf(stderr, "%s : Expected 0, got %" PRIu64 "\n", __func__, n);
@@ -127,7 +129,8 @@ int test_intersection_uint64_t()
     uint64_t a_arr[11] = {0,1,2,3,3,4,5,6,7,8,9};
     uint64_t b_arr[7] = {0,3,3,5,6,6,9};
     uint64_t o_arr[6] = {0};
-    uint64_t n = intersection_uint64_t(a_arr, 11, b_arr, 7, o_arr);
+    uint64_t *p = intersection_uint64_t(a_arr, 11, b_arr, 7, o_arr);
+    uint64_t n = (p - o_arr);
     if (n != 6)
     {
         fprintf(stderr, "%s : Expected 5, got %" PRIu64 "\n", __func__, n);
@@ -152,7 +155,8 @@ int test_union_uint64_t()
     uint64_t a_arr[7] = {0,2,3,3,5,8,9};
     uint64_t b_arr[7] = {0,1,4,5,6,6,7};
     uint64_t o_arr[11] = {0};
-    uint64_t n = union_uint64_t(a_arr, 6, b_arr, 7, o_arr);
+    uint64_t *p = union_uint64_t(a_arr, 6, b_arr, 7, o_arr);
+    uint64_t n = (p - o_arr);
     if (n != 11)
     {
         fprintf(stderr, "%s : Expected 10, got %" PRIu64 "\n", __func__, n);
@@ -177,7 +181,8 @@ int test_union_uint64_t_ba()
     uint64_t a_arr[6] = {0,1,4,5,6,7};
     uint64_t b_arr[7] = {0,2,3,5,8,9,9};
     uint64_t o_arr[20] = {0};
-    uint64_t n = union_uint64_t(a_arr, 6, b_arr, 7, o_arr);
+    uint64_t *p = union_uint64_t(a_arr, 6, b_arr, 7, o_arr);
+    uint64_t n = (p - o_arr);
     if (n != 11)
     {
         fprintf(stderr, "%s : Expected 5, got %" PRIu64 "\n", __func__, n);

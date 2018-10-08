@@ -148,26 +148,24 @@ static inline void sort_uint64_t(uint64_t *arr, uint64_t nitems)
  * @param arr    Pointer to the first element of the array to process.
  * @param nitems Number of elements in the array.
  *
- * @return Number of unique elements.
+ * @return Pointer to the end of the array.
  */
-static inline uint64_t unique_uint64_t(uint64_t *arr, uint64_t nitems)
+static inline uint64_t *unique_uint64_t(uint64_t *arr, uint64_t nitems)
 {
     if (nitems == 0)
     {
-        return 0;
+        return arr;
     }
     uint64_t *last = (arr + nitems);
     uint64_t *p = arr;
-    nitems = 1;
     while (++arr != last)
     {
         if ((*p != *arr) && (*p++ != *arr))
         {
             *p = *arr;
-            ++nitems;
         }
     }
-    return nitems;
+    return ++p;
 }
 
 /**
@@ -179,11 +177,10 @@ static inline uint64_t unique_uint64_t(uint64_t *arr, uint64_t nitems)
  * @param b_nitems Number of elements in the second array.
  * @param o_arr    Pointer to the first element or the output array.
  *
- * @return Number of items in the output array.
+ * @return Pointer to the end of the array.
  */
-static inline uint64_t intersection_uint64_t(uint64_t *a_arr, uint64_t a_nitems, uint64_t *b_arr, uint64_t b_nitems, uint64_t *o_arr)
+static inline uint64_t *intersection_uint64_t(uint64_t *a_arr, uint64_t a_nitems, uint64_t *b_arr, uint64_t b_nitems, uint64_t *o_arr)
 {
-    uint64_t k = 0;
     uint64_t *a_last = (a_arr + a_nitems);
     uint64_t *b_last = (b_arr + b_nitems);
     while ((a_arr != a_last) && (b_arr != b_last))
@@ -196,11 +193,10 @@ static inline uint64_t intersection_uint64_t(uint64_t *a_arr, uint64_t a_nitems,
         if (*a_arr == *b_arr)
         {
             *o_arr++ = *a_arr++;
-            k++;
         }
         ++b_arr;
     }
-    return k;
+    return o_arr;
 }
 
 /**
@@ -212,11 +208,10 @@ static inline uint64_t intersection_uint64_t(uint64_t *a_arr, uint64_t a_nitems,
  * @param b_nitems Number of elements in the second array.
  * @param o_arr    Pointer to the first element or the output array.
  *
- * @return Number of items in the output array.
+ * @return Pointer to the end of the array.
  */
-static inline uint64_t union_uint64_t(uint64_t *a_arr, uint64_t a_nitems, uint64_t *b_arr, uint64_t b_nitems, uint64_t *o_arr)
+static inline uint64_t *union_uint64_t(uint64_t *a_arr, uint64_t a_nitems, uint64_t *b_arr, uint64_t b_nitems, uint64_t *o_arr)
 {
-    uint64_t k = 0;
     uint64_t *a_last = (a_arr + a_nitems);
     uint64_t *b_last = (b_arr + b_nitems);
     while ((a_arr != a_last) && (b_arr != b_last))
@@ -224,30 +219,25 @@ static inline uint64_t union_uint64_t(uint64_t *a_arr, uint64_t a_nitems, uint64
         if (*a_arr < *b_arr)
         {
             *o_arr++ = *a_arr++;
-            k++;
             continue;
         }
         if (*a_arr > *b_arr)
         {
             *o_arr++ = *b_arr++;
-            k++;
             continue;
         }
         *o_arr++ = *a_arr++;
         b_arr++;
-        k++;
     }
     while (a_arr != a_last)
     {
         *o_arr++ = *a_arr++;
-        k++;
     }
     while (b_arr != b_last)
     {
         *o_arr++ = *b_arr++;
-        k++;
     }
-    return k;
+    return o_arr;
 }
 
 #endif  // VARIANTKEY_SET_H
