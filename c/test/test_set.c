@@ -86,6 +86,23 @@ void benchmark_sort_uint64_t()
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/nitems);
 }
 
+int test_reverse_uint64_t()
+{
+    int errors = 0;
+    uint64_t arr[9] = {0,1,2,3,4,5,6,7,8};
+    reverse_uint64_t(arr, 9);
+    uint64_t i;
+    for(i = 0; i < 9; i++)
+    {
+        if (arr[i] != (8 - i))
+        {
+            fprintf(stderr, "%s : Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, (9 - i), arr[i]);
+            ++errors;
+        }
+    }
+    return errors;
+}
+
 int test_unique_uint64_t()
 {
     int errors = 0;
@@ -206,6 +223,7 @@ int main()
     int errors = 0;
 
     errors += test_sort_uint64_t();
+    errors += test_reverse_uint64_t();
     errors += test_unique_uint64_t();
     errors += test_unique_uint64_t_zero();
     errors += test_intersection_uint64_t();

@@ -322,6 +322,15 @@ sort.uint64 <- function(x, ...) {
     return(.Call("R_sort_uint64", as.uint64(x), ret))
 }
 
+#' Reverse a uint64 vector.
+#' @param x uint64 vector
+#' @useDynLib variantkey R_reverse_uint64
+#' @export
+rev.uint64 <- function(x, ...) {
+    ret <- uint64(length(x))
+    return(.Call("R_reverse_uint64", as.uint64(x), ret))
+}
+
 #' Eliminates all but the first element from every consecutive group of equal values.
 #' @param x uint64 vector
 #' @useDynLib variantkey R_unique_uint64

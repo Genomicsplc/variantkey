@@ -151,6 +151,15 @@ SEXP R_sort_uint64(SEXP x, SEXP ret)
     return ret;
 }
 
+SEXP R_reverse_uint64(SEXP x, SEXP ret)
+{
+    uint64_t n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    memcpy((void *)res, (void *)REAL(x), (n * sizeof(uint64_t)));
+    reverse_uint64_t(res, n);
+    return ret;
+}
+
 SEXP R_unique_uint64(SEXP x, SEXP ret)
 {
     uint64_t n = LENGTH(ret);

@@ -143,6 +143,24 @@ static inline void sort_uint64_t(uint64_t *arr, uint64_t nitems)
 }
 
 /**
+ * Reverse in-place an array of uint64_t values.
+ *
+ * @param arr    Pointer to the first element of the array to process.
+ * @param nitems Number of elements in the array.
+ */
+static inline void reverse_uint64_t(uint64_t *arr, uint64_t nitems)
+{
+    uint64_t *last = (arr + nitems);
+    uint64_t tmp;
+    while ((arr != last) && (arr != --last))
+    {
+        tmp = *last;
+        *last = *arr;
+        *arr++ = tmp;
+    }
+}
+
+/**
  * Eliminates all but the first element from every consecutive group of equal values.
  *
  * @param arr    Pointer to the first element of the array to process.
