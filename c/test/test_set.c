@@ -58,7 +58,8 @@ int test_sort_uint64_t()
 {
     int errors = 0;
     uint64_t arr[10] = {8,1,9,3,2,7,4,0,5,6};
-    sort_uint64_t(arr, 10);
+    uint64_t tmp[10];
+    sort_uint64_t(arr, tmp, 10);
     uint64_t i;
     for(i = 0; i < 10; i++)
     {
@@ -74,14 +75,14 @@ int test_sort_uint64_t()
 void benchmark_sort_uint64_t()
 {
     const uint64_t nitems = 100000;
-    uint64_t i, arr[nitems];
+    uint64_t i, arr[nitems], tmp[nitems];
     for (i=nitems ; i > 0; i--)
     {
         arr[i] = i;
     }
     uint64_t tstart, tend;
     tstart = get_time();
-    sort_uint64_t(arr, nitems);
+    sort_uint64_t(arr, tmp, nitems);
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/nitems);
 }

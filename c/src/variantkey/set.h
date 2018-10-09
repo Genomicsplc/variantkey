@@ -47,15 +47,15 @@
  * Sorts in-memory an array of uint64_t values in ascending order.
  *
  * @param arr    Pointer to the first element of the array to process.
+ * @param tmp    Pointer to the first element of a temporary array.
  * @param nitems Number of elements in the array.
  */
-static inline void sort_uint64_t(uint64_t *arr, uint64_t nitems)
+static inline void sort_uint64_t(uint64_t *arr, uint64_t *tmp, uint64_t nitems)
 {
-    uint64_t c7[256]= {0}, c6[256]= {0}, c5[256]= {0}, c4[256]= {0}, c3[256]= {0}, c2[256]= {0}, c1[256]= {0}, c0[256]= {0};
-    uint64_t o7=0, o6=0, o5=0, o4=0, o3=0, o2=0, o1=0, o0=0;
-    uint64_t t7, t6, t5, t4, t3, t2, t1, t0;
-    uint64_t i;
-    uint64_t *tmp = (uint64_t *)malloc(nitems * sizeof(uint64_t));
+    uint32_t c7[256]= {0}, c6[256]= {0}, c5[256]= {0}, c4[256]= {0}, c3[256]= {0}, c2[256]= {0}, c1[256]= {0}, c0[256]= {0};
+    uint32_t o7=0, o6=0, o5=0, o4=0, o3=0, o2=0, o1=0, o0=0;
+    uint32_t t7, t6, t5, t4, t3, t2, t1, t0;
+    uint32_t i;
     uint64_t v;
     // calculate counts
     for(i = 0; i < nitems; i++)
@@ -139,7 +139,6 @@ static inline void sort_uint64_t(uint64_t *arr, uint64_t nitems)
         v = tmp[i];
         arr[c0[((v >> 56) & 0xff)]++] = v;
     }
-    free(tmp);
 }
 
 /**

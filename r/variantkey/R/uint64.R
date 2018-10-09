@@ -319,7 +319,8 @@ order.uint64 <- function(x, ...) {
 #' @export
 sort.uint64 <- function(x, ...) {
     ret <- uint64(length(x))
-    return(.Call("R_sort_uint64", as.uint64(x), ret))
+    tmp <- uint64(length(x))
+    return(.Call("R_sort_uint64", as.uint64(x), tmp, ret))
 }
 
 #' Reverse a uint64 vector.

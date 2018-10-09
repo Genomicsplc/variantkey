@@ -142,12 +142,13 @@ SEXP R_integer_to_uint64(SEXP x, SEXP ret)
     return ret;
 }
 
-SEXP R_sort_uint64(SEXP x, SEXP ret)
+SEXP R_sort_uint64(SEXP x, SEXP t, SEXP ret)
 {
     uint64_t n = LENGTH(ret);
     uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *tmp = (uint64_t *)REAL(t);
     memcpy((void *)res, (void *)REAL(x), (n * sizeof(uint64_t)));
-    sort_uint64_t(res, n);
+    sort_uint64_t(res, tmp, n);
     return ret;
 }
 
