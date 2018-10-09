@@ -57,7 +57,7 @@ static inline void sort_uint64_t(uint64_t *arr, uint64_t nitems)
     uint64_t i;
     uint64_t *tmp = (uint64_t *)malloc(nitems * sizeof(uint64_t));
     uint64_t v;
-    // calculate counts (histograms)
+    // calculate counts
     for(i = 0; i < nitems; i++)
     {
         v = arr[i];
@@ -70,7 +70,7 @@ static inline void sort_uint64_t(uint64_t *arr, uint64_t nitems)
         c1[((v >> 48) & 0xff)]++;
         c0[((v >> 56) & 0xff)]++;
     }
-    // convert counts to offsets (indices)
+    // convert counts to offsets
     for(i = 0; i < 256; i++)
     {
         t7 = (o7 + c7[i]);

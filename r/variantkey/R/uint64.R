@@ -306,8 +306,6 @@ as.data.frame.uint64 <- function(x, ...) {
     return(ret)
 }
 
-# @TODO: implement native uint64 functions to avoid conversion to and from hex
-
 #' Ordering Permutation.
 #' @param x uint64 vector
 #' @export
@@ -315,62 +313,40 @@ order.uint64 <- function(x, ...) {
     return(order(as.character(as.hex64(x)), ...))
 }
 
-#' Sorting or Ordering uint64 Vectors.
+#' Sorts a uint64 vector in ascending order.
 #' @param x uint64 vector
+#' @useDynLib variantkey R_sort_uint64
 #' @export
 sort.uint64 <- function(x, ...) {
-    return(as.uint64(as.hex64(sort(as.character(as.hex64(x)), ...))))
+    ret <- uint64(length(x))
+    return(.Call("R_sort_uint64", as.uint64(x), ret))
 }
 
-#' Extract Unique Elements.
+#' Eliminates all but the first element from every consecutive group of equal values.
 #' @param x uint64 vector
+#' @useDynLib variantkey R_unique_uint64
 #' @export
 unique.uint64 <- function(x, ...) {
-    return(as.uint64(as.hex64(unique(as.character(as.hex64(x)), ...))))
+    ret <- uint64(length(x))
+    return(.Call("R_unique_uint64", as.uint64(x), ret))
 }
 
-#' Performs set union on two vectors.
+#' Returns the intersection of two sorted uint64 vectors.
 #' @param x uint64 vector
 #' @param y uint64 vector
-#' @export
-union.uint64 <- function(x, y) {
-    return(as.uint64(as.hex64(union(as.character(as.hex64(x)), as.character(as.hex64(y))))))
-}
-
-#' Performs set (asymmetric!) difference on two vectors.
-#' @param x uint64 vector
-#' @param y uint64 vector
+#' @useDynLib variantkey R_intersect_uint64
 #' @export
 intersect.uint64 <- function(x, y) {
-    return(as.uint64(as.hex64(intersect(as.character(as.hex64(x)), as.character(as.hex64(y))))))
+    ret <- uint64(min(length(x), length(y)))
+    return(.Call("R_intersect_uint64", as.uint64(x), as.uint64(y), ret))
 }
 
-#' Performs set setdiff on two vectors.
+#' Returns the union of two sorted uint64 vectors.
 #' @param x uint64 vector
 #' @param y uint64 vector
+#' @useDynLib variantkey R_union_uint64
 #' @export
-setdiff.uint64 <- function(x, y) {
-    return(as.uint64(as.hex64(setdiff(as.character(as.hex64(x)), as.character(as.hex64(y))))))
-}
-
-#' Performs set equality on two vectors.
-#' @param x uint64 vector
-#' @param y uint64 vector
-#' @export
-setequal.uint64 <- function(x, y) {
-    return(setequal(as.character(as.hex64(x)), as.character(as.hex64(y))))
-}
-
-#' Determines which elements of a vector or data frame are duplicates of elements with smaller subscripts, and returns a logical vector indicating which elements (rows) are duplicates.
-#' @param x uint64 vector
-#' @export
-duplicated.uint64 <- function(x, ...) {
-    return(duplicated(as.character(as.hex64(x)), ...))
-}
-
-#' Generalized” more efficient shortcut for any(duplicated(.)).
-#' @param x uint64 vector
-#' @export
-anyDuplicated.uint64 <- function(x, ...) {
-    return(anyDuplicated(as.character(as.hex64(x)), ...))
+union.uint64 <- function(x, y) {
+    ret <- uint64(length(x) + length(y))
+    return(.Call("R_union_uint64", as.uint64(x), as.uint64(y), ret))
 }

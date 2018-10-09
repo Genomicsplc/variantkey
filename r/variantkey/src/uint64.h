@@ -35,6 +35,7 @@
 #include <Rdefines.h>
 #include <stdlib.h>
 #include "../../../c/src/variantkey/hex.h"
+#include "../../../c/src/variantkey/set.h"
 
 #define MAX_UINT64_DEC_CHARS 21
 
@@ -138,5 +139,46 @@ SEXP R_integer_to_uint64(SEXP x, SEXP ret)
     {
         res[i] = (uint64_t)(px[i]);
     }
+    return ret;
+}
+
+SEXP R_sort_uint64(SEXP x, SEXP ret)
+{
+    uint64_t n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    memcpy((void *)res, (void *)REAL(x), (n * sizeof(uint64_t)));
+    sort_uint64_t(res, n);
+    return ret;
+}
+
+SEXP R_unique_uint64(SEXP x, SEXP ret)
+{
+    uint64_t n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    memcpy((void *)res, (void *)REAL(x), (n * sizeof(uint64_t)));
+    uint64_t *p = unique_uint64_t(res, n);
+    SETLENGTH(ret, (p - res));
+    return ret;
+}
+
+SEXP R_intersect_uint64(SEXP x, SEXP y, SEXP ret)
+{
+    uint64_t nx = LENGTH(x), ny = LENGTH(y);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *px = (uint64_t *)REAL(x);
+    uint64_t *py = (uint64_t *)REAL(y);
+    uint64_t *p = intersection_uint64_t(px, nx, py, ny, res);
+    SETLENGTH(ret, (p - res));
+    return ret;
+}
+
+SEXP R_union_uint64(SEXP x, SEXP y, SEXP ret)
+{
+    uint64_t nx = LENGTH(x), ny = LENGTH(y);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *px = (uint64_t *)REAL(x);
+    uint64_t *py = (uint64_t *)REAL(y);
+    uint64_t *p = union_uint64_t(px, nx, py, ny, res);
+    SETLENGTH(ret, (p - res));
     return ret;
 }
