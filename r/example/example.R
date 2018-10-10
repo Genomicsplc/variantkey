@@ -58,8 +58,8 @@ union.uint64(a, b)
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 
-# INIT
-# --------------------------
+# INITIALIZE VARIANTKEY
+# ---------------------
 
 # Load support files:
 # genoref_file : Name and path of the binary file containing the genome reference (fasta.bin).

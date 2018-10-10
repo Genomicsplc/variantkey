@@ -91,7 +91,8 @@ void benchmark_sort_uint64_t()
 int test_order_uint64_t()
 {
     int errors = 0;
-    uint64_t tmp[10], arr[10] = {
+    uint64_t tmp[10], arr[10] =
+    {
         0xfffffffffffffff0,
         0xffffffff00000000,
         0xffffffffffffffff,
@@ -104,7 +105,8 @@ int test_order_uint64_t()
         0xfffffffffffff000,
     };
     uint32_t tdx[10], idx[10];
-    uint64_t exp[10] = {
+    uint64_t exp[10] =
+    {
         0x0000000000000000,
         0xffffffff00000000,
         0xfffffffff0000000,
