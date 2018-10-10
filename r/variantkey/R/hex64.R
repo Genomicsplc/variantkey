@@ -75,7 +75,7 @@ setAs("character", HEX64, function(from)as.hex64.character(from))
 #' @param x hex64 vector
 #' @export
 as.character.hex64 <- function(x, ...) {
-    oldClass(x) <- "character"
+    oldClass(x) <- NULL
     return(x)
 }
 
