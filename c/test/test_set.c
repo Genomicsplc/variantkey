@@ -77,9 +77,9 @@ void benchmark_sort_uint64_t()
     const uint32_t nitems = 100000;
     uint64_t arr[nitems], tmp[nitems];
     uint32_t i;
-    for (i = nitems ; i > 0; i--)
+    for (i = 0; i < nitems; i--)
     {
-        arr[i] = i;
+        arr[i] = (uint64_t)(nitems - i);
     }
     uint64_t tstart, tend;
     tstart = get_time();
