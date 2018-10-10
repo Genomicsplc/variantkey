@@ -60,12 +60,12 @@ int test_sort_uint64_t()
     uint64_t arr[10] = {8,1,9,3,2,7,4,0,5,6};
     uint64_t tmp[10];
     sort_uint64_t(arr, tmp, 10);
-    uint64_t i;
+    uint32_t i;
     for(i = 0; i < 10; i++)
     {
         if (arr[i] != i)
         {
-            fprintf(stderr, "%s : Unexpected value: expected %" PRIu64 ", got %" PRIu64 "\n", __func__, i, arr[i]);
+            fprintf(stderr, "%s : Expected %" PRIu32 ", got %" PRIu64 "\n", __func__, i, arr[i]);
             ++errors;
         }
     }
@@ -74,9 +74,10 @@ int test_sort_uint64_t()
 
 void benchmark_sort_uint64_t()
 {
-    const uint64_t nitems = 100000;
-    uint64_t i, arr[nitems], tmp[nitems];
-    for (i=nitems ; i > 0; i--)
+    const uint32_t nitems = 100000;
+    uint64_t arr[nitems], tmp[nitems];
+    uint32_t i;
+    for (i = nitems ; i > 0; i--)
     {
         arr[i] = i;
     }
@@ -85,6 +86,56 @@ void benchmark_sort_uint64_t()
     sort_uint64_t(arr, tmp, nitems);
     tend = get_time();
     fprintf(stdout, " * %s : %lu ns/op\n", __func__, (tend - tstart)/nitems);
+}
+
+int test_order_uint64_t()
+{
+    int errors = 0;
+    uint64_t tmp[10], arr[10] = {
+        0xfffffffffffffff0,
+        0xffffffff00000000,
+        0xffffffffffffffff,
+        0xffffffffff000000,
+        0xfffffffff0000000,
+        0xffffffffffffff00,
+        0xfffffffffff00000,
+        0x0000000000000000,
+        0xffffffffffff0000,
+        0xfffffffffffff000,
+    };
+    uint32_t tdx[10], idx[10];
+    uint64_t exp[10] = {
+        0x0000000000000000,
+        0xffffffff00000000,
+        0xfffffffff0000000,
+        0xffffffffff000000,
+        0xfffffffffff00000,
+        0xffffffffffff0000,
+        0xfffffffffffff000,
+        0xffffffffffffff00,
+        0xfffffffffffffff0,
+        0xffffffffffffffff,
+    };
+    order_uint64_t(arr, tmp, idx, tdx, 10);
+    uint32_t i;
+    for(i = 0; i < 10; i++)
+    {
+        if (arr[i] != exp[i])
+        {
+            fprintf(stderr, "%s (%" PRIu32 "): Expected value %" PRIu64 ", got %" PRIu64 "\n", __func__, i, exp[i], arr[i]);
+            ++errors;
+        }
+    }
+    uint32_t edx[10] = {8,1,9,3,2,7,4,0,5,6};
+    for(i = 0; i < 10; i++)
+    {
+        if (idx[i] != edx[i])
+        {
+            fprintf(stderr, "%s (%" PRIu32 "): Expected index %" PRIu32 ", got %" PRIu32 "\n", __func__, i, edx[i], idx[i]);
+            ++errors;
+        }
+    }
+    return errors;
 }
 
 int test_reverse_uint64_t()
@@ -97,7 +148,7 @@ int test_reverse_uint64_t()
     {
         if (arr[i] != (8 - i))
         {
-            fprintf(stderr, "%s : Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, (9 - i), arr[i]);
+            fprintf(stderr, "%s : Expected %" PRIu64 ", got %" PRIu64 "\n", __func__, (8 - i), arr[i]);
             ++errors;
         }
     }
@@ -224,6 +275,7 @@ int main()
     int errors = 0;
 
     errors += test_sort_uint64_t();
+    errors += test_order_uint64_t();
     errors += test_reverse_uint64_t();
     errors += test_unique_uint64_t();
     errors += test_unique_uint64_t_zero();

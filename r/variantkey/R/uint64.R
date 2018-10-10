@@ -306,21 +306,28 @@ as.data.frame.uint64 <- function(x, ...) {
     return(ret)
 }
 
-#' Ordering Permutation.
-#' @param x uint64 vector
-#' @export
-order.uint64 <- function(x, ...) {
-    return(order(as.character(as.hex64(x)), ...))
-}
-
 #' Sorts a uint64 vector in ascending order.
 #' @param x uint64 vector
 #' @useDynLib variantkey R_sort_uint64
 #' @export
 sort.uint64 <- function(x, ...) {
-    ret <- uint64(length(x))
-    tmp <- uint64(length(x))
+    n <- length(x)
+    tmp <- uint64(n)
+    ret <- uint64(n)
     return(.Call("R_sort_uint64", as.uint64(x), tmp, ret))
+}
+
+#' Returns a permutation which rearranges its first argument into ascending order.
+#' @param x uint64 vector
+#' @useDynLib variantkey R_order_uint64
+#' @export
+order.uint64 <- function(x) {
+    n <- length(x)
+    tmp <- uint64(n)
+    ret <- uint64(n)
+    idx <- integer(n)
+    tdx <- integer(n)
+    return(.Call("R_order_uint64", as.uint64(x), tmp, ret, idx, tdx) + 1)
 }
 
 #' Reverse a uint64 vector.

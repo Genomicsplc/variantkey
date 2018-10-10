@@ -5,6 +5,60 @@
 
 library(variantkey)
 
+# UINT64 FUNCTIONS
+# ----------------
+
+# In R the VariantKey is represented with a custom "uint64" class
+# because there is no native support for unsigned 64 bit integers in R.
+
+as.uint64("81985529216486895")
+# [1] "81985529216486895"
+
+# It is also possible to load a uint64 from a 16-character hexadecimal string using the hex64 class:
+as.uint64(as.hex64(c("0123456789abcdef")))
+# [1] "81985529216486895"
+
+u <- as.uint64(as.hex64(c("fffffffffffffff0", "ffffffff00000000", "ffffffffffffffff", "ffffffffff000000", "fffffffff0000000", "ffffffffffffff00", "fffffffffff00000", "0000000000000000", "ffffffffffff0000", "fffffffffffff000")))
+print(u)
+#  [1] "18446744073709551600" "18446744069414584320" "18446744073709551615"
+#  [4] "18446744073692774400" "18446744073441116160" "18446744073709551360"
+#  [7] "18446744073708503040" "0"                    "18446744073709486080"
+# [10] "18446744073709547520"
+
+s <- sort(u)
+print(s)
+#  [1] "0"                    "18446744069414584320" "18446744073441116160"
+#  [4] "18446744073692774400" "18446744073708503040" "18446744073709486080"
+#  [7] "18446744073709547520" "18446744073709551360" "18446744073709551600"
+# [10] "18446744073709551615"
+
+rev(s)
+#  [1] "18446744073709551615" "18446744073709551600" "18446744073709551360"
+#  [4] "18446744073709547520" "18446744073709486080" "18446744073708503040"
+#  [7] "18446744073692774400" "18446744073441116160" "18446744069414584320"
+# [10] "0"
+
+order.uint64(u)
+#  [1]  9  2 10  4  3  8  5  1  6  7
+
+unique(as.uint64(c("1085102592571150095", "1085102592571150095")))
+# [1] "1085102592571150095"
+
+a <- as.uint64(c("1085102592571150000", "1085102592571150010"))
+b <- as.uint64(c("1085102592571150010", "1085102592571150020"))
+intersect.uint64(a, b)
+# [1] "1085102592571150010"
+
+union.uint64(a, b)
+# [1] "1085102592571150000" "1085102592571150010" "1085102592571150020"
+
+
+# /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
+
+
+# INIT
+# --------------------------
+
 # Load support files:
 # genoref_file : Name and path of the binary file containing the genome reference (fasta.bin).
 #                This file can be generated from a FASTA file using the resources/tools/fastabin.sh script.
@@ -15,6 +69,7 @@ library(variantkey)
 # vkrs_file    : Name and path of the binary file containing the VariantKey to rsID mapping (vkrs.bin).
 #                This file can be generated using the resources/tools/vkrs.sh script.
 InitVariantKey(genoref_file = "genoref.bin", nrvk_file = "nrvk.10.bin", rsvk_file = "rsvk.10.bin", vkrs_file = "vkrs.10.bin")
+
 
 # BASIC VARIANTKEY FUNCTIONS
 # --------------------------

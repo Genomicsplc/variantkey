@@ -540,8 +540,7 @@ See [Python Usage Examples](python-class/test/example.py).
 The R module is located in the `r` directory.
 Use the "`make r`" command to test the R wrapper and generate reports.
 
-In R the VariantKey is represented as hexadecimal string because there is no native support for unsigned 64 bit integers in R.
-Alternatively it is possible to use the encoding of the individual components (i.e. `CHROM`, `POS` and `REF+ALT`).
+In R the VariantKey is represented with a custom "uint64" class because there is no native support for unsigned 64 bit integers in R.
 
 See [R Usage Examples](r/example/example.R).
 
