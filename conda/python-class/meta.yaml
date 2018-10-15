@@ -1,6 +1,6 @@
 package:
   name: pyvariantkey
-  version: 5.1.0
+  version: 5.1.1
 
 source:
   path: ../..
@@ -14,11 +14,11 @@ requirements:
     - setuptools
     - numpy >=1.15.0
   build:
-    - variantkey >=5.1.0
+    - variantkey >=5.1.1
     - numpy >=1.15.0
   run:
     - python
-    - variantkey >=5.1.0
+    - variantkey >=5.1.1
     - numpy >=1.15.0
 
 test:
@@ -30,7 +30,7 @@ test:
     - pytest-cov
     - pytest-benchmark
     - pycodestyle
-    - variantkey >=5.1.0
+    - variantkey >=5.1.1
     - numpy >=1.15.0
   imports:
     - pyvariantkey
