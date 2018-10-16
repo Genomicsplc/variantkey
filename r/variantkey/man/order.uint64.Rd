@@ -2,13 +2,13 @@
 % Please edit documentation in R/uint64.R
 \name{order.uint64}
 \alias{order.uint64}
-\title{Ordering Permutation.}
+\title{Returns a permutation which rearranges its first argument into ascending order.}
 \usage{
-order.uint64(x, ...)
+order.uint64(x)
 }
 \arguments{
 \item{x}{uint64 vector}
 }
 \description{
-Ordering Permutation.
+Returns a permutation which rearranges its first argument into ascending order.
 }

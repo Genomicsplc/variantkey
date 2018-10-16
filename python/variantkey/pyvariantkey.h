@@ -90,6 +90,7 @@ static PyObject *py_extract_regionkey_strand(PyObject *self, PyObject *args, PyO
 static PyObject *py_decode_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_reverse_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_extend_regionkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_regionkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_parse_regionkey_hex(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_get_regionkey_chrom_startpos(PyObject *self, PyObject *args, PyObject *keywds);
@@ -916,6 +917,20 @@ PyMODINIT_FUNC initvariantkey(void);
 "    End position (startpos + region_length).\n"\
 "strand : int\n"\
 "    Strand direction (-1, 0, +1)\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"int :\n"\
+"    RegionKey 64 bit code."
+
+#define PYEXTENDREGIONKEY_DOCSTRING "Extend a regionkey region by a fixed amount from the start and end position..\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"rk : int\n"\
+"    RegionKey code.\n"\
+"size : int\n"\
+"    Amount to extend the region..\n"\
 "\n"\
 "Returns\n"\
 "-------\n"\

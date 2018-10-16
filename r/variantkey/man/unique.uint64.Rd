@@ -2,7 +2,7 @@
 % Please edit documentation in R/uint64.R
 \name{unique.uint64}
 \alias{unique.uint64}
-\title{Extract Unique Elements.}
+\title{Eliminates all but the first element from every consecutive group of equal values.}
 \usage{
 \method{unique}{uint64}(x, ...)
 }
@@ -10,5 +10,5 @@
 \item{x}{uint64 vector}
 }
 \description{
-Extract Unique Elements.
+Eliminates all but the first element from every consecutive group of equal values.
 }

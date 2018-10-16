@@ -2,7 +2,7 @@
 % Please edit documentation in R/uint64.R
 \name{sort.uint64}
 \alias{sort.uint64}
-\title{Sorting or Ordering uint64 Vectors.}
+\title{Sorts a uint64 vector in ascending order.}
 \usage{
 \method{sort}{uint64}(x, ...)
 }
@@ -10,5 +10,5 @@
 \item{x}{uint64 vector}
 }
 \description{
-Sorting or Ordering uint64 Vectors.
+Sorts a uint64 vector in ascending order.
 }

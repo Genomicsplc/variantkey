@@ -212,6 +212,9 @@ func main() {
 	fmt.Println(vk.RegionKey("MT", 1000, 2000, -1))
 	// 14411520955069251204
 
+	fmt.Println(vk.ExtendRegionKey(14411520955069251204, 100))
+	// 14411520740320887204
+
 	fmt.Println(vk.GetRegionKeyChromStartPos(0xc80001f400003e84))
 	// 6710887400
 

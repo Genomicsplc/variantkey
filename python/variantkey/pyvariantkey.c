@@ -801,6 +801,17 @@ static PyObject* py_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyOb
     return Py_BuildValue("K", h);
 }
 
+static PyObject* py_extend_regionkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t rk;
+    uint32_t size;
+    static char *kwlist[] = {"rk", "size", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "KI", kwlist, &rk, &size))
+        return NULL;
+    uint64_t h = extend_regionkey(rk, size);
+    return Py_BuildValue("K", h);
+}
+
 static PyObject* py_regionkey_hex(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t code;
@@ -1017,6 +1028,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"decode_regionkey", (PyCFunction)py_decode_regionkey, METH_VARARGS|METH_KEYWORDS, PYDECODEREGIONKEY_DOCSTRING},
     {"reverse_regionkey", (PyCFunction)py_reverse_regionkey, METH_VARARGS|METH_KEYWORDS, PYREVERSEREGIONKEY_DOCSTRING},
     {"regionkey", (PyCFunction)py_regionkey, METH_VARARGS|METH_KEYWORDS, PYREGIONKEY_DOCSTRING},
+    {"extend_regionkey", (PyCFunction)py_extend_regionkey, METH_VARARGS|METH_KEYWORDS, PYEXTENDREGIONKEY_DOCSTRING},
     {"regionkey_hex", (PyCFunction)py_regionkey_hex, METH_VARARGS|METH_KEYWORDS, PYREGIONKEYHEX_DOCSTRING},
     {"parse_regionkey_hex", (PyCFunction)py_parse_regionkey_hex, METH_VARARGS|METH_KEYWORDS, PYPARSEREGIONKEYHEX_DOCSTRING},
     {"get_regionkey_chrom_startpos", (PyCFunction)py_get_regionkey_chrom_startpos, METH_VARARGS|METH_KEYWORDS, PYGETREGIONKEYCHROMSTARTPOS_DOCSTRING},

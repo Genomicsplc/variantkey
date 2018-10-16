@@ -360,6 +360,39 @@ void benchmark_regionkey()
     fprintf(stdout, " * %s : %lu ns/op (%" PRIx64 ")\n", __func__, (tend - tstart)/size, res);
 }
 
+int test_extend_regionkey()
+{
+    int errors = 0;
+    uint64_t rk = regionkey("X", 1, 10000, 20000, -1);
+    uint64_t erk = extend_regionkey(rk, 1000);
+    uint32_t startpos = extract_regionkey_startpos(erk);
+    uint32_t endpos = extract_regionkey_endpos(erk);
+    if (startpos != 9000)
+    {
+        fprintf(stderr, "%s Expecting STARTPOS 9000, got %" PRIu32 "\n", __func__, startpos);
+        ++errors;
+    }
+    if (endpos != 21000)
+    {
+        fprintf(stderr, "%s Expecting ENDPOS 21000, got %" PRIu32 "\n", __func__, endpos);
+        ++errors;
+    }
+    erk = extend_regionkey(rk, 300000000);
+    startpos = extract_regionkey_startpos(erk);
+    endpos = extract_regionkey_endpos(erk);
+    if (startpos != 0)
+    {
+        fprintf(stderr, "%s Expecting STARTPOS 9000, got %" PRIu32 "\n", __func__, startpos);
+        ++errors;
+    }
+    if (endpos != RK_MAX_POS)
+    {
+        fprintf(stderr, "%s Expecting ENDPOS %" PRIu32 ", got %" PRIu32 "\n", __func__, RK_MAX_POS, endpos);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_regionkey_hex()
 {
     int errors = 0;
@@ -544,6 +577,7 @@ int main()
     errors += test_decode_regionkey();
     errors += test_reverse_regionkey();
     errors += test_regionkey();
+    errors += test_extend_regionkey();
     errors += test_regionkey_hex();
     errors += test_parse_regionkey_hex();
     errors += test_get_regionkey_chrom_startpos();

@@ -99,6 +99,13 @@ class TestFunctions(TestCase):
             h = variantkey.regionkey(chrom, startpos, endpos, strand)
             self.assertEqual(h, rk)
 
+    def test_extend_regionkey(self):
+        rk = variantkey.regionkey("X", 10000, 20000, -1)
+        h = variantkey.extend_regionkey(rk, 1000)
+        self.assertEqual(h, 13258616630331740228)
+        h = variantkey.extend_regionkey(rk, 300000000)
+        self.assertEqual(h, 13258597305126223868)
+
     def test_regionkey_hex(self):
         for _, _, _, _, _, _, rk, rs, _, _ in regionsTestData:
             h = variantkey.regionkey_hex(rk)

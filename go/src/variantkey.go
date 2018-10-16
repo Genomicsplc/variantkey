@@ -660,6 +660,11 @@ func RegionKey(chrom string, startpos, endpos uint32, strand int8) uint64 {
 	return uint64(C.regionkey((*C.char)(pchrom), C.size_t(len(chrom)), C.uint32_t(startpos), C.uint32_t(endpos), C.int8_t(strand)))
 }
 
+// ExtendRegionKey extend a regionkey region by a fixed amount from the start and end position.
+func ExtendRegionKey(rk uint64, size uint32) uint64 {
+	return uint64(C.extend_regionkey(C.uint64_t(rk), C.uint32_t(size)))
+}
+
 // GetRegionKeyChromStartPos get the CHROM + START POS encoding from RegionKey.
 func GetRegionKeyChromStartPos(rk uint64) uint64 {
 	return uint64(C.get_regionkey_chrom_startpos(C.uint64_t(rk)))

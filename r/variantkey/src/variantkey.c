@@ -899,6 +899,19 @@ SEXP R_regionkey(SEXP chrom, SEXP startpos, SEXP endpos, SEXP strand, SEXP ret)
     return ret;
 }
 
+SEXP R_extend_regionkey(SEXP rk, SEXP size, SEXP ret)
+{
+    uint64_t i, n = LENGTH(ret);
+    uint64_t *res = (uint64_t *)REAL(ret);
+    uint64_t *prk = (uint64_t *)REAL(rk);
+    uint32_t psize = (uint32_t)asInteger(size);
+    for(i = 0; i < n; i++)
+    {
+        res[i] = extend_regionkey(prk[i], psize);
+    }
+    return ret;
+}
+
 SEXP R_regionkey_hex(SEXP rk, SEXP ret)
 {
     return R_hex_uint64_t(rk, ret);

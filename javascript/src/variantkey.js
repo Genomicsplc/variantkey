@@ -404,6 +404,13 @@ function regionKey(chrom, startpos, endpos, strand) {
     return encodeRegionKey(encodeChrom(chrom), startpos, endpos, encodeRegionStrand(strand));
 }
 
+function extendRegionKey(rk, size) {
+    var drk = decodeRegionKey(rk);
+    drk.startpos = ((size >= drk.startpos) ? 0 : (drk.startpos - size));
+    drk.endpos = (((0x0FFFFFFF - drk.endpos) <= size) ? 0x0FFFFFFF : (drk.endpos + size));
+    return encodeRegionKey(drk.chrom, drk.startpos, drk.endpos, drk.strand);
+}
+
 function regionKeyString(rk) {
     return padL08(rk.hi.toString(16)) + padL08(rk.lo.toString(16));
 }
@@ -619,6 +626,7 @@ if (typeof(module) !== 'undefined') {
         decodeRegionKey: decodeRegionKey,
         reverseRegionKey: reverseRegionKey,
         regionKey: regionKey,
+        extendRegionKey: extendRegionKey,
         regionKeyString: regionKeyString,
         getVariantKeyEndPos: getVariantKeyEndPos,
         areOverlappingRegions: areOverlappingRegions,

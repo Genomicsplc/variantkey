@@ -2,7 +2,7 @@
 % Please edit documentation in R/uint64.R
 \name{intersect.uint64}
 \alias{intersect.uint64}
-\title{Performs set (asymmetric!) difference on two vectors.}
+\title{Returns the intersection of two sorted uint64 vectors.}
 \usage{
 intersect.uint64(x, y)
 }
@@ -12,5 +12,5 @@ intersect.uint64(x, y)
 \item{y}{uint64 vector}
 }
 \description{
-Performs set (asymmetric!) difference on two vectors.
+Returns the intersection of two sorted uint64 vectors.
 }

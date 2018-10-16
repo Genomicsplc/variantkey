@@ -913,6 +913,24 @@ class VariantKey(object):
                  np.array(endpos).astype(np.uint32),
                  np.array(strand).astype(np.int16))
 
+    def extend_regionkey(self, rk, size):
+        """Extend a regionkey region by a fixed amount from the start and end position.
+
+        Parameters
+        ----------
+        rk : uint64
+            RegionKey code.
+        size: uint32
+            Amount to extend the region.
+
+        Returns
+        -------
+        uint64 :
+            RegionKey 64 bit code.
+        """
+        f = np.vectorize(pvk.extend_regionkey, excluded=['size'], otypes=[np.uint64])
+        return f(np.array(rk).astype(np.uint64), np.array(size).astype(np.uint32))
+
     def regionkey_hex(self, rk):
         """Returns RegionKey hexadecimal string (16 characters).
 
