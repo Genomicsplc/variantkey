@@ -690,6 +690,16 @@ RegionKey <- function(chrom, startpos, endpos, strand) {
     return(.Call("R_regionkey", as.character(chrom), as.integer(startpos), as.integer(endpos), as.integer(strand), ret))
 }
 
+#' Extend a regionkey region by a fixed amount from the start and end position.
+#' @param rk       RegionKey code.
+#' @param size     Amount to extend the region.
+#' @useDynLib   variantkey R_regionkey
+#' @export
+ExtendRegionKey <- function(rk, size) {
+    ret <- uint64(length(rk))
+    return(.Call("R_extend_regionkey", as.uint64(rk), as.integer(size), ret))
+}
+
 #' Returns RegionKey hexadecimal string (16 characters).
 #' @param vk    RegiontKey code.
 #' @useDynLib   variantkey R_regionkey_hex

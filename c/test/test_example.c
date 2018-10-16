@@ -336,6 +336,14 @@ int main()
     fprintf(stdout, "%016" PRIx64 "\n", rk);
     // c80001f400003e84
 
+    uint64_t erk = extend_regionkey(rk, 100);
+    fprintf(stdout, "%016" PRIx64 "\n", erk);
+    // c80001c2000041a4
+
+    reverse_regionkey(erk, &rrk);
+    fprintf(stdout, "%s %" PRIu32 " %" PRIu32 " %" PRIi8 "\n", rrk.chrom, rrk.startpos, rrk.endpos, rrk.strand);
+    // MT 900 2100 -1
+
     char rs[17] = "";
     regionkey_hex(0xc80001f400003e84, rs);
     fprintf(stdout, "%s\n", rs);

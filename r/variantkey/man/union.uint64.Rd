@@ -2,7 +2,7 @@
 % Please edit documentation in R/uint64.R
 \name{union.uint64}
 \alias{union.uint64}
-\title{Performs set union on two vectors.}
+\title{Returns the union of two sorted uint64 vectors.}
 \usage{
 union.uint64(x, y)
 }
@@ -12,5 +12,5 @@ union.uint64(x, y)
 \item{y}{uint64 vector}
 }
 \description{
-Performs set union on two vectors.
+Returns the union of two sorted uint64 vectors.
 }

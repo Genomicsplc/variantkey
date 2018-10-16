@@ -108,6 +108,13 @@ class TestFunctions(TestCase):
         h = npvk.regionkey(regionsTestData[:, 0], regionsTestData[:, 1], regionsTestData[:, 2], regionsTestData[:, 3])
         np.testing.assert_array_equal(h, regionsTestData[:, 6].astype(np.uint64))
 
+    def test_extend_regionkey(self):
+        rk = npvk.regionkey("X", 10000, 20000, -1)
+        h = npvk.extend_regionkey(rk, 1000)
+        self.assertEqual(h, 13258616630331740228)
+        h = npvk.extend_regionkey(rk, 300000000)
+        self.assertEqual(h, 13258597305126223868)
+
     def test_regionkey_hex(self):
         h = npvk.regionkey_hex(regionsTestData[:, 6])
         np.testing.assert_array_equal(h, regionsTestData[:, 7].astype('|S16'))

@@ -282,6 +282,28 @@ func BenchmarkRegionKey(b *testing.B) {
 	}
 }
 
+func TestExtendRegionKey(t *testing.T) {
+	rk := RegionKey("X", 10000, 20000, -1)
+	erk := ExtendRegionKey(rk, 1000)
+	startpos := ExtractRegionKeyStartPos(erk)
+	endpos := ExtractRegionKeyEndPos(erk)
+	if startpos != 9000 {
+		t.Errorf("Expecting STARTPOS 9000, got %#v", startpos)
+	}
+	if endpos != 21000 {
+		t.Errorf("Expecting ENDPOS 21000, got %#v", endpos)
+	}
+	erk = ExtendRegionKey(rk, 300000000)
+	startpos = ExtractRegionKeyStartPos(erk)
+	endpos = ExtractRegionKeyEndPos(erk)
+	if startpos != 0 {
+		t.Errorf("Expecting STARTPOS 9000, got %#v", startpos)
+	}
+	if endpos != 268435455 {
+		t.Errorf("Expecting ENDPOS 268435455, %#v", endpos)
+	}
+}
+
 func TestGetRegionKeyChromStartPos(t *testing.T) {
 	for _, v := range regionsTestData {
 		v := v

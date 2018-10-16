@@ -92,8 +92,8 @@
 #define RADIX_SORT_ITERATION_BLOCK(A, B, BYTE, SHIFT) \
     for (i = 0; i < nitems; i++) \
     { \
-        v = A[i]; \
-        B[c##BYTE[((v >> SHIFT) & 0xff)]++] = v; \
+        v = (A)[i]; \
+        (B)[c##BYTE[((v >> (SHIFT)) & 0xff)]++] = v; \
     }
 
 /**

@@ -94,6 +94,14 @@ test_that("RegionKey", {
     expect_identical(res, as.uint64(as.hex64(unlist(x[,"rk"]))))
 })
 
+test_that("ExtendRegionKey", {
+    rk <- RegionKey("X", 10000, 20000, -1)
+    res <- ExtendRegionKey(rk, 1000)
+    expect_identical(res, as.uint64("13258616630331740228"))
+    res <- ExtendRegionKey(rk, 300000000)
+    expect_identical(res, as.uint64("13258597305126223868"))
+})
+
 test_that("GetRegionKeyChromStartPos", {
     res <- GetRegionKeyChromStartPos(as.hex64(unlist(x[,"rk"])))
     expect_that(res, equals(as.uint64(as.hex64(unlist(x[,"csp"])))))
@@ -101,7 +109,7 @@ test_that("GetRegionKeyChromStartPos", {
 
 test_that("GetRegionKeyChromEndPos", {
     res <- GetRegionKeyChromEndPos(as.hex64(unlist(x[,"rk"])))
-    expect_that(res, equals(as.uint64(as.hex64(unlist(x[,"cep"])))))
+    expect_identical(res, as.uint64(as.hex64(unlist(x[,"cep"]))))
 })
 
 test_that("AreOverlappingRegions", {
@@ -126,5 +134,5 @@ test_that("AreOverlappingVariantKeyRegionKey", {
 
 test_that("VariantToRegionkey", {
     res <- VariantToRegionkey(mc = NULL, as.hex64(unlist(t[,"a_vk"])))
-    expect_that(res, equals(as.uint64(as.hex64(unlist(t[,"a_rk"])))))
+    expect_identical(res, as.uint64(as.hex64(unlist(t[,"a_rk"]))))
 })

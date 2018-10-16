@@ -42,6 +42,7 @@ const {
     decodeRegionKey,
     reverseRegionKey,
     regionKey,
+    extendRegionKey,
     regionKeyString,
     getVariantKeyEndPos,
     areOverlappingRegions,
@@ -250,6 +251,24 @@ function test_regionKey() {
     return errors;
 }
 
+function test_extendRegionKey() {
+    var errors = 0;
+    var rk = regionKey("X", 10000, 20000, -1);
+    var erk = extendRegionKey(rk, 1000);
+    var drk = decodeRegionKey(erk);
+    if ((drk.startpos != 9000) || (drk.endpos != 21000)) {
+        console.error("Expected region 9000:21000, got ", drk.startpos, ":", drk.endpos);
+        ++errors;
+    }
+    erk = extendRegionKey(rk, 300000000);
+    drk = decodeRegionKey(erk);
+    if ((drk.startpos != 0) || (drk.endpos != 268435455)) {
+        console.error("Expected region 0:268435455, got ", drk.startpos, ":", drk.endpos);
+        ++errors;
+    }
+    return errors;
+}
+
 function test_regionKeyString() {
     var errors = 0;
     var rs = "";
@@ -360,6 +379,7 @@ errors += test_extractRegionKeyStrand();
 errors += test_decodeRegionKey();
 errors += test_reverseRegionKey();
 errors += test_regionKey();
+errors += test_extendRegionKey();
 errors += test_regionKeyString();
 errors += test_getVariantKeyEndPos();
 errors += test_areOverlappingRegions();

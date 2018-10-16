@@ -44,14 +44,21 @@
 #include <stdio.h>
 #include "nrvk.h"
 
+#define RK_MAX_POS       0x000000000FFFFFFF  //!< Maximum position value (2^28 - 1)
 #define RKMASK_CHROM     0xF800000000000000  //!< RegionKey binary mask for CHROM     [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000 ]
 #define RKMASK_STARTPOS  0x07FFFFFF80000000  //!< RegionKey binary mask for START POS [ 00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000 ]
 #define RKMASK_ENDPOS    0x000000007FFFFFF8  //!< RegionKey binary mask for END POS   [ 00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111000 ]
 #define RKMASK_STRAND    0x0000000000000006  //!< RegionKey binary mask for STRAND    [ 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000110 ]
+#define RKMASK_NOPOS     0xF800000000000007  //!< RegionKey binary mask WITHOUT POS   [ 11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000111 ]
 #define RKSHIFT_CHROM     59 //!< CHROM LSB position from the VariantKey LSB
 #define RKSHIFT_STARTPOS  31 //!< START POS LSB position from the VariantKey LSB
 #define RKSHIFT_ENDPOS     3 //!< END POS LSB position from the VariantKey LSB
 #define RKSHIFT_STRAND     1 //!< STRAND LSB position from the VariantKey LSB
+
+#define RK_CHROM    ((rk & RKMASK_CHROM) >> RKSHIFT_CHROM)       //!< Extract the CHROM code from RegionKey.
+#define RK_STARTPOS ((rk & RKMASK_STARTPOS) >> RKSHIFT_STARTPOS) //!< Extract the START POS code from RegionKey.
+#define RK_ENDPOS   ((rk & RKMASK_ENDPOS) >> RKSHIFT_ENDPOS)     //!< Extract the END POS code from RegionKey.
+#define RK_STRAND   ((rk & RKMASK_STRAND) >> RKSHIFT_STRAND)     //!< Extract the STRAND from RegionKey.
 
 /**
  * RegionKey struct.
@@ -122,7 +129,7 @@ static inline uint64_t encode_regionkey(uint8_t chrom, uint32_t startpos, uint32
  */
 static inline uint8_t extract_regionkey_chrom(uint64_t rk)
 {
-    return (uint8_t)((rk & RKMASK_CHROM) >> RKSHIFT_CHROM);
+    return (uint8_t)RK_CHROM;
 }
 
 /** @brief Extract the START POS code from RegionKey.
@@ -133,7 +140,7 @@ static inline uint8_t extract_regionkey_chrom(uint64_t rk)
  */
 static inline uint32_t extract_regionkey_startpos(uint64_t rk)
 {
-    return (uint32_t)((rk & RKMASK_STARTPOS) >> RKSHIFT_STARTPOS);
+    return (uint32_t)RK_STARTPOS;
 }
 
 /** @brief Extract the END POS code from RegionKey.
@@ -144,7 +151,7 @@ static inline uint32_t extract_regionkey_startpos(uint64_t rk)
  */
 static inline uint32_t extract_regionkey_endpos(uint64_t rk)
 {
-    return (uint32_t)((rk & RKMASK_ENDPOS) >> RKSHIFT_ENDPOS);
+    return (uint32_t)RK_ENDPOS;
 }
 
 /** @brief Extract the STRAND from RegionKey.
@@ -155,7 +162,7 @@ static inline uint32_t extract_regionkey_endpos(uint64_t rk)
  */
 static inline uint8_t extract_regionkey_strand(uint64_t rk)
 {
-    return (uint8_t)((rk & RKMASK_STRAND) >> RKSHIFT_STRAND);
+    return (uint8_t)RK_STRAND;
 }
 
 /** @brief Decode a RegionKey code and returns the components as regionkey_t structure.
@@ -198,6 +205,20 @@ static inline void reverse_regionkey(uint64_t rk, regionkey_rev_t *rev)
 static inline uint64_t regionkey(const char *chrom, size_t sizechrom, uint32_t startpos, uint32_t endpos, int8_t strand)
 {
     return encode_regionkey(encode_chrom(chrom, sizechrom), startpos, endpos, encode_region_strand(strand));
+}
+
+/** @brief Extend a regionkey region by a fixed amount from the start and end position.
+ *
+ * @param rk   RegionKey code.
+ * @param size Amount to extend the region.
+ */
+static inline uint64_t extend_regionkey(uint64_t rk, uint32_t size)
+{
+    uint64_t startpos = RK_STARTPOS;
+    uint64_t endpos = RK_ENDPOS;
+    startpos = ((size >= startpos) ? 0 : (startpos - size));
+    endpos = (((RK_MAX_POS - endpos) <= size) ? RK_MAX_POS : (endpos + size));
+    return ((rk & RKMASK_NOPOS) | (startpos << RKSHIFT_STARTPOS) | (endpos << RKSHIFT_ENDPOS));
 }
 
 /** @brief Returns RegionKey hexadecimal string (16 characters).

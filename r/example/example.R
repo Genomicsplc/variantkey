@@ -347,6 +347,22 @@ x <- RegionKey(chrom="MT", startpos=1000, endpos=2000, strand=-1)
 print(x)
 # [1] "14411520955069251204"
 
+ex <- ExtendRegionKey(x, 100)
+print(ex)
+# [1] 14411520740320887204
+ReverseRegionKey(ex)
+# $CHROM
+# [1] "MT"
+# 
+# $STARTPOS
+# [1] 900
+# 
+# $ENDPOS
+# [1] 2100
+# 
+# $STRAND
+# [1] -1
+
 x <- GetRegionKeyChromStartPos("14411520955069251204")
 print(x)
 # [1] "6710887400"

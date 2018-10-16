@@ -185,6 +185,12 @@ print(vk.reverse_regionkey(0xc80001f400003e84))
 print(vk.regionkey("MT", 1000, 2000, -1))
 # 14411520955069251204
 
+print(vk.extend_regionkey(14411520955069251204, 100))
+# 14411520740320887204
+
+print(vk.reverse_regionkey(14411520740320887204))
+# (array(b'MT', dtype='|S2'), array(900, dtype=uint32), array(2100, dtype=uint32), array(-1, dtype=int16))
+
 print(vk.regionkey_hex(0xc80001f400003e84))
 # b'c80001f400003e84'
 
