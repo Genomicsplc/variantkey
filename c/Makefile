@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help testcpp test tidy build package_vk version doc format clean
+.PHONY: help testcpp test tidy build package_vk version doc format clean install uniinstall rpm deb
 
 # Use bash as shell (Note: Ubuntu now uses dash which doesn't support PIPESTATUS).
 SHELL=/bin/bash
@@ -37,6 +37,27 @@ CONDA_ENV=../../env-${PROJECT}
 # Current directory
 CURRENTDIR=$(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 
+# Name of RPM or DEB package
+PKGNAME=${VENDOR}-${PROJECT}-headers
+
+# Path for binary files (where the executable files will be installed)
+LIBPATH=usr/include/$(VENDOR)/$(PROJECT)/
+
+# Path path for documentation
+DOCPATH=usr/share/doc/$(PKGNAME)/
+
+# Installation path for the binary files
+PATHINSTLIB=$(DESTDIR)/$(LIBPATH)
+
+# Installation path for documentation
+PATHINSTDOC=$(DESTDIR)/$(DOCPATH)
+
+# RPM Packaging path (where RPMs will be stored)
+PATHRPMPKG=$(CURRENTDIR)/target/RPM
+
+# DEB Packaging path (where DEBs will be stored)
+PATHDEBPKG=$(CURRENTDIR)/target/DEB
+
 # --- MAKE TARGETS ---
 
 # Display general help about this command
@@ -45,17 +66,21 @@ help:
 	@echo "$(PROJECT) Makefile."
 	@echo "The following commands are available:"
 	@echo ""
-	@echo "    make qa         : Run all the tests and static analysis reports"
-	@echo "    make test       : Run the unit tests"
-	@echo "    make tidy       : Check the code using clang-tidy"
-	@echo "    make build      : Build the library"
-	@echo "    make version    : Set version from VERSION file"
-	@echo "    make doc        : Generate source code documentation"
-	@echo "    make format     : Format the source code"
-	@echo "    make clean      : Remove any build artifact"
+	@echo "    make qa        : Run all the tests and static analysis reports"
+	@echo "    make test      : Run the unit tests"
+	@echo "    make tidy      : Check the code using clang-tidy"
+	@echo "    make build     : Build the library"
+	@echo "    make version   : Set version from VERSION file"
+	@echo "    make doc       : Generate source code documentation"
+	@echo "    make format    : Format the source code"
+	@echo "    make clean     : Remove any build artifact"
+	@echo "    make install   : Install the library"
+	@echo "    make uninstall : Uninstall the library"
+	@echo "    make rpm       : Build an RPM package"
+	@echo "    make deb       : Build a DEB package"
 	@echo ""
 
-all: clean version format test tidy build doc
+all: clean version format test tidy build rpm deb package_vk doc
 
 # Test C code compatibility with C++
 testcpp:
@@ -110,7 +135,6 @@ build:
 	cd target/build && \
 	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:./ && \
 	env CTEST_OUTPUT_ON_FAILURE=1 make test | tee build.log ; test $${PIPESTATUS[0]} -eq 0
-	make package_vk
 
 package_vk: version
 	cd target/build/vk && make -j package
@@ -139,3 +163,54 @@ format:
 # Remove any build artifact
 clean:
 	rm -rf target
+
+# Install this application
+install: uninstall
+	mkdir -p $(PATHINSTLIB)
+	cp src/variantkey/*.h $(PATHINSTLIB)
+	find $(PATHINSTLIB) -type f -exec chmod 644 {} \;
+	mkdir -p $(PATHINSTDOC)
+	cp -f ../LICENSE $(PATHINSTDOC)
+	cp -f ../README.md $(PATHINSTDOC)
+	cp -f ../VERSION $(PATHINSTDOC)
+	cp -f ../RELEASE $(PATHINSTDOC)
+	chmod -R 644 $(PATHINSTDOC)*
+
+# Remove all installed files (excluding configuration files)
+uninstall:
+	rm -rf $(PATHINSTLIB)
+	rm -rf $(PATHINSTDOC)
+
+# Build the RPM package for RedHat-like Linux distributions
+rpm:
+	rm -rf $(PATHRPMPKG)
+	rpmbuild \
+	--define "_topdir $(PATHRPMPKG)" \
+	--define "_vendor $(VENDOR)" \
+	--define "_owner $(OWNER)" \
+	--define "_project $(PROJECT)" \
+	--define "_package $(PKGNAME)" \
+	--define "_version $(VERSION)" \
+	--define "_release $(RELEASE)" \
+	--define "_current_directory $(CURRENTDIR)" \
+	--define "_libpath /$(LIBPATH)" \
+	--define "_docpath /$(DOCPATH)" \
+	-bb resources/rpm/rpm.spec
+
+# Build the DEB package for Debian-like Linux distributions
+deb:
+	rm -rf $(PATHDEBPKG)
+	make install DESTDIR=$(PATHDEBPKG)/$(PKGNAME)-$(VERSION)
+	rm -f $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/$(DOCPATH)LICENSE
+	tar -zcvf $(PATHDEBPKG)/$(PKGNAME)_$(VERSION).orig.tar.gz -C $(PATHDEBPKG)/ $(PKGNAME)-$(VERSION)
+	cp -rf ./resources/debian $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian
+	find $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/ -type f -exec sed -i "s/~#DATE#~/`date -R`/" {} \;
+	find $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/ -type f -exec sed -i "s/~#PKGNAME#~/$(PKGNAME)/" {} \;
+	find $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/ -type f -exec sed -i "s/~#VERSION#~/$(VERSION)/" {} \;
+	find $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/ -type f -exec sed -i "s/~#RELEASE#~/$(RELEASE)/" {} \;
+	echo $(LIBPATH) > $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/$(PKGNAME).dirs
+	echo "$(LIBPATH)* $(LIBPATH)" > $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/install
+	echo $(DOCPATH) >> $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/$(PKGNAME).dirs
+	echo "$(DOCPATH)* $(DOCPATH)" >> $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/install
+	echo "new-package-should-close-itp-bug" >> $(PATHDEBPKG)/$(PKGNAME)-$(VERSION)/debian/$(PKGNAME).lintian-overrides
+	cd $(PATHDEBPKG)/$(PKGNAME)-$(VERSION) && debuild -us -uc

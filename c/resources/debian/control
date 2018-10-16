@@ -1,0 +1,19 @@
+Source: ~#PKGNAME#~
+Maintainer: GENOMICS plc <support@genomicsplc.com>
+Section: utils
+Priority: optional
+Build-Depends: debhelper (>= 9)
+Standards-Version: 3.9.7
+Homepage: https://github.com/genomicsplc/variantkey
+Vcs-Git: https://github.com/genomicsplc/variantkey.git
+
+Package: ~#PKGNAME#~
+Provides: variantkey
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Numerical Encoding for Human Genetic Variants.
+ Provides C header-only files for:
+ VariantKey, a reversible numerical encoding schema for human genetic variants.
+ RegionKey, a reversible numerical encoding schema for human genetic regions.
+ ESID, a reversible numerical encoding schema for genetic string identifiers.
+ 

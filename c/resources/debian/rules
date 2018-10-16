@@ -1,0 +1,5 @@
+#!/usr/bin/make -f
+export DH_VERBOSE=1
+export DH_GOPKG := github.com/genomicsplc/variantkey
+%:
+	dh $@

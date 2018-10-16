@@ -1,0 +1,12 @@
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: variantkey
+Upstream-Contact: GENOMICS plc <support@genomicsplc.com>
+Source: https://github.com/genomicsplc/variantkey
+
+Files: *
+Copyright: Copyright 2017-2018 GENOMICS plc <support@genomicsplc.com>
+License: MIT
+
+License: MIT
+ Full license and copyright terms are available at:
+ /usr/share/doc/genomicsplc-variantkey/LICENSE
