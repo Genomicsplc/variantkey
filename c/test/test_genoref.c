@@ -379,6 +379,86 @@ int test_normalize_variant(mmfile_t mf)
     return errors;
 }
 
+int test_normalized_variantkey(mmfile_t mf)
+{
+    int errors = 0;
+    int ret;
+    int i;
+    uint64_t vk;
+    typedef struct test_nvk_t
+    {
+        int        exp;
+        char       chrom[3];
+        uint8_t    posindex;
+        uint32_t   pos;
+        uint32_t   exp_pos;
+        size_t     sizeref;
+        size_t     sizealt;
+        size_t     exp_sizeref;
+        size_t     exp_sizealt;
+        uint64_t   vk;
+        const char *exp_ref;
+        const char *exp_alt;
+        char       ref[256];
+        char       alt[256];
+    } test_nvk_t;
+    static test_nvk_t test_nvk[12] =
+    {
+        {-2, "1",  0, 26, 26, 1, 1, 1, 1, 0x0800000d08880000, "A",  "C",  "A",      "C"     },  // invalid position
+        {-1, "1",  1,  1,  0, 1, 1, 1, 1, 0x08000000736a947f, "J",  "C",  "J",      "C"     },  // invalid reference
+        { 4, "1",  0,  0,  0, 1, 1, 1, 1, 0x0800000008880000, "A",  "C",  "T",      "G"     },  // flip
+        { 0, "1",  0,  0,  0, 1, 1, 1, 1, 0x0800000008880000, "A",  "C",  "A",      "C"     },  // OK
+        {32, "13", 1,  3,  3, 3, 2, 2, 1, 0x68000001fed6a22d, "DE", "D",  "CDE",    "CD"    },  // left trim
+        {48, "13", 0,  2,  3, 3, 3, 1, 1, 0x68000001c7868961, "D",  "F",  "CDE",    "CFE"   },  // left trim + right trim
+        {48, "1",  0,  0,  2, 6, 6, 1, 1, 0x0800000147df7d13, "C",  "K",  "aBCDEF", "aBKDEF"},  // left trim + right trim
+        { 0, "1",  0,  0,  0, 1, 0, 1, 0, 0x0800000008000000, "A",  "",   "A",      ""      },  // OK
+        { 8, "1",  0,  3,  2, 1, 0, 2, 1, 0x0800000150b13d0f, "CD", "C",  "D",      ""      },  // left extend
+        { 0, "1",  1, 25, 24, 1, 2, 1, 2, 0x0800000c111ea6eb, "Y",  "CK", "Y",      "CK"    },  // OK
+        { 2, "1",  0,  0,  0, 1, 1, 1, 1, 0x0800000008900000, "A",  "G",  "G",      "A"     },  // swap
+        { 6, "1",  1,  1,  0, 1, 1, 1, 1, 0x0800000008880000, "A",  "C",  "G",      "T"     },  // swap + flip
+    };
+    for (i = 0; i < 12; i++)
+    {
+        ret = 0;
+        vk = normalized_variantkey(mf, test_nvk[i].chrom, strlen(test_nvk[i].chrom), &test_nvk[i].pos, test_nvk[i].posindex, test_nvk[i].ref, &test_nvk[i].sizeref, test_nvk[i].alt, &test_nvk[i].sizealt, &ret);
+        if (vk != test_nvk[i].vk)
+        {
+            fprintf(stderr, "%s (%d): Expected return value %016" PRIx64 " , got  %016" PRIx64 "\n", __func__, i, test_nvk[i].vk, vk);
+            ++errors;
+        }
+        if (ret != test_nvk[i].exp)
+        {
+            fprintf(stderr, "%s (%d): Expected return value %d, got %d\n", __func__, i, test_nvk[i].exp, ret);
+            ++errors;
+        }
+        if (test_nvk[i].pos != test_nvk[i].exp_pos)
+        {
+            fprintf(stderr, "%s (%d): Expected POS %" PRIu32 ", got %" PRIu32 "\n", __func__, i, test_nvk[i].exp_pos, test_nvk[i].pos);
+            ++errors;
+        }
+        if (test_nvk[i].sizeref != test_nvk[i].exp_sizeref)
+        {
+            fprintf(stderr, "%s (%d): Expected REF size %lu, got %lu\n", __func__, i, test_nvk[i].exp_sizeref, test_nvk[i].sizeref);
+            ++errors;
+        }
+        if (test_nvk[i].sizealt != test_nvk[i].exp_sizealt)
+        {
+            fprintf(stderr, "%s (%d): Expected ALT size %lu, got %lu\n", __func__, i, test_nvk[i].exp_sizealt, test_nvk[i].sizealt);
+            ++errors;
+        }
+        if (strcmp(test_nvk[i].ref, test_nvk[i].exp_ref) != 0)
+        {
+            fprintf(stderr, "%s (%d): Expected REF %s, got %s\n", __func__, i, test_nvk[i].exp_ref, test_nvk[i].ref);
+            ++errors;
+        }
+        if (strcmp(test_nvk[i].alt, test_nvk[i].exp_alt) != 0)
+        {
+            fprintf(stderr, "%s (%d): Expected ALT %s, got %s\n", __func__, i, test_nvk[i].exp_alt, test_nvk[i].alt);
+            ++errors;
+        }
+    }
+    return errors;
+}
 
 int main()
 {
@@ -396,6 +476,7 @@ int main()
     errors += test_check_reference(genoref);
     errors += test_flip_allele();
     errors += test_normalize_variant(genoref);
+    errors += test_normalized_variantkey(genoref);
 
     benchmark_aztoupper();
     benchmark_prepend_char();

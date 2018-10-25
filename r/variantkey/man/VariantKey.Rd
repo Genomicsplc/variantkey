@@ -2,7 +2,8 @@
 % Please edit documentation in R/variantkey.R
 \name{VariantKey}
 \alias{VariantKey}
-\title{Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.}
+\title{Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+The variant should be already normalized (see NormalizeVariant or use NormalizedVariantkey).}
 \usage{
 VariantKey(chrom, pos, ref, alt)
 }
@@ -17,4 +18,5 @@ VariantKey(chrom, pos, ref, alt)
 }
 \description{
 Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+The variant should be already normalized (see NormalizeVariant or use NormalizedVariantkey).
 }

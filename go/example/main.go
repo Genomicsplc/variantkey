@@ -88,6 +88,10 @@ func main() {
 	fmt.Println(gref.NormalizeVariant(13, 2, "CDE", "CFE"))
 	// 48 3 D F 1 1
 
+	// Create a normalized variantkey
+	fmt.Println(gref.NormalizedVariantKey("13", 2, 0, "CDE", "CFE"))
+	// 7493989787586955617 48
+
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 	// NRVK

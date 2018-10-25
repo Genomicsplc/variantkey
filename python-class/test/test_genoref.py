@@ -121,3 +121,23 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(nalt, tdata[:, 9].astype('|S256'))
         np.testing.assert_array_equal(nsizeref, tdata[:, 6].astype(np.uint8))
         np.testing.assert_array_equal(nsizealt, tdata[:, 7].astype(np.uint8))
+
+        def test_normalized_variantkey(self):
+            # 0:ecode, 1:chrom, 2:pos, 3:epos, 4:sizeref, 5:sizealt, 6:esizeref, 7:esizealt, 8:vk, 9:eref, 10:ealt, 11:ref, 12:alt
+            tdata = np.array([
+                (-2, "1",  26, 26, 1, 1, 1, 1, 0x0800000d08880000, b"A",   b"C",  b"A",      b"C"),       # invalid position
+                (-1, "1",   0,  0, 1, 1, 1, 1, 0x08000000736a947f, b"J",   b"C",  b"J",      b"C"),       # invalid reference
+                (4, "1",    0,  0, 1, 1, 1, 1, 0x0800000008880000, b"A",   b"C",  b"T",      b"G"),       # flip
+                (0, "1",    0,  0, 1, 1, 1, 1, 0x0800000008880000, b"A",   b"C",  b"A",      b"C"),       # OK
+                (32, "13",  2,  3, 3, 2, 2, 1, 0x68000001fed6a22d, b"DE",  b"D",  b"CDE",    b"CD"),      # left trim
+                (48, "13",  2,  3, 3, 3, 1, 1, 0x68000001c7868961, b"D",   b"F",  b"CDE",    b"CFE"),     # left trim + right trim
+                (48, "1",   0,  2, 6, 6, 1, 1, 0x0800000147df7d13, b"C",   b"K",  b"aBCDEF", b"aBKDEF"),  # left trim + right trim
+                (0, "1",    0,  0, 1, 0, 1, 0, 0x0800000008000000, b"A",   b"",   b"A",      b""),        # OK
+                (8, "1",    3,  2, 1, 0, 2, 1, 0x0800000150b13d0f, b"CD",  b"C",  b"D",      b""),        # left extend
+                (0, "1",   24, 24, 1, 2, 1, 2, 0x0800000c111ea6eb, b"Y",   b"CK", b"Y",      b"CK"),      # OK
+                (2, "1",    0,  0, 1, 1, 1, 1, 0x0800000008900000, b"A",   b"G",  b"G",      b"A"),       # swap
+                (6, "1",    0,  0, 1, 1, 1, 1, 0x0800000008880000, b"A",   b"C",  b"G",      b"T"),       # swap + flip
+            ])
+            nvk, ncode = npvk.normalized_variantkey(tdata[:, 1], tdata[:, 2], 0, tdata[:, 11], tdata[:, 12])
+            np.testing.assert_array_equal(nvk, tdata[:, 8].astype(np.uint64))
+            np.testing.assert_array_equal(ncode, tdata[:, 0].ncode.astype(np.int_))

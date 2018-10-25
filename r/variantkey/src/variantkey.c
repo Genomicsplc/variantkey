@@ -734,6 +734,40 @@ SEXP R_normalize_variant(SEXP mf, SEXP chrom, SEXP pos, SEXP ref, SEXP alt, SEXP
     return res;
 }
 
+SEXP R_normalized_variantkey(SEXP mf, SEXP chrom, SEXP pos, SEXP posindex, SEXP ref, SEXP alt, SEXP rvk, SEXP rcode)
+{
+    uint64_t i, n = LENGTH(rcode);
+    int32_t *code = (int32_t *)INTEGER(rcode);
+    uint64_t *vk = (uint64_t *)REAL(rvk);
+    uint32_t *ppos = (uint32_t *)INTEGER(pos);
+    uint8_t pposindex = (uint8_t)asInteger(posindex);
+    const mmfile_t *cmf = get_mmfile_mf(mf);
+    size_t sizeref;
+    size_t sizealt;
+    char r[ALLELE_MAXSIZE];
+    char a[ALLELE_MAXSIZE];
+    uint32_t tpos;
+    int rc;
+    for(i = 0; i < n; i++)
+    {
+        const char *c = CHAR(STRING_ELT(chrom, i));
+        strncpy(r, CHAR(STRING_ELT(ref, i)), ALLELE_MAXSIZE);
+        strncpy(a, CHAR(STRING_ELT(alt, i)), ALLELE_MAXSIZE);
+        sizeref = strlen(r);
+        sizealt = strlen(a);
+        tpos = ppos[i];
+        rc = (int)(code[i]);
+        vk[i] = normalized_variantkey(*cmf, c, strlen(c), &tpos, pposindex, r, &sizeref, a, &sizealt, &rc);
+        code[i] = (int32_t)rc;
+    }
+    const char *names[] = {"VK", "RET", ""};
+    SEXP res = PROTECT(mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(res, 0, rvk);
+    SET_VECTOR_ELT(res, 1, rcode);
+    UNPROTECT(1);
+    return res;
+}
+
 // --- REGIONKEY ---
 
 SEXP R_encode_region_strand(SEXP strand, SEXP ret)

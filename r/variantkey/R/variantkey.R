@@ -201,6 +201,7 @@ DecodeVariantKey <- function(vk) {
 }
 
 #' Returns a 64 bit variant key based on CHROM, POS (0-base), REF, ALT.
+#' The variant should be already normalized (see NormalizeVariant or use NormalizedVariantkey).
 #' @param chrom Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
 #' @param pos   Position. The reference position, with the first base having position 0.
 #' @param ref   Reference allele. String containing a sequence of nucleotide letters.
@@ -573,6 +574,25 @@ NormalizeVariant <- function(chrom, pos, ref, alt, mf=vk.env$genoref_$MF) {
     rref <- character(n)
     ralt <- character(n)
     return(.Call("R_normalize_variant", mf, as.integer(chrom), as.integer(pos), as.character(ref), as.character(alt), rcode, rpos, rref, ralt))
+}
+
+#' Create a normalized variantkey.
+#' @param chrom      Chromosome encoded number.
+#' @param pos        Position. The reference position.
+#' @param posindex   Position index: 0 for 0-based, 1 for 1-based.
+#' @param ref        Reference allele. String containing a sequence of nucleotide letters.
+#' @param alt        Alternate non-reference allele string.
+#' @param mf      Memory-mapped file object as retured by MmapGenorefFile.
+#' @useDynLib   variantkey R_normalize_variant
+#' @export
+NormalizedVariantKey <- function(chrom, pos, posindex, ref, alt, mf=vk.env$genoref_$MF) {
+    n <- length(chrom)
+    if ((n != length(pos)) || (n != length(ref)) || (n != length(alt))) {
+        stop(vk.env$ERR_INPUT_LENGTH)
+    }
+    rvk <- uint64(n)
+    rcode <- integer(n)
+    return(.Call("R_normalized_variantkey", mf, as.character(chrom), as.integer(pos), as.integer(posindex), as.character(ref), as.character(alt), rvk, rcode))
 }
 
 # --- REGIONKEY ---

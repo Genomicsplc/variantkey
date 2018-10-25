@@ -126,6 +126,12 @@ int main()
     fprintf(stdout, "%d %" PRIu32 " %s %s %lu %lu\n", ret, pos, nref, nalt, sizeref, sizealt);
     // 48 3 D F 1 1
 
+    // create a normalized variantkey
+    int ncode = 0;
+    vk = normalized_variantkey(genoref, "13", 2, &pos, 0, nref, &sizeref, nalt, &sizealt, &ncode);
+    fprintf(stdout, "%" PRIx64 " %d\n", vk, ncode);
+    // 68000001c7868961 0
+
     int err = munmap_binfile(genoref);
     if (err != 0)
     {

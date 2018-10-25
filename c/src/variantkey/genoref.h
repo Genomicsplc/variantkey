@@ -47,6 +47,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "binsearch.h"
+#include "variantkey.h"
 
 #ifndef ALLELE_MAXSIZE
 #define ALLELE_MAXSIZE 256 //!< Maximum allele length.
@@ -408,6 +409,32 @@ static inline int normalize_variant(mmfile_t mf, uint8_t chrom, uint32_t *pos, c
     ref[*sizeref] = 0;
     alt[*sizealt] = 0;
     return status;
+}
+
+/** @brief Returns a normalized 64 bit variant key based on CHROM, POS, REF, ALT.
+ *
+ * @param mf         Structure containing the memory mapped binary fasta file.
+ * @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+ * @param sizechrom  Length of the chrom string, excluding the terminating null byte.
+ * @param pos        Position. The reference position.
+ * @param posindex   Position index: 0 for 0-based, 1 for 1-based.
+ * @param ref        Reference allele. String containing a sequence of nucleotide letters.
+ *                   The value in the pos field refers to the position of the first nucleotide in the String.
+ *                   Characters must be A-Z, a-z or *.
+ * @param sizeref    Length of the ref string, excluding the terminating null byte.
+ * @param alt        Alternate non-reference allele string.
+ *                   Characters must be A-Z, a-z or *.
+ * @param sizealt    Length of the alt string, excluding the terminating null byte.
+ * @param ret        Normalization return value (see: normalize_variant).
+ *
+ * @return      Normalized VariantKey 64 bit code.
+ */
+static inline uint64_t normalized_variantkey(mmfile_t mf, const char *chrom, size_t sizechrom, uint32_t *pos, uint8_t posindex, char *ref, size_t *sizeref, char *alt, size_t *sizealt, int *ret)
+{
+    uint8_t echrom = encode_chrom(chrom, sizechrom);
+    (*pos) -= posindex;
+    *ret = normalize_variant(mf, echrom, pos, ref, sizeref, alt, sizealt);
+    return encode_variantkey(echrom, *pos, encode_refalt(ref, *sizeref, alt, *sizealt));
 }
 
 #endif  // VARIANTKEY_GENOREF_H

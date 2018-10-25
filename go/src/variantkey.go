@@ -181,6 +181,7 @@ func DecodeVariantKey(v uint64) TVariantKey {
 }
 
 // VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
+// The variant should be already normalized (see NormalizeVariant or use NormalizedVariantkey).
 func VariantKey(chrom string, pos uint32, ref, alt string) uint64 {
 	bchrom := StringToNTBytes(chrom)
 	bref := StringToNTBytes(ref)
@@ -563,6 +564,25 @@ func (mf TMMFile) NormalizeVariant(chrom uint8, pos uint32, ref string, alt stri
 	nalt = C.GoString((*C.char)(palt))
 	nsizeref = uint8(csizeref)
 	nsizealt = uint8(csizealt)
+	return
+}
+
+// NormalizedVariantKey returns a normalized Genetic Variant Key based on CHROM, POS, REF, ALT.
+func (mf TMMFile) NormalizedVariantKey(chrom string, pos uint32, posindex uint8, ref string, alt string) (vk uint64, code int) {
+	bchrom := StringToNTBytes(chrom)
+	bref := StringToNTBytesN(ref, 256)
+	balt := StringToNTBytesN(alt, 256)
+	sizeref := len(ref)
+	sizealt := len(alt)
+	pchrom := unsafe.Pointer(&bchrom[0]) // #nosec
+	pref := unsafe.Pointer(&bref[0])     // #nosec
+	palt := unsafe.Pointer(&balt[0])     // #nosec
+	cpos := C.uint32_t(pos)
+	csizeref := C.size_t(sizeref)
+	csizealt := C.size_t(sizealt)
+	ccode := C.int(code)
+	vk = uint64(C.normalized_variantkey(castGoTMMFileToC(mf), (*C.char)(pchrom), C.size_t(len(chrom)), &cpos, C.uint8_t(posindex), (*C.char)(pref), &csizeref, (*C.char)(palt), &csizealt, &ccode)) // #nosec
+	code = int(ccode)
 	return
 }
 
