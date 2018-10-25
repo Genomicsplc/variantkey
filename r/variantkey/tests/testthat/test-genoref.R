@@ -98,4 +98,25 @@ test_that("NormalizeVariant", {
     expect_that(res$ALT, equals(unlist(x[,"ealt"])))
 })
 
+test_that("NormalizedVariantKey", {
+    x <- rbind(
+        list(-2,  "1",  26, 26, 1, 1, 1, 1, "0800000d08880000", "A",  "C",  "A",      "C"),       # invalid position
+        list(-1,  "1",   0,  0, 1, 1, 1, 1, "08000000736a947f", "J",  "C",  "J",      "C"),       # invalid reference
+        list( 4,  "1",   0,  0, 1, 1, 1, 1, "0800000008880000", "A",  "C",  "T",      "G"),       # flip
+        list( 0,  "1",   0,  0, 1, 1, 1, 1, "0800000008880000", "A",  "C",  "A",      "C"),       # OK
+        list(32, "13",   2,  3, 3, 2, 2, 1, "68000001fed6a22d", "DE", "D",  "CDE",    "CD"),      # left trim
+        list(48, "13",   2,  3, 3, 3, 1, 1, "68000001c7868961", "D",  "F",  "CDE",    "CFE"),     # left trim + right trim
+        list(48,  "1",   0,  2, 6, 6, 1, 1, "0800000147df7d13", "C",  "K",  "aBCDEF", "aBKDEF"),  # left trim + right trim
+        list( 0,  "1",   0,  0, 1, 0, 1, 0, "0800000008000000", "A",  "",   "A",      ""),        # OK
+        list( 8,  "1",   3,  2, 1, 0, 2, 1, "0800000150b13d0f", "CD", "C",  "D",      ""),        # left extend
+        list( 0,  "1",  24, 24, 1, 2, 1, 2, "0800000c111ea6eb", "Y",  "CK", "Y",      "CK"),      # OK
+        list( 2,  "1",   0,  0, 1, 1, 1, 1, "0800000008900000", "A",  "G",  "G",      "A"),       # swap
+        list( 6,  "1",   0,  0, 1, 1, 1, 1, "0800000008880000", "A",  "C",  "G",      "T")        # swap + flip
+    )
+    colnames(x) <- list("ecode", "chrom", "pos", "epos", "sizeref", "sizealt", "esizeref", "esizealt", "vk", "eref", "ealt", "ref", "alt")
+    res <- NormalizedVariantKey(chrom = unlist(x[,"chrom"]), pos = unlist(x[,"pos"]), posindex = 0, ref = unlist(x[,"ref"]), alt = unlist(x[,"alt"]))
+    expect_identical(res$VK, as.uint64(as.hex64(unlist(x[,"vk"]))))
+    expect_that(res$RET, equals(unlist(x[,"ecode"])))
+})
+
 CloseVariantKey()

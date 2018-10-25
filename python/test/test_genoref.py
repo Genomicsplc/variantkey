@@ -101,18 +101,18 @@ class TestFunctions(TestCase):
         def test_normalize_variant(self):
             # ecode, chrom, pos, epos, sizeref, sizealt, esizeref, esizealt, eref, ealt, ref, alt
             tdata = [
-                (-2, 1, 26, 26, 1, 1, 1, 1, b"A",   b"C",  b"A",      b"C"),      # invalid position
-                (-1, 1,  0,  0, 1, 1, 1, 1, b"J",   b"C",  b"J",      b"C"),      # invalid reference
-                (4, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"T",      b"G"),      # flip
-                (0, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"A",      b"C"),      # OK
-                (32, 13, 2,  3, 3, 2, 2, 1, b"DE",  b"D",  b"CDE",    b"CD"),     # left trim
-                (48, 13, 2,  3, 3, 3, 1, 1, b"D",   b"F",  b"CDE",    b"CFE"),    # left trim + right trim
+                (-2, 1, 26, 26, 1, 1, 1, 1, b"A",   b"C",  b"A",      b"C"),       # invalid position
+                (-1, 1,  0,  0, 1, 1, 1, 1, b"J",   b"C",  b"J",      b"C"),       # invalid reference
+                (4, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"T",      b"G"),       # flip
+                (0, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"A",      b"C"),       # OK
+                (32, 13, 2,  3, 3, 2, 2, 1, b"DE",  b"D",  b"CDE",    b"CD"),      # left trim
+                (48, 13, 2,  3, 3, 3, 1, 1, b"D",   b"F",  b"CDE",    b"CFE"),     # left trim + right trim
                 (48, 1,  0,  2, 6, 6, 1, 1, b"C",   b"K",  b"aBCDEF", b"aBKDEF"),  # left trim + right trim
-                (0, 1,  0,  0, 1, 0, 1, 0,  b"A",   b"",   b"A",      b""),       # OK
-                (8, 1,  3,  2, 1, 0, 2, 1,  b"CD",  b"C",  b"D",      b""),       # left extend
-                (0, 1, 24, 24, 1, 2, 1, 2,  b"Y",   b"CK", b"Y",      b"CK"),     # OK
-                (2, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"G",  b"G",      b"A"),      # swap
-                (6, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"G",      b"T"),      # swap + flip
+                (0, 1,  0,  0, 1, 0, 1, 0,  b"A",   b"",   b"A",      b""),        # OK
+                (8, 1,  3,  2, 1, 0, 2, 1,  b"CD",  b"C",  b"D",      b""),        # left extend
+                (0, 1, 24, 24, 1, 2, 1, 2,  b"Y",   b"CK", b"Y",      b"CK"),      # OK
+                (2, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"G",  b"G",      b"A"),       # swap
+                (6, 1,  0,  0, 1, 1, 1, 1,  b"A",   b"C",  b"G",      b"T"),       # swap + flip
             ]
             for ecode, chrom, pos, epos, sizeref, sizealt, esizeref, esizealt, eref, ealt, ref, alt in tdata:
                 ncode, npos, nref, nalt, nsizeref, nsizealt = bs.normalize_variant(mf, chrom, pos, ref, alt)
@@ -122,6 +122,27 @@ class TestFunctions(TestCase):
                 self.assertEqual(ealt, nalt)
                 self.assertEqual(esizeref, nsizeref)
                 self.assertEqual(esizealt, nsizealt)
+
+        def test_normalized_variantkey(self):
+            # ecode, chrom, posindex, pos, epos, sizeref, sizealt, esizeref, esizealt, vk, eref, ealt, ref, alt
+            tdata = [
+                (-2, "1",  0, 26, 26, 1, 1, 1, 1, 0x0800000d08880000, b"A",   b"C",  b"A",      b"C"),       # invalid position
+                (-1, "1",  1,  1,  0, 1, 1, 1, 1, 0x08000000736a947f, b"J",   b"C",  b"J",      b"C"),       # invalid reference
+                (4, "1",  0,  0,  0, 1, 1, 1, 1, 0x0800000008880000, b"A",   b"C",  b"T",      b"G"),        # flip
+                (0, "1",  0,  0,  0, 1, 1, 1, 1, 0x0800000008880000, b"A",   b"C",  b"A",      b"C"),        # OK
+                (32, "13", 1,  3,  3, 3, 2, 2, 1, 0x68000001fed6a22d, b"DE",  b"D",  b"CDE",    b"CD"),      # left trim
+                (48, "13", 0,  2,  3, 3, 3, 1, 1, 0x68000001c7868961, b"D",   b"F",  b"CDE",    b"CFE"),     # left trim + right trim
+                (48, "1",  0,  0,  2, 6, 6, 1, 1, 0x0800000147df7d13, b"C",   b"K",  b"aBCDEF", b"aBKDEF"),  # left trim + right trim
+                (0, "1",  0,  0,  0, 1, 0, 1, 0, 0x0800000008000000, b"A",   b"",   b"A",      b""),         # OK
+                (8, "1",  0,  3,  2, 1, 0, 2, 1, 0x0800000150b13d0f, b"CD",  b"C",  b"D",      b""),         # left extend
+                (0, "1",  1, 25, 24, 1, 2, 1, 2, 0x0800000c111ea6eb, b"Y",   b"CK", b"Y",      b"CK"),       # OK
+                (2, "1",  0,  0,  0, 1, 1, 1, 1, 0x0800000008900000, b"A",   b"G",  b"G",      b"A"),        # swap
+                (6, "1",  1,  1,  0, 1, 1, 1, 1, 0x0800000008880000, b"A",   b"C",  b"G",      b"T"),        # swap + flip
+            ]
+            for ecode, chrom, posindex, pos, epos, sizeref, sizealt, esizeref, esizealt, vk, eref, ealt, ref, alt in tdata:
+                nvk, ncode = bs.normalized_variantkey(mf, chrom, pos, posindex, ref, alt)
+                self.assertEqual(vk, nvk)
+                self.assertEqual(ecode, ncode)
 
 
 class TestBenchmark(object):

@@ -177,6 +177,15 @@ print(x)
 # $ALT
 # [1] "F"
 
+# Create a normalized variantkey
+x <- NormalizedVariantKey(chrom="13", pos=2, posindex=0, ref="CDE", alt="CFE")
+print(x)
+# $VK
+# [1] "7493989787586955617"
+#
+# $RET
+# [1] 48
+
 # /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 
 

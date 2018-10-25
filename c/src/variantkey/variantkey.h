@@ -487,7 +487,9 @@ static inline void decode_variantkey(uint64_t code, variantkey_t *vk)
     vk->refalt = extract_variantkey_refalt(code);
 }
 
-/** @brief Returns a 64 bit variant key based on CHROM, POS (0-based), REF, ALT.
+/**
+ * Returns a 64 bit variant key based on CHROM, POS (0-based), REF, ALT.
+ * The variant should be already normalized (see normalize_variant or use normalized_variantkey).
  *
  * @param chrom      Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
  * @param sizechrom  Length of the chrom string, excluding the terminating null byte.

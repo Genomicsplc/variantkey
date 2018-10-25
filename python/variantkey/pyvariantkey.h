@@ -78,6 +78,7 @@ static PyObject *py_get_genoref_seq(PyObject *self, PyObject *args, PyObject *ke
 static PyObject *py_check_reference(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_flip_allele(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_normalize_variant(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_normalized_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 
 // REGIONKEY
 static PyObject *py_encode_region_strand(PyObject *self, PyObject *args, PyObject *keywds);
@@ -276,6 +277,7 @@ PyMODINIT_FUNC initvariantkey(void);
 "(23, 12345, 286097408)"
 
 #define PYVARIANTKEY_DOCSTRING "Returns a 64 bit variant key based on CHROM, POS (0-based), REF, ALT.\n"\
+"The variant should be already normalized (see normalize_variant or use normalized_variantkey).\n"\
 "\n"\
 "Parameters\n"\
 "----------\n"\
@@ -780,6 +782,29 @@ PyMODINIT_FUNC initvariantkey(void);
 "    - ALT string.\n"\
 "    - REF length.\n"\
 "    - ALT length."
+
+#define PYNORMALIZEDVARIANTKEY_DOCSTRING "Returns a normalized 64 bit variant key based on CHROM, POS, REF, ALT."\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mf : obj\n"\
+"    Memory-mapped file object as retured by mmap_genoref_file().\n"\
+"chrom : str or bytes\n"\
+"    Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.\n"\
+"pos : int\n"\
+"    Position. The reference position.\n"\
+"posindex : int\n"\
+"    Position index: 0 for 0-based, 1 for 1-based.\n"\
+"ref : str or bytes\n"\
+"    Reference allele. String containing a sequence of nucleotide letters. The value in the pos field refers to the position of the first nucleotide in the String. Characters must be A-Z, a-z or *\n"\
+"alt : str or bytes\n"\
+"    Alternate non-reference allele string. Characters must be A-Z, a-z or *\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"tuple :\n"\
+"    - VariantKey 64 bit code.\n"\
+"    - Normalization code (see normalize_variant)."
 
 // ----------
 

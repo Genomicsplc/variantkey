@@ -245,6 +245,7 @@ class VariantKey(object):
 
     def variantkey(self, chrom, pos, ref, alt):
         """Returns a 64 bit variant key based on CHROM, POS (0-based), REF, ALT.
+        The variant should be already normalized (see normalize_variant or use normalized_variantkey).
 
         Parameters
         ----------
@@ -723,6 +724,40 @@ class VariantKey(object):
         return f(self.genoref_mf,
                  np.array(chrom).astype(np.uint8),
                  np.array(pos).astype(np.uint32),
+                 np.array(ref).astype(np.string_),
+                 np.array(alt).astype(np.string_))
+
+    def normalized_variantkey(self, chrom, pos, posindex, ref, alt):
+        """Normalize a variant."\
+        " Flip alleles if required and apply the normalization algorithm described at:"\
+        " https://genome.sph.umich.edu/wiki/Variant_Normalization
+
+        Parameters
+        ----------
+        chrom : string
+            Chromosome. An identifier from the reference genome, no white-space or leading zeros permitted.
+        pos : uint32
+            Position. The reference position.
+        posindex : uint32
+            Position index: 0 for 0-based, 1 for 1-based.
+        ref : string
+            Reference allele. String containing a sequence of nucleotide letters.
+        alt : string
+            Alternate non-reference allele string.
+
+        Returns
+        -------
+        tuple :
+            - Normalized VariantKey 64 bit code (uint64).
+            - Normalization return code (see normalize_variant).
+        """
+        f = np.vectorize(pvk.normalized_variantkey,
+                         excluded=['mf, posindex'],
+                         otypes=[np.uint64, np.int_])
+        return f(self.genoref_mf,
+                 np.array(chrom).astype(np.string_),
+                 np.array(pos).astype(np.uint32),
+                 np.array(posindex).astype(np.int_),
                  np.array(ref).astype(np.string_),
                  np.array(alt).astype(np.string_))
 

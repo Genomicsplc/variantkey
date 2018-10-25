@@ -681,6 +681,34 @@ static PyObject *py_normalize_variant(PyObject *Py_UNUSED(ignored), PyObject *ar
     return result;
 }
 
+static PyObject *py_normalized_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    PyObject* mf = NULL;
+    uint32_t pos;
+    uint8_t posindex;
+    const char *chrom;
+    const char *cref;
+    const char *calt;
+    Py_ssize_t sizechrom, sizeref, sizealt;
+    static char *kwlist[] = {"mf", "chrom", "pos", "posindex", "ref", "alt", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "Os#IBs#s#", kwlist, &mf, &chrom, &sizechrom, &pos, &posindex, &cref, &sizeref, &calt, &sizealt))
+        return NULL;
+    size_t stref = (size_t)sizeref;
+    size_t stalt = (size_t)sizealt;
+    char ref[ALLELE_MAXSIZE] = "", alt[ALLELE_MAXSIZE] = "";
+    strncpy(ref, cref, stref);
+    ref[stref] = 0;
+    strncpy(alt, calt, stalt);
+    alt[stalt] = 0;
+    const mmfile_t *cmf = py_get_mmfile_mf(mf);
+    int code = 0;
+    uint64_t vk = normalized_variantkey(*cmf, chrom, sizechrom, &pos, posindex, ref, &stref, alt, &stalt, &code);
+    PyObject *result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("K", vk));
+    PyTuple_SetItem(result, 1, Py_BuildValue("i", code));
+    return result;
+}
+
 // --- REGIONKEY ---
 
 static PyObject* py_encode_region_strand(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
@@ -1016,6 +1044,7 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"check_reference", (PyCFunction)py_check_reference, METH_VARARGS|METH_KEYWORDS, PYCHECKREFERENCE_DOCSTRING},
     {"flip_allele", (PyCFunction)py_flip_allele, METH_VARARGS|METH_KEYWORDS, PYFLIPALLELE_DOCSTRING},
     {"normalize_variant", (PyCFunction)py_normalize_variant, METH_VARARGS|METH_KEYWORDS, PYNORMALIZEVARIANT_DOCSTRING},
+    {"normalized_variantkey", (PyCFunction)py_normalized_variantkey, METH_VARARGS|METH_KEYWORDS, PYNORMALIZEDVARIANTKEY_DOCSTRING},
 
     // REGIONKEY
     {"encode_region_strand", (PyCFunction)py_encode_region_strand, METH_VARARGS|METH_KEYWORDS, PYENCODEREGIONSTRAND_DOCSTRING},
