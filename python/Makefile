@@ -5,7 +5,7 @@
 # ------------------------------------------------------------------------------
 
 # List special make targets that are not associated with files
-.PHONY: help version build format clean
+.PHONY: help version build wheel format clean
 
 # Project name
 PROJECT=variantkey
@@ -35,6 +35,7 @@ help:
 	@echo ""
 	@echo "    make test    : Run the unit tests against source code"
 	@echo "    make build   : Build and test a minified version of the library"
+	@echo "    make wheel   : Build a Wheel package"
 	@echo "    make format  : Format the source code"
 	@echo "    make clean   : Remove any build artifact"
 	@echo ""
@@ -45,12 +46,16 @@ all: clean format build
 version:
 	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/python/meta.yaml
 	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/python/meta.yaml
-	sed -i "s/version=.*,$$/version='$(VERSION)',/" setup.py
+	sed -i "s/version=.*,$$/version='$(VERSION).$(RELEASE)',/" setup.py
 
 # Build a minified version of the library
 build: version
 	../conda/setup-conda.sh
 	PROJECT_ROOT=${CURRENTDIR} ${CONDA_ENV}/bin/conda build --prefix-length 128 --no-anaconda-upload --override-channels $(ARTIFACTORY_CONDA_CHANNELS) ../conda/python
+
+# Build a Wheel package
+wheel: clean version
+	python3 setup.py sdist bdist_wheel
 
 # Format the source code
 format:

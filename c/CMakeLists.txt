@@ -1,12 +1,12 @@
-cmake_minimum_required (VERSION 3.1)
-project (variantkey)
+cmake_minimum_required(VERSION 3.1)
+project(variantkey)
 
-set( CMAKE_VERBOSE_MAKEFILE on )
+set(CMAKE_VERBOSE_MAKEFILE on)
 
 add_definitions(-DCMAKE)
 
 # enable testing
-enable_testing ()
+enable_testing()
 
 # Extract version from the VERSION file
 file(STRINGS ../VERSION VERSION_FILE_CONTENT)
@@ -25,8 +25,7 @@ option(BUILD_SHARED_LIB "Build a shared library" ON)
 
 if(CMAKE_COMPILER_IS_GNUCC)
     message(STATUS "Build type: ${CMAKE_BUILD_TYPE}")
-    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
-                    OUTPUT_VARIABLE GCC_VERSION)
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion OUTPUT_VARIABLE GCC_VERSION)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D VERSION='\"${PROJECT_VERSION}\"' -s -pedantic -std=c99 -Wall -Wextra -Wno-strict-prototypes -Wcast-align -Wundef -Wformat-security")
 
     if (GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
@@ -36,11 +35,11 @@ if(CMAKE_COMPILER_IS_GNUCC)
         message(STATUS "GCC 4.8 required to run address sanitizer - please upgrade your installation")
     endif(GCC_VERSION VERSION_GREATER 4.8 OR GCC_VERSION VERSION_EQUAL 4.8)
 
-    set(CMAKE_C_FLAGS_RELEASE     "-O3")
-    set(CMAKE_C_FLAGS_DEBUG       "-O0 -g3")
-    set(CMAKE_C_FLAGS_COVERAGE    "-O0 -pg -g3 --coverage ${CMAKE_C_FLAGS_ASAN}")
-    set(CMAKE_C_FLAGS_CHECK       "-O2 -Werror")
-    set(CMAKE_C_FLAGS_CHECKFULL   "${CMAKE_C_FLAGS_CHECK} -Wcast-qual")
+    set(CMAKE_C_FLAGS_RELEASE   "-O3")
+    set(CMAKE_C_FLAGS_DEBUG     "-O0 -g3")
+    set(CMAKE_C_FLAGS_COVERAGE  "-O0 -pg -g3 --coverage ${CMAKE_C_FLAGS_ASAN}")
+    set(CMAKE_C_FLAGS_CHECK     "-O2 -Werror")
+    set(CMAKE_C_FLAGS_CHECKFULL "${CMAKE_C_FLAGS_CHECK} -Wcast-qual")
 endif(CMAKE_COMPILER_IS_GNUCC)
 
 if (BUILD_SHARED_LIB)

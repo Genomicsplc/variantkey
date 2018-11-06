@@ -89,7 +89,7 @@ testcpp:
 # Build and run the unit tests
 test: testcpp
 	@mkdir -p target/test/test
-	@echo -e "\n\n*** BUILD TEST - see config.mk ***\n"
+	@echo -e "\n\n*** BUILD TEST ***\n"
 	rm -rf target/test/*
 	mkdir -p target/test/coverage
 	cd target/test && \
@@ -120,7 +120,7 @@ tidy:
 # Build the library
 build:
 	@mkdir -p target/build
-	@echo -e "\n\n*** BUILD RELEASE - see config.mk ***\n"
+	@echo -e "\n\n*** BUILD RELEASE ***\n"
 	rm -rf target/build/*
 	cd target/build && \
 	cmake -DCMAKE_C_FLAGS=$(CMAKE_C_FLAGS) \
