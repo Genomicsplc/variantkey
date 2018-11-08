@@ -95,7 +95,7 @@ make test
 In this context, the human genetic variant for a given genome assembly is defined as the set of four components compatible with the VCF format:
 
 * **`CHROM`** - chromosome: An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate missing data.
-* **`POS`** - position: The reference position in the chromosome, with the first nucleotide having position 0. The largest expected value is 247,199,718 to represent the last base pair in the chromosome 1.
+* **`POS`** - position: The reference position in the chromosome, with the first nucleotide having position 0. The largest expected value is less than 250 million to represent the last base pair in the chromosome 1.
 * **`REF`** - reference allele: String containing a sequence of reference nucleotide letters. The value in the POS field refers to the position of the first nucleotide in the String.
 * **`ALT`** - alternate allele: Single alternate non-reference allele. String containing a sequence of nucleotide letters. Multiallelic variants must be decomposed in individual biallelic variants.
 
@@ -161,7 +161,7 @@ As shown in the following example, there are multiple ways to represent the same
 * *A variant representation is left aligned if and only if its base position is smallest among all potential representations having the same allele length and representing the same variant.*
 * *A variant representation is parsimonious if and only if the entry has the shortest allele length among all VCF entries representing the same variant.*
 
-Example of VCF entries representing the same variant:
+Example of entries representing the same variant:
 
 ```
                                VARIANT    POS: 0
@@ -189,6 +189,17 @@ In VCF files the variant normalization can be performed using the [vt](https://g
 
 ```
     vt normalize decomposed.vcf -m -r genome.fa -o normalized.vcf
+```
+or the [bcftools](https://samtools.github.io/bcftools/bcftools.html#norm) software with the command:
+
+```
+    bcftools norm -f genome.fa -o normalized.vcf decomposed.vcf
+```
+
+or decompose and normalize with a single command:
+
+```
+    bcftools norm --multiallelics -any -f genome.fa -o normalized.vcf source.vcf
 ```
 
 <a name="normfunc"></a>
@@ -248,10 +259,12 @@ while both alleles start with the same letter and have length 2 or more, do
 ```
 
 The genome reference binary file can be obtained from a FASTA file using the `resources/tools/fastabin.sh` script.
-This script extracts the first 25 sequences for chromosomes `1` to `22`, `X`, `Y` and `MT`.  
-The first line of the binary fasta file contains the index composed by 26 blocks of 32 bit numbers, one for each of the 25 chromosomes plus one to indicate the end of the file.
-Each index number represents the file byte offset of the corresponding chromosome sequence.
-The index is followed by 25 lines, one for each chromosome sequence.
+This script extracts the first 25 sequences for chromosomes `1` to `22`, `X`, `Y` and `MT`.
+
+#### Normalized VariantKey
+
+This library provides the 'normalized_variantkey' function that returns the VariantKey of the normalized variant.
+This function should be used instead of 'variantkey' if the input variant is not normalized.
 
 
 <a name="vkformat"></a>
@@ -266,48 +279,46 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 
 ```
-    1      8      16      24      32      40      48      56      64
-    |      |       |       |       |       |       |       |       |
-    0123456789012345678901234567890123456789012345678901234567890123
-    CHROM|<--------- POS ----------->||<-------- REF+ALT --------->|
-      |               |                             |
-      5 bit           28 bit                        31 bit
+        0   4 5                             32 33                              63
+        |   | |                              | |                                |
+        01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890123
+5 bit CHROM | |          28 bit POS          | |         31 bit REF+ALT         |
 ```
 
 * **`CHROM`**   : 5 bit to represent the chromosome.
 
-    ```
-    0   4
-    |   |
-    11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-        |
-        LSB
-    ```
+```
+        0   4
+        |   |
+        11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+        |   |
+        MSB LSB
+```
     The chromosome is encoded as unsigned integer number: 1 to 22, X=23, Y=24, MT=25, NA=0.  
     This section is 5 bit long, so it can store up to 2<sup>5</sup>=32 symbols, enough to contain the required 26 canonical chromosome symbols.  
     The largest value is: 25 dec = 19 hex = 11001 bin.  
-    Values from 26 to 31 are currently reserved. They will be used to indicate 6 alternative modes to interpret the remaining 59 bit. For instance, one of these values can be used to indicate the encoding of variants that occurs in non-canonical contigs.
+    Values from 26 to 31 are currently reserved. They can be used to indicate 6 alternative modes to interpret the remaining 59 bit. For instance, one of these values can be used to indicate the encoding of variants that occurs in non-canonical contigs.
 
 * **`POS`**     : 28 bit for the reference position (`POS`), with the first nucleotide having position 0.
 
-    ```
-    0    5                             32
-    |    |                              |
-    00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
-         |                              |
-        MSB                            LSB
-    ```
-    This section is 28 bit long, so it can store up to 2<sup>28</sup>=268,435,456 symbols, enough to contain the maximum position 247,199,718 found on the largest human chromosome.
+```
+        0    5                              32
+        |    |                              |
+        00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
+             |                              |
+             MSB                            LSB
+```
+    This section is 28 bit long, so it can store up to 2<sup>28</sup>=268,435,456 symbols, enough to contain the maximum position found on the largest human chromosome.
 
 * **`REF+ALT`** : 31 bit for the encoding of the `REF` and `ALT` strings.
 
-    ```
-    0                                   33                               63
-    |                                    |                                |
-    00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
-                                         |                                |
-                                        MSB                              LSB
-    ```
+```
+        0                                    33                               63
+        |                                    |                                |
+        00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
+                                             |                                |
+                                             MSB                              LSB
+```
     This section allow two different type of encodings:
 
     * **Non-reversible encoding**
@@ -316,6 +327,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         The hash value is calulated using a custom fast non-cryptographic algorithm based on [MurmurHash3](https://github.com/aappleby/smhasher/wiki/MurmurHash3).  
         A lookup table is required to reverse the `REF` and `ALT` values.  
         In the normalized dbSNP VCF file GRCh37.p13.b150 there are only 0.365% (1229769 / 337162128) variants that requires this encoding. Amongst those, the maximum number of variants that share the same chromosome and position is 15. With 30 bit the probability of hash collision is approximately 10<sup>-7</sup> for 15 elements, 10<sup>-6</sup> for 46 and 10<sup>-5</sup> for 146.
+        The size of the non-reversible lookup table for GRCh37.p13.b150 is only 45.7MB.
 
     * **Reversible encoding**
 
@@ -336,7 +348,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
         GGG     GA         0011 0010 10 10 10 10 00 00 00 00 00 00 00 0
         ACGT    CGTACGT    0100 0111 00 01 10 11 01 10 11 00 01 10 11 0
                            |                                          |
-                         33 (MSB)                                   63 (LSB)
+                           33 (MSB)                                   63 (LSB)
         ```
 
         The reversible encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
@@ -353,7 +365,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 * Comparing two variants by VariantKey only requires comparing two numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
 * VariantKey can be used as a main database key to index data by "variant". This simplify common searching, merging and filtering operations.
 * All types of database joins between two data sets (inner, left, right and full) can be easily performed using the VariantKey as index.
-* When `CHROM`, `REF` and `ALT` are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit, with the ability to perform a quick binary search algorithm on the first sorted column.
+* When `CHROM`, `REF` and `ALT` are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit, with the ability to perform a quick binary search on the first sorted column.
 
 
 <a name="vkinput"></a>
@@ -381,56 +393,55 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 
 
 ```
-    1      8      16      24      32      40      48      56      64
-    |      |       |       |       |       |       |       |       |
-    0123456789012345678901234567890123456789012345678901234567890123
-    CHROM|<------ START POS -------->||<------ END POS -------->|||
-      |               |                           |              |
-      5 bit           28 bit                      28 bit         2 bit STRAND
+        0   4 5                             32 33                           60    63
+        |   | |                              | |                             |    |
+        01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890 12 3
+5 bit CHROM | |       28 bit START POS       | |       28 bit END POS        | ||
+                                                                               STRAND
 ```
 
 * **`CHROM`**   : 5 bit to represent the chromosome.
 
-    ```
-    0   4
-    |   |
-    11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-        |
-        LSB
-    ```
+```
+        0   4
+        |   |
+        11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+        |   |
+        MSB LSB
+```
     The chromosome is encoded as in VariantKey.
 
 * **`STARTPOS`** : 28 bit for the region START position.
 
-    ```
-    0    5                             32
-    |    |                              |
-    00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
-         |                              |
-        MSB                            LSB
-    ```
+```
+        0    5                              32                                63
+        |    |                              |                                 |
+        00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
+             |                              |
+             MSB                            LSB
+```
     This section is encoded as in VariantKey POS.
 
 * **`ENDPOS`** : 28 bit for the region END position.
 
-    ```
-    0                                   33                            60
-    |                                    |                             |
-    00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111000
-                                         |                             |
-                                        MSB                           LSB
-    ```
+```
+        0                                    33                            60 63
+        |                                    |                             |  |
+        00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111000
+                                             |                             |
+                                             MSB                           LSB
+```
     The end position is equivalent to (STARTPOS + REGION_LENGTH).
 
 * **`STRAND`** : 2 bit to encode the strand direction.
 
-    ```
-    0                                                                 61  62
-    |                                                                   ||
-    00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000110
-                                                                        ||
-                                                                     MSB  LSB
-    ```
+```
+        0                                                                 61  62
+        |                                                                   ||
+        00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000110
+                                                                            ||
+                                                                         MSB  LSB
+```
     The strand direction is encoded as:
     
     ```
@@ -492,7 +503,7 @@ for example:
 <a name="clib"></a>
 ## C Library
 
-The reference implementation of this library is written in C programming language in a way that is also compatible with C++.
+The reference implementation of this library is written in header-only C programming language in a way that is also compatible with C++.
 
 This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.  
 All the artifacts and reports produced using this Makefile are stored in the *target* folder.  
