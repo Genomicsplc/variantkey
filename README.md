@@ -164,25 +164,26 @@ As shown in the following example, there are multiple ways to represent the same
 Example of entries representing the same variant:
 
 ```
-                               VARIANT    POS: 0
-                                          REF: GGGCACACACAGGG
-                                          ALT: GGGCACACAGGG
-    
-                      NOT-LEFT-ALIGNED    POS:      5
-                                          REF:      CAC
-                                          ALT:      C
-    
-    NOT-LEFT-ALIGNED, NOT-PARSIMONIOUS    POS:   2
-                                          REF:   GCACA
-                                          ALT:   GCA
-    
-                      NOT-PARSIMONIOUS    POS:  1
-                                          REF:  GGCA
-                                          ALT:  GG
-    
-                            NORMALIZED    POS:   2
-                                          REF:   GCA
-                                          ALT:   G
+                                                  DELETE
+                                    POS: 0        ||
+                         VARIANT    REF: GGGCACACACAGGG
+                                    ALT: GGGCACACAGGG
+
+                                    POS:      5
+                  NOT-LEFT-ALIGNED  REF:      CAC
+                                    ALT:      C
+
+                                    POS:   2
+NOT-LEFT-ALIGNED, NOT-PARSIMONIOUS  REF:   GCACA
+                                    ALT:   GCA
+
+                                    POS:  1
+                  NOT-PARSIMONIOUS  REF:  GGCA
+                                    ALT:  GG
+
+                                    POS:   2
+                      NORMALIZED    REF:   GCA
+                                    ALT:   G
 ```
 
 In VCF files the variant normalization can be performed using the [vt](https://genome.sph.umich.edu/wiki/Vt#Normalization) software tool with the command:
@@ -212,7 +213,7 @@ The match is considered valid and consistent if there is a perfect letter-by-let
 
 ```
     SYMBOL | DESCRIPTION                   | BASES   | COMPLEMENT
-    -------|-------------------------------|---------|-----------
+    -------+-------------------------------+---------+-----------
        A   | Adenine                       | A       |  T
        C   | Cytosine                      |   C     |  G
        G   | Guanine                       |     G   |  C
@@ -228,7 +229,7 @@ The match is considered valid and consistent if there is a perfect letter-by-let
        H   | not G (H comes after G)       | A C   T |  D
        V   | not T (V comes after T and U) | A C G   |  B
        N   | aNy base (not a gap)          | A C G T |  N
-    -------|-------------------------------|---------|----------
+    -------+-------------------------------+---------+----------
 ```
 
 If the reference allele is not valid, the `normalize_variant` function tries to find a reference match with one of the following variant transformations:
@@ -247,7 +248,8 @@ Otherwise, a custom implementation of the [vt normalization](https://genome.sph.
 ```
 while break, do
     if any of the alelles is empty and the position is greater than zero, then
-        extend both alleles one letter to the left using the nucleotide in the corresponding genome reference position;
+        extend both alleles one letter to the left using the nucleotide in
+        the corresponding genome reference position;
     else
         if both alleles end with the same letter and they have length 2 or more, then
             truncate the rightmost letter of each allele;
@@ -263,8 +265,8 @@ This script extracts the first 25 sequences for chromosomes `1` to `22`, `X`, `Y
 
 #### Normalized VariantKey
 
-This library provides the 'normalized_variantkey' function that returns the VariantKey of the normalized variant.
-This function should be used instead of 'variantkey' if the input variant is not normalized.
+This library provides the `normalized_variantkey` function that returns the VariantKey of the normalized variant.
+This function should be used instead of `variantkey` if the input variant is not normalized.
 
 
 <a name="vkformat"></a>
@@ -279,46 +281,77 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
 
 ```
-        0   4 5                             32 33                              63
-        |   | |                              | |                                |
-        01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890123
-5 bit CHROM | |          28 bit POS          | |         31 bit REF+ALT         |
+         0   4 5                             32 33                              63
+         |   | |                              | |                                |
+         01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890123
+5 bit CHROM >| |<         28 bit POS         >| |<        31 bit REF+ALT        >|
 ```
 
-* **`CHROM`**   : 5 bit to represent the chromosome.
+Example of VariantKey encoding:
 
 ```
-        0   4
-        |   |
-        11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-        |   |
-        MSB LSB
+                   | CHROM | POS                          | REF | ALT                           |
+-------------------+-------+------------------------------+-----+-------------------------------+
+       Raw variant | chr19 | 29238770                     | TC  | TG                            |
+Normalized variant | 19    | 29238771                     | C   | G                             |
+-------------------+-------+------------------------------+-----+-------------------------------+
+    VariantKey bin | 10011 | 0001101111100010010111110011 | 0001 0001 01 10 0000000000000000000 |
+-------------------+-------+------------------------------+-------------------------------------+
+    VariantKey hex | 98DF12F988B00000                                                           |
+    VariantKey dec | 11015544076520914944                                                       |
+-------------------+----------------------------------------------------------------------------+
 ```
+
+
+* **`CHROM`** : 5 bit to represent the chromosome.
+
+    ```
+         0   4
+         |   |
+         11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+         |   |
+         MSB LSB
+
+         CHROM binary mask (F800000000000000 hex = 17870283321406128128 dec)
+
+         Example: 'chr19' str = 19 dec = 10011 bin
+    ```
+
     The chromosome is encoded as unsigned integer number: 1 to 22, X=23, Y=24, MT=25, NA=0.  
-    This section is 5 bit long, so it can store up to 2<sup>5</sup>=32 symbols, enough to contain the required 26 canonical chromosome symbols.  
+    This section is 5 bit long, so it can store up to 2<sup>5</sup>=32 symbols, enough to contain the required 25 canonical chromosome symbols + NA.  
     The largest value is: 25 dec = 19 hex = 11001 bin.  
-    Values from 26 to 31 are currently reserved. They can be used to indicate 6 alternative modes to interpret the remaining 59 bit. For instance, one of these values can be used to indicate the encoding of variants that occurs in non-canonical contigs.
+    Values from 26 to 31 are currently reserved. They can be used to indicate 6 alternative modes to interpret the remaining 59 bit. For instance, one of these values can be used to indicate the encoding of variants that occurs in non-canonical contigs.  
 
-* **`POS`**     : 28 bit for the reference position (`POS`), with the first nucleotide having position 0.
 
-```
-        0    5                              32
-        |    |                              |
-        00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
-             |                              |
-             MSB                            LSB
-```
+* **`POS`** : 28 bit for the reference position (`POS`), with the first nucleotide having position 0.
+
+    ```
+         0    5                              32
+         |    |                              |
+         00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
+              |                              |
+              MSB                            LSB
+
+         POS binary mask (7FFFFFF80000000 hex = 576460750155939840 dec)
+
+         Example: 29238771 dec = 0001101111100010010111110011 bin
+    ```
+
     This section is 28 bit long, so it can store up to 2<sup>28</sup>=268,435,456 symbols, enough to contain the maximum position found on the largest human chromosome.
+
 
 * **`REF+ALT`** : 31 bit for the encoding of the `REF` and `ALT` strings.
 
-```
-        0                                    33                               63
-        |                                    |                                |
-        00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
-                                             |                                |
-                                             MSB                              LSB
-```
+    ```
+         0                                    33                               63
+         |                                    |                                |
+         00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111111
+                                              |                                |
+                                              MSB                              LSB
+
+         REF+ALT binary mask (7FFFFFFF hex = 2147483647 dec)
+    ```
+
     This section allow two different type of encodings:
 
     * **Non-reversible encoding**
@@ -331,7 +364,7 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
 
     * **Reversible encoding**
 
-        If the total number of nucleotides between `REF` and `ALT` is 11 or less, and they only contain base letters `A`, `C`, `G` and `T`, then the LSB is set to 0 and the remaining 30 bit are used as follows:
+        If the total number of nucleotides between `REF` and `ALT` is 11 or less, and they only contain base letters `A`, `C`, `G` and `T`, then the LSB is set to 0 and the remaining 30 bit are used as follows:  
         * bit 1-4 indicates the number of bases in `REF` - the capacity of this section is 2<sup>4</sup>=16; the maximum expected value is 10 dec = 1010 bin;
         * bit 5-8 indicates the number of bases in `ALT` - the capacity of this section is 2<sup>4</sup>=16; the maximum expected value is 10 dec = 1010 bin;
         * the following 11 groups of 2 bit are used to represent `REF` bases followed by `ALT`, with the following encoding:
@@ -341,28 +374,28 @@ The VariantKey is composed of 3 sections arranged in 64 bit:
             * `T` = 4 dec = 11 bin.
 
         Examples:
-        
+
         ```
-        REF     ALT        REF+ALT BINARY ENCODING
-        A       G          0001 0001 00 10 00 00 00 00 00 00 00 00 00 0
-        GGG     GA         0011 0010 10 10 10 10 00 00 00 00 00 00 00 0
-        ACGT    CGTACGT    0100 0111 00 01 10 11 01 10 11 00 01 10 11 0
-                           |                                          |
-                           33 (MSB)                                   63 (LSB)
+            REF     ALT        REF+ALT BINARY ENCODING
+            A       G          0001 0001 00 10 00 00 00 00 00 00 00 00 00 0
+            GGG     GA         0011 0010 10 10 10 10 00 00 00 00 00 00 00 0
+            ACGT    CGTACGT    0100 0111 00 01 10 11 01 10 11 00 01 10 11 0
+                               |                                          |
+                               33 (MSB)                                   63 (LSB)
         ```
 
         The reversible encoding covers 99.635% of the variants in the normalized dbSNP VCF file GRCh37.p13.b150.
 
-
 <a name="vkproperties"></a>
 ### VariantKey Properties
 
-* Sorting the VariantKey is equivalent of sorting by `CHROM` and `POS`.
+* It can be encoded and decoded on-the-fly.
+* Sorting by VariantKey is equivalent of sorting by `CHROM` and `POS`.
 * The 64 bit VariantKey can be exported as a 16 character hexadecimal string.
 * Sorting the hexadecimal representation of VariantKey in alphabetical order is equivalent of sorting the VariantKey numerically.
 * Each VariantKey code is unique for a given reference genome.
 * The direct comparisons of two VariantKeys makes sense only if they both refer to the same genome reference.
-* Comparing two variants by VariantKey only requires comparing two numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
+* Comparing two variants by VariantKey only requires comparing two 64 bit numbers, a very well optimized operation in current computer architectures. In contrast, comparing two normalized variants in VCF format requires comparing one numbers and three strings.
 * VariantKey can be used as a main database key to index data by "variant". This simplify common searching, merging and filtering operations.
 * All types of database joins between two data sets (inner, left, right and full) can be easily performed using the VariantKey as index.
 * When `CHROM`, `REF` and `ALT` are the only strings in a table, replacing them with VariantKey allows to work with numeric only tables with obvious advantages. This also allows to represent the data in a compact binary format where each column uses a fixed number of bit, with the ability to perform a quick binary search on the first sorted column.
@@ -393,33 +426,43 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 
 
 ```
-        0   4 5                             32 33                           60    63
-        |   | |                              | |                             |    |
-        01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890 12 3
-5 bit CHROM | |       28 bit START POS       | |       28 bit END POS        | ||
+         0   4 5                             32 33                           60    63
+         |   | |                              | |                             |    |
+         01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890 12 3
+5 bit CHROM >| |<      28 bit START POS      >| |<      28 bit END POS       >| ||
                                                                                STRAND
 ```
 
 * **`CHROM`**   : 5 bit to represent the chromosome.
 
-```
+    ```
         0   4
         |   |
         11111000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
         |   |
         MSB LSB
-```
+
+        CHROM binary mask (F800000000000000 hex = 17870283321406128128 dec)
+
+        Example: 'chr19' str = 19 dec = 10011 bin
+    ```
+
     The chromosome is encoded as in VariantKey.
 
 * **`STARTPOS`** : 28 bit for the region START position.
 
-```
+    ```
         0    5                              32                                63
         |    |                              |                                 |
         00000111 11111111 11111111 11111111 10000000 00000000 00000000 00000000
              |                              |
              MSB                            LSB
-```
+
+        STARTPOS binary mask (7FFFFFF80000000 hex = 576460750155939840 dec)
+
+        Example: 29238771 dec = 0001101111100010010111110011 bin
+    ```
+
     This section is encoded as in VariantKey POS.
 
 * **`ENDPOS`** : 28 bit for the region END position.
@@ -430,20 +473,25 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
         00000000 00000000 00000000 00000000 01111111 11111111 11111111 11111000
                                              |                             |
                                              MSB                           LSB
+
+        ENDPOS binary mask (7FFFFFF8 hex = 2147483640 dec)
+
+        Example: 29239026 dec = 0001101111100010011011110010 bin
 ```
     The end position is equivalent to (STARTPOS + REGION_LENGTH).
 
 * **`STRAND`** : 2 bit to encode the strand direction.
 
-```
+    ```
         0                                                                 61  62
         |                                                                   ||
         00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000110
                                                                             ||
                                                                          MSB  LSB
-```
+    ```
+
     The strand direction is encoded as:
-    
+
     ```
     -1 : 2 dec = "10" bin
      0 : 0 dec = "00" bin
@@ -462,43 +510,51 @@ This library contains extra functions to encode some string IDs to 64 bit unsign
 
 * The `encode_string_id` function encodes maximum 10 ASCII characters (from '!' to 'z') of a string into a 64 bit unsigned integer. The encoded value can be reversed into a "normalized" version of the original 10 character string using the `decode_string_id` function. The decoded string only support uppercase characters.
 
-* The `encode_string_num_id` function encodes string composed by a character section followed by a separator character and a numerical section into a 64 bit unsigned integer. For example: "ABCDE:0001234". This function encodes up to 5 characters in uppercase, a number up to 2<sup>27</sup>, and up to 7 zero padding digits in a 64 bit unsigned integer. The encoded value can be reversed into a "normalized" version of the original 10 character string using the `decode_string_id` function.
+* The `encode_string_num_id` function encodes string composed by a character section followed by a separator character and a numerical section into a 64 bit unsigned integer. For example: "`ABCDE:0001234`". This function encodes up to 5 characters in uppercase, a number up to 2<sup>27</sup>, and up to 7 zero padding digits in a 64 bit unsigned integer. The encoded value can be reversed into a "normalized" version of the original 10 character string using the `decode_string_id` function.
 
 * The `hash_string_id` function creates a 64 bit unsigned integer hash of the input string.
 
 
 <a name="binaryfiles"></a>
-## Binary file formats for lookup tables 
+## Binary files for lookup tables
 
-A direct application of the VariantKey representation is the ability to create lookup tables as simple binary files.
+A direct application of the VariantKey representation is the ability to create lookup tables as simple binary files.  
+The binary lookup-table files are natively supported by the variantkey library and can be generated using the scripts in `resources/tools/`.  
+NOTE: The `vkhexbin.sh` script requires [bcftools](https://github.com/samtools/bcftools/tree/develop) with variantkey support.
+The `vcfnorm.sh` script requires the [vt](https://github.com/atks/vt) tool.
 
-The binary lookup-table files are natively supported by the variantkey library and can be generated from a normalized VCF file using the `resources/tools/vkhexbin.sh` shell script.  
-The VCF file can be normalized using the `resources/tools/vcfnorm.sh` script.  
-The `vkhexbin.sh` requires [bcftools](https://github.com/samtools/bcftools) compiled with the plugins in `resources/bcftools/plugins` folder.
+Prebuilt binary files can be downloaded from:
+https://sourceforge.net/projects/variantkey/files/
 
-* **`rsvk.bin`**  
-Lookup table to retrieve VariantKey from rsID.  
-This binary file can be generated by the `resources/tools/rsvk.sh' script from a TSV file.  
-This can also be in *Apache Arrow File* format with a single *RecordBatch*, or *Feather* format. The first column must contain the rsID sorted in ascending order.
+* **`fasta.bin`**
+    Binary version of the reference genome sequence FASTA file.  
+    It only cntains the first 25 sequences for chromosomes 1 to 22, X, Y and MT.  
+    This binary file can be generated by the [fastabin.sh](https://github.com/Genomicsplc/variantkey/blob/master/resources/tools/fastabin.sh) script from a genome reference FASTA file.
+    
+* **`rsvk.bin`**
+    Lookup table to retrieve VariantKey from rsID.  
+    This binary file can be generated by the [rsvk.sh](https://github.com/Genomicsplc/variantkey/blob/master/resources/tools/rsvk.sh) script from a normalized TSV file.
+    The VCF file can be normalized using the [vcfnorm.sh](https://github.com/Genomicsplc/variantkey/blob/master/resources/tools/vcfnorm.sh) script.  
+    This can also be in *Apache Arrow File* format with a single *RecordBatch*, or *Feather* format. The first column must contain the rsID sorted in ascending order.
+    
+* **`vkrs.bin`**
+    Lookup table to retrieve rsID from VariantKey.  
+    This binary file can be generated by the [vkrs.sh](https://github.com/Genomicsplc/variantkey/blob/master/resources/tools/vkrs.sh) script from a normalized TSV file.
+    The VCF file can be normalized using the [vcfnorm.sh](https://github.com/Genomicsplc/variantkey/blob/master/resources/tools/vcfnorm.sh) script.
+    This can also be in *Apache Arrow File* format with a single *RecordBatch*, or *Feather* format. The first column must contain the VariantKey sorted in ascending order.
+    
+* **`nrvk.bin`**
+    Lookup table to retrieve the original `REF` and `ALT` string for the non-reversible VariantKey.  
+    This binary file can be generated by the [nrvk.sh](https://github.com/Genomicsplc/variantkey/blob/master/resources/tools/nrvk.sh) script from a TSV file with the following format:
 
-* **`vkrs.bin`**  
-Lookup table to retrieve rsID from VariantKey.  
-This binary file can be generated by the `resources/tools/vkrs.sh' script from a TSV file.  
-This can also be in *Apache Arrow File* format with a single *RecordBatch*, or *Feather* format. The first column must contain the VariantKey sorted in ascending order.
-
-* **`nrvk.bin`**  
-Lookup table to retrieve the original `REF` and `ALT` string for the non-reversible VariantKey.  
-This binary file can be generated by the `resources/tools/nrvk.sh' script from a TSV file with the following format:
-
-```
+    ```
     [16 BYTE VARIANTKEY HEX]\t[REF STRING]\t[ALT STRING]\n...
-```
-for example:
 
-```
+    for example:
+
     b800c35bbcece603	AAAAAAAAGG	AG
     1800c351f61f65d3	A	AAGAAAGAAAG
-```
+    ```
 
 <a name="clib"></a>
 ## C Library
