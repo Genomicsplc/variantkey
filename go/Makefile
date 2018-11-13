@@ -172,7 +172,7 @@ astscan:
 # Generate source docs
 docs:
 	@mkdir -p target/docs
-	godoc -src -url "http://localhost:6060/pkg/github.com/${VENDOR}/${PROJECT}/go/src/" > target/docs/index.html
+	GOPATH=$(GOPATH) godoc -src -url "http://localhost:6060/pkg/github.com/${VENDOR}/${PROJECT}/go/src/" > target/docs/index.html
 	sed -i 's|="/lib/godoc/|="|g' target/docs/index.html
 	cp $(GOPATH)/src/golang.org/x/tools/godoc/static/*.js target/docs/
 	cp $(GOPATH)/src/golang.org/x/tools/godoc/static/*.css target/docs/
