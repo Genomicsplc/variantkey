@@ -1,11 +1,11 @@
 // Package variantkey is a Go wrapper for the variantkey C software library.
 // 64 bit Encoding for Human Genetic Variants.
 //
-// @category   Libraries
-// @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
-// @copyright  2017-2018 GENOMICS plc
-// @license    MIT (see LICENSE)
-// @link       https://github.com/genomicsplc/variantkey
+//  @category   Libraries
+//  @author     Nicola Asuni <nicola.asuni@genomicsplc.com>
+//  @copyright  2017-2018 GENOMICS plc
+//  @license    MIT (see LICENSE)
+//  @link       https://github.com/genomicsplc/variantkey
 //
 // LICENSE
 //

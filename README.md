@@ -430,7 +430,7 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
          |   | |                              | |                             |    |
          01234 567 89012345 67890123 45678901 2 3456789 01234567 89012345 67890 12 3
 5 bit CHROM >| |<      28 bit START POS      >| |<      28 bit END POS       >| ||
-                                                                               STRAND
+                                                                                STRAND
 ```
 
 * **`CHROM`**   : 5 bit to represent the chromosome.
@@ -493,9 +493,9 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
     The strand direction is encoded as:
 
     ```
-    -1 : 2 dec = "10" bin
-     0 : 0 dec = "00" bin
-    +1 : 1 dec = "01" bin
+    -1 : 2 dec = "10" bin = reverse (minus) strand direction
+     0 : 0 dec = "00" bin = unknown strand direction
+    +1 : 1 dec = "01" bin = forward (plus) strand direction
     ```
 
 * The last bit of RegionKey is reserved.

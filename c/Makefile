@@ -148,6 +148,7 @@ version:
 	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/c.src/meta.yaml
 	sed -i "s/version:.*$$/version: $(VERSION)/" ../conda/c.vk/meta.yaml
 	sed -i "s/number:.*$$/number: $(RELEASE)/" ../conda/c.vk/meta.yaml
+	sed -i "s/PROJECT_NUMBER.*=.*$$/PROJECT_NUMBER = $(VERSION)/" doc/Doxyfile
 
 # Generate source code documentation
 doc:

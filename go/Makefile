@@ -83,7 +83,7 @@ help:
 	@echo ""
 
 # Alias for help target
-all: clean format deps qa
+all: clean format deps qa docs
 
 # Run the unit tests
 test:
@@ -172,9 +172,11 @@ astscan:
 # Generate source docs
 docs:
 	@mkdir -p target/docs
-	nohup sh -c 'GOPATH=$(GOPATH) godoc -http=127.0.0.1:6060' > target/godoc_server.log 2>&1 &
-	wget --directory-prefix=target/docs/ --execute robots=off --retry-connrefused --recursive --no-parent --adjust-extension --page-requisites --convert-links http://127.0.0.1:6060/pkg/github.com/${VENDOR}/${PROJECT}/ ; kill -9 `lsof -ti :6060`
-	@echo '<html><head><meta http-equiv="refresh" content="0;./127.0.0.1:6060/pkg/'${CVSPATH}'/'${PROJECT}'/index.html"/></head><a href="./127.0.0.1:6060/pkg/'${CVSPATH}'/'${PROJECT}'/index.html">'${PKGNAME}' Documentation ...</a></html>' > target/docs/index.html
+	godoc -src -url "http://localhost:6060/pkg/github.com/${VENDOR}/${PROJECT}/go/src/" > target/docs/index.html
+	sed -i 's|="/lib/godoc/|="|g' target/docs/index.html
+	cp $(GOPATH)/src/golang.org/x/tools/godoc/static/*.js target/docs/
+	cp $(GOPATH)/src/golang.org/x/tools/godoc/static/*.css target/docs/
+	sed -i "s|\"/src/github.com/${VENDOR}/${PROJECT}/|https://github.com/${VENDOR}/${PROJECT}/blob/master/|g" target/docs/index.html
 
 # Alias to run targets: fmtcheck test vet lint coverage
 qa: fmtcheck test vet lint coverage cyclo ineffassign misspell structcheck varcheck errcheck gosimple astscan

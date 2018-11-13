@@ -1,6 +1,6 @@
 package:
   name: r-variantkey
-  version: 5.3.2
+  version: 5.3.4
 
 source:
   path: ../..
@@ -32,6 +32,7 @@ test:
     - {{ compiler('c') }}
     - r-base
     - r-testthat
+    - r-pkgdown
   imports:
     - variantkey
 
