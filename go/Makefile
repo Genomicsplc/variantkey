@@ -83,7 +83,7 @@ help:
 	@echo ""
 
 # Alias for help target
-all: clean format deps qa docs
+all: clean format deps qa
 
 # Run the unit tests
 test:
