@@ -1,0 +1,971 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module variantkey</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>variantkey</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/variantkey_1542189514480/_test_env_placehold_placehold_p/lib/python3.6/site-packages/variantkey.cpython-36m-x86_64-linux-gnu.so">/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/variantkey_1542189514480/_test_env_placehold_placehold_p/lib/python3.6/site-packages/variantkey.cpython-36m-x86_64-linux-gnu.so</a></font></td></tr></table>
+    <p></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-are_overlapping_region_regionkey"><strong>are_overlapping_region_regionkey</strong></a>(...)</dt><dd><tt>Check&nbsp;if&nbsp;a&nbsp;region&nbsp;and&nbsp;a&nbsp;regionkey&nbsp;are&nbsp;overlapping.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;A&nbsp;chromosome&nbsp;code.<br>
+startpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;A&nbsp;start&nbsp;position.<br>
+endpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;A&nbsp;end&nbsp;position&nbsp;(startpos&nbsp;+&nbsp;region&nbsp;length).<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;B.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;the&nbsp;regions&nbsp;overlap,&nbsp;0&nbsp;otherwise.</tt></dd></dl>
+ <dl><dt><a name="-are_overlapping_regionkeys"><strong>are_overlapping_regionkeys</strong></a>(...)</dt><dd><tt>Check&nbsp;if&nbsp;two&nbsp;regionkeys&nbsp;are&nbsp;overlapping.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rka&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;A.<br>
+rkb&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;B.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;the&nbsp;regions&nbsp;overlap,&nbsp;0&nbsp;otherwise.</tt></dd></dl>
+ <dl><dt><a name="-are_overlapping_regions"><strong>are_overlapping_regions</strong></a>(...)</dt><dd><tt>Check&nbsp;if&nbsp;two&nbsp;regions&nbsp;are&nbsp;overlapping.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+a_chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;A&nbsp;chromosome&nbsp;code.<br>
+a_startpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;A&nbsp;start&nbsp;position.<br>
+a_endpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;A&nbsp;end&nbsp;position&nbsp;(startpos&nbsp;+&nbsp;region&nbsp;length).<br>
+b_chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;B&nbsp;chromosome&nbsp;code.<br>
+b_startpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;B&nbsp;start&nbsp;position.<br>
+b_endpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Region&nbsp;B&nbsp;end&nbsp;position&nbsp;(startpos&nbsp;+&nbsp;region&nbsp;length).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;the&nbsp;regions&nbsp;overlap,&nbsp;0&nbsp;otherwise.</tt></dd></dl>
+ <dl><dt><a name="-are_overlapping_variantkey_regionkey"><strong>are_overlapping_variantkey_regionkey</strong></a>(...)</dt><dd><tt>Check&nbsp;if&nbsp;variantkey&nbsp;and&nbsp;regionkey&nbsp;are&nbsp;overlapping.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;if&nbsp;the&nbsp;regions&nbsp;overlap,&nbsp;0&nbsp;otherwise.</tt></dd></dl>
+ <dl><dt><a name="-check_reference"><strong>check_reference</strong></a>(...)</dt><dd><tt>Check&nbsp;if&nbsp;the&nbsp;reference&nbsp;allele&nbsp;matches&nbsp;the&nbsp;reference&nbsp;genome&nbsp;data.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mf&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;file&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_genoref_file">mmap_genoref_file</a>().<br>
+chrom&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;Chromosome&nbsp;number&nbsp;(see&nbsp;encode_chrom).<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.&nbsp;The&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+ref&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Reference&nbsp;allele.&nbsp;String&nbsp;containing&nbsp;a&nbsp;sequence&nbsp;of&nbsp;nucleotide&nbsp;letters.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;positive&nbsp;number&nbsp;in&nbsp;case&nbsp;of&nbsp;success,&nbsp;negative&nbsp;in&nbsp;case&nbsp;of&nbsp;error:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0&nbsp;the&nbsp;reference&nbsp;allele&nbsp;match&nbsp;the&nbsp;reference&nbsp;genome;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1&nbsp;the&nbsp;reference&nbsp;allele&nbsp;is&nbsp;inconsistent&nbsp;with&nbsp;the&nbsp;genome&nbsp;reference&nbsp;(i.e.&nbsp;when&nbsp;contains&nbsp;nucleotide&nbsp;letters&nbsp;other&nbsp;than&nbsp;A,&nbsp;C,&nbsp;G&nbsp;and&nbsp;T);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;the&nbsp;reference&nbsp;allele&nbsp;don't&nbsp;match&nbsp;the&nbsp;reference&nbsp;genome;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-2&nbsp;the&nbsp;reference&nbsp;allele&nbsp;is&nbsp;longer&nbsp;than&nbsp;the&nbsp;genome&nbsp;reference&nbsp;sequence.</tt></dd></dl>
+ <dl><dt><a name="-compare_variantkey_chrom"><strong>compare_variantkey_chrom</strong></a>(...)</dt><dd><tt>Compares&nbsp;two&nbsp;VariantKeys&nbsp;by&nbsp;chromosome&nbsp;only.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vka&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;first&nbsp;VariantKey&nbsp;to&nbsp;be&nbsp;compared.<br>
+vkb&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;second&nbsp;VariantKey&nbsp;to&nbsp;be&nbsp;compared.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;if&nbsp;the&nbsp;first&nbsp;chromosome&nbsp;is&nbsp;smaller&nbsp;than&nbsp;the&nbsp;second,&nbsp;0&nbsp;if&nbsp;they&nbsp;are&nbsp;equal&nbsp;and&nbsp;1&nbsp;if&nbsp;the&nbsp;first&nbsp;is&nbsp;greater&nbsp;than&nbsp;the&nbsp;second.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-compare_variantkey_chrom">compare_variantkey_chrom</a>(13258599952973561856,&nbsp;13258609498538377215)<br>
+0</tt></dd></dl>
+ <dl><dt><a name="-compare_variantkey_chrom_pos"><strong>compare_variantkey_chrom_pos</strong></a>(...)</dt><dd><tt>Compares&nbsp;two&nbsp;VariantKeys&nbsp;by&nbsp;chromosome&nbsp;and&nbsp;position.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vka&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;first&nbsp;VariantKey&nbsp;to&nbsp;be&nbsp;compared.<br>
+vkb&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;second&nbsp;VariantKey&nbsp;to&nbsp;be&nbsp;compared.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-1&nbsp;if&nbsp;the&nbsp;first&nbsp;CHROM+POS&nbsp;is&nbsp;smaller&nbsp;than&nbsp;the&nbsp;second,&nbsp;0&nbsp;if&nbsp;they&nbsp;are&nbsp;equal&nbsp;and&nbsp;1&nbsp;if&nbsp;the&nbsp;first&nbsp;is&nbsp;greater&nbsp;than&nbsp;the&nbsp;second.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-compare_variantkey_chrom_pos">compare_variantkey_chrom_pos</a>(13258599952973561856,&nbsp;13258609498538377215)<br>
+-1</tt></dd></dl>
+ <dl><dt><a name="-decode_chrom"><strong>decode_chrom</strong></a>(...)</dt><dd><tt>Decode&nbsp;the&nbsp;chromosome&nbsp;numerical&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+code&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+bytes&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome&nbsp;string<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-decode_chrom">decode_chrom</a>(23)<br>
+b'X'</tt></dd></dl>
+ <dl><dt><a name="-decode_refalt"><strong>decode_refalt</strong></a>(...)</dt><dd><tt>Decode&nbsp;the&nbsp;32&nbsp;bit&nbsp;REF+ALT&nbsp;code&nbsp;if&nbsp;reversible&nbsp;(if&nbsp;it&nbsp;has&nbsp;11&nbsp;or&nbsp;less&nbsp;bases&nbsp;in&nbsp;total&nbsp;and&nbsp;only&nbsp;contains&nbsp;ACGT&nbsp;letters).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+code&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;REF+ALT&nbsp;code<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;length<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;length<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-decode_refalt">decode_refalt</a>(286097408)<br>
+(b'AC',&nbsp;b'GT',&nbsp;2,&nbsp;2)</tt></dd></dl>
+ <dl><dt><a name="-decode_region_strand"><strong>decode_region_strand</strong></a>(...)</dt><dd><tt>Decode&nbsp;the&nbsp;strand&nbsp;direction&nbsp;code&nbsp;(0&nbsp;&gt;&nbsp;0,&nbsp;1&nbsp;&gt;&nbsp;+1,&nbsp;2&nbsp;&gt;&nbsp;-1).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+strand&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Strand&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Strand&nbsp;direction.</tt></dd></dl>
+ <dl><dt><a name="-decode_regionkey"><strong>decode_regionkey</strong></a>(...)</dt><dd><tt>Decode&nbsp;a&nbsp;RegionKey&nbsp;code&nbsp;and&nbsp;returns&nbsp;the&nbsp;components&nbsp;as&nbsp;regionkey_t&nbsp;structure.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;encoded&nbsp;chromosome<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;start&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;end&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;encoded&nbsp;strand</tt></dd></dl>
+ <dl><dt><a name="-decode_string_id"><strong>decode_string_id</strong></a>(...)</dt><dd><tt>Decode&nbsp;the&nbsp;encoded&nbsp;string&nbsp;ID.<br>
+This&nbsp;function&nbsp;is&nbsp;the&nbsp;reverse&nbsp;of&nbsp;encode_string_id.<br>
+The&nbsp;string&nbsp;is&nbsp;always&nbsp;returned&nbsp;in&nbsp;uppercase&nbsp;mode.<br>
+Parameters<br>
+----------<br>
+esid&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;string&nbsp;ID&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;STRING<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;STRING&nbsp;length</tt></dd></dl>
+ <dl><dt><a name="-decode_variantkey"><strong>decode_variantkey</strong></a>(...)</dt><dd><tt>Decode&nbsp;a&nbsp;VariantKey&nbsp;code&nbsp;and&nbsp;returns&nbsp;the&nbsp;components.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;CHROM&nbsp;code<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;POS<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF+ALT&nbsp;code<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-decode_variantkey">decode_variantkey</a>(13258623813950472192)<br>
+(23,&nbsp;12345,&nbsp;286097408)</tt></dd></dl>
+ <dl><dt><a name="-encode_chrom"><strong>encode_chrom</strong></a>(...)</dt><dd><tt>Returns&nbsp;chromosome&nbsp;numerical&nbsp;encoding.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome.&nbsp;An&nbsp;identifier&nbsp;from&nbsp;the&nbsp;reference&nbsp;genome,&nbsp;no&nbsp;white-space&nbsp;permitted.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;code<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-encode_chrom">encode_chrom</a>('X')<br>
+23</tt></dd></dl>
+ <dl><dt><a name="-encode_refalt"><strong>encode_refalt</strong></a>(...)</dt><dd><tt>Returns&nbsp;reference+alternate&nbsp;numerical&nbsp;encoding.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+ref&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Reference&nbsp;allele.&nbsp;String&nbsp;containing&nbsp;a&nbsp;sequence&nbsp;of&nbsp;nucleotide&nbsp;letters.&nbsp;The&nbsp;value&nbsp;in&nbsp;the&nbsp;pos&nbsp;field&nbsp;refers&nbsp;to&nbsp;the&nbsp;position&nbsp;of&nbsp;the&nbsp;first&nbsp;nucleotide&nbsp;in&nbsp;the&nbsp;String.&nbsp;Characters&nbsp;must&nbsp;be&nbsp;A-Z,&nbsp;a-z&nbsp;or&nbsp;*<br>
+alt&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Alternate&nbsp;non-reference&nbsp;allele&nbsp;string.&nbsp;Characters&nbsp;must&nbsp;be&nbsp;A-Z,&nbsp;a-z&nbsp;or&nbsp;*<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;code<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-encode_refalt">encode_refalt</a>(ref=b'AC',&nbsp;alt=b'GT')<br>
+286097408</tt></dd></dl>
+ <dl><dt><a name="-encode_region_strand"><strong>encode_region_strand</strong></a>(...)</dt><dd><tt>Encode&nbsp;the&nbsp;strand&nbsp;direction&nbsp;(-1&nbsp;&gt;&nbsp;2,&nbsp;0&nbsp;&gt;&nbsp;0,&nbsp;+1&nbsp;&gt;&nbsp;1).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+strand&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Strand&nbsp;direction&nbsp;(-1,&nbsp;0,&nbsp;+1).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Strand&nbsp;code.</tt></dd></dl>
+ <dl><dt><a name="-encode_regionkey"><strong>encode_regionkey</strong></a>(...)</dt><dd><tt>Returns&nbsp;a&nbsp;64&nbsp;bit&nbsp;regionkey<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;Chromosome&nbsp;(see&nbsp;encode_chrom).<br>
+startpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;position&nbsp;(zero&nbsp;based).<br>
+endpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;End&nbsp;position&nbsp;(startpos&nbsp;+&nbsp;region_length).<br>
+strand&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;Strand&nbsp;direction&nbsp;(-1&nbsp;&gt;&nbsp;2,&nbsp;0&nbsp;&gt;&nbsp;0,&nbsp;+1&nbsp;&gt;&nbsp;1)<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;64&nbsp;bit&nbsp;code.</tt></dd></dl>
+ <dl><dt><a name="-encode_string_id"><strong>encode_string_id</strong></a>(...)</dt><dd><tt>Encode&nbsp;maximum&nbsp;10&nbsp;characters&nbsp;of&nbsp;a&nbsp;string&nbsp;into&nbsp;a&nbsp;64&nbsp;bit&nbsp;unsigned&nbsp;integer.<br>
+This&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;convert&nbsp;generic&nbsp;string&nbsp;IDs&nbsp;to&nbsp;numeric&nbsp;IDs.<br>
+Parameters<br>
+----------<br>
+strid&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;string&nbsp;to&nbsp;encode.&nbsp;It&nbsp;must&nbsp;be&nbsp;maximum&nbsp;10&nbsp;characters&nbsp;long&nbsp;and&nbsp;support&nbsp;ASCII&nbsp;characters&nbsp;from&nbsp;'!'&nbsp;to&nbsp;'z'.<br>
+start&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;First&nbsp;character&nbsp;to&nbsp;encode,&nbsp;starting&nbsp;from&nbsp;0.&nbsp;To&nbsp;encode&nbsp;the&nbsp;last&nbsp;10&nbsp;characters,&nbsp;set&nbsp;this&nbsp;value&nbsp;at&nbsp;(size&nbsp;-&nbsp;10).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;string&nbsp;ID.</tt></dd></dl>
+ <dl><dt><a name="-encode_string_num_id"><strong>encode_string_num_id</strong></a>(...)</dt><dd><tt>Encode&nbsp;a&nbsp;string&nbsp;composed&nbsp;by&nbsp;a&nbsp;character&nbsp;section&nbsp;followed&nbsp;by&nbsp;a&nbsp;separator<br>
+character&nbsp;and&nbsp;a&nbsp;numerical&nbsp;section&nbsp;into&nbsp;a&nbsp;64&nbsp;bit&nbsp;unsigned&nbsp;integer.&nbsp;For&nbsp;example:&nbsp;ABCDE:0001234.<br>
+Encodes&nbsp;up&nbsp;to&nbsp;5&nbsp;characters&nbsp;in&nbsp;uppercase,&nbsp;a&nbsp;number&nbsp;up&nbsp;to&nbsp;2^27,&nbsp;and&nbsp;up&nbsp;to&nbsp;7&nbsp;zero&nbsp;padding&nbsp;digits.<br>
+If&nbsp;the&nbsp;string&nbsp;is&nbsp;10&nbsp;character&nbsp;or&nbsp;less,&nbsp;then&nbsp;the&nbsp;<a href="#-encode_string_id">encode_string_id</a>()&nbsp;is&nbsp;used.<br>
+Parameters<br>
+----------<br>
+strid&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;string&nbsp;to&nbsp;encode.&nbsp;It&nbsp;must&nbsp;be&nbsp;maximum&nbsp;10&nbsp;characters&nbsp;long&nbsp;and&nbsp;support&nbsp;ASCII&nbsp;characters&nbsp;from&nbsp;'!'&nbsp;to&nbsp;'z'.<br>
+sep&nbsp;:&nbsp;str&nbsp;or&nbsp;byte<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Separator&nbsp;character&nbsp;between&nbsp;string&nbsp;and&nbsp;number.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;string&nbsp;ID.</tt></dd></dl>
+ <dl><dt><a name="-encode_variantkey"><strong>encode_variantkey</strong></a>(...)</dt><dd><tt>Returns&nbsp;a&nbsp;64&nbsp;bit&nbsp;variant&nbsp;key&nbsp;based&nbsp;on&nbsp;the&nbsp;pre-encoded&nbsp;CHROM,&nbsp;POS&nbsp;(0-based)&nbsp;and&nbsp;REF+ALT.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;Chromosome&nbsp;(see&nbsp;encode_chrom).<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.&nbsp;The&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+refalt&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;Reference&nbsp;+&nbsp;Alternate&nbsp;(see&nbsp;encode_refalt).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;64&nbsp;bit&nbsp;code.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-encode_variantkey">encode_variantkey</a>(chrom=23,&nbsp;pos=12345,&nbsp;refalt=286097408)<br>
+13258623813950472192</tt></dd></dl>
+ <dl><dt><a name="-extend_regionkey"><strong>extend_regionkey</strong></a>(...)</dt><dd><tt>Extend&nbsp;a&nbsp;regionkey&nbsp;region&nbsp;by&nbsp;a&nbsp;fixed&nbsp;amount&nbsp;from&nbsp;the&nbsp;start&nbsp;and&nbsp;end&nbsp;position..<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+size&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Amount&nbsp;to&nbsp;extend&nbsp;the&nbsp;region..<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;64&nbsp;bit&nbsp;code.</tt></dd></dl>
+ <dl><dt><a name="-extract_regionkey_chrom"><strong>extract_regionkey_chrom</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;CHROM&nbsp;code&nbsp;from&nbsp;RegionKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;code.</tt></dd></dl>
+ <dl><dt><a name="-extract_regionkey_endpos"><strong>extract_regionkey_endpos</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;END&nbsp;POS&nbsp;code&nbsp;from&nbsp;RegionKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;END&nbsp;POS.</tt></dd></dl>
+ <dl><dt><a name="-extract_regionkey_startpos"><strong>extract_regionkey_startpos</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;START&nbsp;POS&nbsp;code&nbsp;from&nbsp;RegionKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;START&nbsp;POS.</tt></dd></dl>
+ <dl><dt><a name="-extract_regionkey_strand"><strong>extract_regionkey_strand</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;STRAND&nbsp;from&nbsp;RegionKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;STRAND.</tt></dd></dl>
+ <dl><dt><a name="-extract_variantkey_chrom"><strong>extract_variantkey_chrom</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;CHROM&nbsp;code&nbsp;from&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;code.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-extract_variantkey_chrom">extract_variantkey_chrom</a>(13258623813950472192)<br>
+23</tt></dd></dl>
+ <dl><dt><a name="-extract_variantkey_pos"><strong>extract_variantkey_pos</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;POS&nbsp;code&nbsp;from&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-extract_variantkey_pos">extract_variantkey_pos</a>(13258623813950472192)<br>
+12345</tt></dd></dl>
+ <dl><dt><a name="-extract_variantkey_refalt"><strong>extract_variantkey_refalt</strong></a>(...)</dt><dd><tt>Extract&nbsp;the&nbsp;REF+ALT&nbsp;code&nbsp;from&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;REF+ALT&nbsp;code.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-extract_variantkey_refalt">extract_variantkey_refalt</a>(13258623813950472192)<br>
+286097408</tt></dd></dl>
+ <dl><dt><a name="-find_all_rv_variantkey_by_rsid"><strong>find_all_rv_variantkey_by_rsid</strong></a>(...)</dt><dd><tt>Search&nbsp;for&nbsp;the&nbsp;specified&nbsp;rsID&nbsp;and&nbsp;returns&nbsp;all&nbsp;associated&nbsp;VariantKeys.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_rsvk_file">mmap_rsvk_file</a>().<br>
+first&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;First&nbsp;element&nbsp;of&nbsp;the&nbsp;range&nbsp;to&nbsp;search&nbsp;(min&nbsp;value&nbsp;=&nbsp;0).<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+rsid&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rsID&nbsp;to&nbsp;search.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey(s).</tt></dd></dl>
+ <dl><dt><a name="-find_ref_alt_by_variantkey"><strong>find_ref_alt_by_variantkey</strong></a>(...)</dt><dd><tt>Retrieve&nbsp;the&nbsp;REF&nbsp;and&nbsp;ALT&nbsp;strings&nbsp;for&nbsp;the&nbsp;specified&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;to&nbsp;search.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;length.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;length.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF+ALT&nbsp;length.</tt></dd></dl>
+ <dl><dt><a name="-find_rv_variantkey_by_rsid"><strong>find_rv_variantkey_by_rsid</strong></a>(...)</dt><dd><tt>Search&nbsp;for&nbsp;the&nbsp;specified&nbsp;rsID&nbsp;and&nbsp;returns&nbsp;the&nbsp;first&nbsp;occurrence&nbsp;of&nbsp;VariantKey&nbsp;in&nbsp;the&nbsp;RV&nbsp;file.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_rsvk_file">mmap_rsvk_file</a>().<br>
+first&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;First&nbsp;element&nbsp;of&nbsp;the&nbsp;range&nbsp;to&nbsp;search&nbsp;(min&nbsp;value&nbsp;=&nbsp;0).<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+rsid&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rsID&nbsp;to&nbsp;search.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-find_vr_chrompos_range"><strong>find_vr_chrompos_range</strong></a>(...)</dt><dd><tt>Search&nbsp;for&nbsp;the&nbsp;specified&nbsp;CHROM-POS&nbsp;range&nbsp;and&nbsp;returns&nbsp;the&nbsp;first&nbsp;occurrence&nbsp;of&nbsp;rsID&nbsp;in&nbsp;the&nbsp;VR&nbsp;file.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_vkrs_file">mmap_vkrs_file</a>().<br>
+first&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;First&nbsp;element&nbsp;of&nbsp;the&nbsp;range&nbsp;to&nbsp;search&nbsp;(min&nbsp;value&nbsp;=&nbsp;0).<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome&nbsp;encoded&nbsp;number.<br>
+pos_min&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+pos_max&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;End&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;rsID&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Position&nbsp;of&nbsp;the&nbsp;first&nbsp;item.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Position&nbsp;of&nbsp;the&nbsp;last&nbsp;item.</tt></dd></dl>
+ <dl><dt><a name="-find_vr_rsid_by_variantkey"><strong>find_vr_rsid_by_variantkey</strong></a>(...)</dt><dd><tt>Search&nbsp;for&nbsp;the&nbsp;specified&nbsp;VariantKey&nbsp;and&nbsp;returns&nbsp;the&nbsp;first&nbsp;occurrence&nbsp;of&nbsp;rsID&nbsp;in&nbsp;the&nbsp;VR&nbsp;file.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_vkrs_file">mmap_vkrs_file</a>().<br>
+first&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;First&nbsp;element&nbsp;of&nbsp;the&nbsp;range&nbsp;to&nbsp;search&nbsp;(min&nbsp;value&nbsp;=&nbsp;0).<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;rsID&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-flip_allele"><strong>flip_allele</strong></a>(...)</dt><dd><tt>Flip&nbsp;the&nbsp;allele&nbsp;nucleotides&nbsp;(replaces&nbsp;each&nbsp;letter&nbsp;with&nbsp;its&nbsp;complement).<br>
+&nbsp;The&nbsp;resulting&nbsp;string&nbsp;is&nbsp;always&nbsp;in&nbsp;uppercase.&nbsp;Supports&nbsp;extended&nbsp;nucleotide&nbsp;letters.<br>
+Parameters<br>
+----------<br>
+allele&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;String&nbsp;containing&nbsp;a&nbsp;sequence&nbsp;of&nbsp;nucleotide&nbsp;letters.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+bytes&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Flipped&nbsp;allele.</tt></dd></dl>
+ <dl><dt><a name="-get_genoref_seq"><strong>get_genoref_seq</strong></a>(...)</dt><dd><tt>Returns&nbsp;the&nbsp;genome&nbsp;reference&nbsp;nucleotide&nbsp;at&nbsp;the&nbsp;specified&nbsp;chromosome&nbsp;and&nbsp;position.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mf&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;file&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_genoref_file">mmap_genoref_file</a>().<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Encoded&nbsp;Chromosome&nbsp;number&nbsp;(see&nbsp;encode_chrom).<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.&nbsp;The&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+bytes&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Nucleotide&nbsp;letter&nbsp;or&nbsp;0&nbsp;(NULL&nbsp;char)&nbsp;in&nbsp;case&nbsp;of&nbsp;invalid&nbsp;position.</tt></dd></dl>
+ <dl><dt><a name="-get_next_rv_variantkey_by_rsid"><strong>get_next_rv_variantkey_by_rsid</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;next&nbsp;VariantKey&nbsp;for&nbsp;the&nbsp;specified&nbsp;rsID&nbsp;in&nbsp;the&nbsp;RV&nbsp;file.&nbsp;This&nbsp;function&nbsp;should&nbsp;be&nbsp;used&nbsp;after&nbsp;find_rv_variantkey_by_rsid.&nbsp;This&nbsp;function&nbsp;can&nbsp;be&nbsp;called&nbsp;in&nbsp;a&nbsp;loop&nbsp;to&nbsp;get&nbsp;all&nbsp;VariantKeys&nbsp;that&nbsp;are&nbsp;associated&nbsp;with&nbsp;the&nbsp;same&nbsp;rsID&nbsp;(if&nbsp;any).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_rsvk_file">mmap_rsvk_file</a>().<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Current&nbsp;item&nbsp;position.<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+rsid&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;rsID&nbsp;to&nbsp;search.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-get_regionkey_chrom_endpos"><strong>get_regionkey_chrom_endpos</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;CHROM&nbsp;+&nbsp;END&nbsp;POS&nbsp;encoding&nbsp;from&nbsp;RegionKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;+&nbsp;END&nbsp;POS&nbsp;encoding.</tt></dd></dl>
+ <dl><dt><a name="-get_regionkey_chrom_startpos"><strong>get_regionkey_chrom_startpos</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;CHROM&nbsp;+&nbsp;START&nbsp;POS&nbsp;encoding&nbsp;from&nbsp;RegionKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;+&nbsp;START&nbsp;POS&nbsp;encoding.</tt></dd></dl>
+ <dl><dt><a name="-get_variantkey_chrom_endpos"><strong>get_variantkey_chrom_endpos</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;CHROM&nbsp;+&nbsp;END&nbsp;POS&nbsp;encoding&nbsp;from&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;+&nbsp;END&nbsp;POS&nbsp;encoding.</tt></dd></dl>
+ <dl><dt><a name="-get_variantkey_chrom_startpos"><strong>get_variantkey_chrom_startpos</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;CHROM&nbsp;+&nbsp;START&nbsp;POS&nbsp;encoding&nbsp;from&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;CHROM&nbsp;+&nbsp;START&nbsp;POS&nbsp;encoding.</tt></dd></dl>
+ <dl><dt><a name="-get_variantkey_endpos"><strong>get_variantkey_endpos</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;VariantKey&nbsp;end&nbsp;position&nbsp;(POS&nbsp;+&nbsp;REF&nbsp;length).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Variant&nbsp;end&nbsp;position.</tt></dd></dl>
+ <dl><dt><a name="-get_variantkey_ref_length"><strong>get_variantkey_ref_length</strong></a>(...)</dt><dd><tt>Retrieve&nbsp;the&nbsp;REF&nbsp;length&nbsp;for&nbsp;the&nbsp;specified&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;REF&nbsp;length&nbsp;or&nbsp;0&nbsp;if&nbsp;the&nbsp;VariantKey&nbsp;is&nbsp;not&nbsp;reversible&nbsp;and&nbsp;not&nbsp;found.</tt></dd></dl>
+ <dl><dt><a name="-hash_string_id"><strong>hash_string_id</strong></a>(...)</dt><dd><tt>Hash&nbsp;the&nbsp;input&nbsp;string&nbsp;into&nbsp;a&nbsp;64&nbsp;bit&nbsp;unsigned&nbsp;integer.<br>
+This&nbsp;function&nbsp;can&nbsp;be&nbsp;used&nbsp;to&nbsp;convert&nbsp;long&nbsp;string&nbsp;IDs&nbsp;to&nbsp;numeric&nbsp;IDs.<br>
+Parameters<br>
+----------<br>
+strid&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;The&nbsp;string&nbsp;to&nbsp;encode.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Hash&nbsp;string&nbsp;ID.</tt></dd></dl>
+ <dl><dt><a name="-mmap_genoref_file"><strong>mmap_genoref_file</strong></a>(...)</dt><dd><tt>Memory&nbsp;map&nbsp;the&nbsp;specified&nbsp;genome&nbsp;reference&nbsp;binary&nbsp;file&nbsp;(fasta.bin).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+file&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Path&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;map.<br>
+ctbytes&nbsp;:&nbsp;int&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;containing&nbsp;the&nbsp;number&nbsp;of&nbsp;bytes&nbsp;for&nbsp;each&nbsp;column&nbsp;type&nbsp;(i.e.&nbsp;1&nbsp;for&nbsp;uint8,&nbsp;2&nbsp;for&nbsp;uint16,&nbsp;4&nbsp;for&nbsp;uint32,&nbsp;8&nbsp;for&nbsp;uint64).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;map&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;File&nbsp;size.</tt></dd></dl>
+ <dl><dt><a name="-mmap_nrvk_file"><strong>mmap_nrvk_file</strong></a>(...)</dt><dd><tt>Memory&nbsp;map&nbsp;the&nbsp;specified&nbsp;NRVK&nbsp;binary&nbsp;file&nbsp;(nrvk.bin).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+file&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Path&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;map.<br>
+ctbytes&nbsp;:&nbsp;int&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;containing&nbsp;the&nbsp;number&nbsp;of&nbsp;bytes&nbsp;for&nbsp;each&nbsp;column&nbsp;type&nbsp;(i.e.&nbsp;1&nbsp;for&nbsp;uint8,&nbsp;2&nbsp;for&nbsp;uint16,&nbsp;4&nbsp;for&nbsp;uint32,&nbsp;8&nbsp;for&nbsp;uint64).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;map&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;mapped&nbsp;columns&nbsp;object.</tt></dd></dl>
+ <dl><dt><a name="-mmap_rsvk_file"><strong>mmap_rsvk_file</strong></a>(...)</dt><dd><tt>Memory&nbsp;map&nbsp;the&nbsp;specified&nbsp;RSVK&nbsp;binary&nbsp;file&nbsp;(rsvk.bin).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+file&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Path&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;map.<br>
+ctbytes&nbsp;:&nbsp;int&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;containing&nbsp;the&nbsp;number&nbsp;of&nbsp;bytes&nbsp;for&nbsp;each&nbsp;column&nbsp;type&nbsp;(i.e.&nbsp;1&nbsp;for&nbsp;uint8,&nbsp;2&nbsp;for&nbsp;uint16,&nbsp;4&nbsp;for&nbsp;uint32,&nbsp;8&nbsp;for&nbsp;uint64).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;map&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;mapped&nbsp;columns&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Number&nbsp;of&nbsp;rows.</tt></dd></dl>
+ <dl><dt><a name="-mmap_vkrs_file"><strong>mmap_vkrs_file</strong></a>(...)</dt><dd><tt>Memory&nbsp;map&nbsp;the&nbsp;specified&nbsp;VKRS&nbsp;binary&nbsp;file&nbsp;(vkrs.bin).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+file&nbsp;:&nbsp;str<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Path&nbsp;to&nbsp;the&nbsp;file&nbsp;to&nbsp;map.<br>
+ctbytes&nbsp;:&nbsp;int&nbsp;array<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Array&nbsp;containing&nbsp;the&nbsp;number&nbsp;of&nbsp;bytes&nbsp;for&nbsp;each&nbsp;column&nbsp;type&nbsp;(i.e.&nbsp;1&nbsp;for&nbsp;uint8,&nbsp;2&nbsp;for&nbsp;uint16,&nbsp;4&nbsp;for&nbsp;uint32,&nbsp;8&nbsp;for&nbsp;uint64).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;map&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;mapped&nbsp;columns&nbsp;object.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Number&nbsp;of&nbsp;rows.</tt></dd></dl>
+ <dl><dt><a name="-munmap_binfile"><strong>munmap_binfile</strong></a>(...)</dt><dd><tt>Unmap&nbsp;and&nbsp;close&nbsp;the&nbsp;memory-mapped&nbsp;file.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mf&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Pointer&nbsp;to&nbsp;the&nbsp;memory&nbsp;mapped&nbsp;file&nbsp;object.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;On&nbsp;success&nbsp;returns&nbsp;0,&nbsp;on&nbsp;failure&nbsp;-1.</tt></dd></dl>
+ <dl><dt><a name="-normalize_variant"><strong>normalize_variant</strong></a>(...)</dt><dd><tt>Normalize&nbsp;a&nbsp;variant.&nbsp;Flip&nbsp;alleles&nbsp;if&nbsp;required&nbsp;and&nbsp;apply&nbsp;the&nbsp;normalization&nbsp;algorithm&nbsp;described&nbsp;at:&nbsp;https://genome.sph.umich.edu/wiki/Variant_Normalization<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mf&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;file&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_genoref_file">mmap_genoref_file</a>().<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome&nbsp;encoded&nbsp;number.<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.&nbsp;The&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+ref&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Reference&nbsp;allele.&nbsp;String&nbsp;containing&nbsp;a&nbsp;sequence&nbsp;of&nbsp;nucleotide&nbsp;letters.<br>
+alt&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Alternate&nbsp;non-reference&nbsp;allele&nbsp;string.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Bitmask&nbsp;number&nbsp;in&nbsp;case&nbsp;of&nbsp;success,&nbsp;negative&nbsp;number&nbsp;in&nbsp;case&nbsp;of&nbsp;error.&nbsp;When&nbsp;positive,&nbsp;each&nbsp;bit&nbsp;has&nbsp;a&nbsp;different&nbsp;meaning&nbsp;when&nbsp;set:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;bit&nbsp;0&nbsp;:&nbsp;The&nbsp;reference&nbsp;allele&nbsp;is&nbsp;inconsistent&nbsp;with&nbsp;the&nbsp;genome&nbsp;reference&nbsp;(i.e.&nbsp;when&nbsp;contains&nbsp;nucleotide&nbsp;letters&nbsp;other&nbsp;than&nbsp;A,&nbsp;C,&nbsp;G&nbsp;and&nbsp;T).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;bit&nbsp;1&nbsp;:&nbsp;The&nbsp;alleles&nbsp;have&nbsp;been&nbsp;swapped.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;bit&nbsp;2&nbsp;:&nbsp;The&nbsp;alleles&nbsp;nucleotides&nbsp;have&nbsp;been&nbsp;flipped&nbsp;(each&nbsp;nucleotide&nbsp;have&nbsp;been&nbsp;replaced&nbsp;with&nbsp;its&nbsp;complement).<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;bit&nbsp;3&nbsp;:&nbsp;Alleles&nbsp;have&nbsp;been&nbsp;left&nbsp;extended.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;bit&nbsp;4&nbsp;:&nbsp;Alleles&nbsp;have&nbsp;been&nbsp;right&nbsp;trimmed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;bit&nbsp;5&nbsp;:&nbsp;Alleles&nbsp;have&nbsp;been&nbsp;left&nbsp;trimmed.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;POS.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;length.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;length.</tt></dd></dl>
+ <dl><dt><a name="-normalized_variantkey"><strong>normalized_variantkey</strong></a>(...)</dt><dd><tt>Returns&nbsp;a&nbsp;normalized&nbsp;64&nbsp;bit&nbsp;variant&nbsp;key&nbsp;based&nbsp;on&nbsp;CHROM,&nbsp;POS,&nbsp;REF,&nbsp;ALT.<br>
+Parameters<br>
+----------<br>
+mf&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;file&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_genoref_file">mmap_genoref_file</a>().<br>
+chrom&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome.&nbsp;An&nbsp;identifier&nbsp;from&nbsp;the&nbsp;reference&nbsp;genome,&nbsp;no&nbsp;white-space&nbsp;or&nbsp;leading&nbsp;zeros&nbsp;permitted.<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.&nbsp;The&nbsp;reference&nbsp;position.<br>
+posindex&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position&nbsp;index:&nbsp;0&nbsp;for&nbsp;0-based,&nbsp;1&nbsp;for&nbsp;1-based.<br>
+ref&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Reference&nbsp;allele.&nbsp;String&nbsp;containing&nbsp;a&nbsp;sequence&nbsp;of&nbsp;nucleotide&nbsp;letters.&nbsp;The&nbsp;value&nbsp;in&nbsp;the&nbsp;pos&nbsp;field&nbsp;refers&nbsp;to&nbsp;the&nbsp;position&nbsp;of&nbsp;the&nbsp;first&nbsp;nucleotide&nbsp;in&nbsp;the&nbsp;String.&nbsp;Characters&nbsp;must&nbsp;be&nbsp;A-Z,&nbsp;a-z&nbsp;or&nbsp;*<br>
+alt&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Alternate&nbsp;non-reference&nbsp;allele&nbsp;string.&nbsp;Characters&nbsp;must&nbsp;be&nbsp;A-Z,&nbsp;a-z&nbsp;or&nbsp;*<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey&nbsp;64&nbsp;bit&nbsp;code.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Normalization&nbsp;code&nbsp;(see&nbsp;normalize_variant).</tt></dd></dl>
+ <dl><dt><a name="-nrvk_bin_to_tsv"><strong>nrvk_bin_to_tsv</strong></a>(...)</dt><dd><tt>Convert&nbsp;a&nbsp;vrnr.bin&nbsp;file&nbsp;to&nbsp;a&nbsp;simple&nbsp;TSV.<br>
+For&nbsp;the&nbsp;reverse&nbsp;operation&nbsp;see&nbsp;the&nbsp;resources/tools/nrvk.sh&nbsp;script.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+tsvfile&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Output&nbsp;file&nbsp;name.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Number&nbsp;of&nbsp;bytes&nbsp;written&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;of&nbsp;error.</tt></dd></dl>
+ <dl><dt><a name="-parse_regionkey_hex"><strong>parse_regionkey_hex</strong></a>(...)</dt><dd><tt>Parses&nbsp;a&nbsp;RegionKey&nbsp;hexadecimal&nbsp;string&nbsp;and&nbsp;returns&nbsp;the&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rs&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;hexadecimal&nbsp;string&nbsp;(it&nbsp;must&nbsp;contain&nbsp;16&nbsp;hexadecimal&nbsp;characters).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;RegionKey&nbsp;code.</tt></dd></dl>
+ <dl><dt><a name="-parse_variantkey_hex"><strong>parse_variantkey_hex</strong></a>(...)</dt><dd><tt>Parses&nbsp;a&nbsp;VariantKey&nbsp;hexadecimal&nbsp;string&nbsp;and&nbsp;returns&nbsp;the&nbsp;code.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vs&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;hexadecimal&nbsp;string&nbsp;(it&nbsp;must&nbsp;contain&nbsp;16&nbsp;hexadecimal&nbsp;characters).<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;64&nbsp;bit&nbsp;code.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-parse_variantkey_hex">parse_variantkey_hex</a>(b'b800181c910d8000')<br>
+13258623813950472192</tt></dd></dl>
+ <dl><dt><a name="-regionkey"><strong>regionkey</strong></a>(...)</dt><dd><tt>Returns&nbsp;a&nbsp;64&nbsp;bit&nbsp;regionkey&nbsp;based&nbsp;on&nbsp;CHROM,&nbsp;START&nbsp;POS&nbsp;(0-based),&nbsp;END&nbsp;POS&nbsp;and&nbsp;STRAND.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome.&nbsp;An&nbsp;identifier&nbsp;from&nbsp;the&nbsp;reference&nbsp;genome,&nbsp;no&nbsp;white-space&nbsp;or&nbsp;leading&nbsp;zeros&nbsp;permitted.<br>
+startpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;position&nbsp;(zero&nbsp;based).<br>
+endpos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;End&nbsp;position&nbsp;(startpos&nbsp;+&nbsp;region_length).<br>
+strand&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Strand&nbsp;direction&nbsp;(-1,&nbsp;0,&nbsp;+1)<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;64&nbsp;bit&nbsp;code.</tt></dd></dl>
+ <dl><dt><a name="-regionkey_hex"><strong>regionkey_hex</strong></a>(...)</dt><dd><tt>Returns&nbsp;RegionKey&nbsp;hexadecimal&nbsp;string&nbsp;(16&nbsp;characters).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+string&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;hexadecimal&nbsp;string.</tt></dd></dl>
+ <dl><dt><a name="-reverse_regionkey"><strong>reverse_regionkey</strong></a>(...)</dt><dd><tt>Reverse&nbsp;a&nbsp;RegionKey&nbsp;code&nbsp;and&nbsp;returns&nbsp;the&nbsp;normalized&nbsp;components&nbsp;as&nbsp;regionkey_rev_t&nbsp;structure.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+rk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;RegionKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;chromosome<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;start&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;end&nbsp;position<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;strand</tt></dd></dl>
+ <dl><dt><a name="-reverse_variantkey"><strong>reverse_variantkey</strong></a>(...)</dt><dd><tt>Reverse&nbsp;a&nbsp;VariantKey&nbsp;code&nbsp;and&nbsp;returns&nbsp;the&nbsp;normalized&nbsp;components.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;CHROM&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;POS.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;string.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF&nbsp;length.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;ALT&nbsp;length.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;REF+ALT&nbsp;length.</tt></dd></dl>
+ <dl><dt><a name="-variantkey"><strong>variantkey</strong></a>(...)</dt><dd><tt>Returns&nbsp;a&nbsp;64&nbsp;bit&nbsp;variant&nbsp;key&nbsp;based&nbsp;on&nbsp;CHROM,&nbsp;POS&nbsp;(0-based),&nbsp;REF,&nbsp;ALT.<br>
+The&nbsp;variant&nbsp;should&nbsp;be&nbsp;already&nbsp;normalized&nbsp;(see&nbsp;normalize_variant&nbsp;or&nbsp;use&nbsp;normalized_variantkey).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome.&nbsp;An&nbsp;identifier&nbsp;from&nbsp;the&nbsp;reference&nbsp;genome,&nbsp;no&nbsp;white-space&nbsp;or&nbsp;leading&nbsp;zeros&nbsp;permitted.<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Position.&nbsp;The&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+ref&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Reference&nbsp;allele.&nbsp;String&nbsp;containing&nbsp;a&nbsp;sequence&nbsp;of&nbsp;nucleotide&nbsp;letters.&nbsp;The&nbsp;value&nbsp;in&nbsp;the&nbsp;pos&nbsp;field&nbsp;refers&nbsp;to&nbsp;the&nbsp;position&nbsp;of&nbsp;the&nbsp;first&nbsp;nucleotide&nbsp;in&nbsp;the&nbsp;String.&nbsp;Characters&nbsp;must&nbsp;be&nbsp;A-Z,&nbsp;a-z&nbsp;or&nbsp;*<br>
+alt&nbsp;:&nbsp;str&nbsp;or&nbsp;bytes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Alternate&nbsp;non-reference&nbsp;allele&nbsp;string.&nbsp;Characters&nbsp;must&nbsp;be&nbsp;A-Z,&nbsp;a-z&nbsp;or&nbsp;*<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;64&nbsp;bit&nbsp;code.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-variantkey">variantkey</a>(chrom=b'X',&nbsp;pos=12345,&nbsp;ref=b'AC',&nbsp;alt=b'GT')<br>
+13258623813950472192<br>
+&gt;&gt;&gt;&nbsp;<a href="#-variantkey">variantkey</a>(chrom='X',&nbsp;pos=12345,&nbsp;ref='AC',&nbsp;alt='GT')<br>
+13258623813950472192<br>
+&gt;&gt;&gt;&nbsp;<a href="#-variantkey">variantkey</a>(b'X',&nbsp;12345,&nbsp;b'AC',&nbsp;b'GT')<br>
+13258623813950472192<br>
+&gt;&gt;&gt;&nbsp;<a href="#-variantkey">variantkey</a>('X',&nbsp;12345,&nbsp;'AC',&nbsp;'GT')<br>
+13258623813950472192</tt></dd></dl>
+ <dl><dt><a name="-variantkey_hex"><strong>variantkey_hex</strong></a>(...)</dt><dd><tt>Returns&nbsp;VariantKey&nbsp;hexadecimal&nbsp;string&nbsp;(16&nbsp;characters).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;code.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+bytes:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey&nbsp;hexadecimal&nbsp;string.<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-variantkey_hex">variantkey_hex</a>(13258623813950472192)<br>
+b'b800181c910d8000'</tt></dd></dl>
+ <dl><dt><a name="-variantkey_range"><strong>variantkey_range</strong></a>(...)</dt><dd><tt>Returns&nbsp;minimum&nbsp;and&nbsp;maximum&nbsp;VariantKeys&nbsp;for&nbsp;range&nbsp;searches.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+chrom&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Chromosome&nbsp;encoded&nbsp;number.<br>
+pos_min&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Start&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+pos_max&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;End&nbsp;reference&nbsp;position,&nbsp;with&nbsp;the&nbsp;first&nbsp;base&nbsp;having&nbsp;position&nbsp;0.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey&nbsp;min&nbsp;value<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey&nbsp;max&nbsp;value<br>
+&nbsp;<br>
+Example<br>
+-------<br>
+&gt;&gt;&gt;&nbsp;<a href="#-variantkey_range">variantkey_range</a>(chrom=23,&nbsp;pos_min=1234,&nbsp;pos_max=5678)<br>
+(13258599952973561856,&nbsp;13258609498538377215)</tt></dd></dl>
+ <dl><dt><a name="-variantkey_to_regionkey"><strong>variantkey_to_regionkey</strong></a>(...)</dt><dd><tt>Get&nbsp;RegionKey&nbsp;from&nbsp;VariantKey.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_nrvk_file">mmap_nrvk_file</a>().<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+int&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;A&nbsp;RegionKey&nbsp;code.</tt></dd></dl>
+</td></tr></table>
+</body></html>

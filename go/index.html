@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#375EAB">
+
+  <title>variantkey - The Go Programming Language</title>
+
+<link type="text/css" rel="stylesheet" href="style.css">
+
+<link rel="stylesheet" href="jquery.treeview.css">
+<script>window.initFuncs = [];</script>
+<script src="jquery.js" defer></script>
+<script src="jquery.treeview.js" defer></script>
+<script src="jquery.treeview.edit.js" defer></script>
+
+
+<script>var goVersion = "go1.11.1";</script>
+<script src="godocs.js" defer></script>
+</head>
+<body>
+
+<div id='lowframe' style="position: fixed; bottom: 0; left: 0; height: 0; width: 100%; border-top: thin solid grey; background-color: white; overflow: auto;">
+...
+</div><!-- #lowframe -->
+
+<div id="topbar" class="wide"><div class="container">
+<div class="top-heading" id="heading-wide"><a href="/">The Go Programming Language</a></div>
+<div class="top-heading" id="heading-narrow"><a href="/">Go</a></div>
+<a href="#" id="menu-button"><span id="menu-button-arrow">&#9661;</span></a>
+<form method="GET" action="/search">
+<div id="menu">
+<a href="/doc/">Documents</a>
+<a href="/pkg/">Packages</a>
+<a href="/project/">The Project</a>
+<a href="/help/">Help</a>
+
+<a href="/blog/">Blog</a>
+
+
+<span class="search-box"><input type="search" id="search" name="q" placeholder="Search" aria-label="Search" required><button type="submit"><span><!-- magnifying glass: --><svg width="24" height="24" viewBox="0 0 24 24"><title>submit search</title><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/><path d="M0 0h24v24H0z" fill="none"/></svg></span></button></span>
+</div>
+</form>
+
+</div></div>
+
+
+
+<div id="page" class="wide">
+<div class="container">
+
+
+  <h1>
+    Package variantkey
+    <span class="text-muted"></span>
+  </h1>
+
+
+
+
+
+
+
+<div id="nav"></div>
+
+
+<!--
+	Copyright 2009 The Go Authors. All rights reserved.
+	Use of this source code is governed by a BSD-style
+	license that can be found in the LICENSE file.
+-->
+<!--
+	Note: Static (i.e., not template-generated) href and id
+	attributes start with "pkg-" to make it impossible for
+	them to conflict with generated attributes (some of which
+	correspond to Go identifiers).
+-->
+
+	<script type='text/javascript'>
+	document.ANALYSIS_DATA = null;
+	document.CALLGRAPH = null;
+	</script>
+
+	
+		
+		<div id="short-nav">
+			<dl>
+			<dd><code>import "github.com/genomicsplc/variantkey/go/src"</code></dd>
+			</dl>
+			<dl>
+			<dd><a href="#pkg-overview" class="overviewLink">Overview</a></dd>
+			<dd><a href="#pkg-index" class="indexLink">Index</a></dd>
+			
+			
+			</dl>
+		</div>
+		<!-- The package's Name is printed as title by the top-level template -->
+		<div id="pkg-overview" class="toggleVisible">
+			<div class="collapsed">
+				<h2 class="toggleButton" title="Click to show Overview section">Overview ▹</h2>
+			</div>
+			<div class="expanded">
+				<h2 class="toggleButton" title="Click to hide Overview section">Overview ▾</h2>
+				<p>
+Package variantkey is a Go wrapper for the variantkey C software library.
+64 bit Encoding for Human Genetic Variants.
+</p>
+<pre>@category   Libraries
+@author     Nicola Asuni &lt;nicola.asuni@genomicsplc.com&gt;
+@copyright  2017-2018 GENOMICS plc
+@license    MIT (see LICENSE)
+@link       <a href="https://github.com/genomicsplc/variantkey">https://github.com/genomicsplc/variantkey</a>
+</pre>
+<h3 id="hdr-LICENSE">LICENSE</h3>
+<p>
+Copyright (c) 2017-2018 GENOMICS plc
+</p>
+<p>
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the &#34;Software&#34;), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+</p>
+<p>
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+</p>
+<p>
+THE SOFTWARE IS PROVIDED &#34;AS IS&#34;, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+</p>
+
+				
+			</div>
+		</div>
+
+		<div id="pkg-index" class="toggleVisible">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Index section">Index ▹</h2>
+		</div>
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Index section">Index ▾</h2>
+
+		<!-- Table of contents for API; must be named manual-nav to turn off auto nav. -->
+			<div id="manual-nav">
+			<dl>
+			
+			
+			
+				
+				<dd><a href="#AreOverlappingRegionKeys">func AreOverlappingRegionKeys(rka, rkb uint64) bool</a></dd>
+			
+				
+				<dd><a href="#AreOverlappingRegionRegionKey">func AreOverlappingRegionRegionKey(chrom uint8, startpos, endpos uint32, rk uint64) bool</a></dd>
+			
+				
+				<dd><a href="#AreOverlappingRegions">func AreOverlappingRegions(chromA uint8, startposA, endposA uint32, chromB uint8, startposB, endposB uint32) bool</a></dd>
+			
+				
+				<dd><a href="#CompareVariantKeyChrom">func CompareVariantKeyChrom(va, vb uint64) int</a></dd>
+			
+				
+				<dd><a href="#CompareVariantKeyChromPos">func CompareVariantKeyChromPos(va, vb uint64) int</a></dd>
+			
+				
+				<dd><a href="#DecodeChrom">func DecodeChrom(c uint8) string</a></dd>
+			
+				
+				<dd><a href="#DecodeRefAlt">func DecodeRefAlt(c uint32) (string, string, uint8, uint8, uint8)</a></dd>
+			
+				
+				<dd><a href="#DecodeRegionStrand">func DecodeRegionStrand(strand uint8) int8</a></dd>
+			
+				
+				<dd><a href="#DecodeStringID">func DecodeStringID(esid uint64) string</a></dd>
+			
+				
+				<dd><a href="#EncodeChrom">func EncodeChrom(chrom string) uint8</a></dd>
+			
+				
+				<dd><a href="#EncodeRefAlt">func EncodeRefAlt(ref string, alt string) uint32</a></dd>
+			
+				
+				<dd><a href="#EncodeRegionKey">func EncodeRegionKey(chrom uint8, startpos, endpos uint32, strand uint8) uint64</a></dd>
+			
+				
+				<dd><a href="#EncodeRegionStrand">func EncodeRegionStrand(strand int8) uint8</a></dd>
+			
+				
+				<dd><a href="#EncodeStringID">func EncodeStringID(s string, start uint32) uint64</a></dd>
+			
+				
+				<dd><a href="#EncodeStringNumID">func EncodeStringNumID(s string, sep byte) uint64</a></dd>
+			
+				
+				<dd><a href="#EncodeVariantKey">func EncodeVariantKey(chrom uint8, pos, refalt uint32) uint64</a></dd>
+			
+				
+				<dd><a href="#ExtendRegionKey">func ExtendRegionKey(rk uint64, size uint32) uint64</a></dd>
+			
+				
+				<dd><a href="#ExtractRegionKeyChrom">func ExtractRegionKeyChrom(rk uint64) uint8</a></dd>
+			
+				
+				<dd><a href="#ExtractRegionKeyEndPos">func ExtractRegionKeyEndPos(rk uint64) uint32</a></dd>
+			
+				
+				<dd><a href="#ExtractRegionKeyStartPos">func ExtractRegionKeyStartPos(rk uint64) uint32</a></dd>
+			
+				
+				<dd><a href="#ExtractRegionKeyStrand">func ExtractRegionKeyStrand(rk uint64) uint8</a></dd>
+			
+				
+				<dd><a href="#ExtractVariantKeyChrom">func ExtractVariantKeyChrom(v uint64) uint8</a></dd>
+			
+				
+				<dd><a href="#ExtractVariantKeyPos">func ExtractVariantKeyPos(v uint64) uint32</a></dd>
+			
+				
+				<dd><a href="#ExtractVariantKeyRefAlt">func ExtractVariantKeyRefAlt(v uint64) uint32</a></dd>
+			
+				
+				<dd><a href="#FlipAllele">func FlipAllele(allele string) string</a></dd>
+			
+				
+				<dd><a href="#GetRegionKeyChromEndPos">func GetRegionKeyChromEndPos(rk uint64) uint64</a></dd>
+			
+				
+				<dd><a href="#GetRegionKeyChromStartPos">func GetRegionKeyChromStartPos(rk uint64) uint64</a></dd>
+			
+				
+				<dd><a href="#GetVariantKeyChromStartPos">func GetVariantKeyChromStartPos(vk uint64) uint64</a></dd>
+			
+				
+				<dd><a href="#HashStringID">func HashStringID(s string) uint64</a></dd>
+			
+				
+				<dd><a href="#Hex">func Hex(v uint64) string</a></dd>
+			
+				
+				<dd><a href="#MmapNRVKFile">func MmapNRVKFile(file string) (TMMFile, NRVKCols, error)</a></dd>
+			
+				
+				<dd><a href="#MmapRSVKFile">func MmapRSVKFile(file string, ctbytes []uint8) (TMMFile, RSIDVARCols, error)</a></dd>
+			
+				
+				<dd><a href="#MmapVKRSFile">func MmapVKRSFile(file string, ctbytes []uint8) (TMMFile, RSIDVARCols, error)</a></dd>
+			
+				
+				<dd><a href="#ParseHex">func ParseHex(s string) uint64</a></dd>
+			
+				
+				<dd><a href="#RegionKey">func RegionKey(chrom string, startpos, endpos uint32, strand int8) uint64</a></dd>
+			
+				
+				<dd><a href="#ReverseVariantKey">func ReverseVariantKey(v uint64) (chrom string, pos uint32, ref string, alt string, sizeref uint8, sizealt uint8)</a></dd>
+			
+				
+				<dd><a href="#StringToNTBytes">func StringToNTBytes(s string) []byte</a></dd>
+			
+				
+				<dd><a href="#StringToNTBytesN">func StringToNTBytesN(s string, size uint32) []byte</a></dd>
+			
+				
+				<dd><a href="#VariantKey">func VariantKey(chrom string, pos uint32, ref, alt string) uint64</a></dd>
+			
+			
+				
+				<dd><a href="#NRVKCols">type NRVKCols</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.AreOverlappingVariantKeyRegionKey">func (nr NRVKCols) AreOverlappingVariantKeyRegionKey(vk, rk uint64) bool</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.FindRefAltByVariantKey">func (nr NRVKCols) FindRefAltByVariantKey(vk uint64) (string, string, uint8, uint8, uint32)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.GetVariantKeyChromEndPos">func (nr NRVKCols) GetVariantKeyChromEndPos(vk uint64) uint64</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.GetVariantKeyEndPos">func (nr NRVKCols) GetVariantKeyEndPos(vk uint64) uint32</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.GetVariantKeyRefLength">func (nr NRVKCols) GetVariantKeyRefLength(vk uint64) uint8</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.ReverseVariantKey">func (nr NRVKCols) ReverseVariantKey(vk uint64) (TVariantKeyRev, uint32)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.VariantToRegionkey">func (nr NRVKCols) VariantToRegionkey(vk uint64) uint64</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#NRVKCols.VknrBinToTSV">func (nr NRVKCols) VknrBinToTSV(tsvfile string) uint64</a></dd>
+				
+			
+				
+				<dd><a href="#RSIDVARCols">type RSIDVARCols</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindAllRVVariantKeyByRsid">func (crv RSIDVARCols) FindAllRVVariantKeyByRsid(first, last uint64, rsid uint32) (vks []uint64)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindRVVariantKeyByRsid">func (crv RSIDVARCols) FindRVVariantKeyByRsid(first, last uint64, rsid uint32) (uint64, uint64)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindVRChromPosRange">func (crv RSIDVARCols) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, posMax uint32) (uint32, uint64, uint64)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindVRRsidByVariantKey">func (crv RSIDVARCols) FindVRRsidByVariantKey(first uint64, last uint64, vk uint64) (uint32, uint64)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.GetNextRVVariantKeyByRsid">func (crv RSIDVARCols) GetNextRVVariantKeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64)</a></dd>
+				
+			
+				
+				<dd><a href="#TMMFile">type TMMFile</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#MmapGenorefFile">func MmapGenorefFile(file string) (TMMFile, error)</a></dd>
+				
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#TMMFile.CheckReference">func (mf TMMFile) CheckReference(chrom uint8, pos uint32, ref string) int</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#TMMFile.Close">func (mf TMMFile) Close() error</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#TMMFile.GetGenorefSeq">func (mf TMMFile) GetGenorefSeq(chrom uint8, pos uint32) byte</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#TMMFile.NormalizeVariant">func (mf TMMFile) NormalizeVariant(chrom uint8, pos uint32, ref string, alt string) (code int, npos uint32, nref, nalt string, nsizeref, nsizealt uint8)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#TMMFile.NormalizedVariantKey">func (mf TMMFile) NormalizedVariantKey(chrom string, pos uint32, posindex uint8, ref string, alt string) (vk uint64, code int)</a></dd>
+				
+			
+				
+				<dd><a href="#TRegionKey">type TRegionKey</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#DecodeRegionKey">func DecodeRegionKey(rk uint64) TRegionKey</a></dd>
+				
+				
+			
+				
+				<dd><a href="#TRegionKeyRev">type TRegionKeyRev</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#ReverseRegionKey">func ReverseRegionKey(rk uint64) TRegionKeyRev</a></dd>
+				
+				
+			
+				
+				<dd><a href="#TVKRange">type TVKRange</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#Range">func Range(chrom uint8, posMin, posMax uint32) TVKRange</a></dd>
+				
+				
+			
+				
+				<dd><a href="#TVariantKey">type TVariantKey</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#DecodeVariantKey">func DecodeVariantKey(v uint64) TVariantKey</a></dd>
+				
+				
+			
+				
+				<dd><a href="#TVariantKeyRev">type TVariantKeyRev</a></dd>
+				
+				
+			
+			
+			</dl>
+			</div><!-- #manual-nav -->
+
+		
+
+		
+			<h3>Package files</h3>
+			<p>
+			<span style="font-size:90%">
+			
+				<a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go">variantkey.go</a>
+			
+			</span>
+			</p>
+		
+		</div><!-- .expanded -->
+		</div><!-- #pkg-index -->
+
+		<div id="pkg-callgraph" class="toggle" style="display: none">
+		<div class="collapsed">
+			<h2 class="toggleButton" title="Click to show Internal Call Graph section">Internal call graph ▹</h2>
+		</div> <!-- .expanded -->
+		<div class="expanded">
+			<h2 class="toggleButton" title="Click to hide Internal Call Graph section">Internal call graph ▾</h2>
+			<p>
+			  In the call graph viewer below, each node
+			  is a function belonging to this package
+			  and its children are the functions it
+			  calls&mdash;perhaps dynamically.
+			</p>
+			<p>
+			  The root nodes are the entry points of the
+			  package: functions that may be called from
+			  outside the package.
+			  There may be non-exported or anonymous
+			  functions among them if they are called
+			  dynamically from another package.
+			</p>
+			<p>
+			  Click a node to visit that function's source code.
+			  From there you can visit its callers by
+			  clicking its declaring <code>func</code>
+			  token.
+			</p>
+			<p>
+			  Functions may be omitted if they were
+			  determined to be unreachable in the
+			  particular programs or tests that were
+			  analyzed.
+			</p>
+			<!-- Zero means show all package entry points. -->
+			<ul style="margin-left: 0.5in" id="callgraph-0" class="treeview"></ul>
+		</div>
+		</div> <!-- #pkg-callgraph -->
+
+		
+		
+		
+			
+			
+			<h2 id="AreOverlappingRegionKeys">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26394:26445#L699">AreOverlappingRegionKeys</a>
+				<a class="permalink" href="#AreOverlappingRegionKeys">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func AreOverlappingRegionKeys(rka, rkb <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#bool">bool</a></pre>
+			<p>
+AreOverlappingRegionKeys check if two regionkeys are overlapping.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="AreOverlappingRegionRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26098:26186#L694">AreOverlappingRegionRegionKey</a>
+				<a class="permalink" href="#AreOverlappingRegionRegionKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func AreOverlappingRegionRegionKey(chrom <a href="/pkg/builtin/#uint8">uint8</a>, startpos, endpos <a href="/pkg/builtin/#uint32">uint32</a>, rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#bool">bool</a></pre>
+			<p>
+AreOverlappingRegionRegionKey check if a region and a regionkey are overlapping.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="AreOverlappingRegions">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25721:25834#L689">AreOverlappingRegions</a>
+				<a class="permalink" href="#AreOverlappingRegions">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func AreOverlappingRegions(chromA <a href="/pkg/builtin/#uint8">uint8</a>, startposA, endposA <a href="/pkg/builtin/#uint32">uint32</a>, chromB <a href="/pkg/builtin/#uint8">uint8</a>, startposB, endposB <a href="/pkg/builtin/#uint32">uint32</a>) <a href="/pkg/builtin/#bool">bool</a></pre>
+			<p>
+AreOverlappingRegions check if two regions are overlapping.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="CompareVariantKeyChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=7396:7442#L195">CompareVariantKeyChrom</a>
+				<a class="permalink" href="#CompareVariantKeyChrom">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func CompareVariantKeyChrom(va, vb <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#int">int</a></pre>
+			<p>
+CompareVariantKeyChrom compares two VariantKeys by chromosome only.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="CompareVariantKeyChromPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=7602:7651#L200">CompareVariantKeyChromPos</a>
+				<a class="permalink" href="#CompareVariantKeyChromPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func CompareVariantKeyChromPos(va, vb <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#int">int</a></pre>
+			<p>
+CompareVariantKeyChromPos compares two VariantKeys by chromosome and position.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="DecodeChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=4202:4234#L116">DecodeChrom</a>
+				<a class="permalink" href="#DecodeChrom">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func DecodeChrom(c <a href="/pkg/builtin/#uint8">uint8</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+DecodeChrom decode chrom to string
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="DecodeRefAlt">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=4858:4923#L135">DecodeRefAlt</a>
+				<a class="permalink" href="#DecodeRefAlt">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func DecodeRefAlt(c <a href="/pkg/builtin/#uint32">uint32</a>) (<a href="/pkg/builtin/#string">string</a>, <a href="/pkg/builtin/#string">string</a>, <a href="/pkg/builtin/#uint8">uint8</a>, <a href="/pkg/builtin/#uint8">uint8</a>, <a href="/pkg/builtin/#uint8">uint8</a>)</pre>
+			<p>
+DecodeRefAlt decode Ref+Alt code if reversible
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="DecodeRegionStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23144:23186#L623">DecodeRegionStrand</a>
+				<a class="permalink" href="#DecodeRegionStrand">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func DecodeRegionStrand(strand <a href="/pkg/builtin/#uint8">uint8</a>) <a href="/pkg/builtin/#int8">int8</a></pre>
+			<p>
+DecodeRegionStrand decode the strand direction code (0 &gt; 0, 1 &gt; +1, 2 &gt; -1).
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="DecodeStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28012:28051#L733">DecodeStringID</a>
+				<a class="permalink" href="#DecodeStringID">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func DecodeStringID(esid <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+DecodeStringID decode the encoded string ID.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=3945:3981#L108">EncodeChrom</a>
+				<a class="permalink" href="#EncodeChrom">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeChrom(chrom <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#uint8">uint8</a></pre>
+			<p>
+EncodeChrom returns chromosome encoding.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeRefAlt">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=4460:4508#L124">EncodeRefAlt</a>
+				<a class="permalink" href="#EncodeRefAlt">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeRefAlt(ref <a href="/pkg/builtin/#string">string</a>, alt <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#uint32">uint32</a></pre>
+			<p>
+EncodeRefAlt returns reference+alternate code.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23295:23374#L628">EncodeRegionKey</a>
+				<a class="permalink" href="#EncodeRegionKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeRegionKey(chrom <a href="/pkg/builtin/#uint8">uint8</a>, startpos, endpos <a href="/pkg/builtin/#uint32">uint32</a>, strand <a href="/pkg/builtin/#uint8">uint8</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+EncodeRegionKey returns  a 64 bit regionkey
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeRegionStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=22960:23002#L618">EncodeRegionStrand</a>
+				<a class="permalink" href="#EncodeRegionStrand">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeRegionStrand(strand <a href="/pkg/builtin/#int8">int8</a>) <a href="/pkg/builtin/#uint8">uint8</a></pre>
+			<p>
+EncodeRegionStrand encode the strand direction (-1 &gt; 2, 0 &gt; 0, +1 &gt; 1).
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27182:27232#L716">EncodeStringID</a>
+				<a class="permalink" href="#EncodeStringID">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeStringID(s <a href="/pkg/builtin/#string">string</a>, start <a href="/pkg/builtin/#uint32">uint32</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+EncodeStringID encode maximum 10 characters of a string into a 64 bit unsigned integer. The argument &#34;start&#34; indicate the first character to encode.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeStringNumID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27758:27807#L726">EncodeStringNumID</a>
+				<a class="permalink" href="#EncodeStringNumID">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeStringNumID(s <a href="/pkg/builtin/#string">string</a>, sep <a href="/pkg/builtin/#byte">byte</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+EncodeStringNumID cncode a string composed by a character section followed by a separator character and a
+numerical section into a 64 bit unsigned integer. For example: &#34;ABCDE:0001234&#34;.
+Encodes up to 5 characters in uppercase, a number up to 2^27, and up to 7 zero padding digits.
+If the string is 10 character or less, then the encode_string_id() is used.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="EncodeVariantKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=5458:5519#L147">EncodeVariantKey</a>
+				<a class="permalink" href="#EncodeVariantKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func EncodeVariantKey(chrom <a href="/pkg/builtin/#uint8">uint8</a>, pos, refalt <a href="/pkg/builtin/#uint32">uint32</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+EncodeVariantKey returns a Genetic Variant Key based on pre-encoded CHROM, POS (0-base), REF+ALT.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtendRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25146:25197#L674">ExtendRegionKey</a>
+				<a class="permalink" href="#ExtendRegionKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtendRegionKey(rk <a href="/pkg/builtin/#uint64">uint64</a>, size <a href="/pkg/builtin/#uint32">uint32</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+ExtendRegionKey extend a regionkey region by a fixed amount from the start and end position.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractRegionKeyChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23559:23602#L633">ExtractRegionKeyChrom</a>
+				<a class="permalink" href="#ExtractRegionKeyChrom">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractRegionKeyChrom(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint8">uint8</a></pre>
+			<p>
+ExtractRegionKeyChrom extracts the CHROM code from RegionKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractRegionKeyEndPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23919:23964#L643">ExtractRegionKeyEndPos</a>
+				<a class="permalink" href="#ExtractRegionKeyEndPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractRegionKeyEndPos(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint32">uint32</a></pre>
+			<p>
+ExtractRegionKeyEndPos extracts the END POS code from RegionKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractRegionKeyStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23737:23784#L638">ExtractRegionKeyStartPos</a>
+				<a class="permalink" href="#ExtractRegionKeyStartPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractRegionKeyStartPos(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint32">uint32</a></pre>
+			<p>
+ExtractRegionKeyStartPos extracts the START POS code from RegionKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractRegionKeyStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24090:24134#L648">ExtractRegionKeyStrand</a>
+				<a class="permalink" href="#ExtractRegionKeyStrand">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractRegionKeyStrand(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint8">uint8</a></pre>
+			<p>
+ExtractRegionKeyStrand extract the STRAND from RegionKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractVariantKeyChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=5683:5726#L152">ExtractVariantKeyChrom</a>
+				<a class="permalink" href="#ExtractVariantKeyChrom">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractVariantKeyChrom(v <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint8">uint8</a></pre>
+			<p>
+ExtractVariantKeyChrom extracts the CHROM code from VariantKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractVariantKeyPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=5852:5894#L157">ExtractVariantKeyPos</a>
+				<a class="permalink" href="#ExtractVariantKeyPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractVariantKeyPos(v <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint32">uint32</a></pre>
+			<p>
+ExtractVariantKeyPos extracts the POS code from VariantKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ExtractVariantKeyRefAlt">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=6026:6071#L162">ExtractVariantKeyRefAlt</a>
+				<a class="permalink" href="#ExtractVariantKeyRefAlt">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ExtractVariantKeyRefAlt(v <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint32">uint32</a></pre>
+			<p>
+ExtractVariantKeyRefAlt extracts the REF+ALT code from VariantKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="FlipAllele">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19139:19176#L520">FlipAllele</a>
+				<a class="permalink" href="#FlipAllele">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func FlipAllele(allele <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+FlipAllele flips allele nucleotides.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetRegionKeyChromEndPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25545:25591#L684">GetRegionKeyChromEndPos</a>
+				<a class="permalink" href="#GetRegionKeyChromEndPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetRegionKeyChromEndPos(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+GetRegionKeyChromEndPos get the CHROM + END POS encoding from RegionKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetRegionKeyChromStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25352:25400#L679">GetRegionKeyChromStartPos</a>
+				<a class="permalink" href="#GetRegionKeyChromStartPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetRegionKeyChromStartPos(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+GetRegionKeyChromStartPos get the CHROM + START POS encoding from RegionKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="GetVariantKeyChromStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17930:17979#L485">GetVariantKeyChromStartPos</a>
+				<a class="permalink" href="#GetVariantKeyChromStartPos">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func GetVariantKeyChromStartPos(vk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+GetVariantKeyChromStartPos get the CHROM + START POS encoding from VariantKey.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="HashStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28306:28340#L741">HashStringID</a>
+				<a class="permalink" href="#HashStringID">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func HashStringID(s <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+HashStringID hash the input string into a 64 bit unsigned integer.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="Hex">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=7823:7848#L205">Hex</a>
+				<a class="permalink" href="#Hex">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func Hex(v <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#string">string</a></pre>
+			<p>
+Hex provides a 16 digits hexadecimal string representation of a 64bit unsigned number.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="MmapNRVKFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=15973:16030#L439">MmapNRVKFile</a>
+				<a class="permalink" href="#MmapNRVKFile">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func MmapNRVKFile(file <a href="/pkg/builtin/#string">string</a>) (<a href="#TMMFile">TMMFile</a>, <a href="#NRVKCols">NRVKCols</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+			<p>
+MmapNRVKFile memory map the NRVK binary file.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="MmapRSVKFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=12187:12264#L343">MmapRSVKFile</a>
+				<a class="permalink" href="#MmapRSVKFile">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func MmapRSVKFile(file <a href="/pkg/builtin/#string">string</a>, ctbytes []<a href="/pkg/builtin/#uint8">uint8</a>) (<a href="#TMMFile">TMMFile</a>, <a href="#RSIDVARCols">RSIDVARCols</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+			<p>
+MmapRSVKFile memory map the RSVK binary file.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="MmapVKRSFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=11542:11619#L322">MmapVKRSFile</a>
+				<a class="permalink" href="#MmapVKRSFile">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func MmapVKRSFile(file <a href="/pkg/builtin/#string">string</a>, ctbytes []<a href="/pkg/builtin/#uint8">uint8</a>) (<a href="#TMMFile">TMMFile</a>, <a href="#RSIDVARCols">RSIDVARCols</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+			<p>
+MmapVKRSFile memory map the VKRS binary file.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ParseHex">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=8101:8131#L213">ParseHex</a>
+				<a class="permalink" href="#ParseHex">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ParseHex(s <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+ParseHex parses a 16 digit HEX string and returns the 64 bit unsigned number.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="RegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24760:24833#L667">RegionKey</a>
+				<a class="permalink" href="#RegionKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func RegionKey(chrom <a href="/pkg/builtin/#string">string</a>, startpos, endpos <a href="/pkg/builtin/#uint32">uint32</a>, strand <a href="/pkg/builtin/#int8">int8</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+RegionKey returns a 64 bit regionkey based on CHROM, START POS (0-based), END POS and STRAND.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="ReverseVariantKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=8330:8443#L220">ReverseVariantKey</a>
+				<a class="permalink" href="#ReverseVariantKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func ReverseVariantKey(v <a href="/pkg/builtin/#uint64">uint64</a>) (chrom <a href="/pkg/builtin/#string">string</a>, pos <a href="/pkg/builtin/#uint32">uint32</a>, ref <a href="/pkg/builtin/#string">string</a>, alt <a href="/pkg/builtin/#string">string</a>, sizeref <a href="/pkg/builtin/#uint8">uint8</a>, sizealt <a href="/pkg/builtin/#uint8">uint8</a>)</pre>
+			<p>
+ReverseVariantKey parses a variant key string and returns the components.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="StringToNTBytes">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=3621:3658#L94">StringToNTBytes</a>
+				<a class="permalink" href="#StringToNTBytes">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func StringToNTBytes(s <a href="/pkg/builtin/#string">string</a>) []<a href="/pkg/builtin/#byte">byte</a></pre>
+			<p>
+StringToNTBytes safely convert a string to byte array with an extra null terminator
+This is to ensure a correct CGO conversion to char*
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="StringToNTBytesN">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=3794:3845#L101">StringToNTBytesN</a>
+				<a class="permalink" href="#StringToNTBytesN">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func StringToNTBytesN(s <a href="/pkg/builtin/#string">string</a>, size <a href="/pkg/builtin/#uint32">uint32</a>) []<a href="/pkg/builtin/#byte">byte</a></pre>
+			<p>
+StringToNTBytesN convert a string to byte array allocating &#34;size&#34; bytes.
+</p>
+
+			
+			
+
+		
+			
+			
+			<h2 id="VariantKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=6558:6623#L175">VariantKey</a>
+				<a class="permalink" href="#VariantKey">&#xb6;</a>
+				
+				
+			</h2>
+			<pre>func VariantKey(chrom <a href="/pkg/builtin/#string">string</a>, pos <a href="/pkg/builtin/#uint32">uint32</a>, ref, alt <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+			<p>
+VariantKey returns a Genetic Variant Key based on CHROM, POS (0-base), REF, ALT.
+The variant should be already normalized (see NormalizeVariant or use NormalizedVariantkey).
+</p>
+
+			
+			
+
+		
+		
+			
+			
+			<h2 id="NRVKCols">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=15095:15331#L411">NRVKCols</a>
+				<a class="permalink" href="#NRVKCols">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+NRVKCols contains the NRVK memory mapped file column info.
+</p>
+
+			<pre>type NRVKCols struct {
+<span id="NRVKCols.Vk"></span>    Vk     <a href="/pkg/unsafe/">unsafe</a>.<a href="/pkg/unsafe/#Pointer">Pointer</a> <span class="comment">// Pointer to the VariantKey column.</span>
+<span id="NRVKCols.Offset"></span>    Offset <a href="/pkg/unsafe/">unsafe</a>.<a href="/pkg/unsafe/#Pointer">Pointer</a> <span class="comment">// Pointer to the Offset column.</span>
+<span id="NRVKCols.Data"></span>    Data   <a href="/pkg/unsafe/">unsafe</a>.<a href="/pkg/unsafe/#Pointer">Pointer</a> <span class="comment">// Pointer to the Data column.</span>
+<span id="NRVKCols.NRows"></span>    NRows  <a href="/pkg/builtin/#uint64">uint64</a>         <span class="comment">// Number of rows.</span>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+				
+				<h3 id="NRVKCols.AreOverlappingVariantKeyRegionKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26624:26696#L704">AreOverlappingVariantKeyRegionKey</a>
+					<a class="permalink" href="#NRVKCols.AreOverlappingVariantKeyRegionKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) AreOverlappingVariantKeyRegionKey(vk, rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#bool">bool</a></pre>
+				<p>
+AreOverlappingVariantKeyRegionKey check if variantkey and regionkey are overlapping.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.FindRefAltByVariantKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=16530:16621#L456">FindRefAltByVariantKey</a>
+					<a class="permalink" href="#NRVKCols.FindRefAltByVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) FindRefAltByVariantKey(vk <a href="/pkg/builtin/#uint64">uint64</a>) (<a href="/pkg/builtin/#string">string</a>, <a href="/pkg/builtin/#string">string</a>, <a href="/pkg/builtin/#uint8">uint8</a>, <a href="/pkg/builtin/#uint8">uint8</a>, <a href="/pkg/builtin/#uint32">uint32</a>)</pre>
+				<p>
+FindRefAltByVariantKey retrieve the REF and ALT strings for the specified VariantKey.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.GetVariantKeyChromEndPos">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18127:18188#L490">GetVariantKeyChromEndPos</a>
+					<a class="permalink" href="#NRVKCols.GetVariantKeyChromEndPos">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) GetVariantKeyChromEndPos(vk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+				<p>
+GetVariantKeyChromEndPos get the CHROM + END POS encoding from VariantKey.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.GetVariantKeyEndPos">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17707:17763#L480">GetVariantKeyEndPos</a>
+					<a class="permalink" href="#NRVKCols.GetVariantKeyEndPos">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) GetVariantKeyEndPos(vk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint32">uint32</a></pre>
+				<p>
+GetVariantKeyEndPos get the VariantKey end position (POS + REF length).
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.GetVariantKeyRefLength">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17486:17544#L475">GetVariantKeyRefLength</a>
+					<a class="permalink" href="#NRVKCols.GetVariantKeyRefLength">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) GetVariantKeyRefLength(vk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint8">uint8</a></pre>
+				<p>
+GetVariantKeyRefLength retrieve the REF length for the specified VariantKey.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.ReverseVariantKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17181:17253#L468">ReverseVariantKey</a>
+					<a class="permalink" href="#NRVKCols.ReverseVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) ReverseVariantKey(vk <a href="/pkg/builtin/#uint64">uint64</a>) (<a href="#TVariantKeyRev">TVariantKeyRev</a>, <a href="/pkg/builtin/#uint32">uint32</a>)</pre>
+				<p>
+ReverseVariantKey reverse a VariantKey code and returns the normalized components.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.VariantToRegionkey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26871:26926#L709">VariantToRegionkey</a>
+					<a class="permalink" href="#NRVKCols.VariantToRegionkey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) VariantToRegionkey(vk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+				<p>
+VariantToRegionkey get RegionKey from VariantKey.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="NRVKCols.VknrBinToTSV">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18403:18457#L495">VknrBinToTSV</a>
+					<a class="permalink" href="#NRVKCols.VknrBinToTSV">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (nr <a href="#NRVKCols">NRVKCols</a>) VknrBinToTSV(tsvfile <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#uint64">uint64</a></pre>
+				<p>
+VknrBinToTSV converts a vrnr.bin file to a simple TSV. For the reverse operation see the resources/tools/nrvk.sh script.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="RSIDVARCols">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=10774:10954#L297">RSIDVARCols</a>
+				<a class="permalink" href="#RSIDVARCols">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+RSIDVARCols contains the RSVK or VKRS memory mapped file column info.
+</p>
+
+			<pre>type RSIDVARCols struct {
+<span id="RSIDVARCols.Vk"></span>    Vk    <a href="/pkg/unsafe/">unsafe</a>.<a href="/pkg/unsafe/#Pointer">Pointer</a> <span class="comment">// Pointer to the VariantKey column.</span>
+<span id="RSIDVARCols.Rs"></span>    Rs    <a href="/pkg/unsafe/">unsafe</a>.<a href="/pkg/unsafe/#Pointer">Pointer</a> <span class="comment">// Pointer to the rsID column.</span>
+<span id="RSIDVARCols.NRows"></span>    NRows <a href="/pkg/builtin/#uint64">uint64</a>         <span class="comment">// Number of rows.</span>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+				
+				<h3 id="RSIDVARCols.FindAllRVVariantKeyByRsid">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=13707:13803#L380">FindAllRVVariantKeyByRsid</a>
+					<a class="permalink" href="#RSIDVARCols.FindAllRVVariantKeyByRsid">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (crv <a href="#RSIDVARCols">RSIDVARCols</a>) FindAllRVVariantKeyByRsid(first, last <a href="/pkg/builtin/#uint64">uint64</a>, rsid <a href="/pkg/builtin/#uint32">uint32</a>) (vks []<a href="/pkg/builtin/#uint64">uint64</a>)</pre>
+				<p>
+FindAllRVVariantKeyByRsid get all VariantKeys for the specified rsID in the RV file.
+Returns a list of VariantKeys
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="RSIDVARCols.FindRVVariantKeyByRsid">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=12902:12997#L364">FindRVVariantKeyByRsid</a>
+					<a class="permalink" href="#RSIDVARCols.FindRVVariantKeyByRsid">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (crv <a href="#RSIDVARCols">RSIDVARCols</a>) FindRVVariantKeyByRsid(first, last <a href="/pkg/builtin/#uint64">uint64</a>, rsid <a href="/pkg/builtin/#uint32">uint32</a>) (<a href="/pkg/builtin/#uint64">uint64</a>, <a href="/pkg/builtin/#uint64">uint64</a>)</pre>
+				<p>
+FindRVVariantKeyByRsid search for the specified RSID and returns the first occurrence of VariantKey in the RV file.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="RSIDVARCols.FindVRChromPosRange">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=14643:14766#L401">FindVRChromPosRange</a>
+					<a class="permalink" href="#RSIDVARCols.FindVRChromPosRange">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (crv <a href="#RSIDVARCols">RSIDVARCols</a>) FindVRChromPosRange(first, last <a href="/pkg/builtin/#uint64">uint64</a>, chrom <a href="/pkg/builtin/#uint8">uint8</a>, posMin, posMax <a href="/pkg/builtin/#uint32">uint32</a>) (<a href="/pkg/builtin/#uint32">uint32</a>, <a href="/pkg/builtin/#uint64">uint64</a>, <a href="/pkg/builtin/#uint64">uint64</a>)</pre>
+				<p>
+FindVRChromPosRange search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="RSIDVARCols.FindVRRsidByVariantKey">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=14242:14342#L394">FindVRRsidByVariantKey</a>
+					<a class="permalink" href="#RSIDVARCols.FindVRRsidByVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (crv <a href="#RSIDVARCols">RSIDVARCols</a>) FindVRRsidByVariantKey(first <a href="/pkg/builtin/#uint64">uint64</a>, last <a href="/pkg/builtin/#uint64">uint64</a>, vk <a href="/pkg/builtin/#uint64">uint64</a>) (<a href="/pkg/builtin/#uint32">uint32</a>, <a href="/pkg/builtin/#uint64">uint64</a>)</pre>
+				<p>
+FindVRRsidByVariantKey search for the specified VariantKey and returns the first occurrence of RSID in the VR file.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="RSIDVARCols.GetNextRVVariantKeyByRsid">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=13316:13412#L372">GetNextRVVariantKeyByRsid</a>
+					<a class="permalink" href="#RSIDVARCols.GetNextRVVariantKeyByRsid">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (crv <a href="#RSIDVARCols">RSIDVARCols</a>) GetNextRVVariantKeyByRsid(pos, last <a href="/pkg/builtin/#uint64">uint64</a>, rsid <a href="/pkg/builtin/#uint32">uint32</a>) (<a href="/pkg/builtin/#uint64">uint64</a>, <a href="/pkg/builtin/#uint64">uint64</a>)</pre>
+				<p>
+GetNextRVVariantKeyByRsid get the next VariantKey for the specified rsID in the RV file.
+Returns the VariantKey or 0, and the position
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="TMMFile">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=8689:9353#L233">TMMFile</a>
+				<a class="permalink" href="#TMMFile">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+TMMFile contains the memory mapped file info
+</p>
+
+			<pre>type TMMFile struct {
+<span id="TMMFile.Src"></span>    Src     <a href="/pkg/unsafe/">unsafe</a>.<a href="/pkg/unsafe/#Pointer">Pointer</a> <span class="comment">// Pointer to the memory map.</span>
+<span id="TMMFile.Fd"></span>    Fd      <a href="/pkg/builtin/#int">int</a>            <span class="comment">// File descriptor.</span>
+<span id="TMMFile.Size"></span>    Size    <a href="/pkg/builtin/#uint64">uint64</a>         <span class="comment">// File size in bytes.</span>
+<span id="TMMFile.DOffset"></span>    DOffset <a href="/pkg/builtin/#uint64">uint64</a>         <span class="comment">// Offset to the beginning of the data block (address of the first byte of the first item in the first column).</span>
+<span id="TMMFile.DLength"></span>    DLength <a href="/pkg/builtin/#uint64">uint64</a>         <span class="comment">// Length in bytes of the data block.</span>
+<span id="TMMFile.NRows"></span>    NRows   <a href="/pkg/builtin/#uint64">uint64</a>         <span class="comment">// Number of rows.</span>
+<span id="TMMFile.NCols"></span>    NCols   <a href="/pkg/builtin/#uint8">uint8</a>          <span class="comment">// Number of columns.</span>
+<span id="TMMFile.CTBytes"></span>    CTBytes []<a href="/pkg/builtin/#uint8">uint8</a>        <span class="comment">// Number of bytes per column type (i.e. 1 for uint8_t, 2 for uint16_t, 4 for uint32_t, 8 for uint64_t)</span>
+<span id="TMMFile.Index"></span>    Index   []<a href="/pkg/builtin/#uint64">uint64</a>       <span class="comment">// Index of the offsets to the beginning of each column.</span>
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="MmapGenorefFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18697:18747#L504">MmapGenorefFile</a>
+					<a class="permalink" href="#MmapGenorefFile">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func MmapGenorefFile(file <a href="/pkg/builtin/#string">string</a>) (<a href="#TMMFile">TMMFile</a>, <a href="/pkg/builtin/#error">error</a>)</pre>
+				<p>
+MmapGenorefFile maps the specified fasta file in memory.
+</p>
+
+				
+				
+			
+
+			
+				
+				<h3 id="TMMFile.CheckReference">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19711:19784#L534">CheckReference</a>
+					<a class="permalink" href="#TMMFile.CheckReference">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (mf <a href="#TMMFile">TMMFile</a>) CheckReference(chrom <a href="/pkg/builtin/#uint8">uint8</a>, pos <a href="/pkg/builtin/#uint32">uint32</a>, ref <a href="/pkg/builtin/#string">string</a>) <a href="/pkg/builtin/#int">int</a></pre>
+				<p>
+CheckReference checks if the reference allele matches the reference genome data.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="TMMFile.Close">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=10502:10533#L286">Close</a>
+					<a class="permalink" href="#TMMFile.Close">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (mf <a href="#TMMFile">TMMFile</a>) Close() <a href="/pkg/builtin/#error">error</a></pre>
+				<p>
+Close Unmap and close the memory-mapped file.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="TMMFile.GetGenorefSeq">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19461:19522#L529">GetGenorefSeq</a>
+					<a class="permalink" href="#TMMFile.GetGenorefSeq">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (mf <a href="#TMMFile">TMMFile</a>) GetGenorefSeq(chrom <a href="/pkg/builtin/#uint8">uint8</a>, pos <a href="/pkg/builtin/#uint32">uint32</a>) <a href="/pkg/builtin/#byte">byte</a></pre>
+				<p>
+GetGenorefSeq returns the nucleotide at the specified chromosome and position.
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="TMMFile.NormalizeVariant">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=20244:20396#L541">NormalizeVariant</a>
+					<a class="permalink" href="#TMMFile.NormalizeVariant">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (mf <a href="#TMMFile">TMMFile</a>) NormalizeVariant(chrom <a href="/pkg/builtin/#uint8">uint8</a>, pos <a href="/pkg/builtin/#uint32">uint32</a>, ref <a href="/pkg/builtin/#string">string</a>, alt <a href="/pkg/builtin/#string">string</a>) (code <a href="/pkg/builtin/#int">int</a>, npos <a href="/pkg/builtin/#uint32">uint32</a>, nref, nalt <a href="/pkg/builtin/#string">string</a>, nsizeref, nsizealt <a href="/pkg/builtin/#uint8">uint8</a>)</pre>
+				<p>
+NormalizeVariant flips alleles if required and apply the normalization algorithm described at: <a href="https://genome.sph.umich.edu/wiki/Variant_Normalization">https://genome.sph.umich.edu/wiki/Variant_Normalization</a>
+</p>
+
+				
+				
+				
+			
+				
+				<h3 id="TMMFile.NormalizedVariantKey">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=21090:21216#L561">NormalizedVariantKey</a>
+					<a class="permalink" href="#TMMFile.NormalizedVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (mf <a href="#TMMFile">TMMFile</a>) NormalizedVariantKey(chrom <a href="/pkg/builtin/#string">string</a>, pos <a href="/pkg/builtin/#uint32">uint32</a>, posindex <a href="/pkg/builtin/#uint8">uint8</a>, ref <a href="/pkg/builtin/#string">string</a>, alt <a href="/pkg/builtin/#string">string</a>) (vk <a href="/pkg/builtin/#uint64">uint64</a>, code <a href="/pkg/builtin/#int">int</a>)</pre>
+				<p>
+NormalizedVariantKey returns a normalized Genetic Variant Key based on CHROM, POS, REF, ALT.
+</p>
+
+				
+				
+				
+			
+		
+			
+			
+			<h2 id="TRegionKey">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=21939:22098#L582">TRegionKey</a>
+				<a class="permalink" href="#TRegionKey">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+TRegionKey contains a representation of a genetic region key
+</p>
+
+			<pre>type TRegionKey struct {
+<span id="TRegionKey.Chrom"></span>    Chrom    <a href="/pkg/builtin/#uint8">uint8</a>  `json:&#34;chrom&#34;`
+<span id="TRegionKey.StartPos"></span>    StartPos <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;startpos&#34;`
+<span id="TRegionKey.EndPos"></span>    EndPos   <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;endpos&#34;`
+<span id="TRegionKey.Strand"></span>    Strand   <a href="/pkg/builtin/#uint8">uint8</a>  `json:&#34;strand&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="DecodeRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24295:24337#L653">DecodeRegionKey</a>
+					<a class="permalink" href="#DecodeRegionKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func DecodeRegionKey(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="#TRegionKey">TRegionKey</a></pre>
+				<p>
+DecodeRegionKey parses a regionkey string and returns the components as TRegionKey structure.
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="TRegionKeyRev">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=22154:22316#L590">TRegionKeyRev</a>
+				<a class="permalink" href="#TRegionKeyRev">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+TRegionKeyRev contains a genetic region components
+</p>
+
+			<pre>type TRegionKeyRev struct {
+<span id="TRegionKeyRev.Chrom"></span>    Chrom    <a href="/pkg/builtin/#string">string</a> `json:&#34;chrom&#34;`
+<span id="TRegionKeyRev.StartPos"></span>    StartPos <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;startpos&#34;`
+<span id="TRegionKeyRev.EndPos"></span>    EndPos   <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;endpos&#34;`
+<span id="TRegionKeyRev.Strand"></span>    Strand   <a href="/pkg/builtin/#int8">int8</a>   `json:&#34;strand&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="ReverseRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24510:24556#L660">ReverseRegionKey</a>
+					<a class="permalink" href="#ReverseRegionKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func ReverseRegionKey(rk <a href="/pkg/builtin/#uint64">uint64</a>) <a href="#TRegionKeyRev">TRegionKeyRev</a></pre>
+				<p>
+ReverseRegionKey parses a regionkey string and returns the components.
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="TVKRange">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=2577:2651#L58">TVKRange</a>
+				<a class="permalink" href="#TVKRange">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+TVKRange contains min and max VariantKey values for range searches
+</p>
+
+			<pre>type TVKRange struct {
+<span id="TVKRange.Min"></span>    Min <a href="/pkg/builtin/#uint64">uint64</a> `json:&#34;min&#34;`
+<span id="TVKRange.Max"></span>    Max <a href="/pkg/builtin/#uint64">uint64</a> `json:&#34;max&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="Range">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=7138:7193#L188">Range</a>
+					<a class="permalink" href="#Range">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func Range(chrom <a href="/pkg/builtin/#uint8">uint8</a>, posMin, posMax <a href="/pkg/builtin/#uint32">uint32</a>) <a href="#TVKRange">TVKRange</a></pre>
+				<p>
+Range Returns minimum and maximum variant keys for range searches.
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="TVariantKey">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=2115:2231#L41">TVariantKey</a>
+				<a class="permalink" href="#TVariantKey">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+TVariantKey contains a representation of a genetic variant key
+</p>
+
+			<pre>type TVariantKey struct {
+<span id="TVariantKey.Chrom"></span>    Chrom  <a href="/pkg/builtin/#uint8">uint8</a>  `json:&#34;chrom&#34;`
+<span id="TVariantKey.Pos"></span>    Pos    <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;pos&#34;`
+<span id="TVariantKey.RefAlt"></span>    RefAlt <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;refalt&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+				
+				<h3 id="DecodeVariantKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=6237:6280#L167">DecodeVariantKey</a>
+					<a class="permalink" href="#DecodeVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func DecodeVariantKey(v <a href="/pkg/builtin/#uint64">uint64</a>) <a href="#TVariantKey">TVariantKey</a></pre>
+				<p>
+DecodeVariantKey parses a variant key string and returns the components as TVariantKey structure.
+</p>
+
+				
+				
+			
+
+			
+		
+			
+			
+			<h2 id="TVariantKeyRev">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=2289:2505#L48">TVariantKeyRev</a>
+				<a class="permalink" href="#TVariantKeyRev">&#xb6;</a>
+				
+				
+			</h2>
+			<p>
+TVariantKeyRev contains a genetic variant components
+</p>
+
+			<pre>type TVariantKeyRev struct {
+<span id="TVariantKeyRev.Chrom"></span>    Chrom   <a href="/pkg/builtin/#string">string</a> `json:&#34;chrom&#34;`
+<span id="TVariantKeyRev.Pos"></span>    Pos     <a href="/pkg/builtin/#uint32">uint32</a> `json:&#34;pos&#34;`
+<span id="TVariantKeyRev.Ref"></span>    Ref     <a href="/pkg/builtin/#string">string</a> `json:&#34;ref&#34;`
+<span id="TVariantKeyRev.Alt"></span>    Alt     <a href="/pkg/builtin/#string">string</a> `json:&#34;alt&#34;`
+<span id="TVariantKeyRev.SizeRef"></span>    SizeRef <a href="/pkg/builtin/#uint8">uint8</a>  `json:&#34;size_ref&#34;`
+<span id="TVariantKeyRev.SizeAlt"></span>    SizeAlt <a href="/pkg/builtin/#uint8">uint8</a>  `json:&#34;size_alt&#34;`
+}
+</pre>
+
+			
+
+			
+
+			
+			
+			
+
+			
+
+			
+		
+	
+
+	
+
+
+
+
+
+
+
+<div id="footer">
+Build version go1.11.1.<br>
+Except as <a href="https://developers.google.com/site-policies#restrictions">noted</a>,
+the content of this page is licensed under the
+Creative Commons Attribution 3.0 License,
+and code is licensed under a <a href="/LICENSE">BSD license</a>.<br>
+<a href="/doc/tos.html">Terms of Service</a> |
+<a href="http://www.google.com/intl/en/policies/privacy/">Privacy Policy</a>
+</div>
+
+</div><!-- .container -->
+</div><!-- #page -->
+</body>
+</html>
+
