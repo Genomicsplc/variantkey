@@ -91,13 +91,12 @@ pubdocs:
 	cp -r ./python-class/target/doc/*.html ./target/DOCS/python-class/
 	mkdir -p ./target/DOCS/r
 	cp -r ./r/variantkey/docs/* ./target/DOCS/r/
-	cp ./resources/doc/Home.md ./target/DOCS/
-	git clone https://github.com/genomicsplc/variantkey.git ./target/gh-pages
-	cd target/gh-pages
-	git branch gh-pages
+	cp ./resources/doc/index.html ./target/DOCS/
+	git clone git@github.com:Genomicsplc/variantkey.git ./target/gh-pages
+	cd target/gh-pages && git checkout gh-pages
 	mv -f ./target/gh-pages/.git ./target/DOCS/
+	rm -rf ./target/gh-pages
 	cd ./target/DOCS/ && \
 	git add . -A && \
 	git commit -m 'Update documentation' && \
-	git push origin master --force
-	rm -rf ./target/gh-pages
+	git push origin gh-pages --force

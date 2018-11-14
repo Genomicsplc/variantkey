@@ -559,6 +559,9 @@ https://sourceforge.net/projects/variantkey/files/
 <a name="clib"></a>
 ## C Library
 
+* [C source code documentation](https://genomicsplc.github.io/variantkey/c/index.html)
+* [C Usage Examples](c/test/test_example.c)
+
 The reference implementation of this library is written in header-only C programming language in a way that is also compatible with C++.
 
 This project includes a Makefile that allows you to test and build the project in a Linux-compatible system with simple commands.  
@@ -572,44 +575,49 @@ All the artifacts and reports produced using this Makefile are stored in the *ta
 The code inside the `c/vk` folder is used to generate the `vk` command line tool.  
 This tools requires the pre-normalized positional arguments `CHROM`, `POS`, `REF`, `ALT` and returns the VariantKey in hexadecimal representation.
 
-See [C Usage Examples](c/test/test_example.c).
-
 
 <a name="golib"></a>
-## GO Library
+## Go Library (golang)
+
+* [Go source code documentation](https://genomicsplc.github.io/variantkey/go/index.html)
+* [Go Usage Examples](go/example/main.go)
 
 A go wrapper is located in the `go` directory.  
 Use the "`make go`" command to test the GO wrapper and generate reports.
-
-See [GO Usage Examples](go/example/main.go).
 
 
 <a name="pythonlib"></a>
 ## Python Module
 
+* [Python source code documentation](https://genomicsplc.github.io/variantkey/python/variantkey.html)
+* [Python Usage Examples](python/test/example.py)
+
 The python module is located in the `python` directory.
 Use the "`make python`" command to test the Python wrapper and generate reports.
 
-See [Python Usage Examples](python/test/example.py).
 
 <a name="pythonclass"></a>
-## Python Class
+## Python Vectorized Class
+
+* [Python vectorized class source code documentation](https://genomicsplc.github.io/variantkey/python-class/pyvariantkey.variantkey.html)
+* [Python Usage Examples](python-class/test/example.py)
 
 The python class module is a wrapper for the low-level Python library and it is located in the `python-class` directory.
 All methods of this class are vectorized, so they also accept lists or numpy arrays as input.
 Use the "`make python`" command to test the Python class and generate reports.
 
-See [Python Usage Examples](python-class/test/example.py).
 
 <a name="rlib"></a>
 ## R Module
+
+* [R source code documentation](https://genomicsplc.github.io/variantkey/r/index.html)
+* [R Usage Examples](r/example/example.R)
 
 The R module is located in the `r` directory.
 Use the "`make r`" command to test the R wrapper and generate reports.
 
 In R the VariantKey is represented with a custom "uint64" class because there is no native support for unsigned 64 bit integers in R.
 
-See [R Usage Examples](r/example/example.R).
 
 <a name="jslib"></a>
 ## Javascript library (limited support)
