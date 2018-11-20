@@ -11,6 +11,14 @@
 * **license**     MIT (see LICENSE)
 * **link**        https://github.com/Genomicsplc/variantkey
 
+-----------------------------------------------------------------
+
+**How to cite**
+
+Nicola Asuni. [VariantKey - A Reversible Numerical Representation of Human Genetic Variants](https://www.biorxiv.org/content/early/2018/11/19/473744.1)., bioRxiv 473744; doi: https://doi.org/10.1101/473744
+
+
+-----------------------------------------------------------------
 
 ## TOC
 
@@ -34,11 +42,12 @@
 * [R Module](#rlib)
 * [Javascript library](#jslib)
 
+-----------------------------------------------------------------
 
 <a name="description"></a>
 ## Description
 
-A genetic variant is often referred as a single entity but, for a given genome assembly, it is usually represented as a set of four components with variable length: *chromosome*, *position*, *reference* and *alternate* alleles. There is no guarantee that these components are represented in a consistent way across different data sources. The numerical *dbSNP* reference record representation (*rs#*) only covers a subset of all possible variants and it is not bijective. Processing variant-based data can be really inefficient due to the necessity to perform four different comparison operations for each variant, three of which are string comparisons. Working with strings, in contrast of numbers, poses extra challenges on memory allocation and data-representation.
+Human genetic variants are usually represented by four values with variable length: chromosome, position, reference and alternate alleles. There is no guarantee that these components are represented in a consistent way across different data sources, and processing variant-based data can be inefficient because four different comparison operations are needed for each variant, three of which are string comparisons. Working with strings, in contrast to numbers, poses extra challenges on computer memory allocation and data-representation. Existing variant identifiers do not typically  represent every possible variant we may be interested in, nor they are directly reversible.
 
 **VariantKey**, a novel reversible numerical encoding schema for human genetic variants, overcomes these limitations by allowing to process variants as a single 64 bit numeric entities while preserving the ability to be searched and sorted per chromosome and position.
 
@@ -46,7 +55,7 @@ The individual components of short variants (up to 11 bases between `REF` and `A
 
 The [VariantKey Format](#vkformat) doesn't represent universal codes, it only encodes `CHROM`, `POS`, `REF` and `ALT`, so each code is unique for a given reference genome. The direct comparisons of two VariantKeys makes sense only if they both refer to the same genome reference.
 
-This software library can be used to generate and reverse VariantKeys.
+This software library can be used to generate and reverse [VariantKey](#vkformat)s and [RegionKey](#regionkey)s.
 
 
 
