@@ -5,7 +5,7 @@
 # Normalize VCF files (allele decomposition + normalization)
 #
 # Requires:
-#  - vt
+#  - vt (https://github.com/atks/vt)
 #  - tabix
 #
 #  On Debian/Ubuntu:

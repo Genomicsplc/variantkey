@@ -8,10 +8,10 @@
 # - nrvk.bin : Non-reversible VariantKey REF+ALT map
 #
 # Requires:
-#  - vt
-#  - bcftoolsvh (Genomics PLC version of bcftools)
-#  - sort (coreutils)
-#  - xxd (vim-common)
+#  - vt      (https://github.com/atks/vt)
+#  - bcftool (https://github.com/samtools/bcftools/tree/develop)
+#  - sort    (coreutils)
+#  - xxd     (vim-common)
 #
 #  On Debian/Ubuntu:
 #  sudo apt-get update && sudo apt-get install -y --allow-unauthenticated vt bcftoolsvh tabix coreutils vim-common
