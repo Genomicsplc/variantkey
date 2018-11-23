@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>variantkey</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/variantkey_1542189514480/_test_env_placehold_placehold_p/lib/python3.6/site-packages/variantkey.cpython-36m-x86_64-linux-gnu.so">/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/variantkey_1542189514480/_test_env_placehold_placehold_p/lib/python3.6/site-packages/variantkey.cpython-36m-x86_64-linux-gnu.so</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/variantkey_1543004532130/_test_env_placehold_placehold_p/lib/python3.6/site-packages/variantkey.cpython-36m-x86_64-linux-gnu.so">/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/variantkey_1543004532130/_test_env_placehold_placehold_p/lib/python3.6/site-packages/variantkey.cpython-36m-x86_64-linux-gnu.so</a></font></td></tr></table>
     <p></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -463,6 +463,23 @@ Returns<br>
 -------<br>
 tuple&nbsp;:&nbsp;int<br>
 &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey(s).</tt></dd></dl>
+ <dl><dt><a name="-find_all_vr_rsid_by_variantkey"><strong>find_all_vr_rsid_by_variantkey</strong></a>(...)</dt><dd><tt>Search&nbsp;for&nbsp;the&nbsp;specified&nbsp;VariantKey&nbsp;and&nbsp;returns&nbsp;all&nbsp;associated&nbsp;rsIDs.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_vkrs_file">mmap_vkrs_file</a>().<br>
+first&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;First&nbsp;element&nbsp;of&nbsp;the&nbsp;range&nbsp;to&nbsp;search&nbsp;(min&nbsp;value&nbsp;=&nbsp;0).<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;rsID(s).</tt></dd></dl>
  <dl><dt><a name="-find_ref_alt_by_variantkey"><strong>find_ref_alt_by_variantkey</strong></a>(...)</dt><dd><tt>Retrieve&nbsp;the&nbsp;REF&nbsp;and&nbsp;ALT&nbsp;strings&nbsp;for&nbsp;the&nbsp;specified&nbsp;VariantKey.<br>
 &nbsp;<br>
 Parameters<br>
@@ -582,6 +599,24 @@ Returns<br>
 -------<br>
 tuple&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;VariantKey&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
+ <dl><dt><a name="-get_next_vr_rsid_by_variantkey"><strong>get_next_vr_rsid_by_variantkey</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;next&nbsp;VariantKey&nbsp;for&nbsp;the&nbsp;specified&nbsp;rsID&nbsp;in&nbsp;the&nbsp;VR&nbsp;file.&nbsp;This&nbsp;function&nbsp;should&nbsp;be&nbsp;used&nbsp;after&nbsp;find_vr_rsid_by_variantkey.&nbsp;This&nbsp;function&nbsp;can&nbsp;be&nbsp;called&nbsp;in&nbsp;a&nbsp;loop&nbsp;to&nbsp;get&nbsp;all&nbsp;rsIDs&nbsp;that&nbsp;are&nbsp;associated&nbsp;with&nbsp;the&nbsp;same&nbsp;VariantKey&nbsp;(if&nbsp;any).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+mc&nbsp;:&nbsp;obj<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Memory-mapped&nbsp;columns&nbsp;object&nbsp;as&nbsp;retured&nbsp;by&nbsp;<a href="#-mmap_vkrs_file">mmap_vkrs_file</a>().<br>
+pos&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Current&nbsp;item&nbsp;position.<br>
+last&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Element&nbsp;(up&nbsp;to&nbsp;but&nbsp;not&nbsp;including)&nbsp;where&nbsp;to&nbsp;end&nbsp;the&nbsp;search&nbsp;(max&nbsp;value&nbsp;=&nbsp;nitems).<br>
+vk&nbsp;:&nbsp;int<br>
+&nbsp;&nbsp;&nbsp;&nbsp;VariantKey.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;rsID&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
  <dl><dt><a name="-get_regionkey_chrom_endpos"><strong>get_regionkey_chrom_endpos</strong></a>(...)</dt><dd><tt>Get&nbsp;the&nbsp;CHROM&nbsp;+&nbsp;END&nbsp;POS&nbsp;encoding&nbsp;from&nbsp;RegionKey.<br>
 &nbsp;<br>

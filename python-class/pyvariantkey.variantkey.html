@@ -8,7 +8,7 @@
 <td valign=bottom>&nbsp;<br>
 <font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="pyvariantkey.html"><font color="#ffffff">pyvariantkey</font></a>.variantkey</strong></big></big></font></td
 ><td align=right valign=bottom
-><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/pyvariantkey_1542189712446/_test_env_placehold_placehold/lib/python3.6/site-packages/pyvariantkey/variantkey.py">/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/pyvariantkey_1542189712446/_test_env_placehold_placehold/lib/python3.6/site-packages/pyvariantkey/variantkey.py</a></font></td></tr></table>
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="file:/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/pyvariantkey_1543004656731/_test_env_placehold_placehold/lib/python3.6/site-packages/pyvariantkey/variantkey.py">/home/nicola/WWW/GO/src/github.com/genomicsplc/env-variantkey/conda-bld/pyvariantkey_1543004656731/_test_env_placehold_placehold/lib/python3.6/site-packages/pyvariantkey/variantkey.py</a></font></td></tr></table>
     <p><tt>Vectorized&nbsp;<a href="#VariantKey">VariantKey</a>.</tt></p>
 <p>
 <table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
@@ -487,6 +487,18 @@ Returns<br>
 uint64&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;<a href="#VariantKey">VariantKey</a>(s).</tt></dd></dl>
 
+<dl><dt><a name="VariantKey-find_all_vr_rsid_by_variantkey"><strong>find_all_vr_rsid_by_variantkey</strong></a>(self, vk)</dt><dd><tt>Search&nbsp;for&nbsp;the&nbsp;specified&nbsp;<a href="#VariantKey">VariantKey</a>&nbsp;and&nbsp;returns&nbsp;all&nbsp;associated&nbsp;rsIDs.<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+vk&nbsp;:&nbsp;uint64<br>
+&nbsp;&nbsp;&nbsp;&nbsp;variantKey&nbsp;to&nbsp;search.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+uint32&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;rsID(s).</tt></dd></dl>
+
 <dl><dt><a name="VariantKey-find_ref_alt_by_variantkey"><strong>find_ref_alt_by_variantkey</strong></a>(self, vk)</dt><dd><tt>Retrieve&nbsp;the&nbsp;REF&nbsp;and&nbsp;ALT&nbsp;strings&nbsp;for&nbsp;the&nbsp;specified&nbsp;<a href="#VariantKey">VariantKey</a>.<br>
 &nbsp;<br>
 Parameters<br>
@@ -588,6 +600,21 @@ Returns<br>
 -------<br>
 tuple&nbsp;:<br>
 &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;uint64&nbsp;:&nbsp;<a href="#VariantKey">VariantKey</a>&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;uint64&nbsp;:&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
+
+<dl><dt><a name="VariantKey-get_next_vr_rsid_by_variantkey"><strong>get_next_vr_rsid_by_variantkey</strong></a>(self, pos, vk)</dt><dd><tt>Get&nbsp;the&nbsp;next&nbsp;rsID&nbsp;for&nbsp;the&nbsp;specified&nbsp;<a href="#VariantKey">VariantKey</a>&nbsp;in&nbsp;the&nbsp;VR&nbsp;file."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"&nbsp;This&nbsp;function&nbsp;should&nbsp;be&nbsp;used&nbsp;after&nbsp;find_vr_rsid_by_variantkey."&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"&nbsp;This&nbsp;function&nbsp;can&nbsp;be&nbsp;called&nbsp;in&nbsp;a&nbsp;loop&nbsp;to&nbsp;get&nbsp;all&nbsp;rsIDs&nbsp;that&nbsp;are&nbsp;associated&nbsp;with&nbsp;the&nbsp;same&nbsp;<a href="#VariantKey">VariantKey</a>&nbsp;(if&nbsp;any).<br>
+&nbsp;<br>
+Parameters<br>
+----------<br>
+pos&nbsp;:&nbsp;uint64<br>
+&nbsp;&nbsp;&nbsp;&nbsp;Current&nbsp;item&nbsp;position.<br>
+vk&nbsp;:&nbsp;uint64<br>
+&nbsp;&nbsp;&nbsp;&nbsp;variantKey&nbsp;to&nbsp;search.<br>
+&nbsp;<br>
+Returns<br>
+-------<br>
+tuple&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;uint32&nbsp;:&nbsp;rsID&nbsp;or&nbsp;0&nbsp;in&nbsp;case&nbsp;not&nbsp;found.<br>
 &nbsp;&nbsp;&nbsp;&nbsp;-&nbsp;uint64&nbsp;:&nbsp;Item&nbsp;position&nbsp;in&nbsp;the&nbsp;file.</tt></dd></dl>
 
 <dl><dt><a name="VariantKey-get_regionkey_chrom_endpos"><strong>get_regionkey_chrom_endpos</strong></a>(self, rk)</dt><dd><tt>Get&nbsp;the&nbsp;CHROM&nbsp;+&nbsp;END&nbsp;POS&nbsp;encoding&nbsp;from&nbsp;RegionKey.<br>

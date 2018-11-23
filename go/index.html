@@ -310,6 +310,9 @@ THE SOFTWARE.
 					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindAllRVVariantKeyByRsid">func (crv RSIDVARCols) FindAllRVVariantKeyByRsid(first, last uint64, rsid uint32) (vks []uint64)</a></dd>
 				
 					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindAllVRRsidByVariantKey">func (cvr RSIDVARCols) FindAllVRRsidByVariantKey(first, last uint64, vk uint64) (rsids []uint32)</a></dd>
+				
+					
 					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.FindRVVariantKeyByRsid">func (crv RSIDVARCols) FindRVVariantKeyByRsid(first, last uint64, rsid uint32) (uint64, uint64)</a></dd>
 				
 					
@@ -320,6 +323,9 @@ THE SOFTWARE.
 				
 					
 					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.GetNextRVVariantKeyByRsid">func (crv RSIDVARCols) GetNextRVVariantKeyByRsid(pos, last uint64, rsid uint32) (uint64, uint64)</a></dd>
+				
+					
+					<dd>&nbsp; &nbsp; <a href="#RSIDVARCols.GetNextVRRsidByVariantKey">func (cvr RSIDVARCols) GetNextVRRsidByVariantKey(pos, last uint64, vk uint64) (uint32, uint64)</a></dd>
 				
 			
 				
@@ -443,7 +449,7 @@ THE SOFTWARE.
 		
 			
 			
-			<h2 id="AreOverlappingRegionKeys">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26394:26445#L699">AreOverlappingRegionKeys</a>
+			<h2 id="AreOverlappingRegionKeys">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27334:27385#L722">AreOverlappingRegionKeys</a>
 				<a class="permalink" href="#AreOverlappingRegionKeys">&#xb6;</a>
 				
 				
@@ -459,7 +465,7 @@ AreOverlappingRegionKeys check if two regionkeys are overlapping.
 		
 			
 			
-			<h2 id="AreOverlappingRegionRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26098:26186#L694">AreOverlappingRegionRegionKey</a>
+			<h2 id="AreOverlappingRegionRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27038:27126#L717">AreOverlappingRegionRegionKey</a>
 				<a class="permalink" href="#AreOverlappingRegionRegionKey">&#xb6;</a>
 				
 				
@@ -475,7 +481,7 @@ AreOverlappingRegionRegionKey check if a region and a regionkey are overlapping.
 		
 			
 			
-			<h2 id="AreOverlappingRegions">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25721:25834#L689">AreOverlappingRegions</a>
+			<h2 id="AreOverlappingRegions">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26661:26774#L712">AreOverlappingRegions</a>
 				<a class="permalink" href="#AreOverlappingRegions">&#xb6;</a>
 				
 				
@@ -555,7 +561,7 @@ DecodeRefAlt decode Ref+Alt code if reversible
 		
 			
 			
-			<h2 id="DecodeRegionStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23144:23186#L623">DecodeRegionStrand</a>
+			<h2 id="DecodeRegionStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24084:24126#L646">DecodeRegionStrand</a>
 				<a class="permalink" href="#DecodeRegionStrand">&#xb6;</a>
 				
 				
@@ -571,7 +577,7 @@ DecodeRegionStrand decode the strand direction code (0 &gt; 0, 1 &gt; +1, 2 &gt;
 		
 			
 			
-			<h2 id="DecodeStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28012:28051#L733">DecodeStringID</a>
+			<h2 id="DecodeStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28952:28991#L756">DecodeStringID</a>
 				<a class="permalink" href="#DecodeStringID">&#xb6;</a>
 				
 				
@@ -619,7 +625,7 @@ EncodeRefAlt returns reference+alternate code.
 		
 			
 			
-			<h2 id="EncodeRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23295:23374#L628">EncodeRegionKey</a>
+			<h2 id="EncodeRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24235:24314#L651">EncodeRegionKey</a>
 				<a class="permalink" href="#EncodeRegionKey">&#xb6;</a>
 				
 				
@@ -635,7 +641,7 @@ EncodeRegionKey returns  a 64 bit regionkey
 		
 			
 			
-			<h2 id="EncodeRegionStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=22960:23002#L618">EncodeRegionStrand</a>
+			<h2 id="EncodeRegionStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23900:23942#L641">EncodeRegionStrand</a>
 				<a class="permalink" href="#EncodeRegionStrand">&#xb6;</a>
 				
 				
@@ -651,7 +657,7 @@ EncodeRegionStrand encode the strand direction (-1 &gt; 2, 0 &gt; 0, +1 &gt; 1).
 		
 			
 			
-			<h2 id="EncodeStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27182:27232#L716">EncodeStringID</a>
+			<h2 id="EncodeStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28122:28172#L739">EncodeStringID</a>
 				<a class="permalink" href="#EncodeStringID">&#xb6;</a>
 				
 				
@@ -667,7 +673,7 @@ EncodeStringID encode maximum 10 characters of a string into a 64 bit unsigned i
 		
 			
 			
-			<h2 id="EncodeStringNumID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27758:27807#L726">EncodeStringNumID</a>
+			<h2 id="EncodeStringNumID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28698:28747#L749">EncodeStringNumID</a>
 				<a class="permalink" href="#EncodeStringNumID">&#xb6;</a>
 				
 				
@@ -702,7 +708,7 @@ EncodeVariantKey returns a Genetic Variant Key based on pre-encoded CHROM, POS (
 		
 			
 			
-			<h2 id="ExtendRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25146:25197#L674">ExtendRegionKey</a>
+			<h2 id="ExtendRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26086:26137#L697">ExtendRegionKey</a>
 				<a class="permalink" href="#ExtendRegionKey">&#xb6;</a>
 				
 				
@@ -718,7 +724,7 @@ ExtendRegionKey extend a regionkey region by a fixed amount from the start and e
 		
 			
 			
-			<h2 id="ExtractRegionKeyChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23559:23602#L633">ExtractRegionKeyChrom</a>
+			<h2 id="ExtractRegionKeyChrom">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24499:24542#L656">ExtractRegionKeyChrom</a>
 				<a class="permalink" href="#ExtractRegionKeyChrom">&#xb6;</a>
 				
 				
@@ -734,7 +740,7 @@ ExtractRegionKeyChrom extracts the CHROM code from RegionKey.
 		
 			
 			
-			<h2 id="ExtractRegionKeyEndPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23919:23964#L643">ExtractRegionKeyEndPos</a>
+			<h2 id="ExtractRegionKeyEndPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24859:24904#L666">ExtractRegionKeyEndPos</a>
 				<a class="permalink" href="#ExtractRegionKeyEndPos">&#xb6;</a>
 				
 				
@@ -750,7 +756,7 @@ ExtractRegionKeyEndPos extracts the END POS code from RegionKey.
 		
 			
 			
-			<h2 id="ExtractRegionKeyStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23737:23784#L638">ExtractRegionKeyStartPos</a>
+			<h2 id="ExtractRegionKeyStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24677:24724#L661">ExtractRegionKeyStartPos</a>
 				<a class="permalink" href="#ExtractRegionKeyStartPos">&#xb6;</a>
 				
 				
@@ -766,7 +772,7 @@ ExtractRegionKeyStartPos extracts the START POS code from RegionKey.
 		
 			
 			
-			<h2 id="ExtractRegionKeyStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24090:24134#L648">ExtractRegionKeyStrand</a>
+			<h2 id="ExtractRegionKeyStrand">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25030:25074#L671">ExtractRegionKeyStrand</a>
 				<a class="permalink" href="#ExtractRegionKeyStrand">&#xb6;</a>
 				
 				
@@ -830,7 +836,7 @@ ExtractVariantKeyRefAlt extracts the REF+ALT code from VariantKey.
 		
 			
 			
-			<h2 id="FlipAllele">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19139:19176#L520">FlipAllele</a>
+			<h2 id="FlipAllele">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=20079:20116#L543">FlipAllele</a>
 				<a class="permalink" href="#FlipAllele">&#xb6;</a>
 				
 				
@@ -846,7 +852,7 @@ FlipAllele flips allele nucleotides.
 		
 			
 			
-			<h2 id="GetRegionKeyChromEndPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25545:25591#L684">GetRegionKeyChromEndPos</a>
+			<h2 id="GetRegionKeyChromEndPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26485:26531#L707">GetRegionKeyChromEndPos</a>
 				<a class="permalink" href="#GetRegionKeyChromEndPos">&#xb6;</a>
 				
 				
@@ -862,7 +868,7 @@ GetRegionKeyChromEndPos get the CHROM + END POS encoding from RegionKey.
 		
 			
 			
-			<h2 id="GetRegionKeyChromStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25352:25400#L679">GetRegionKeyChromStartPos</a>
+			<h2 id="GetRegionKeyChromStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26292:26340#L702">GetRegionKeyChromStartPos</a>
 				<a class="permalink" href="#GetRegionKeyChromStartPos">&#xb6;</a>
 				
 				
@@ -878,7 +884,7 @@ GetRegionKeyChromStartPos get the CHROM + START POS encoding from RegionKey.
 		
 			
 			
-			<h2 id="GetVariantKeyChromStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17930:17979#L485">GetVariantKeyChromStartPos</a>
+			<h2 id="GetVariantKeyChromStartPos">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18870:18919#L508">GetVariantKeyChromStartPos</a>
 				<a class="permalink" href="#GetVariantKeyChromStartPos">&#xb6;</a>
 				
 				
@@ -894,7 +900,7 @@ GetVariantKeyChromStartPos get the CHROM + START POS encoding from VariantKey.
 		
 			
 			
-			<h2 id="HashStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=28306:28340#L741">HashStringID</a>
+			<h2 id="HashStringID">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=29246:29280#L764">HashStringID</a>
 				<a class="permalink" href="#HashStringID">&#xb6;</a>
 				
 				
@@ -926,7 +932,7 @@ Hex provides a 16 digits hexadecimal string representation of a 64bit unsigned n
 		
 			
 			
-			<h2 id="MmapNRVKFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=15973:16030#L439">MmapNRVKFile</a>
+			<h2 id="MmapNRVKFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=16913:16970#L462">MmapNRVKFile</a>
 				<a class="permalink" href="#MmapNRVKFile">&#xb6;</a>
 				
 				
@@ -990,7 +996,7 @@ ParseHex parses a 16 digit HEX string and returns the 64 bit unsigned number.
 		
 			
 			
-			<h2 id="RegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24760:24833#L667">RegionKey</a>
+			<h2 id="RegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25700:25773#L690">RegionKey</a>
 				<a class="permalink" href="#RegionKey">&#xb6;</a>
 				
 				
@@ -1073,7 +1079,7 @@ The variant should be already normalized (see NormalizeVariant or use Normalized
 		
 			
 			
-			<h2 id="NRVKCols">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=15095:15331#L411">NRVKCols</a>
+			<h2 id="NRVKCols">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=16035:16271#L434">NRVKCols</a>
 				<a class="permalink" href="#NRVKCols">&#xb6;</a>
 				
 				
@@ -1102,7 +1108,7 @@ NRVKCols contains the NRVK memory mapped file column info.
 
 			
 				
-				<h3 id="NRVKCols.AreOverlappingVariantKeyRegionKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26624:26696#L704">AreOverlappingVariantKeyRegionKey</a>
+				<h3 id="NRVKCols.AreOverlappingVariantKeyRegionKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27564:27636#L727">AreOverlappingVariantKeyRegionKey</a>
 					<a class="permalink" href="#NRVKCols.AreOverlappingVariantKeyRegionKey">&#xb6;</a>
 					
 					
@@ -1117,7 +1123,7 @@ AreOverlappingVariantKeyRegionKey check if variantkey and regionkey are overlapp
 				
 			
 				
-				<h3 id="NRVKCols.FindRefAltByVariantKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=16530:16621#L456">FindRefAltByVariantKey</a>
+				<h3 id="NRVKCols.FindRefAltByVariantKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17470:17561#L479">FindRefAltByVariantKey</a>
 					<a class="permalink" href="#NRVKCols.FindRefAltByVariantKey">&#xb6;</a>
 					
 					
@@ -1132,7 +1138,7 @@ FindRefAltByVariantKey retrieve the REF and ALT strings for the specified Varian
 				
 			
 				
-				<h3 id="NRVKCols.GetVariantKeyChromEndPos">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18127:18188#L490">GetVariantKeyChromEndPos</a>
+				<h3 id="NRVKCols.GetVariantKeyChromEndPos">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19067:19128#L513">GetVariantKeyChromEndPos</a>
 					<a class="permalink" href="#NRVKCols.GetVariantKeyChromEndPos">&#xb6;</a>
 					
 					
@@ -1147,7 +1153,7 @@ GetVariantKeyChromEndPos get the CHROM + END POS encoding from VariantKey.
 				
 			
 				
-				<h3 id="NRVKCols.GetVariantKeyEndPos">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17707:17763#L480">GetVariantKeyEndPos</a>
+				<h3 id="NRVKCols.GetVariantKeyEndPos">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18647:18703#L503">GetVariantKeyEndPos</a>
 					<a class="permalink" href="#NRVKCols.GetVariantKeyEndPos">&#xb6;</a>
 					
 					
@@ -1162,7 +1168,7 @@ GetVariantKeyEndPos get the VariantKey end position (POS + REF length).
 				
 			
 				
-				<h3 id="NRVKCols.GetVariantKeyRefLength">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17486:17544#L475">GetVariantKeyRefLength</a>
+				<h3 id="NRVKCols.GetVariantKeyRefLength">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18426:18484#L498">GetVariantKeyRefLength</a>
 					<a class="permalink" href="#NRVKCols.GetVariantKeyRefLength">&#xb6;</a>
 					
 					
@@ -1177,7 +1183,7 @@ GetVariantKeyRefLength retrieve the REF length for the specified VariantKey.
 				
 			
 				
-				<h3 id="NRVKCols.ReverseVariantKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=17181:17253#L468">ReverseVariantKey</a>
+				<h3 id="NRVKCols.ReverseVariantKey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18121:18193#L491">ReverseVariantKey</a>
 					<a class="permalink" href="#NRVKCols.ReverseVariantKey">&#xb6;</a>
 					
 					
@@ -1192,7 +1198,7 @@ ReverseVariantKey reverse a VariantKey code and returns the normalized component
 				
 			
 				
-				<h3 id="NRVKCols.VariantToRegionkey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=26871:26926#L709">VariantToRegionkey</a>
+				<h3 id="NRVKCols.VariantToRegionkey">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=27811:27866#L732">VariantToRegionkey</a>
 					<a class="permalink" href="#NRVKCols.VariantToRegionkey">&#xb6;</a>
 					
 					
@@ -1207,7 +1213,7 @@ VariantToRegionkey get RegionKey from VariantKey.
 				
 			
 				
-				<h3 id="NRVKCols.VknrBinToTSV">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18403:18457#L495">VknrBinToTSV</a>
+				<h3 id="NRVKCols.VknrBinToTSV">func (NRVKCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19343:19397#L518">VknrBinToTSV</a>
 					<a class="permalink" href="#NRVKCols.VknrBinToTSV">&#xb6;</a>
 					
 					
@@ -1268,6 +1274,22 @@ Returns a list of VariantKeys
 				
 			
 				
+				<h3 id="RSIDVARCols.FindAllVRRsidByVariantKey">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=15042:15138#L410">FindAllVRRsidByVariantKey</a>
+					<a class="permalink" href="#RSIDVARCols.FindAllVRRsidByVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (cvr <a href="#RSIDVARCols">RSIDVARCols</a>) FindAllVRRsidByVariantKey(first, last <a href="/pkg/builtin/#uint64">uint64</a>, vk <a href="/pkg/builtin/#uint64">uint64</a>) (rsids []<a href="/pkg/builtin/#uint32">uint32</a>)</pre>
+				<p>
+FindAllVRRsidByVariantKey get all rsID for the specified VariantKeys in the VR file.
+Returns a list of rsIDs
+</p>
+
+				
+				
+				
+			
+				
 				<h3 id="RSIDVARCols.FindRVVariantKeyByRsid">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=12902:12997#L364">FindRVVariantKeyByRsid</a>
 					<a class="permalink" href="#RSIDVARCols.FindRVVariantKeyByRsid">&#xb6;</a>
 					
@@ -1283,7 +1305,7 @@ FindRVVariantKeyByRsid search for the specified RSID and returns the first occur
 				
 			
 				
-				<h3 id="RSIDVARCols.FindVRChromPosRange">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=14643:14766#L401">FindVRChromPosRange</a>
+				<h3 id="RSIDVARCols.FindVRChromPosRange">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=15583:15706#L424">FindVRChromPosRange</a>
 					<a class="permalink" href="#RSIDVARCols.FindVRChromPosRange">&#xb6;</a>
 					
 					
@@ -1328,6 +1350,22 @@ Returns the VariantKey or 0, and the position
 				
 				
 			
+				
+				<h3 id="RSIDVARCols.GetNextVRRsidByVariantKey">func (RSIDVARCols) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=14657:14751#L402">GetNextVRRsidByVariantKey</a>
+					<a class="permalink" href="#RSIDVARCols.GetNextVRRsidByVariantKey">&#xb6;</a>
+					
+					
+				</h3>
+				<pre>func (cvr <a href="#RSIDVARCols">RSIDVARCols</a>) GetNextVRRsidByVariantKey(pos, last <a href="/pkg/builtin/#uint64">uint64</a>, vk <a href="/pkg/builtin/#uint64">uint64</a>) (<a href="/pkg/builtin/#uint32">uint32</a>, <a href="/pkg/builtin/#uint64">uint64</a>)</pre>
+				<p>
+GetNextVRRsidByVariantKey get the next rsID for the specified VariantKey in the VR file.
+Returns the rsID or 0, and the position
+</p>
+
+				
+				
+				
+			
 		
 			
 			
@@ -1363,7 +1401,7 @@ TMMFile contains the memory mapped file info
 
 			
 				
-				<h3 id="MmapGenorefFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=18697:18747#L504">MmapGenorefFile</a>
+				<h3 id="MmapGenorefFile">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19637:19687#L527">MmapGenorefFile</a>
 					<a class="permalink" href="#MmapGenorefFile">&#xb6;</a>
 					
 					
@@ -1379,7 +1417,7 @@ MmapGenorefFile maps the specified fasta file in memory.
 
 			
 				
-				<h3 id="TMMFile.CheckReference">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19711:19784#L534">CheckReference</a>
+				<h3 id="TMMFile.CheckReference">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=20651:20724#L557">CheckReference</a>
 					<a class="permalink" href="#TMMFile.CheckReference">&#xb6;</a>
 					
 					
@@ -1409,7 +1447,7 @@ Close Unmap and close the memory-mapped file.
 				
 			
 				
-				<h3 id="TMMFile.GetGenorefSeq">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=19461:19522#L529">GetGenorefSeq</a>
+				<h3 id="TMMFile.GetGenorefSeq">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=20401:20462#L552">GetGenorefSeq</a>
 					<a class="permalink" href="#TMMFile.GetGenorefSeq">&#xb6;</a>
 					
 					
@@ -1424,7 +1462,7 @@ GetGenorefSeq returns the nucleotide at the specified chromosome and position.
 				
 			
 				
-				<h3 id="TMMFile.NormalizeVariant">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=20244:20396#L541">NormalizeVariant</a>
+				<h3 id="TMMFile.NormalizeVariant">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=21184:21336#L564">NormalizeVariant</a>
 					<a class="permalink" href="#TMMFile.NormalizeVariant">&#xb6;</a>
 					
 					
@@ -1439,7 +1477,7 @@ NormalizeVariant flips alleles if required and apply the normalization algorithm
 				
 			
 				
-				<h3 id="TMMFile.NormalizedVariantKey">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=21090:21216#L561">NormalizedVariantKey</a>
+				<h3 id="TMMFile.NormalizedVariantKey">func (TMMFile) <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=22030:22156#L584">NormalizedVariantKey</a>
 					<a class="permalink" href="#TMMFile.NormalizedVariantKey">&#xb6;</a>
 					
 					
@@ -1456,7 +1494,7 @@ NormalizedVariantKey returns a normalized Genetic Variant Key based on CHROM, PO
 		
 			
 			
-			<h2 id="TRegionKey">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=21939:22098#L582">TRegionKey</a>
+			<h2 id="TRegionKey">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=22879:23038#L605">TRegionKey</a>
 				<a class="permalink" href="#TRegionKey">&#xb6;</a>
 				
 				
@@ -1483,7 +1521,7 @@ TRegionKey contains a representation of a genetic region key
 
 			
 				
-				<h3 id="DecodeRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24295:24337#L653">DecodeRegionKey</a>
+				<h3 id="DecodeRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25235:25277#L676">DecodeRegionKey</a>
 					<a class="permalink" href="#DecodeRegionKey">&#xb6;</a>
 					
 					
@@ -1501,7 +1539,7 @@ DecodeRegionKey parses a regionkey string and returns the components as TRegionK
 		
 			
 			
-			<h2 id="TRegionKeyRev">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=22154:22316#L590">TRegionKeyRev</a>
+			<h2 id="TRegionKeyRev">type <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=23094:23256#L613">TRegionKeyRev</a>
 				<a class="permalink" href="#TRegionKeyRev">&#xb6;</a>
 				
 				
@@ -1528,7 +1566,7 @@ TRegionKeyRev contains a genetic region components
 
 			
 				
-				<h3 id="ReverseRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=24510:24556#L660">ReverseRegionKey</a>
+				<h3 id="ReverseRegionKey">func <a href=https://github.com/genomicsplc/variantkey/blob/master/go/src/variantkey.go?s=25450:25496#L683">ReverseRegionKey</a>
 					<a class="permalink" href="#ReverseRegionKey">&#xb6;</a>
 					
 					

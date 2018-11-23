@@ -58,7 +58,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">variantkey</a>
-        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">5.3.4.1</span>
+        <span class="label label-default" data-toggle="tooltip" data-placement="bottom" title="Released package">5.4.0.1</span>
       </span>
     </div>
 
@@ -314,6 +314,13 @@ NOTE: the output is limited to maximum 10 results.</p></td>
       </tr><tr>
         
         <td>
+          <p><code><a href="FindAllVrRsidByVariantKey.html">FindAllVrRsidByVariantKey()</a></code> </p>
+        </td>
+        <td><p>Search for the specified VariantKey and returns all the associated rsIDs in the VR file.
+NOTE: the output is limited to maximum 10 results.</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="FindRefAltByVariantKey.html">FindRefAltByVariantKey()</a></code> </p>
         </td>
         <td><p>Retrieve the REF and ALT strings for the specified VariantKey.
@@ -357,6 +364,13 @@ Support extended nucleotide letters.</p></td>
         </td>
         <td><p>Get the next VariantKey for the specified rsID in the RV file, or 0 if not found
 This function can be called in a loop to get all VariantKeys that are associated with the same rsID (if any).</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="GetNextVrRsidByVariantKey.html">GetNextVrRsidByVariantKey()</a></code> </p>
+        </td>
+        <td><p>Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).</p></td>
       </tr><tr>
         
         <td>

@@ -32,7 +32,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">VariantKey
-   &#160;<span id="projectnumber">5.3.4</span>
+   &#160;<span id="projectnumber">5.4.0</span>
    </div>
    <div id="projectbrief">Numerical Encoding for Human Genetic Variants</div>
   </td>
@@ -142,6 +142,8 @@ Functions</h2></td></tr>
 <tr class="separator:a1afdb8f75e9e8b33f79dcf73bdfcc1aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9972dcbd6479393f46bab73f6910479"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="rsidvar_8h.html#ad9972dcbd6479393f46bab73f6910479">find_vr_rsid_by_variantkey</a> (<a class="el" href="structrsidvar__cols__t.html">rsidvar_cols_t</a> cvr, uint64_t *first, uint64_t last, uint64_t vk)</td></tr>
 <tr class="separator:ad9972dcbd6479393f46bab73f6910479"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a13321a33ad8e7be9a3d05562279035fd"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="rsidvar_8h.html#a13321a33ad8e7be9a3d05562279035fd">get_next_vr_rsid_by_variantkey</a> (<a class="el" href="structrsidvar__cols__t.html">rsidvar_cols_t</a> cvr, uint64_t *pos, uint64_t last, uint64_t vk)</td></tr>
+<tr class="separator:a13321a33ad8e7be9a3d05562279035fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a35a19319959f573f96888a8f06b0508a"><td class="memItemLeft" align="right" valign="top">static uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="rsidvar_8h.html#a35a19319959f573f96888a8f06b0508a">find_vr_chrompos_range</a> (<a class="el" href="structrsidvar__cols__t.html">rsidvar_cols_t</a> cvr, uint64_t *first, uint64_t *last, uint8_t chrom, uint32_t pos_min, uint32_t pos_max)</td></tr>
 <tr class="separator:a35a19319959f573f96888a8f06b0508a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -403,6 +405,63 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>VariantKey data or zero data if not found </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="a13321a33ad8e7be9a3d05562279035fd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">static uint32_t get_next_vr_rsid_by_variantkey </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structrsidvar__cols__t.html">rsidvar_cols_t</a>&#160;</td>
+          <td class="paramname"><em>cvr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t *&#160;</td>
+          <td class="paramname"><em>pos</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>last</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>vk</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get the next rsID for the specified VariantKey in the VR file. This function should be used after find_vr_rsid_by_variantkey. This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">cvr</td><td>Structure containing the pointers to the VKRS memory mapped file columns (vkrs.bin). </td></tr>
+    <tr><td class="paramname">pos</td><td>Pointer to the current item. This will hold the position of the next record. </td></tr>
+    <tr><td class="paramname">last</td><td>Element (up to but not including) where to end the search (max value = nitems). </td></tr>
+    <tr><td class="paramname">vk</td><td>VariantKey.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>rsID data or zero data if not found </dd></dl>
 
 </div>
 </div>

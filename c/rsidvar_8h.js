@@ -6,6 +6,7 @@ var rsidvar_8h =
     [ "find_vr_chrompos_range", "rsidvar_8h.html#a35a19319959f573f96888a8f06b0508a", null ],
     [ "find_vr_rsid_by_variantkey", "rsidvar_8h.html#ad9972dcbd6479393f46bab73f6910479", null ],
     [ "get_next_rv_variantkey_by_rsid", "rsidvar_8h.html#a1afdb8f75e9e8b33f79dcf73bdfcc1aa", null ],
+    [ "get_next_vr_rsid_by_variantkey", "rsidvar_8h.html#a13321a33ad8e7be9a3d05562279035fd", null ],
     [ "mmap_rsvk_file", "rsidvar_8h.html#a4ef5fa3c1b46dd4685acd21ddf006df5", null ],
     [ "mmap_vkrs_file", "rsidvar_8h.html#ae28e840ebc230a52104065ffd691dab7", null ]
 ];

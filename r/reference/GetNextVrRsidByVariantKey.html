@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prints uint64 argument and returns it invisibly. — print.uint64 • variantkey</title>
+<title>Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any). — GetNextVrRsidByVariantKey • variantkey</title>
 
 <!-- jquery -->
 <script src="https://code.jquery.com/jquery-3.1.0.min.js" integrity="sha384-nrOSfDHtoPMzJHjVTdCopGqIqeYETSXhZDFyniQ8ZHcVy08QesyHcnOUpMpqnmWq" crossorigin="anonymous"></script>
@@ -30,9 +31,11 @@
 
 
 
-<meta property="og:title" content="Prints uint64 argument and returns it invisibly. — print.uint64" />
+<meta property="og:title" content="Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any). — GetNextVrRsidByVariantKey" />
 
-<meta property="og:description" content="Prints uint64 argument and returns it invisibly." />
+<meta property="og:description" content="Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any)." />
 <meta name="twitter:card" content="summary" />
 
 
@@ -97,25 +100,49 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prints uint64 argument and returns it invisibly.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/Genomicsplc/variantkey/blob/master/R/uint64.R'><code>R/uint64.R</code></a></small>
-    <div class="hidden name"><code>print.uint64.Rd</code></div>
+    <h1>Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).</h1>
+    <small class="dont-index">Source: <a href='https://github.com/Genomicsplc/variantkey/blob/master/R/variantkey.R'><code>R/variantkey.R</code></a></small>
+    <div class="hidden name"><code>GetNextVrRsidByVariantKey.Rd</code></div>
     </div>
 
     <div class="ref-description">
     
-    <p>Prints uint64 argument and returns it invisibly.</p>
+    <p>Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).</p>
     
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for uint64</span>
-<span class='fu'>print</span>(<span class='no'>x</span>, <span class='no'>...</span>)</pre>
-        
+    <pre class="usage"><span class='fu'>GetNextVrRsidByVariantKey</span>(<span class='no'>vk</span>, <span class='no'>pos</span>, <span class='kw'>last</span> <span class='kw'>=</span> <span class='no'>vk.env</span>$<span class='no'>vkrs_</span>$<span class='no'>NROWS</span>,
+  <span class='kw'>mc</span> <span class='kw'>=</span> <span class='no'>vk.env</span>$<span class='no'>vkrs_</span>$<span class='no'>MC</span>)</pre>
+    
+    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
+    <table class="ref-arguments">
+    <colgroup><col class="name" /><col class="desc" /></colgroup>
+    <tr>
+      <th>vk</th>
+      <td><p>VariantKey to search.</p></td>
+    </tr>
+    <tr>
+      <th>pos</th>
+      <td><p>Current item.</p></td>
+    </tr>
+    <tr>
+      <th>last</th>
+      <td><p>Element (up to but not including) where to end the search (max value = nitems).</p></td>
+    </tr>
+    <tr>
+      <th>mc</th>
+      <td><p>Memory-mapped columns object as retured by MmapRSVKfile.</p></td>
+    </tr>
+    </table>
+    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
+      <li><a href="#arguments">Arguments</a></li>
                 </ul>
 
   </div>

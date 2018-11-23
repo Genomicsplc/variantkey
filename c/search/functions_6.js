@@ -2,6 +2,7 @@ var searchData=
 [
   ['get_5fgenoref_5fseq',['get_genoref_seq',['../genoref_8h.html#a748f973073b2a044edd819630f3fb6b3',1,'genoref.h']]],
   ['get_5fnext_5frv_5fvariantkey_5fby_5frsid',['get_next_rv_variantkey_by_rsid',['../rsidvar_8h.html#a1afdb8f75e9e8b33f79dcf73bdfcc1aa',1,'rsidvar.h']]],
+  ['get_5fnext_5fvr_5frsid_5fby_5fvariantkey',['get_next_vr_rsid_by_variantkey',['../rsidvar_8h.html#a13321a33ad8e7be9a3d05562279035fd',1,'rsidvar.h']]],
   ['get_5fnrvk_5fref_5falt_5fby_5fpos',['get_nrvk_ref_alt_by_pos',['../nrvk_8h.html#ae1fd26435b086615686388548d3df604',1,'nrvk.h']]],
   ['get_5fregionkey_5fchrom_5fendpos',['get_regionkey_chrom_endpos',['../regionkey_8h.html#a7194028cb92a1939874280fa324fe037',1,'regionkey.h']]],
   ['get_5fregionkey_5fchrom_5fstartpos',['get_regionkey_chrom_startpos',['../regionkey_8h.html#a1758b8c89b069cca3422ec195536cd37',1,'regionkey.h']]],

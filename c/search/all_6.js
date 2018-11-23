@@ -7,6 +7,7 @@ var searchData=
   ['get_5fmiddle_5fblock',['GET_MIDDLE_BLOCK',['../binsearch_8h.html#a1a8b38d5244744dc6543471183eea68c',1,'binsearch.h']]],
   ['get_5fmiddle_5fpoint',['get_middle_point',['../binsearch_8h.html#acfa58740ee6cbd77b5c7b6abd937226e',1,'binsearch.h']]],
   ['get_5fnext_5frv_5fvariantkey_5fby_5frsid',['get_next_rv_variantkey_by_rsid',['../rsidvar_8h.html#a1afdb8f75e9e8b33f79dcf73bdfcc1aa',1,'rsidvar.h']]],
+  ['get_5fnext_5fvr_5frsid_5fby_5fvariantkey',['get_next_vr_rsid_by_variantkey',['../rsidvar_8h.html#a13321a33ad8e7be9a3d05562279035fd',1,'rsidvar.h']]],
   ['get_5fnrvk_5fref_5falt_5fby_5fpos',['get_nrvk_ref_alt_by_pos',['../nrvk_8h.html#ae1fd26435b086615686388548d3df604',1,'nrvk.h']]],
   ['get_5fpos_5fblock',['GET_POS_BLOCK',['../binsearch_8h.html#a641b20c4420de81ffd7a891bd3d6e949',1,'binsearch.h']]],
   ['get_5fregionkey_5fchrom_5fendpos',['get_regionkey_chrom_endpos',['../regionkey_8h.html#a7194028cb92a1939874280fa324fe037',1,'regionkey.h']]],
