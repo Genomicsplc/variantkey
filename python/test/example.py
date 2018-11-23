@@ -185,6 +185,12 @@ if nrows <= 0:
 vk.find_vr_rsid_by_variantkey(mc, 0, nrows, vk=0X80010274003A0000)
 # (97, 3)
 
+vk.get_next_vr_rsid_by_variantkey(mc, 2, nrows, vk=0X80010274003A0000)
+# (97, 3)
+
+vk.find_all_vr_rsid_by_variantkey(mc, 0, nrows, vk=0X80010274003A0000)
+# [97]
+
 vk.find_vr_chrompos_range(mc, 0, nrows, 0X14, 0X000256C5, 0X000256CB)
 # (9973, 7, 9)
 

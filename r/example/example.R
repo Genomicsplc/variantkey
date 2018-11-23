@@ -279,6 +279,18 @@ print(x)
 # $FIRST
 # [1] 3
 
+x <- GetNextVrRsidByVariantKey(vk="9223656209074749440", pos=2)
+print(x)
+# $RSID
+# [1] 97
+#
+# $POS
+# [1] 3
+
+x <- FindAllVrRsidByVariantKey(vk="9223656209074749440")
+print(x)
+# [1] 97
+
 x <- FindVrChromposRange(chrom=0x14, pos_min=0x000256C5, pos_max=0x000256CB)
 print(x)
 #$RSID

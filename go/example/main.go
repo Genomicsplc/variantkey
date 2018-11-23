@@ -178,8 +178,14 @@ func main() {
 	fmt.Println(vr.FindVRRsidByVariantKey(0, 9, 0x80010274003A0000))
 	// 97 3
 
+	fmt.Println(vr.GetNextVRRsidByVariantKey(2, 9, 0x80010274003A0000))
+	// 97 3
+
+	fmt.Println(vr.FindAllVRRsidByVariantKey(0, 9, 0x80010274003A0000))
+	// [97]
+
 	fmt.Println(vr.FindVRChromPosRange(0, 9, 0x14, 0x000256C5, 0x000256CB))
-	// 9973 7 8
+	// 9973 7 9
 
 	// /\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\/\
 

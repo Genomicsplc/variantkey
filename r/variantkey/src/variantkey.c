@@ -455,6 +455,49 @@ SEXP R_find_vr_rsid_by_variantkey(SEXP mc, SEXP first, SEXP last, SEXP vk, SEXP 
     return res;
 }
 
+SEXP R_get_next_vr_rsid_by_variantkey(SEXP mc, SEXP pos, SEXP last, SEXP vk, SEXP rsid, SEXP rpos)
+{
+    uint64_t i, n = LENGTH(rsid);
+    uint32_t *prsid = (uint32_t *)INTEGER(rsid);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    uint32_t *ppos = (uint32_t *)INTEGER(rpos);
+    uint32_t *ipos = (uint32_t *)INTEGER(pos);
+    const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
+    uint64_t pplast = asInteger(last);
+    uint64_t tpos;
+    for(i = 0; i < n; i++)
+    {
+        tpos = ipos[i];
+        prsid[i] = get_next_vr_rsid_by_variantkey(*cmc, &tpos, pplast, pvk[i]);
+        ppos[i] = tpos;
+    }
+    const char *names[] = {"RSID", "POS", ""};
+    SEXP res = PROTECT(mkNamed(VECSXP, names));
+    SET_VECTOR_ELT(res, 0, rsid);
+    SET_VECTOR_ELT(res, 1, rpos);
+    UNPROTECT(1);
+    return res;
+}
+
+SEXP R_find_all_vr_rsid_by_variantkey(SEXP mc, SEXP first, SEXP last, SEXP vk, SEXP ret)
+{
+    uint64_t n = LENGTH(ret);
+    uint32_t *res = (uint32_t *)INTEGER(ret);
+    uint64_t *pvk = (uint64_t *)REAL(vk);
+    uint64_t pfirst = asInteger(first);
+    const rsidvar_cols_t *cmc = get_rsidvar_mc(mc);
+    uint32_t rsid = find_vr_rsid_by_variantkey(*cmc, &pfirst, asInteger(last), *pvk);
+    uint64_t i = 0;
+    while ((rsid > 0) && (i < n))
+    {
+        res[i] = rsid;
+        i++;
+        rsid = get_next_vr_rsid_by_variantkey(*cmc, &pfirst, asInteger(last), *pvk);
+    }
+    SETLENGTH(ret, i);
+    return ret;
+}
+
 SEXP R_find_vr_chrompos_range(SEXP mc, SEXP first, SEXP last, SEXP chrom, SEXP pos_min, SEXP pos_max, SEXP rrsid, SEXP rfirst, SEXP rlast)
 {
     uint64_t i, n = LENGTH(rrsid);

@@ -439,6 +439,39 @@ static PyObject* py_find_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyO
     return result;
 }
 
+static PyObject* py_get_next_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    uint64_t pos, last, vk;
+    PyObject* mc = NULL;
+    static char *kwlist[] = {"mc", "pos", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKK", kwlist, &mc, &pos, &last, &vk))
+        return NULL;
+    const rsidvar_cols_t *cmc = py_get_rsidvar_mc(mc);
+    uint32_t h = get_next_vr_rsid_by_variantkey(*cmc, &pos, last, vk);
+    PyObject *result = PyTuple_New(2);
+    PyTuple_SetItem(result, 0, Py_BuildValue("I", h));
+    PyTuple_SetItem(result, 1, Py_BuildValue("K", pos));
+    return result;
+}
+
+static PyObject* py_find_all_vr_rsid_by_variantkey(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
+{
+    PyObject* rsids = PyList_New(0);
+    uint64_t first, last, vk;
+    PyObject* mc = NULL;
+    static char *kwlist[] = {"mc", "first", "last", "vk", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, keywds, "OKKK", kwlist, &mc, &first, &last, &vk))
+        return NULL;
+    const rsidvar_cols_t *cmc = py_get_rsidvar_mc(mc);
+    uint32_t h = find_vr_rsid_by_variantkey(*cmc, &first, last, vk);
+    while (h > 0)
+    {
+        PyList_Append(rsids, Py_BuildValue("I", h));
+        h = get_next_vr_rsid_by_variantkey(*cmc, &first, last, vk);
+    }
+    return rsids;
+}
+
 static PyObject* py_find_vr_chrompos_range(PyObject *Py_UNUSED(ignored), PyObject *args, PyObject *keywds)
 {
     uint64_t first, last;
@@ -1026,6 +1059,8 @@ static PyMethodDef PyVariantKeyMethods[] =
     {"get_next_rv_variantkey_by_rsid", (PyCFunction)py_get_next_rv_variantkey_by_rsid, METH_VARARGS|METH_KEYWORDS, PYGETNEXTRVVARIANTKEYBYRSID_DOCSTRING},
     {"find_all_rv_variantkey_by_rsid", (PyCFunction)py_find_all_rv_variantkey_by_rsid, METH_VARARGS|METH_KEYWORDS, PYFINDALLRVVARIANTKEYBYRSID_DOCSTRING},
     {"find_vr_rsid_by_variantkey", (PyCFunction)py_find_vr_rsid_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYFINDVRRSIDBYVARIANTKEY_DOCSTRING},
+    {"get_next_vr_rsid_by_variantkey", (PyCFunction)py_get_next_vr_rsid_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYGETNEXTVRRSIDBYVARIANTKEY_DOCSTRING},
+    {"find_all_vr_rsid_by_variantkey", (PyCFunction)py_find_all_vr_rsid_by_variantkey, METH_VARARGS|METH_KEYWORDS, PYFINDALLVRRSIDBYVARIANTKEY_DOCSTRING},
     {"find_vr_chrompos_range", (PyCFunction)py_find_vr_chrompos_range, METH_VARARGS|METH_KEYWORDS, PYFINDVRCHROMPOSRANGE_DOCSTRING},
 
     // NRVK

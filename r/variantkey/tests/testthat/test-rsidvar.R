@@ -64,6 +64,26 @@ test_that("FindVrChromposRange", {
     expect_that(res$LAST, equals(9))
 })
 
+test_that("GetNextVrRsidByVariantKey", {
+    res <- GetNextVrRsidByVariantKey(pos=2, vk="9223656209074749440")
+    expect_that(res$RSID, equals(97))
+    expect_that(res$POS, equals(3))
+    res <- GetNextVrRsidByVariantKey(vk="9223656209074749440", pos=res$POS)
+    expect_that(res$RSID, equals(0))
+    expect_that(res$POS, equals(4))
+})
+
+test_that("FindAllVrRsidByVariantKey", {
+    res <- FindAllVrRsidByVariantKey(vk="9223656209074749440")
+    expect_that(length(res), equals(1))
+    expect_that(unlist(res[1]), equals(97))
+})
+
+test_that("FindAllVrRsidByVariantKeyNotFound", {
+    res <- FindAllVrRsidByVariantKey(vk="fffffffffffffff0")
+    expect_that(length(res), equals(0))
+})
+
 test_that("FindVrChromposRangeNotFound", {
     res <- FindVrChromposRange(0xff, 0xffffff00, 0xfffffff0)
     expect_that(res$RSID, equals(0))

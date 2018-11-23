@@ -149,6 +149,12 @@ vk.find_all_rv_variantkey_by_rsid(0x00000061)
 vk.find_vr_rsid_by_variantkey(vk=0x80010274003a0000)
 # (array(97, dtype=uint32), array(3, dtype=uint64))
 
+vk.get_next_vr_rsid_by_variantkey(2, vk=0x80010274003a0000)
+# (array(97, dtype=uint32), array(3, dtype=uint64))
+
+vk.find_all_vr_rsid_by_variantkey(0x80010274003a0000)
+# array([97], dtype=uint32)
+
 vk.find_vr_chrompos_range(0x14, 0x000256c5, 0x000256cb)
 # (array(9973, dtype=uint32), array(7, dtype=uint64), array(9, dtype=uint64))
 

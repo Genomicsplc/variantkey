@@ -168,6 +168,27 @@ static inline uint32_t find_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *
 }
 
 /**
+ * Get the next rsID for the specified VariantKey in the VR file.
+ * This function should be used after find_vr_rsid_by_variantkey.
+ * This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).
+ *
+ * @param cvr       Structure containing the pointers to the VKRS memory mapped file columns (vkrs.bin).
+ * @param pos       Pointer to the current item. This will hold the position of the next record.
+ * @param last      Element (up to but not including) where to end the search (max value = nitems).
+ * @param vk        VariantKey.
+ *
+ * @return rsID data or zero data if not found
+ */
+static inline uint32_t get_next_vr_rsid_by_variantkey(rsidvar_cols_t cvr, uint64_t *pos, uint64_t last, uint64_t vk)
+{
+    if (col_has_next_uint64_t(cvr.vk, pos, last, vk))
+    {
+        return *(cvr.rs + *pos);
+    }
+    return 0;
+}
+
+/**
  * Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
  *
  * @param cvr       Structure containing the pointers to the VKRS memory mapped file columns (vkrs.bin).

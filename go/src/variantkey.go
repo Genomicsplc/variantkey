@@ -407,6 +407,29 @@ func (crv RSIDVARCols) FindVRRsidByVariantKey(first uint64, last uint64, vk uint
 	return rsid, uint64(cfirst)
 }
 
+// GetNextVRRsidByVariantKey get the next rsID for the specified VariantKey in the VR file.
+// Returns the rsID or 0, and the position
+func (cvr RSIDVARCols) GetNextVRRsidByVariantKey(pos, last uint64, vk uint64) (uint32, uint64) {
+	cpos := C.uint64_t(pos)
+	rsid := uint32(C.get_next_vr_rsid_by_variantkey(castGoRSIDVARColsToC(cvr), &cpos, C.uint64_t(last), C.uint64_t(vk)))
+	return rsid, uint64(cpos)
+}
+
+// FindAllVRRsidByVariantKey get all rsID for the specified VariantKeys in the VR file.
+// Returns a list of rsIDs
+func (cvr RSIDVARCols) FindAllVRRsidByVariantKey(first, last uint64, vk uint64) (rsids []uint32) {
+	ccr := castGoRSIDVARColsToC(cvr)
+	cfirst := C.uint64_t(first)
+	clast := C.uint64_t(last)
+	cvk := C.uint64_t(vk)
+	rsid := uint32(C.find_vr_rsid_by_variantkey(ccr, &cfirst, clast, cvk))
+	for rsid > 0 {
+		rsids = append(rsids, rsid)
+		rsid = uint32(C.get_next_vr_rsid_by_variantkey(ccr, &cfirst, clast, cvk))
+	}
+	return
+}
+
 // FindVRChromPosRange search for the specified CHROM-POS range and returns the first occurrence of RSID in the VR file.
 func (crv RSIDVARCols) FindVRChromPosRange(first, last uint64, chrom uint8, posMin, posMax uint32) (uint32, uint64, uint64) {
 	cfirst := C.uint64_t(first)

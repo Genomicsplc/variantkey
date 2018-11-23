@@ -138,6 +138,35 @@ func BenchmarkFindVRRsidByVariantKey(b *testing.B) {
 	}
 }
 
+func TestGetNextVRRsidByVariantKey(t *testing.T) {
+	var rsid uint32
+	pos := uint64(2)
+	rsid, pos = vr.GetNextVRRsidByVariantKey(pos, vr.NRows, 0x80010274003A0000)
+	if pos != 3 {
+		t.Errorf("(1) Expected pos 3, got %d", pos)
+	}
+	if rsid != 97 {
+		t.Errorf("(1) Expected rsID 97, got %d", rsid)
+	}
+	rsid, pos = vr.GetNextVRRsidByVariantKey(pos, vr.NRows, 0x80010274003A0000)
+	if pos != 4 {
+		t.Errorf("(2) Expected pos 4, got %d", pos)
+	}
+	if rsid != 0 {
+		t.Errorf("(2) Expected rsID 0, got %d", rsid)
+	}
+}
+
+func TestFindAllVRRsidByVariantKey(t *testing.T) {
+	rsid := vr.FindAllVRRsidByVariantKey(0, vr.NRows, 0x80010274003A0000)
+	if len(rsid) != 1 {
+		t.Errorf("Expected len 1, got %d", len(rsid))
+	}
+	if rsid[0] != 97 {
+		t.Errorf("Expected rsID 97, got %d", rsid[0])
+	}
+}
+
 func TestFindVRChromPosRange(t *testing.T) {
 	rsid, first, last := vr.FindVRChromPosRange(0, vr.NRows, testData[6].chrom, testData[7].pos, testData[8].pos)
 	if rsid != testData[7].rsid {

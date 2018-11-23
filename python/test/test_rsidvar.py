@@ -113,6 +113,19 @@ class TestFunctions(TestCase):
         self.assertEqual(rx, 0)
         self.assertEqual(first, 9)
 
+    def test_get_next_vr_rsid_by_variantkey(self):
+        rsid, pos = bs.get_next_vr_rsid_by_variantkey(vrmc, 2, vrnrows, 0x80010274003A0000)
+        self.assertEqual(rsid, 97)
+        self.assertEqual(pos, 3)
+        rsid, pos = bs.get_next_vr_rsid_by_variantkey(vrmc, pos, vrnrows, 0x80010274003A0000)
+        self.assertEqual(rsid, 0)
+        self.assertEqual(pos, 4)
+
+    def test_find_all_vr_rsid_by_variantkey(self):
+        rsids = bs.find_all_vr_rsid_by_variantkey(vrmc, 0, vrnrows, 0x80010274003A0000)
+        self.assertEqual(len(rsids), 1)
+        self.assertEqual(rsids[0], 97)
+
     def test_find_vr_chrompos_range(self):
         xrsid, xfirst, xlast = bs.find_vr_chrompos_range(vrmc, 0, vrnrows, testData[6][1], testData[7][2], testData[8][2])
         self.assertEqual(xrsid, testData[7][4])

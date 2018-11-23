@@ -195,6 +195,35 @@ int test_find_vr_rsid_by_variantkey_notfound(rsidvar_cols_t cvr)
     return errors;
 }
 
+int test_get_next_vr_rsid_by_variantkey(rsidvar_cols_t cvr)
+{
+    int errors = 0;
+    uint64_t pos = 2;
+    uint32_t rsid = get_next_vr_rsid_by_variantkey(cvr, &pos, cvr.nrows, 0x80010274003A0000);
+    if (pos != 3)
+    {
+        fprintf(stderr, "%s (1 Expected) pos 3, got %" PRIu64 "\n", __func__, pos);
+        ++errors;
+    }
+    if (rsid != 97)
+    {
+        fprintf(stderr, "%s (1) Expected rsid 97, got %" PRIx32 "\n", __func__, rsid);
+        ++errors;
+    }
+    rsid = get_next_vr_rsid_by_variantkey(cvr, &pos, cvr.nrows, 0x80010274003A0000);
+    if (pos != 4)
+    {
+        fprintf(stderr, "%s (2) Expected pos 4, got %" PRIu64 "\n", __func__, pos);
+        ++errors;
+    }
+    if (rsid != 0)
+    {
+        fprintf(stderr, "%s (2) Expected rsid 0, got %" PRIx32 "\n", __func__, rsid);
+        ++errors;
+    }
+    return errors;
+}
+
 int test_find_vr_chrompos_range(rsidvar_cols_t cvr)
 {
     int errors = 0;
@@ -340,6 +369,7 @@ int main()
     errors += test_get_next_rv_variantkey_by_rsid(crv);
     errors += test_find_vr_rsid_by_variantkey(cvr);
     errors += test_find_vr_rsid_by_variantkey_notfound(cvr);
+    errors += test_get_next_vr_rsid_by_variantkey(cvr);
     errors += test_find_vr_chrompos_range(cvr);
     errors += test_find_vr_chrompos_range_notfound(cvr);
 

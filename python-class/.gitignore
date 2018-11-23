@@ -1,5 +1,5 @@
 .cache
-.coverage*
+.coverage
 LICENSE
 README.md
 c/

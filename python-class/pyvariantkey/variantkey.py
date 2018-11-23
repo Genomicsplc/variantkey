@@ -432,7 +432,7 @@ class VariantKey(object):
         vk = []
         rsid_arr = np.array(rsid).astype(np.uint32)
         for x in np.nditer(rsid_arr):
-            vk = vk + pvk.find_all_rv_variantkey_by_rsid(self.rsvk_mc, 0, self.rsvk_nrows, x)
+            vk = vk + pvk.find_all_rv_variantkey_by_rsid(self.rsvk_mc, 0, self.rsvk_nrows, x.item(0))
         return np.array(vk).astype(np.uint64)
 
     def find_vr_rsid_by_variantkey(self, vk):
@@ -456,6 +456,49 @@ class VariantKey(object):
                  0,
                  self.vkrs_nrows,
                  np.array(vk).astype(np.uint64))
+
+    def get_next_vr_rsid_by_variantkey(self, pos, vk):
+        """Get the next rsID for the specified VariantKey in the VR file."\
+        " This function should be used after find_vr_rsid_by_variantkey."\
+        " This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).
+
+        Parameters
+        ----------
+        pos : uint64
+            Current item position.
+        vk : uint64
+            variantKey to search.
+
+        Returns
+        -------
+        tuple :
+            - uint32 : rsID or 0 in case not found.
+            - uint64 : Item position in the file.
+        """
+        f = np.vectorize(pvk.get_next_vr_rsid_by_variantkey, excluded=['mc', 'last'], otypes=[np.uint32, np.uint64])
+        return f(self.vkrs_mc,
+                 np.array(pos).astype(np.uint64),
+                 self.vkrs_nrows,
+                 np.array(vk).astype(np.uint64))
+
+    def find_all_vr_rsid_by_variantkey(self, vk):
+        """Search for the specified VariantKey and returns all associated rsIDs.
+
+        Parameters
+        ----------
+        vk : uint64
+            variantKey to search.
+
+        Returns
+        -------
+        uint32 :
+            - rsID(s).
+        """
+        rs = []
+        vk_arr = np.array(vk).astype(np.uint64)
+        for x in np.nditer(vk_arr):
+            rs = rs + pvk.find_all_vr_rsid_by_variantkey(self.vkrs_mc, 0, self.vkrs_nrows, x.item(0))
+        return np.array(rs).astype(np.uint32)
 
     def find_vr_chrompos_range(self, chrom, pos_min, pos_max):
         """Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.

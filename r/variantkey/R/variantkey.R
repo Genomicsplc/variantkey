@@ -371,6 +371,35 @@ FindVrRsidByVariantKey <- function(vk, first=0, last=vk.env$vkrs_$NROWS, mc=vk.e
     return(.Call("R_find_vr_rsid_by_variantkey", mc, as.integer(first), as.integer(last), as.uint64(vk), rsid, rfirst))
 }
 
+#' Get the next rsID for the specified VariantKey in the VR file, or 0 if not found
+#' This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).
+#' @param vk        VariantKey to search.
+#' @param pos       Current item.
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
+#' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
+#' @useDynLib   variantkey R_get_next_vr_rsid_by_variantkey
+#' @export
+GetNextVrRsidByVariantKey <- function(vk, pos, last=vk.env$vkrs_$NROWS, mc=vk.env$vkrs_$MC) {
+    n <- length(vk)
+    rsid <- integer(n)
+    rpos <- integer(n)
+    return(.Call("R_get_next_vr_rsid_by_variantkey", mc, as.integer(pos), as.integer(last), as.uint64(vk), rsid, rpos))
+}
+
+#' Search for the specified VariantKey and returns all the associated rsIDs in the VR file.
+#' NOTE: the output is limited to maximum 10 results.
+#' @param vk        VariantKey to search.
+#' @param max       max number of results to return.
+#' @param first     First element of the range to search (min value = 0).
+#' @param last      Element (up to but not including) where to end the search (max value = nitems).
+#' @param mc        Memory-mapped columns object as retured by MmapRSVKfile.
+#' @useDynLib   variantkey R_find_all_vr_rsid_by_variantkey
+#' @export
+FindAllVrRsidByVariantKey <- function(vk, max=10, first=0, last=vk.env$vkrs_$NROWS, mc=vk.env$vkrs_$MC) {
+    ret <- integer(max)
+    return(.Call("R_find_all_vr_rsid_by_variantkey", mc, as.integer(first), as.integer(last), as.uint64(vk), ret))
+}
+
 #' Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.
 #' @param chrom     Chromosome encoded number.
 #' @param pos_min   Start reference position, with the first base having position 0.

@@ -58,10 +58,10 @@ class TestFunctions(TestCase):
         np.testing.assert_array_equal(first, 9)
 
     def test_get_next_rv_variantkey_by_rsid(self):
-        vk, pos = npvk.get_next_rv_variantkey_by_rsid(2, 0x00000061)
-        np.testing.assert_array_equal(vk, 0x80010274003A0000)
+        vk, pos = npvk.get_next_rv_variantkey_by_rsid(2, testData[3, 4].astype(np.uint32))
+        np.testing.assert_array_equal(vk, testData[3, 5].astype(np.uint64))
         np.testing.assert_array_equal(pos, 3)
-        vk, pos = npvk.get_next_rv_variantkey_by_rsid(pos, 0x00000061)
+        vk, pos = npvk.get_next_rv_variantkey_by_rsid(pos, testData[3, 4].astype(np.uint32))
         np.testing.assert_array_equal(vk, 0)
         np.testing.assert_array_equal(pos, 4)
 
@@ -78,6 +78,18 @@ class TestFunctions(TestCase):
         rx, first = npvk.find_vr_rsid_by_variantkey(0xfffffffffffffff0)
         np.testing.assert_array_equal(rx, 0)
         np.testing.assert_array_equal(first, 9)
+
+    def test_get_next_vr_rsid_by_variantkey(self):
+        rsid, pos = npvk.get_next_vr_rsid_by_variantkey(2, testData[3, 5].astype(np.uint64))
+        np.testing.assert_array_equal(rsid, 97)
+        np.testing.assert_array_equal(pos, 3)
+        rsid, pos = npvk.get_next_vr_rsid_by_variantkey(pos, testData[3, 5].astype(np.uint64))
+        np.testing.assert_array_equal(rsid, 0)
+        np.testing.assert_array_equal(pos, 4)
+
+    def test_find_all_vr_rsid_by_variantkey(self):
+        rsids = npvk.find_all_vr_rsid_by_variantkey(testData[3, 5].astype(np.uint64))
+        np.testing.assert_array_equal(len(rsids), 1)
 
     def test_find_vr_chrompos_range(self):
         xrsid, xfirst, xlast = npvk.find_vr_chrompos_range(0x14, 0x000256c5, 0x000256cb)

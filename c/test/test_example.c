@@ -283,8 +283,13 @@ int main()
     first = 0;
     uint64_t last = 9;
     rsid = find_vr_chrompos_range(cvr, &first, &last, 0x14, 0x000256C5, 0x000256CB);
-    fprintf(stdout, "%" PRIu32 "%" PRIu64 "%" PRIu64 "\n", rsid, first, last);
+    fprintf(stdout, "%" PRIu32 " %" PRIu64 " %" PRIu64 "\n", rsid, first, last);
     // 9973 7 8
+
+    fpos = 2;
+    rsid = get_next_vr_rsid_by_variantkey(cvr, &fpos, 9, 0x80010274003A0000);
+    fprintf(stdout, "%" PRIu32 " %" PRIu64 "\n", rsid, fpos);
+    // 97 3
 
     err = munmap_binfile(vr);
     if (err != 0)

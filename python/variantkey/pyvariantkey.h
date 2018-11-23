@@ -60,6 +60,8 @@ static PyObject *py_find_rv_variantkey_by_rsid(PyObject *self, PyObject *args, P
 static PyObject *py_get_next_rv_variantkey_by_rsid(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_find_all_rv_variantkey_by_rsid(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_find_vr_rsid_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_get_next_vr_rsid_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
+static PyObject *py_find_all_vr_rsid_by_variantkey(PyObject *self, PyObject *args, PyObject *keywds);
 static PyObject *py_find_vr_chrompos_range(PyObject *self, PyObject *args, PyObject *keywds);
 
 // NRVK
@@ -527,6 +529,45 @@ PyMODINIT_FUNC initvariantkey(void);
 "tuple :\n"\
 "    - rsID or 0 in case not found.\n"\
 "    - Item position in the file."
+
+#define PYGETNEXTVRRSIDBYVARIANTKEY_DOCSTRING "Get the next VariantKey for the specified rsID in the VR file."\
+" This function should be used after find_vr_rsid_by_variantkey."\
+" This function can be called in a loop to get all rsIDs that are associated with the same VariantKey (if any).\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mc : obj\n"\
+"    Memory-mapped columns object as retured by mmap_vkrs_file().\n"\
+"pos : int\n"\
+"    Current item position.\n"\
+"last : int\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
+"vk : int\n"\
+"    VariantKey.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"tuple :\n"\
+"    - rsID or 0 in case not found.\n"\
+"    - Item position in the file."
+
+#define PYFINDALLVRRSIDBYVARIANTKEY_DOCSTRING "Search for the specified VariantKey and returns all associated rsIDs.\n"\
+"\n"\
+"Parameters\n"\
+"----------\n"\
+"mc : obj\n"\
+"    Memory-mapped columns object as retured by mmap_vkrs_file().\n"\
+"first : int\n"\
+"    First element of the range to search (min value = 0).\n"\
+"last : int\n"\
+"    Element (up to but not including) where to end the search (max value = nitems).\n"\
+"vk : int\n"\
+"    VariantKey.\n"\
+"\n"\
+"Returns\n"\
+"-------\n"\
+"tuple : int\n"\
+"    - rsID(s)."
 
 #define PYFINDVRCHROMPOSRANGE_DOCSTRING "Search for the specified CHROM-POS range and returns the first occurrence of rsID in the VR file.\n"\
 "\n"\
