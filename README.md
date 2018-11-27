@@ -33,6 +33,7 @@ Nicola Asuni. [VariantKey - A Reversible Numerical Representation of Human Genet
     * [VariantKey Properties](#vkproperties)
 * [VariantKey Input values](#vkinput)
 * **[RegionKey](#regionkey)**
+    * [RegionKey Properties](#rkproperties)
 * [Encoding String IDs](#esid)
 * [Binary file formats for lookup tables](#binaryfiles)
 * [C Library](#clib)
@@ -57,7 +58,7 @@ The [VariantKey Format](#vkformat) doesn't represent universal codes, it only en
 
 This software library can be used to generate and reverse [VariantKey](#vkformat)s and [RegionKey](#regionkey)s.
 
-
+----------
 
 <a name="quickstart"></a>
 ## Quick Start
@@ -97,6 +98,8 @@ For example:
 cd c
 make test
 ```
+
+----------
 
 <a name="hgvdefinition"></a>
 ## Human Genetic Variant Definition
@@ -421,11 +424,12 @@ Normalized variant | 19    | 29238771                     | C   | G             
 * **`ALT`**   - *alternate non-reference allele* : 
     String containing a sequence of [nucleotide letters](https://en.wikipedia.org/wiki/Nucleic_acid_notation).
 
+----------
 
 <a name="regionkey"></a>
 ## RegionKey
 
-*RegionKey* encodes a human genetic region (defined as the set of *chromosome*, *start position*, *end position* and *strand direction*) in a 64 bit unsigned integer number.
+*RegionKey* encodes a human genomic region (defined as the set of *chromosome*, *start position*, *end position* and *strand direction*) in a 64 bit unsigned integer number.
 
 RegionKey allows to repesent a region as a single entity, and provides analogous properties as the ones listed in [VariantKey Properties](#vkproperties).
 
@@ -442,7 +446,24 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
                                                                                 STRAND
 ```
 
-* **`CHROM`**   : 5 bit to represent the chromosome.
+
+Example of RegionKey encoding:
+
+```
+                  | CHROM | STARTPOS                     | ENDPOS                       | STRAND |
+------------------+-------+------------------------------+------------------------------+--------+
+      Raw variant | chr19 | 29238771                     | 29239026                     | +1     |
+Normalized region | 19    | 29238771                     | 29239026                     | +1     |
+------------------+-------+------------------------------+------------------------------+--------+
+    RegionKey bin | 10011 | 0001101111100010010111110011 | 0001101111100010011011110010 | 01 0   |
+------------------+-------+------------------------------+---------------------------------------+
+    RegionKey hex | 98DF12F98DF13792                                                             |
+    RegionKey dec | 11015544076609075090                                                         |
+------------------+------------------------------------------------------------------------------+
+```
+
+* **`CHROM`**   : 5 bit to represent the chromosome.  
+  An identifier from the reference genome. It only has 26 valid values: autosomes from 1 to 22, the sex chromosomes X=23 and Y=24, mitochondria MT=25 and a symbol NA=0 to indicate an invalid value.
 
     ```
         0   4
@@ -458,7 +479,8 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 
     The chromosome is encoded as in VariantKey.
 
-* **`STARTPOS`** : 28 bit for the region START position.
+* **`STARTPOS`** : 28 bit for the region START position.  
+  The region start position in the chromosome, with the first base having position 0. The largest expected value is less than 250 million to represent the last base pair in Chromosome 1.
 
     ```
         0    5                              32                                63
@@ -474,7 +496,8 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 
     This section is encoded as in VariantKey POS.
 
-* **`ENDPOS`** : 28 bit for the region END position.
+* **`ENDPOS`** : 28 bit for the region END position.  
+  The region end position in the chromosome. The end position is equivalent to (STARTPOS + REGION_LENGTH), such that the base having position ENDPOS is not included in the region.
 
 ```
         0                                    33                            60 63
@@ -489,7 +512,8 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 ```
     The end position is equivalent to (STARTPOS + REGION_LENGTH).
 
-* **`STRAND`** : 2 bit to encode the strand direction.
+* **`STRAND`** : 2 bit to encode the strand direction.  
+  (optional) The direction of the DNA strand. This is useful when encoding genic regions.
 
     ```
         0                                                                 61  62
@@ -503,7 +527,7 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 
     ```
     -1 : 2 dec = "10" bin = reverse (minus) strand direction
-     0 : 0 dec = "00" bin = unknown strand direction
+     0 : 0 dec = "00" bin = unknown or not applicable strand direction
     +1 : 1 dec = "01" bin = forward (plus) strand direction
     ```
 
@@ -511,6 +535,18 @@ The RegionKey is composed of 4 sections arranged in 64 bit:
 
 This software library provides several functions to operate with *RegionKey* and interact with *VariantKey*.
 
+
+<a name="rkproperties"></a>
+### RegionKey Properties
+
+* It is compatible with VariantKey.
+* It can be encoded and decoded on-the-fly.
+* Sorting by RegionKey is equivalent of sorting by CHROM and STARTPOS.
+* The 64 bit RegionKey can be exported as a single 16 character hexadecimal string.
+* Sorting the hexadecimal representation of RegionKey in alphabetical order is equivalent of sorting the RegionKey numerically.
+* RegionKey can be used as a main database key to index data by "region". This simplify common searching, merging and filtering operations.
+
+----------
 
 <a name="esid"></a>
 ## Encoding String IDs
@@ -523,6 +559,7 @@ This library contains extra functions to encode some string IDs to 64 bit unsign
 
 * The `hash_string_id` function creates a 64 bit unsigned integer hash of the input string.
 
+----------
 
 <a name="binaryfiles"></a>
 ## Binary files for lookup tables
@@ -564,6 +601,8 @@ https://sourceforge.net/projects/variantkey/files/
     b800c35bbcece603	AAAAAAAAGG	AG
     1800c351f61f65d3	A	AAGAAAGAAAG
     ```
+
+----------
 
 <a name="clib"></a>
 ## C Library

@@ -611,7 +611,7 @@ func (mf TMMFile) NormalizedVariantKey(chrom string, pos uint32, posindex uint8,
 
 // --- REGIONKEY ---
 
-// TRegionKey contains a representation of a genetic region key
+// TRegionKey contains a representation of a genomic region key
 type TRegionKey struct {
 	Chrom    uint8  `json:"chrom"`
 	StartPos uint32 `json:"startpos"`
@@ -619,7 +619,7 @@ type TRegionKey struct {
 	Strand   uint8  `json:"strand"`
 }
 
-// TRegionKeyRev contains a genetic region components
+// TRegionKeyRev contains a genomic region components
 type TRegionKeyRev struct {
 	Chrom    string `json:"chrom"`
 	StartPos uint32 `json:"startpos"`

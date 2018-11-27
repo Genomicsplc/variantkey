@@ -34,7 +34,7 @@
  * @file regionkey.h
  * @brief RegionKey main functions.
  *
- * The functions provided here allows to generate and process a 64 bit Unsigned Integer Keys for Human Genetic Regions.
+ * The functions provided here allows to generate and process a 64 bit Unsigned Integer Keys for Human Genomic Regions.
  * The RegionKey is sortable for chromosome and start position, and it is also fully reversible.
  */
 

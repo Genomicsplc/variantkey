@@ -21,7 +21,7 @@ Provides:  %{gh_project} = %{version}
 %description
 Provides C header-only files for:
 VariantKey, a reversible numerical encoding schema for human genetic variants.
-RegionKey, a reversible numerical encoding schema for human genetic regions.
+RegionKey, a reversible numerical encoding schema for human genomic regions.
 ESID, a reversible numerical encoding schema for genetic string identifiers.
 
 %build
