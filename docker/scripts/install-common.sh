@@ -1,16 +1,24 @@
 #!/bin/bash error-source-me.sh
 
 function install_common_apt_update() {
-    echo "install-common.sh: calling apt-get update"
-    apt-get -qq update
+    if [ -z ${SUPPRESS_install_common_apt_update+x} ]; then
+        echo "install-common.sh: calling apt-get update"
+        apt-get -qq update
+    else
+        echo "install-common.sh: suppressing apt update since SUPPRESS_install_common_apt_update is set"
+    fi
 }
 
 function install_common_apt_cleanup() {
-    echo "install-common.sh: removing extraneous packages"
-    apt-get -qq autoremove
+    if [ -z ${SUPPRESS_install_common_apt_cleanup+x} ]; then
+        echo "install-common.sh: removing extraneous packages"
+        apt-get -qq autoremove
 
-    echo "install-common.sh: clearing apt cache"
-    rm -rf /var/lib/apt/lists/*
+        echo "install-common.sh: clearing apt cache"
+        rm -rf /var/lib/apt/lists/*
+    else
+        echo "install-common.sh: suppressing apt cleanup since SUPPRESS_install_common_apt_cleanup is set"
+    fi
 }
 
 function install_common_apt_install() {
