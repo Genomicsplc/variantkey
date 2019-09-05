@@ -383,7 +383,7 @@ Normalized variant | 19    | 29238771                     | C   | G             
             * `A` = 0 dec = 00 bin;
             * `C` = 1 dec = 01 bin;
             * `G` = 2 dec = 10 bin;
-            * `T` = 4 dec = 11 bin.
+            * `T` = 3 dec = 11 bin.
 
         Examples:
 
