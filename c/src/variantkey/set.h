@@ -199,7 +199,7 @@ static inline void order_uint64_t(uint64_t *arr, uint64_t *tmp, uint32_t *idx, u
         j = c0[t0];
         arr[j] = v;
         c0[t0]++;
-        idx[tdx[i]] = j;
+        idx[j] = tdx[i];
     }
 }
 

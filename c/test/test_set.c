@@ -128,7 +128,7 @@ int test_order_uint64_t()
             ++errors;
         }
     }
-    uint32_t edx[10] = {8,1,9,3,2,7,4,0,5,6};
+    uint32_t edx[10] = {7,1,4,3,6,8,9,5,0,2};
     for(i = 0; i < 10; i++)
     {
         if (idx[i] != edx[i])
